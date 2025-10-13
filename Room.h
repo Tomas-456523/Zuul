@@ -1,20 +1,24 @@
 //header file for rooms
 
+#ifndef ROOM
+#define ROOM
+
 #include <vector>
 #include <map>
 #include "NPC.h"
+#include "Item.h"
 using namespace std;
 
-#ifndef ROOM
-#define ROOM
+class NPC;
+
 class Room {
 public:
 	Room();
 	~Room();
 
-private: //REPLACE CHAR WITH FUTURE ITEM CLASS
-	vector<char> items;
-	vector<NPC> npcs;
+private:
+	vector<Item*> items;
+	vector<NPC*> npcs;
 	map<char[255], Room> exits;
 };
 #endif

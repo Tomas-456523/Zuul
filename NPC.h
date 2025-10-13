@@ -1,4 +1,4 @@
-//header file for NPCS
+//header file for NPCs
 
 //npcs can be recruited (bool for if they want to be recruited)
 //when recruited, they follow you around and are not listed in the description of a room
@@ -6,13 +6,16 @@
 //recruited npcs can be dismissed, and they will then go back home
 //you can have up to 3 npcs in your party
 
+#ifndef NPC_H
+#define NPC_H
+
 #include <vector>
 #include <stack>
 #include "Room.h"
 using namespace std;
 
-#ifndef NPC_
-#define NPC_
+class Room; //forward declares room because these two classes reference each other
+
 class NPC {
 public:
 	NPC();
@@ -21,7 +24,8 @@ private:
 	char name[255];
 	char description[255];
 
-	Room home;
+	Room* home;
+	Room* currentRoom;
 
 	//the dialogue that the character has to go through before getting to the random dialogue
 	stack<char*> initialDialogue;
@@ -32,6 +36,7 @@ private:
 	vector<char*> battleCries;
 
 	bool recruitable = false;
+	bool recruited = false;
 
 	int health;
 	int defense;
