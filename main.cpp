@@ -16,21 +16,6 @@ FEATURES I NEED TO IMPLEMENT
 - FINALIZE THE PLOT
 - ACHIEVEMENTS
 */
-
-/*
-COMMANDS:
-HELP
-INVENTORY
-PARTY
-ANALYZE [item or npc, ideally they will not have overlapping names]
-FIGHT [npc]
-TALK TO [npc]
-RECRUIT [npc]
-TAKE [item]
-USE [item]
-DROP [item]
-QUIT
-*/
 /*
 If you get the lame ending it gives a reference to the "Don't be lame clause"
 says:
@@ -42,7 +27,7 @@ Maybe you should explore more to get a less lame ending...
 
 ENDING ACHIEVED: LAME ENDING
 
-... and then you get booted to the main menu like in silksong
+... and then you get booted to the main menu like in hollow knight
 */
 #include <iostream>
 #include <limits>
@@ -67,11 +52,24 @@ void AllCaps(char* text) {
 	}
 }
 
-char* ParseCommand() {
-	return NULL;
+void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
+	int i = 0;
+	while (commandP[i] != ' ' && commandP[i] != '\0') {
+		commandWordP[i] = commandP[i];
+		i++;
+	}
+	i++;
+	while (commandP[i] != '\0') {
+		commandWordP[i] = commandP[i];
+		i++;
+	}
 }
 
-void printHelp(char validCommands[12][255], char validExtensions[12][255], char flavorText[16][255]) {
+void travel(Room* currentRoom, char direction[255]) {
+	//currentRoom = 
+}
+
+void printHelp(char validCommands[13][255], char validExtensions[13][255], char flavorText[16][255]) {
 	cout << "\n";
 	srand(time(NULL));
 	cout << flavorText[rand() % 15];
@@ -82,9 +80,10 @@ void printHelp(char validCommands[12][255], char validExtensions[12][255], char 
 }
 
 int main() {
-	char command[255];
-	char* commandP = &command[0];
 	vector<Room*> rooms;
+	Room* currentRoom;
+
+	//command stuff used to be initialized here
 
 	char flavorText[16][255] = {
 		"What even is a BURGER?",
@@ -105,7 +104,7 @@ int main() {
 		"You take a potato chip... and eat it."
 	};
 
-	char validCommands[12][255] = {
+	char validCommands[13][255] = {
 		"GO",
 		"TAKE",
 		"DROP",
@@ -115,12 +114,13 @@ int main() {
 		"ASK",
 		"INVENTORY",
 		"PARTY",
+		"ANALYZE",
 		"FIGHT",
 		"HELP",
 		"QUIT"		
 	};
 
-	char validExtensions[12][255] = {
+	char validExtensions[13][255] = {
 		"[direction]",
 		"[item]",
 		"[item]",
@@ -130,28 +130,41 @@ int main() {
 		"[npc]",
 		"",
 		"",
+		"[npc/item]",
 		"[npc]",
 		"",
 		""
 	};
 
-	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.";
+	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.\nType HELP for help.";
+
+	//player should name him/herself here
+
 	bool continuing = true;
 	while (continuing) {
+		//im not sure if I should initialize these variables here, but it makes it so they're cleared every time which is pretty convenient
+		char command[255];
+
+		char commandWord[255];
+		char commandExtension[255];
+
 		cout << "\n> ";
 		cin.getline(command, 255);
+		AllCaps(command);
 
-		AllCaps(commandP);
-		//PARSE COMMAND
-
-		if (!strcmp(command, "HELP")) {
+		ParseCommand(command, commandWord, commandExtension);
+		if (!strcmp(commandWord, "GO")) {
+			travel(currentRoom, commandExtension);
+		} else if (!strcmp(commandWord, "HELP")) {
 			printHelp(validCommands, validExtensions, flavorText);
-		} else if (!strcmp(command, "QUIT")) {
+		} else if (!strcmp(commandWord, "QUIT")) {
 			continuing = false;
+		} else {
+			cout << "\nInvalid command (type HELP for help).";
 		}
 
 		CinIgnoreAll();
 	}
 	//gives a friendly farewell to the player
-	cout << "Enjoy your next 24 hours.";
+	cout << "\nEnjoy your next 24 hours.";
 }
