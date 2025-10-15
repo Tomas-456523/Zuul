@@ -38,6 +38,36 @@ ENDING ACHIEVED: LAME ENDING
 #include "Item.h"
 using namespace std;
 
+//sets up the entire game world, including rooms, npcs, and items, and returns the starting room
+Room* SetupWorld(vector<Room*>* rooms) {
+	//set up directions
+	char _north[6] = "NORTH";
+	char _south[6] = "SOUTH";
+	char _west[6] = "WEST";
+	char _east[6] = "EAST";
+
+	char* NORTH = &_north[0];
+	char* SOUTH = &_south[0];
+	char* WEST = &_west[0];
+	char* EAST = &_east[0];
+
+	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
+	Room* village = new Room("in Tactical Tent Village. It would be a beautiful day, but the sun is eclipsed by a massive rectangular BURGER advertisement.");
+	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
+
+	//set up room exits
+	village->setExit(SOUTH, docks);
+	docks->setExit(NORTH, village);
+
+	//FUNNY JOKE IDEA: in one room, do "The weather is beautiful; perfect for staying indoors and gaming."
+
+	return village; //returns the room we start in (I mean, it's not really a room but whatever).
+}
+
+void PrintRoomData(Room* currentRoom) {
+	cout << "\nYou are " << currentRoom->getDescription();
+}
+
 void CinIgnoreAll() {
 	if (!cin) {
 		cin.clear();
@@ -58,15 +88,28 @@ void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
 		commandWordP[i] = commandP[i];
 		i++;
 	}
+	commandWordP[i] = '\0';
 	i++;
+	int j = i;
 	while (commandP[i] != '\0') {
-		commandWordP[i] = commandP[i];
+		commandExtensionP[i-j] = commandP[i];
 		i++;
 	}
+	commandExtensionP[i-j] = '\0';
 }
 
-void travel(Room* currentRoom, char direction[255]) {
-	//currentRoom = 
+void travel(Room* currentRoom, char* direction) {
+	if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
+		cout << "\nInvalid direction.";
+		return;
+	}
+	Room* roomCanidate = currentRoom->getExit(direction);
+	if (roomCanidate == NULL) {
+		cout << "\nThere is no exit in that direction.";
+		return;
+	}
+	currentRoom = roomCanidate;
+	PrintRoomData(currentRoom);
 }
 
 void printHelp(char validCommands[13][255], char validExtensions[13][255], char flavorText[16][255]) {
@@ -80,8 +123,10 @@ void printHelp(char validCommands[13][255], char validExtensions[13][255], char 
 }
 
 int main() {
-	vector<Room*> rooms;
-	Room* currentRoom;
+	vector<Room*>* rooms = new vector<Room*>;
+	
+	//sets up the game world and places the player at the current room
+	Room* currentRoom = SetupWorld(rooms);
 
 	//command stuff used to be initialized here
 
@@ -136,7 +181,8 @@ int main() {
 		""
 	};
 
-	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.\nType HELP for help.";
+	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.\nType HELP for help.\n";
+	PrintRoomData(currentRoom);
 
 	//player should name him/herself here
 
@@ -153,8 +199,9 @@ int main() {
 		AllCaps(command);
 
 		ParseCommand(command, commandWord, commandExtension);
+
 		if (!strcmp(commandWord, "GO")) {
-			travel(currentRoom, commandExtension);
+			travel(currentRoom, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "HELP")) {
 			printHelp(validCommands, validExtensions, flavorText);
 		} else if (!strcmp(commandWord, "QUIT")) {

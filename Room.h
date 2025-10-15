@@ -5,30 +5,37 @@
 
 #include <vector>
 #include <map>
+#include <cstring>
 #include "NPC.h"
 #include "Item.h"
 using namespace std;
 
 class NPC;
 
+struct charComparer {
+	bool operator()(char* a, char* b) const {
+		return !strcmp(a,b);
+	}
+};
+
 class Room {
 public:
-	Room(char _description[255]);
+	Room(const char _description[255]);
 	~Room();
 
 	char* getDescription();
 	vector<Item*> getItems();
 	vector<NPC*> getNpcs();
-	Room* getExit(char direction);
+	Room* getExit(char* direction);
 
 	void setItem(Item* item);
 	void setNpcs(NPC* npc);
-	void setExit(char direction, Room* room);
+	void setExit(char* direction, Room* room);
 private:
 	char description[255];
 
 	vector<Item*> items;
 	vector<NPC*> npcs;
-	map<char, Room*> exits;
+	map<char*, Room*, charComparer> exits;
 };
 #endif

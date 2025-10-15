@@ -42,7 +42,7 @@ public: //you need to set stats on creation
 	void addDialogue(); //adds temporary dialogue to the npc
 	void addRandomDialogue(); //adds random dialogue to the npc
 	void addBattleCry(); //adds a random battle cry to the npc
-	void setAttackDescription(); 
+	void setAttackDescription(); //sets the description of the attack
 	void setRecruitable();
 	void setRecruited();
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
@@ -67,7 +67,7 @@ private:
 	//the npcs say a random one of these phrases when attacking
 	vector<char*> battleCries;
 
-	char attackDescription[255];
+	char attackDescription[255]; //describes how the npc is attacking (eg. shot a laser at)
 
 	bool recruitable = false;
 	bool recruited = false;

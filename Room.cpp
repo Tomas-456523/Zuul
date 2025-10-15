@@ -4,7 +4,7 @@
 #include <cstring>
 using namespace std;
 
-Room::Room(char _description[255]) {
+Room::Room(const char _description[255]) {
 	strcpy(description, _description);
 }
 Room::~Room() {
@@ -19,7 +19,7 @@ vector<Item*> Room::getItems() {
 vector<NPC*> Room::getNpcs() {
 	return npcs;
 }
-Room* Room::getExit(char direction) {
+Room* Room::getExit(char* direction) {
 	return exits[direction];
 }
 void Room::setItem(Item* item) {
@@ -28,6 +28,6 @@ void Room::setItem(Item* item) {
 void Room::setNpcs(NPC* npc) {
 	npcs.push_back(npc);
 }
-void Room::setExit(char direction, Room* room) {
+void Room::setExit(char* direction, Room* room) {
 	exits[direction] = room;
 }
