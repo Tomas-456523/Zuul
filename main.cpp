@@ -41,31 +41,34 @@ using namespace std;
 //sets up the entire game world, including rooms, npcs, and items, and returns the starting room
 Room* SetupWorld(vector<Room*>* rooms) {
 	//set up directions
-	char _north[6] = "NORTH";
-	char _south[6] = "SOUTH";
-	char _west[6] = "WEST";
-	char _east[6] = "EAST";
+	char* NORTH = new char[6];
+	char* SOUTH = new char[6];
+	char* WEST = new char[6];
+	char* EAST = new char[6];
 
-	char* NORTH = &_north[0];
-	char* SOUTH = &_south[0];
-	char* WEST = &_west[0];
-	char* EAST = &_east[0];
+	strcpy(NORTH, "NORTH");
+	strcpy(SOUTH, "SOUTH");
+	strcpy(WEST, "WEST");
+	strcpy(EAST, "EAST");
 
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
-	Room* village = new Room("in Tactical Tent Village. It would be a beautiful day, but the sun is eclipsed by a massive rectangular BURGER advertisement.");
+	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
+
+	NPC* elder = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0);
 
 	//set up room exits
 	village->setExit(SOUTH, docks);
 	docks->setExit(NORTH, village);
-
-	//FUNNY JOKE IDEA: in one room, do "The weather is beautiful; perfect for staying indoors and gaming."
 
 	return village; //returns the room we start in (I mean, it's not really a room but whatever).
 }
 
 void PrintRoomData(Room* currentRoom) {
 	cout << "\nYou are " << currentRoom->getDescription();
+	currentRoom->printExits();
+	currentRoom->printNPCs();
+	currentRoom->printItems();
 }
 
 void CinIgnoreAll() {
@@ -98,9 +101,9 @@ void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
 	commandExtensionP[i-j] = '\0';
 }
 
-void travel(Room* currentRoom, char* direction) {
+void travel(Room*& currentRoom, char* direction) {
 	if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
-		cout << "\nInvalid direction.";
+		cout << "\nInvalid direction: \"" << direction << "\".";
 		return;
 	}
 	Room* roomCanidate = currentRoom->getExit(direction);

@@ -20,9 +20,10 @@ class Room; //forward declares room because these two classes reference each oth
 
 class NPC {
 public: //you need to set stats on creation
-	NPC(char _name[255], char _description[255]);
+	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, bool _player = false);
 	~NPC();
 
+	char* getTitle(); //gets the title of the character
 	char* getName(); //gets the name of the character
 	char* getDescription(); //gets the description of the character
 	char* getDialogue(); //gets the current dialogue
@@ -53,6 +54,7 @@ public: //you need to set stats on creation
 	void addPierce();
 	void addSpeed();
 private:
+	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
 	char description[255];
 

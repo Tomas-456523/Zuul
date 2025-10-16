@@ -14,7 +14,7 @@ class NPC;
 
 struct charComparer {
 	bool operator()(char* a, char* b) const {
-		return !strcmp(a,b);
+		return strcmp(a,b) < 0;
 	}
 };
 
@@ -27,9 +27,12 @@ public:
 	vector<Item*> getItems();
 	vector<NPC*> getNpcs();
 	Room* getExit(char* direction);
+	void printExits();
+	void printItems();
+	void printNPCs();
 
 	void setItem(Item* item);
-	void setNpcs(NPC* npc);
+	void setNPC(NPC* npc);
 	void setExit(char* direction, Room* room);
 private:
 	char description[255];
