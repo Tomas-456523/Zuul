@@ -5,8 +5,6 @@
 
 /*
 FEATURES I NEED TO IMPLEMENT
-- ROOMS
-- MOVING
 - DIALOGUE
 - NPCS
 - TURN-BASED COMBAT
@@ -55,7 +53,21 @@ Room* SetupWorld(vector<Room*>* rooms) {
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 
-	NPC* elder = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0);
+	Room* casino = new Room("in a huge casino. You should really leave here before you develop a gambling addiction.");
+
+	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
+
+	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0);
+	//REPLACE AREA WITH WHEREVER THE BURGER HERETIC WILL BE. MAKE ABSOLUTELY CERTAIN YOU DON'T LEAVE THAT IN
+	archie->setDialogue("Hello, Bernard. I hear you are going on a BURGER QUEST? I would advise you to not recieve the BURGER; many are fooled and do not realize the great evil resonating in it. I would implore you to instead seek out my friend in the [AREA]; he can help you to annihilate the source.");
+	archie->setRejectionDialogue("I am sorry, Bernard. I cannot join you on your BURGER QUEST. I must stay here and watch over the village, for my recruitable variable is set to false.");
+	
+	//REPLACE PLACEHOLDER STATS
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 0, 0, 0, 0, 0, 0);
+	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit just before hitting it big?");
+
+
+	NPC* burgerman = new NPC("", "BURGER MAN", "The BURGER MAN in charge of this particular BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
 
 	//set up room exits
 	village->setExit(SOUTH, docks);
@@ -131,6 +143,9 @@ int main() {
 	//sets up the game world and places the player at the current room
 	Room* currentRoom = SetupWorld(rooms);
 
+	vector<Item*>* inventory = new vector<Item*>;
+	vector<NPC*>* party = new vector<NPC*>;
+
 	//command stuff used to be initialized here
 
 	char flavorText[16][255] = {
@@ -205,6 +220,26 @@ int main() {
 
 		if (!strcmp(commandWord, "GO")) {
 			travel(currentRoom, &commandExtension[0]);
+		} else if (!strcmp(commandWord, "TAKE")) {
+
+		} else if (!strcmp(commandWord, "DROP")) {
+
+		} else if (!strcmp(commandWord, "USE")) {
+
+		} else if (!strcmp(commandWord, "RECRUIT")) {
+
+		} else if (!strcmp(commandWord, "DISMISS")) {
+
+		} else if (!strcmp(commandWord, "ASK")) {
+
+		} else if (!strcmp(commandWord, "INVENTORY")) {
+
+		} else if (!strcmp(commandWord, "PARTY")) {
+
+		} else if (!strcmp(commandWord, "ANALYZE")) {
+
+		} else if (!strcmp(commandWord, "FIGHT")) {
+
 		} else if (!strcmp(commandWord, "HELP")) {
 			printHelp(validCommands, validExtensions, flavorText);
 		} else if (!strcmp(commandWord, "QUIT")) {

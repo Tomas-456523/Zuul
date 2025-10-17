@@ -25,7 +25,7 @@ Room* Room::getExit(char* direction) {
 }
 //prints all the exits from this room; I tried just returning the map, but it was annoying because of the custom comparator so I just do this
 void Room::printExits() {
-	cout << "\nExits:"
+	cout << "\nExits:";
 	for (map<char*, Room*, charComparer>::iterator exiterator = exits.begin(); exiterator != exits.end(); ++exiterator) {
 		cout << " " << exiterator->first;
 	}
@@ -39,7 +39,7 @@ void Room::printItems() {
 void Room::printNPCs() {
 	cout << "\nNPCs:";
 	for (NPC* npc : npcs) {
-		if (!npc.getRecruited()) {
+		if (!npc->getRecruited()) {
 			cout << " " << npc->getName();
 		}
 	}

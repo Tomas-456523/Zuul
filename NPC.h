@@ -27,6 +27,9 @@ public: //you need to set stats on creation
 	char* getName(); //gets the name of the character
 	char* getDescription(); //gets the description of the character
 	char* getDialogue(); //gets the current dialogue
+	char* getRejectionDialogue(); //gets the rejection dialogue for the npc
+	char* getRecruitmentDialogue(); //gets the recruitment dialogue for the npc
+	char* getDismissalDialogue(); //gets the dismissal dialogue for the npc
 	char* getBattleCry(); //gets a random battle cry
 	char* getAttackDescription(); //gets the description of the npc's attack
 	bool getRecruitable(); //gets the recruitable status of the character
@@ -40,12 +43,14 @@ public: //you need to set stats on creation
 	int getPierce(); //gets the pierce of the npc
 	int getSpeed(); //gets the speed of the npc
 
-	void addDialogue(); //adds temporary dialogue to the npc
-	void addRandomDialogue(); //adds random dialogue to the npc
+	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
+	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
+	void setRecruitmentDialogue(const char _dialogue[255]); //sets the recruitment dialogue for the npc
+	void setDismissalDialogue(const char _dialogue[255]); //sets the dismissal dialogue for the npc
 	void addBattleCry(); //adds a random battle cry to the npc
 	void setAttackDescription(); //sets the description of the attack
-	void setRecruitable();
-	void setRecruited();
+	void setRecruitable(bool _recruitable);
+	void setRecruited(bool _recruited);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addHealth(); //adds to the maximum and current health
 	void addDefense(); //adds to the defense
@@ -61,11 +66,11 @@ private:
 	Room* home;
 	Room* currentRoom;
 
-	//the dialogue that the character has to go through before getting to the random dialogue
-	stack<char*> initialDialogue;
-
-	//random dialogue will be chosen from this vector after the player has exhausted all initial dialogue
-	vector<char*> randomDialogue;
+	//dialogue that the npc says when asked
+	char dialogue[255];
+	char rejectionDialogue[255];
+	char recruitmentDialogue[255];
+	char dismissalDialogue[255];
 	//the npcs say a random one of these phrases when attacking
 	vector<char*> battleCries;
 
