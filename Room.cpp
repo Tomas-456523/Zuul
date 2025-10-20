@@ -3,6 +3,7 @@
 #include "Item.h"
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 Room::Room(const char _description[255]) {
@@ -39,8 +40,8 @@ void Room::printItems() {
 void Room::printNPCs() {
 	cout << "\nNPCs:";
 	for (NPC* npc : npcs) {
-		if (!npc->getRecruited()) {
-			cout << " " << npc->getName();
+		if (!npc->getRecruited() && !npc->getPlayerness()) {
+			cout << " " << npc->getTitle() << " " << npc->getName();
 		}
 	}
 }
@@ -49,6 +50,9 @@ void Room::setItem(Item* item) {
 }
 void Room::setNPC(NPC* npc) {
 	npcs.push_back(npc);
+}
+void Room::removeNPC(NPC* npc) {
+	npcs.erase(remove(npcs.begin(), npcs.end(), npc), npcs.end());
 }
 void Room::setExit(char* direction, Room* room) {
 	exits[direction] = room;

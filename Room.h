@@ -33,6 +33,7 @@ public:
 
 	void setItem(Item* item);
 	void setNPC(NPC* npc);
+	void removeNPC(NPC* npc);
 	void setExit(char* direction, Room* room);
 private:
 	char description[255];

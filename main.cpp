@@ -31,13 +31,14 @@ ENDING ACHIEVED: LAME ENDING
 #include <limits>
 #include <vector>
 #include <cstring>
+#include <algorithm>
 #include "NPC.h"
 #include "Room.h"
 #include "Item.h"
 using namespace std;
 
 //sets up the entire game world, including rooms, npcs, and items, and returns the starting room
-Room* SetupWorld(vector<Room*>* rooms) {
+NPC* SetupWorld(vector<Room*>* rooms) {
 	//set up directions
 	char* NORTH = new char[6];
 	char* SOUTH = new char[6];
@@ -57,10 +58,13 @@ Room* SetupWorld(vector<Room*>* rooms) {
 
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
 
+	NPC* self = new NPC("", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, true);
+	self->setDialogue("Huh?");
+
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0);
 	//REPLACE AREA WITH WHEREVER THE BURGER HERETIC WILL BE. MAKE ABSOLUTELY CERTAIN YOU DON'T LEAVE THAT IN
-	archie->setDialogue("Hello, Bernard. I hear you are going on a BURGER QUEST? I would advise you to not recieve the BURGER; many are fooled and do not realize the great evil resonating in it. I would implore you to instead seek out my friend in the [AREA]; he can help you to annihilate the source.");
-	archie->setRejectionDialogue("I am sorry, Bernard. I cannot join you on your BURGER QUEST. I must stay here and watch over the village, for my recruitable variable is set to false.");
+	archie->setDialogue("So I hear you are going on a BURGER QUEST? I would advise you to not recieve the BURGER; many are fooled and do not realize the great evil resonating in it. I would implore you to instead seek out my friend in the [AREA]; he can help you to annihilate the source.");
+	archie->setRejectionDialogue("I am sorry. I cannot join you on your BURGER QUEST. I must stay here and watch over the village, for my recruitable variable is set to false.");
 	
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 0, 0, 0, 0, 0, 0);
@@ -73,7 +77,7 @@ Room* SetupWorld(vector<Room*>* rooms) {
 	village->setExit(SOUTH, docks);
 	docks->setExit(NORTH, village);
 
-	return village; //returns the room we start in (I mean, it's not really a room but whatever).
+	return self; //returns the player character
 }
 
 void PrintRoomData(Room* currentRoom) {
@@ -113,7 +117,7 @@ void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
 	commandExtensionP[i-j] = '\0';
 }
 
-void travel(Room*& currentRoom, char* direction) {
+void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
 	if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
 		cout << "\nInvalid direction: \"" << direction << "\".";
 		return;
@@ -124,7 +128,94 @@ void travel(Room*& currentRoom, char* direction) {
 		return;
 	}
 	currentRoom = roomCanidate;
+	for (NPC* npc : (*party)) {
+		npc->setRoom(currentRoom);
+	}
 	PrintRoomData(currentRoom);
+}
+
+NPC* getNPCInRoom(Room* currentRoom, char* npcname) {
+	for (NPC* npc : currentRoom->getNpcs()) {
+		if (!strcmp(npc->getName(), npcname)) {
+			return npc;
+		}
+	}
+	return NULL;
+}
+
+void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
+	NPC* npc = getNPCInRoom(currentRoom, npcname);
+	if (npc == NULL) {
+		cout << "\nThere is nobody named \"" << npcname << "\" here.";
+		return;
+	}
+	if (npc->getPlayerness()) {
+		cout << "\nSELF - \"Huh?\"\n\nYou are already in your own party? ...";
+		return;
+	}
+	if (!npc->getRecruitable()) {
+		cout << "\n" << npcname << " - \"" << npc->getRejectionDialogue() << "\"";
+		cout << "\n" << npcname << " was not added to your party.";
+		return;
+	}
+	if (npc->getRecruited()) {
+		cout << "\n" << npcname << " is already in your party...";
+		return;
+	}
+	party->push_back(npc);
+	cout << "\n" << npcname << " - \"" << npc->getRecruitmentDialogue() << "\"";
+	cout << "\n" << npcname << " was added to your party!";
+}
+
+void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
+	NPC* npc = getNPCInRoom(currentRoom, npcname);
+	if (npc == NULL) {
+		cout << "\nThere is nobody named \"" << npcname << "\" here.";
+		return;
+	}
+	if (npc->getPlayerness()) {
+		cout << "\nSELF - \"Huh? You can't dismiss me bro I'm the main character!\"\nSELF was not dismissed.";
+		return;
+	}
+	if (!npc->getRecruited()) {
+		cout << "\n" << npcname << " is not in your party...";
+		return;
+	}
+	party->erase(remove(party->begin(), party->end(), npc), party->end());
+	cout << "\n" << npcname << " - \"" << npc->getDismissalDialogue() << "\"";
+	cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
+}
+
+void printNPCDialogue(Room* currentRoom, char* npcname) {
+	NPC* npc = getNPCInRoom(currentRoom, npcname);
+	if (npc == NULL) {
+		cout << "\nThere is nobody named \"" << npcname << "\" here.";
+		return;
+	}
+	cout << "\n" << npcname << " - \"" << npc->getDialogue() << "\"";
+}
+
+void printInventory(vector<Item*>* inventory) {
+	if (inventory->size() < 1) {
+		cout << "\nYou have no items!";
+	}
+	cout << "\nYour items are:";
+	for (Item* item : (*inventory)) {
+		cout << "\n" << item->getName() << " - " << item->getDescription();
+	}
+}
+
+void printParty(vector<NPC*>* party) {
+	cout << "\nMembers of your party:";
+	for (NPC* npc : (*party)) {
+		cout << "\n" << npc->getTitle() << " " << npc->getName();
+		cout << "\n  HEALTH - " << npc->getHealthMax();
+		cout << "\t  DEFENSE - " << npc->getDefense();
+		cout << "\n  ATTACK - " << npc->getAttack();
+		cout << "\t  TOUGHNESS - " << npc->getToughness();
+		cout << "\n  PIERCE - " << npc->getPierce();
+		cout << "\t  SPEED - " << npc->getSpeed();
+	}
 }
 
 void printHelp(char validCommands[13][255], char validExtensions[13][255], char flavorText[16][255]) {
@@ -141,10 +232,13 @@ int main() {
 	vector<Room*>* rooms = new vector<Room*>;
 	
 	//sets up the game world and places the player at the current room
-	Room* currentRoom = SetupWorld(rooms);
+	NPC* self = SetupWorld(rooms);
+	Room* currentRoom = self->getHome();
 
 	vector<Item*>* inventory = new vector<Item*>;
 	vector<NPC*>* party = new vector<NPC*>;
+
+	party->push_back(self);
 
 	//command stuff used to be initialized here
 
@@ -219,7 +313,7 @@ int main() {
 		ParseCommand(command, commandWord, commandExtension);
 
 		if (!strcmp(commandWord, "GO")) {
-			travel(currentRoom, &commandExtension[0]);
+			travel(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "TAKE")) {
 
 		} else if (!strcmp(commandWord, "DROP")) {
@@ -227,15 +321,15 @@ int main() {
 		} else if (!strcmp(commandWord, "USE")) {
 
 		} else if (!strcmp(commandWord, "RECRUIT")) {
-
+			recruitNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "DISMISS")) {
-
+			dismissNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "ASK")) {
-
+			printNPCDialogue(currentRoom, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "INVENTORY")) {
-
+			printInventory(inventory);
 		} else if (!strcmp(commandWord, "PARTY")) {
-
+			printParty(party);
 		} else if (!strcmp(commandWord, "ANALYZE")) {
 
 		} else if (!strcmp(commandWord, "FIGHT")) {

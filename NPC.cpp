@@ -42,6 +42,36 @@ char* NPC::getDismissalDialogue() {
 bool NPC::getRecruited() {
 	return recruited;
 }
+bool NPC::getRecruitable() {
+	return recruitable;
+}
+bool NPC::getPlayerness() {
+	return isPlayer;
+}
+Room* NPC::getHome() {
+	return home;
+}
+int NPC::getHealth() {
+	return health;
+}
+int NPC::getHealthMax() {
+	return maxHealth;
+}
+int NPC::getDefense() {
+	return defense;
+}
+int NPC::getAttack() {
+	return attack;
+}
+int NPC::getToughness() {
+	return toughness;
+}
+int NPC::getPierce() {
+	return pierce;
+}
+int NPC::getSpeed() {
+	return speed;
+}
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
 }
@@ -63,8 +93,17 @@ void NPC::setAttackDescription() {
 void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
-void NPC::setRecruited(bool _recruited) {
-	recruited = _recruited;
+void NPC::Recruit() {
+	recruited = true;
+}
+void NPC::Dismiss() {
+	recruited = false;
+	setRoom(home);
+}
+void NPC::setRoom(Room* _room) {
+	currentRoom->removeNPC(this);
+	currentRoom = _room;
+	currentRoom->setNPC(this);
 }
 void NPC::addHealth() {
 

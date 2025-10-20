@@ -42,6 +42,7 @@ public: //you need to set stats on creation
 	int getToughness(); //gets the toughness of the npc
 	int getPierce(); //gets the pierce of the npc
 	int getSpeed(); //gets the speed of the npc
+	Room* getHome(); //gets the home location of the npc
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -50,7 +51,9 @@ public: //you need to set stats on creation
 	void addBattleCry(); //adds a random battle cry to the npc
 	void setAttackDescription(); //sets the description of the attack
 	void setRecruitable(bool _recruitable);
-	void setRecruited(bool _recruited);
+	void Recruit();
+	void Dismiss();
+	void setRoom(Room* _room);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addHealth(); //adds to the maximum and current health
 	void addDefense(); //adds to the defense
@@ -68,6 +71,7 @@ private:
 
 	//dialogue that the npc says when asked
 	char dialogue[255];
+	char recruitedDialogue[255]; //dialogue that the npc says while recruited
 	char rejectionDialogue[255];
 	char recruitmentDialogue[255];
 	char dismissalDialogue[255];
