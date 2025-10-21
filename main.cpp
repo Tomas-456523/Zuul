@@ -13,6 +13,7 @@ FEATURES I NEED TO IMPLEMENT
 - ITEMS
 - FINALIZE THE PLOT
 - ACHIEVEMENTS
+- SOME SORT OF SHOPPING SYSTEM
 */
 /*
 If you get the lame ending it gives a reference to the "Don't be lame clause"
@@ -54,11 +55,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 
-	Room* casino = new Room("in a huge casino. You should really leave here before you develop a gambling addiction.");
+	Room* casino = new Room("in a huge casino. You should really leave before you develop a gambling addiction.");
 
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
 
-	NPC* self = new NPC("", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, true);
 	self->setDialogue("Huh?");
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0);
@@ -134,8 +135,8 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
 	PrintRoomData(currentRoom);
 }
 
-NPC* getNPCInRoom(Room* currentRoom, char* npcname) {
-	for (NPC* npc : currentRoom->getNpcs()) {
+NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname) {
+	for (NPC* npc : the_vector) {
 		if (!strcmp(npc->getName(), npcname)) {
 			return npc;
 		}
@@ -143,8 +144,17 @@ NPC* getNPCInRoom(Room* currentRoom, char* npcname) {
 	return NULL;
 }
 
+Item* getItemInVector(vector<Item*> the_vector, char* itemname) {
+	for (Item* item : the_vector) {
+		if (!strcmp(item->getName(), itemname)) {
+			return item;
+		}
+	}
+	return NULL;
+}
+
 void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
-	NPC* npc = getNPCInRoom(currentRoom, npcname);
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
@@ -168,7 +178,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 }
 
 void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
-	NPC* npc = getNPCInRoom(currentRoom, npcname);
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
@@ -187,7 +197,7 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 }
 
 void printNPCDialogue(Room* currentRoom, char* npcname) {
-	NPC* npc = getNPCInRoom(currentRoom, npcname);
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
@@ -209,12 +219,43 @@ void printParty(vector<NPC*>* party) {
 	cout << "\nMembers of your party:";
 	for (NPC* npc : (*party)) {
 		cout << "\n" << npc->getTitle() << " " << npc->getName();
-		cout << "\n  HEALTH - " << npc->getHealthMax();
-		cout << "\t  DEFENSE - " << npc->getDefense();
-		cout << "\n  ATTACK - " << npc->getAttack();
-		cout << "\t  TOUGHNESS - " << npc->getToughness();
-		cout << "\n  PIERCE - " << npc->getPierce();
-		cout << "\t  SPEED - " << npc->getSpeed();
+	}
+}
+
+void printNPCData(NPC* npc) {
+	cout << "\n" << npc->getTitle();
+	if (strlen(npc->getTitle()) > 0) {
+		cout << " ";
+	}
+	cout << npc->getName() << " - " << npc->getDescription();
+	cout << "\n  HEALTH - " << npc->getHealthMax();
+	cout << "\t  DEFENSE - " << npc->getDefense();
+	cout << "\n  ATTACK - " << npc->getAttack();
+	cout << "\t  TOUGHNESS - " << npc->getToughness();
+	cout << "\n  PIERCE - " << npc->getPierce();
+	cout << "\t  SPEED - " << npc->getSpeed();
+}
+
+void printItemData(Item* item) {
+	cout << "You forgor to program this";
+}
+
+void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name);
+	if (npc == NULL) {
+		npc = getNPCInVector(*party, name);
+	}
+	if (npc != NULL) {
+		printNPCData(npc);
+		return;
+	}
+	Item* item = getItemInVector(currentRoom->getItems(), name);
+	if (item == NULL) {
+		item = getItemInVector(*inventory, name);
+	}
+	if (item != NULL) {
+		printItemData(item);
+		return;
 	}
 }
 
@@ -331,7 +372,7 @@ int main() {
 		} else if (!strcmp(commandWord, "PARTY")) {
 			printParty(party);
 		} else if (!strcmp(commandWord, "ANALYZE")) {
-
+			analyze(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) {
 
 		} else if (!strcmp(commandWord, "HELP")) {

@@ -3,6 +3,14 @@
 #ifndef ITEM
 #define ITEM
 
+//ITEM TYPES WE WILL NEED:
+//Stat upgrader
+//Key Item
+//Weapon
+//BURGER
+//Info
+//no payment; we will use coin system instead
+
 using namespace std;
 
 class Item {

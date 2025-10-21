@@ -27,6 +27,7 @@ Room* Room::getExit(char* direction) {
 //prints all the exits from this room; I tried just returning the map, but it was annoying because of the custom comparator so I just do this
 void Room::printExits() {
 	cout << "\nExits:";
+	//iterates through the map using exiterator (get it? exit + iterator AAHAHHAHAHHAHAHAHHAHAHA so amazing)
 	for (map<char*, Room*, charComparer>::iterator exiterator = exits.begin(); exiterator != exits.end(); ++exiterator) {
 		cout << " " << exiterator->first;
 	}
