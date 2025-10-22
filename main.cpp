@@ -54,6 +54,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
+	//please raname the goofy forest before submitting
+	Room* forest = new Room("at the entrance of the [goofy] forest. Smells like pine trees along the way.");
 
 	Room* casino = new Room("in a huge casino. You should really leave before you develop a gambling addiction.");
 
@@ -73,10 +75,21 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The BURGER MAN in charge of this particular BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
+	
+	Item* object = new Item("OBJECT", "Unidentifiable object whose only purpose is testing items.", village);
+
+	Item* thing = new Item("THING", "Unidentifiable thing whose only purpose is testing items.", docks);
+	Item* thingy = new Item("THINGY", "Unidentifiable thingy whose only purpose is testing items.", docks);
+
+	Item* thingamajig = new Item("THINGAMAJIG", "Unidentifiable thingamajig whose only purpose is testing items.", forest);
+	Item* thingamajiggy = new Item("THINGAMAJIGGY", "Unidentifiable thingamajiggy whose only purpose is testing items.", forest);
+	Item* something = new Item("SOMETHING", "Unidentifiable something whose only purpose is testing items.", forest);
 
 	//set up room exits
 	village->setExit(SOUTH, docks);
+	village->setExit(EAST, forest);
 	docks->setExit(NORTH, village);
+	forest->setExit(WEST, village);
 
 	return self; //returns the player character
 }
@@ -237,7 +250,7 @@ void printNPCData(NPC* npc) {
 }
 
 void printItemData(Item* item) {
-	cout << "You forgor to program this";
+	cout << "\n" << item->getName() << " - " << item->getDescription();
 }
 
 void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {

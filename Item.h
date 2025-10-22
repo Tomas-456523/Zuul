@@ -15,7 +15,7 @@ using namespace std;
 
 class Item {
 public:
-	Item(const char _name[255], const char _description[255], bool _takable = true);
+	Item(const char _name[255], const char _description[255], Room* room, bool _takable = true);
 	~Item();
 
 	char* getName();

@@ -34,11 +34,35 @@ void Room::printExits() {
 }
 void Room::printItems() {
 	int len = items.size();
-	if (len == 1) {
-		//You know what just make this later when you actually need it
+	//if there are 0 items here, don't print anything
+	if (len < 1) {
+		return;
 	}
+	cout << "There is " << items[0]->getName();
+
+	if (len > 2) {
+		cout << ",";
+	}
+	cout << " ";
+
+	for (int i = 1; i < len - 1; i++) {
+		cout << items[i]->getName() << " ";
+		if (len > 2) {
+			cout << ",";
+		}
+		cout << " ";
+	}
+	
+	if (len > 1) {
+		cout << " and ";
+	}
+	cout << items[len-1]->getName();
+	cout << "here.";
 }
 void Room::printNPCs() {
+	if (npcs.size() < 1) {
+		return;
+	}
 	cout << "\nNPCs:";
 	for (NPC* npc : npcs) {
 		if (!npc->getRecruited() && !npc->getPlayerness()) {
