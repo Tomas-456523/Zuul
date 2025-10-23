@@ -11,7 +11,10 @@
 //Info
 //no payment; we will use coin system instead
 
+#include "Room.h"
 using namespace std;
+
+class Room;
 
 class Item {
 public:

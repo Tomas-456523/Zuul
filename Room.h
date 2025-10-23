@@ -11,6 +11,7 @@
 using namespace std;
 
 class NPC;
+class Item;
 
 struct charComparer {
 	bool operator()(char* a, char* b) const {
@@ -34,6 +35,7 @@ public:
 	void setItem(Item* item);
 	void setNPC(NPC* npc);
 	void removeNPC(NPC* npc);
+	void removeItem(Item* item);
 	void setExit(char* direction, Room* room);
 private:
 	char description[255];

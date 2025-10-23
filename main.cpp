@@ -131,23 +131,6 @@ void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
 	commandExtensionP[i-j] = '\0';
 }
 
-void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
-	if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
-		cout << "\nInvalid direction: \"" << direction << "\".";
-		return;
-	}
-	Room* roomCanidate = currentRoom->getExit(direction);
-	if (roomCanidate == NULL) {
-		cout << "\nThere is no exit in that direction.";
-		return;
-	}
-	currentRoom = roomCanidate;
-	for (NPC* npc : (*party)) {
-		npc->setRoom(currentRoom);
-	}
-	PrintRoomData(currentRoom);
-}
-
 NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname) {
 	for (NPC* npc : the_vector) {
 		if (!strcmp(npc->getName(), npcname)) {
@@ -164,6 +147,49 @@ Item* getItemInVector(vector<Item*> the_vector, char* itemname) {
 		}
 	}
 	return NULL;
+}
+
+void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
+	if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
+		cout << "\nInvalid direction \"" << direction << "\".";
+		return;
+	}
+	Room* roomCanidate = currentRoom->getExit(direction);
+	if (roomCanidate == NULL) {
+		cout << "\nThere is no exit in that direction.";
+		return;
+	}
+	currentRoom = roomCanidate;
+	for (NPC* npc : (*party)) {
+		npc->setRoom(currentRoom);
+	}
+	PrintRoomData(currentRoom);
+}
+
+void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
+	Item* item = getItemInVector(currentRoom->getItems(), itemname);
+	if (item == NULL) {
+		cout << "\nThere is no \"" << itemname << "\" here.";
+		return;
+	}
+	currentRoom->removeItem(item);
+	inventory->push_back(item);
+	cout << "\nYou took the " << itemname << ".";
+}
+
+void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
+	Item* item = getItemInVector(*inventory, itemname);
+	if (item == NULL) {
+		cout << "\nYou have no \"" << itemname << "\"."; //I know it's grammatically inaccurate but it looks way better
+		return;
+	}
+	currentRoom->setItem(item);
+	inventory->erase(remove(inventory->begin(), inventory->end(), item), inventory->end());
+	cout << "\nYou dropped the " << itemname << ".";
+}
+
+void useItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
+	//do stuff with the item
 }
 
 void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
@@ -221,17 +247,22 @@ void printNPCDialogue(Room* currentRoom, char* npcname) {
 void printInventory(vector<Item*>* inventory) {
 	if (inventory->size() < 1) {
 		cout << "\nYou have no items!";
+		return;
 	}
 	cout << "\nYour items are:";
-	for (Item* item : (*inventory)) {
-		cout << "\n" << item->getName() << " - " << item->getDescription();
+	for (Item* item : *inventory) {
+		cout << "\n" << item->getName()/* << " - " << item->getDescription()*/;
 	}
 }
 
 void printParty(vector<NPC*>* party) {
 	cout << "\nMembers of your party:";
-	for (NPC* npc : (*party)) {
-		cout << "\n" << npc->getTitle() << " " << npc->getName();
+	for (NPC* npc : *party) {
+		cout << "\n" << npc->getTitle();
+		if (strlen(npc->getTitle()) > 0) {
+			cout << " ";
+		}
+		cout << npc->getName();
 	}
 }
 
@@ -270,6 +301,7 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 		printItemData(item);
 		return;
 	}
+	cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
 void printHelp(char validCommands[13][255], char validExtensions[13][255], char flavorText[16][255]) {
@@ -355,7 +387,7 @@ int main() {
 	bool continuing = true;
 	while (continuing) {
 		//im not sure if I should initialize these variables here, but it makes it so they're cleared every time which is pretty convenient
-		char command[255];
+		char command[255] = "";
 
 		char commandWord[255];
 		char commandExtension[255];
@@ -369,11 +401,11 @@ int main() {
 		if (!strcmp(commandWord, "GO")) {
 			travel(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "TAKE")) {
-
+			takeItem(currentRoom, inventory, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "DROP")) {
-
+			dropItem(currentRoom, inventory, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "USE")) {
-
+			useItem(currentRoom, inventory, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "RECRUIT")) {
 			recruitNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "DISMISS")) {
@@ -393,7 +425,7 @@ int main() {
 		} else if (!strcmp(commandWord, "QUIT")) {
 			continuing = false;
 		} else {
-			cout << "\nInvalid command (type HELP for help).";
+			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
 		}
 
 		CinIgnoreAll();

@@ -32,13 +32,14 @@ void Room::printExits() {
 		cout << " " << exiterator->first;
 	}
 }
+//beautiful, gramatically correct (wait nevermind no it isn't) function for printing all items in the room
 void Room::printItems() {
 	int len = items.size();
 	//if there are 0 items here, don't print anything
 	if (len < 1) {
 		return;
 	}
-	cout << "There is " << items[0]->getName();
+	cout << "\nThere is " << items[0]->getName();
 
 	if (len > 2) {
 		cout << ",";
@@ -46,7 +47,7 @@ void Room::printItems() {
 	cout << " ";
 
 	for (int i = 1; i < len - 1; i++) {
-		cout << items[i]->getName() << " ";
+		cout << items[i]->getName();
 		if (len > 2) {
 			cout << ",";
 		}
@@ -54,13 +55,12 @@ void Room::printItems() {
 	}
 	
 	if (len > 1) {
-		cout << " and ";
+		cout << "and " << items[len - 1]->getName() << " ";
 	}
-	cout << items[len-1]->getName();
 	cout << "here.";
 }
 void Room::printNPCs() {
-	if (npcs.size() < 1) {
+	if (npcs.size() < 1) { //this doesn't work, you have to find the amount of non-recruited npcs
 		return;
 	}
 	cout << "\nNPCs:";
@@ -78,6 +78,9 @@ void Room::setNPC(NPC* npc) {
 }
 void Room::removeNPC(NPC* npc) {
 	npcs.erase(remove(npcs.begin(), npcs.end(), npc), npcs.end());
+}
+void Room::removeItem(Item* item) {
+	items.erase(remove(items.begin(), items.end(), item), items.end());
 }
 void Room::setExit(char* direction, Room* room) {
 	exits[direction] = room;
