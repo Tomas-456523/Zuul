@@ -23,10 +23,19 @@ public:
 
 	char* getName();
 	char* getDescription();
+	bool getTakable();
+	char* getDenial();
+	char* buy(int* mony);
+
+	void setDenial(char denial[255]);
+	void setBuyDesc(char buydesc[255]);
 private:
 	char name[255];
 	char description[255];
 
 	bool takable;
+	char denyDescription[255]; //description of why you can't take the item
+	char buyDescription[255];
+	int price;
 };
 #endif

@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 #include "Item.h"
 #include "Room.h"
 using namespace std;
@@ -14,6 +15,32 @@ char* Item::getName() {
 }
 char* Item::getDescription() {
 	return description;
+}
+bool Item::getTakable() {
+	return takable;
+}
+char* Item::getDenial() {
+	return denyDescription;
+}
+void Item::setDenial(char denial[255]) {
+	strcpy(denyDescription, denial);
+}
+void Item::setBuyDesc(char buydesc[255]) {
+	strcpy(buyDescription, buydesc);
+}
+void Item::buy(int& mony) {
+	if (mony < price) {
+		cout << "\nYou can't afford the " << name << "!";
+		return;
+	}
+	mony -= price;
+	takable = true;
+	cout << "\nYou bought the " << name << "! You now have " << mony << " mon";
+	if (mony == 1) {
+		cout << "y.";
+	} else {
+		cout << "ies.";
+	}
 }
 Item::~Item() {
 

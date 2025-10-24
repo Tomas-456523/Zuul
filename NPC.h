@@ -61,7 +61,7 @@ public: //you need to set stats on creation
 	void addToughness();
 	void addPierce();
 	void addSpeed();
-private:
+protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
 	char description[255];

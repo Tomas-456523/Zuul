@@ -14,6 +14,7 @@ FEATURES I NEED TO IMPLEMENT
 - FINALIZE THE PLOT
 - ACHIEVEMENTS
 - SOME SORT OF SHOPPING SYSTEM
+- QUEST SYSTEM (like, to make npcs recruitable)
 */
 /*
 If you get the lame ending it gives a reference to the "Don't be lame clause"
@@ -41,25 +42,38 @@ using namespace std;
 //sets up the entire game world, including rooms, npcs, and items, and returns the starting room
 NPC* SetupWorld(vector<Room*>* rooms) {
 	//set up directions
-	char* NORTH = new char[6];
-	char* SOUTH = new char[6];
-	char* WEST = new char[6];
-	char* EAST = new char[6];
+	char* NORTH = new char[12];
+	char* SOUTH = new char[12];
+	char* WEST = new char[12];
+	char* EAST = new char[12];
+	//unique directions
+	char* OUT = new char[12];
+	char* IN_TENT_1 = new char[12];
+	char* IN_TENT_2 = new char[12];
+	char* IN_TENT_3 = new char[12];
 
 	strcpy(NORTH, "NORTH");
 	strcpy(SOUTH, "SOUTH");
 	strcpy(WEST, "WEST");
 	strcpy(EAST, "EAST");
 
+	strcpy(OUT, "OUT");
+	strcpy(IN_TENT_1, "IN TENT 1");
+	strcpy(IN_TENT_2, "IN TENT 2");
+	strcpy(IN_TENT_3, "IN TENT 3");
+
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
+	Room* tenthome = new Room("in the developer's house.");
+	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
+	Room* casino = new Room("in the village casino, established shortly after the BURGER RESTAURANT. You should really leave before you develop a gambling addiction.");
+
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 	//please raname the goofy forest before submitting
 	Room* forest = new Room("at the entrance of the [goofy] forest. Smells like pine trees along the way.");
 
-	Room* casino = new Room("in a huge casino. You should really leave before you develop a gambling addiction.");
-
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
+	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
 
 	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, true);
 	self->setDialogue("Huh?");
@@ -71,23 +85,42 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 0, 0, 0, 0, 0, 0);
-	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit just before hitting it big?");
-
+	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
+	graham->setRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The BURGER MAN in charge of this particular BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
 	
-	Item* object = new Item("OBJECT", "Unidentifiable object whose only purpose is testing items.", village);
+	NPC* burgerheretic = new NPC("BURGER HERETIC", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000);
+	burgerheretic->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
+	burgerheretic->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
+
+	//it's a me
+	//I should sell the developer gun
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0);
+	developer->setDialogue("Yo wassup.");
+	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
+
+	/*Item* object = new Item("OBJECT", "Unidentifiable object whose only purpose is testing items.", village);
 
 	Item* thing = new Item("THING", "Unidentifiable thing whose only purpose is testing items.", docks);
 	Item* thingy = new Item("THINGY", "Unidentifiable thingy whose only purpose is testing items.", docks);
 
 	Item* thingamajig = new Item("THINGAMAJIG", "Unidentifiable thingamajig whose only purpose is testing items.", forest);
 	Item* thingamajiggy = new Item("THINGAMAJIGGY", "Unidentifiable thingamajiggy whose only purpose is testing items.", forest);
-	Item* something = new Item("SOMETHING", "Unidentifiable something whose only purpose is testing items.", forest);
+	Item* something = new Item("SOMETHING", "Unidentifiable something whose only purpose is testing items.", forest);*/
+
+	Item* devgun = new Item("DEVELOPER GUN", "I made this in order to make playtesters' lives easier.", tenthome);
 
 	//set up room exits
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forest);
+	village->setExit(IN_TENT_1, tentstore);
+	village->setExit(IN_TENT_2, casino);
+	village->setExit(IN_TENT_3, tenthome);
+	tentstore->setExit(OUT, village);
+	casino->setExit(OUT, village);
+	tenthome->setExit(OUT, village);
+
 	docks->setExit(NORTH, village);
 	forest->setExit(WEST, village);
 
@@ -150,13 +183,13 @@ Item* getItemInVector(vector<Item*> the_vector, char* itemname) {
 }
 
 void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
-	if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
-		cout << "\nInvalid direction \"" << direction << "\".";
-		return;
-	}
 	Room* roomCanidate = currentRoom->getExit(direction);
 	if (roomCanidate == NULL) {
-		cout << "\nThere is no exit in that direction.";
+		if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
+			cout << "\nInvalid direction \"" << direction << "\".";
+		} else {
+			cout << "\nThere is no exit in that direction.";
+		}
 		return;
 	}
 	currentRoom = roomCanidate;
@@ -244,12 +277,13 @@ void printNPCDialogue(Room* currentRoom, char* npcname) {
 	cout << "\n" << npcname << " - \"" << npc->getDialogue() << "\"";
 }
 
-void printInventory(vector<Item*>* inventory) {
+void printInventory(vector<Item*>* inventory, int monies) {
+	cout << "\nYou have " << monies << " monies, and you";
 	if (inventory->size() < 1) {
-		cout << "\nYou have no items!";
+		cout << " have no items!";
 		return;
 	}
-	cout << "\nYour items are:";
+	cout << "r items are:";
 	for (Item* item : *inventory) {
 		cout << "\n" << item->getName()/* << " - " << item->getDescription()*/;
 	}
@@ -304,6 +338,13 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 	cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
+void buy(Room* currentRoom, char* name, int& mony) {
+	Item* item = getItemInVector(currentRoom->getItems(), name);
+	if (item == NULL) {
+		//keep making this
+	}
+}
+
 void printHelp(char validCommands[13][255], char validExtensions[13][255], char flavorText[16][255]) {
 	cout << "\n";
 	srand(time(NULL));
@@ -325,6 +366,8 @@ int main() {
 	vector<NPC*>* party = new vector<NPC*>;
 
 	party->push_back(self);
+
+	int mony = 0; //monies are the currency in the BURGER QUEST multiverse.
 
 	//command stuff used to be initialized here
 
@@ -359,8 +402,9 @@ int main() {
 		"PARTY",
 		"ANALYZE",
 		"FIGHT",
+		"BUY",
 		"HELP",
-		"QUIT"		
+		"QUIT"
 	};
 
 	char validExtensions[13][255] = {
@@ -375,6 +419,7 @@ int main() {
 		"",
 		"[npc/item]",
 		"[npc]",
+		"[item]",
 		"",
 		""
 	};
@@ -413,13 +458,15 @@ int main() {
 		} else if (!strcmp(commandWord, "ASK")) {
 			printNPCDialogue(currentRoom, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "INVENTORY")) {
-			printInventory(inventory);
+			printInventory(inventory, mony);
 		} else if (!strcmp(commandWord, "PARTY")) {
 			printParty(party);
 		} else if (!strcmp(commandWord, "ANALYZE")) {
 			analyze(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) {
-
+		
+		} else if (!strcmp(commandWord, "BUY") {
+			buy(currentRoom, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) {
 			printHelp(validCommands, validExtensions, flavorText);
 		} else if (!strcmp(commandWord, "QUIT")) {
