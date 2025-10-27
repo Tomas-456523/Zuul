@@ -18,17 +18,21 @@ class Room;
 
 class Item {
 public:
-	Item(const char _name[255], const char _description[255], Room* room, bool _takable = true);
+	Item(const char _name[255], const char _description[255], Room* _room, bool _takable = true, int _price = 0);
 	~Item();
 
 	char* getName();
 	char* getDescription();
 	bool getTakable();
 	char* getDenial();
-	char* buy(int* mony);
-
-	void setDenial(char denial[255]);
-	void setBuyDesc(char buydesc[255]);
+	char* getBuyDescription();
+	int getPrice();
+	
+	void buy(int& mony, vector<Item*>* inventory);
+	void setDenial(const char denial[255]);
+	void setBuyDesc(const char buydesc[255]);
+	void setRoom(Room* _room);
+	void unRoom();
 private:
 	char name[255];
 	char description[255];
@@ -37,5 +41,7 @@ private:
 	char denyDescription[255]; //description of why you can't take the item
 	char buyDescription[255];
 	int price;
+
+	Room* room;
 };
 #endif

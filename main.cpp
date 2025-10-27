@@ -71,45 +71,46 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 	//please raname the goofy forest before submitting
 	Room* forest = new Room("at the entrance of the [goofy] forest. Smells like pine trees along the way.");
+	Room* forest2 = new Room("in the deer clearing, where deer frequently gather.");
 
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
 
-	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 0, true);
 	self->setDialogue("Huh?");
+	self->Recruit();
 
-	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0);
+	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 50);
 	//REPLACE AREA WITH WHEREVER THE BURGER HERETIC WILL BE. MAKE ABSOLUTELY CERTAIN YOU DON'T LEAVE THAT IN
 	archie->setDialogue("So I hear you are going on a BURGER QUEST? I would advise you to not recieve the BURGER; many are fooled and do not realize the great evil resonating in it. I would implore you to instead seek out my friend in the [AREA]; he can help you to annihilate the source.");
 	archie->setRejectionDialogue("I am sorry. I cannot join you on your BURGER QUEST. I must stay here and watch over the village, for my recruitable variable is set to false.");
 	
 	//REPLACE PLACEHOLDER STATS
-	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 0, 0, 0, 0, 0, 0);
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 2);
 	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 	graham->setRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
-	NPC* burgerman = new NPC("", "BURGER MAN", "The BURGER MAN in charge of this particular BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
+	NPC* burgerman = new NPC("", "BURGER MAN", "The BURGER MAN in charge of this particular BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
 	
-	NPC* burgerheretic = new NPC("BURGER HERETIC", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000);
+	NPC* burgerheretic = new NPC("BURGER HERETIC", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 80000000);
 	burgerheretic->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
 	burgerheretic->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
 	//it's a me
 	//I should sell the developer gun
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0);
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0);
 	developer->setDialogue("Yo wassup.");
 	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 
-	/*Item* object = new Item("OBJECT", "Unidentifiable object whose only purpose is testing items.", village);
+	//maybe make a secret code for the thing so regular people can't use it
+	Item* devgun = new Item("DEVELOPER GUN", "I made this in order to make playtesters' lives easier.", tenthome, false, 0);
+	devgun->setDenial("TOMAS - No you have to buy that first. But that's for playtesters, so pls don't buy that if you aren't.");
+	devgun->setBuyDesc("TOMAS - I trust that you are a playtester...");
 
-	Item* thing = new Item("THING", "Unidentifiable thing whose only purpose is testing items.", docks);
-	Item* thingy = new Item("THINGY", "Unidentifiable thingy whose only purpose is testing items.", docks);
-
-	Item* thingamajig = new Item("THINGAMAJIG", "Unidentifiable thingamajig whose only purpose is testing items.", forest);
-	Item* thingamajiggy = new Item("THINGAMAJIGGY", "Unidentifiable thingamajiggy whose only purpose is testing items.", forest);
-	Item* something = new Item("SOMETHING", "Unidentifiable something whose only purpose is testing items.", forest);*/
-
-	Item* devgun = new Item("DEVELOPER GUN", "I made this in order to make playtesters' lives easier.", tenthome);
+	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He speaks in an italian accent.", tentstore, 30, 10, 12, 50, 0, 5, 10);
+	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
+	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
+	//probably give the store actual stock here
 
 	//set up room exits
 	village->setExit(SOUTH, docks);
@@ -123,6 +124,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	docks->setExit(NORTH, village);
 	forest->setExit(WEST, village);
+	forest->setExit(NORTH, forest2);
+	forest2->setExit(SOUTH, forest);
 
 	return self; //returns the player character
 }
@@ -205,7 +208,11 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 		cout << "\nThere is no \"" << itemname << "\" here.";
 		return;
 	}
-	currentRoom->removeItem(item);
+	if (!item->getTakable()) {
+		cout << "\n" << item->getDenial();
+		return;
+	}
+	item->unRoom();
 	inventory->push_back(item);
 	cout << "\nYou took the " << itemname << ".";
 }
@@ -216,7 +223,7 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 		cout << "\nYou have no \"" << itemname << "\"."; //I know it's grammatically inaccurate but it looks way better
 		return;
 	}
-	currentRoom->setItem(item);
+	item->setRoom(currentRoom);
 	inventory->erase(remove(inventory->begin(), inventory->end(), item), inventory->end());
 	cout << "\nYou dropped the " << itemname << ".";
 }
@@ -305,7 +312,7 @@ void printNPCData(NPC* npc) {
 	if (strlen(npc->getTitle()) > 0) {
 		cout << " ";
 	}
-	cout << npc->getName() << " - " << npc->getDescription();
+	cout << npc->getName() << " - " << npc->getDescription() << "\n  LEVEL " << npc->getLevel(); //if recruited should say something like LEVEL 30 (1932874 xp to LEVEL UP)
 	cout << "\n  HEALTH - " << npc->getHealthMax();
 	cout << "\t  DEFENSE - " << npc->getDefense();
 	cout << "\n  ATTACK - " << npc->getAttack();
@@ -316,6 +323,14 @@ void printNPCData(NPC* npc) {
 
 void printItemData(Item* item) {
 	cout << "\n" << item->getName() << " - " << item->getDescription();
+	if (!item->getTakable()) {
+		cout << " Costs " << item->getPrice() << " mon";
+		if (item->getPrice() == 1) {
+			cout << "y.";
+		} else {
+			cout << "ies.";
+		}
+	}
 }
 
 void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
@@ -338,11 +353,21 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 	cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
-void buy(Room* currentRoom, char* name, int& mony) {
+void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getItems(), name);
 	if (item == NULL) {
-		//keep making this
+		Item* item = getItemInVector(*inventory, name);
+		if (item == NULL) {
+			cout << "\nYou already own this item!";
+			return;
+		}
+		cout << "\nThere is no \"" << name << "\" here.";
+		return;
+	} else if (item->getTakable()) {
+		cout << "\nNobody is selling the " << name << "; you can just take it.";
+		return;
 	}
+	item->buy(mony, inventory);
 }
 
 void printHelp(char validCommands[13][255], char validExtensions[13][255], char flavorText[16][255]) {
@@ -390,7 +415,7 @@ int main() {
 		"You take a potato chip... and eat it."
 	};
 
-	char validCommands[13][255] = {
+	char validCommands[14][255] = {
 		"GO",
 		"TAKE",
 		"DROP",
@@ -407,7 +432,7 @@ int main() {
 		"QUIT"
 	};
 
-	char validExtensions[13][255] = {
+	char validExtensions[14][255] = {
 		"[direction]",
 		"[item]",
 		"[item]",
@@ -465,8 +490,8 @@ int main() {
 			analyze(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) {
 		
-		} else if (!strcmp(commandWord, "BUY") {
-			buy(currentRoom, &commandExtension[0], mony);
+		} else if (!strcmp(commandWord, "BUY")) {
+			buy(currentRoom, inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) {
 			printHelp(validCommands, validExtensions, flavorText);
 		} else if (!strcmp(commandWord, "QUIT")) {

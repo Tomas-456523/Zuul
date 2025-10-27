@@ -64,12 +64,18 @@ void Room::printItems() {
 	cout << "here.";
 }
 void Room::printNPCs() {
-	if (npcs.size() < 1) { //this doesn't work, you have to find the amount of non-recruited npcs
+	int i = 0;
+	for (NPC* npc : npcs) {
+		if (!npc->getRecruited()) {
+			i++;
+		}
+	}
+	if (i < 1) {
 		return;
 	}
 	cout << "\nNPCs:";
 	for (NPC* npc : npcs) {
-		if (!npc->getRecruited() && !npc->getPlayerness()) {
+		if (!npc->getRecruited()) {
 			cout << " " << npc->getTitle() << " " << npc->getName();
 		}
 	}

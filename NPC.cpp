@@ -2,7 +2,7 @@
 #include "NPC.h"
 using namespace std;
 
-NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, bool _player) {
+NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level, bool _player) {
 	strcpy(title, _title);
 	strcpy(name, _name);
 	strcpy(description, _description);
@@ -16,6 +16,7 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	toughness = _toughness;
 	pierce = _pierce;
 	speed = _speed;
+	level = _level;
 	isPlayer = _player;
 }
 char* NPC::getTitle() {
@@ -72,6 +73,12 @@ int NPC::getPierce() {
 int NPC::getSpeed() {
 	return speed;
 }
+int NPC::getLevel() {
+	return level;
+}
+int NPC::xpForNextLevel(int _level) {
+	return _level * _level + 9;
+}
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
 }
@@ -105,23 +112,9 @@ void NPC::setRoom(Room* _room) {
 	currentRoom = _room;
 	currentRoom->setNPC(this);
 }
-void NPC::addHealth() {
-
-}
-void NPC::addDefense() {
-
-}
-void NPC::addAttack() {
-
-}
-void NPC::addToughness() {
-
-}
-void NPC::addPierce() {
-
-}
-void NPC::addSpeed() {
-
+void NPC::addExp(int _exp) {
+	exp += _exp;
+	//level up based on brackets, idk
 }
 NPC::~NPC() {
 

@@ -20,7 +20,7 @@ class Room; //forward declares room because these two classes reference each oth
 
 class NPC {
 public: //you need to set stats on creation
-	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, bool _player = false);
+	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level = 0, bool _player = false);
 	~NPC();
 
 	char* getTitle(); //gets the title of the character
@@ -43,6 +43,8 @@ public: //you need to set stats on creation
 	int getPierce(); //gets the pierce of the npc
 	int getSpeed(); //gets the speed of the npc
 	Room* getHome(); //gets the home location of the npc
+	int getLevel(); //gets the level of the npc
+	int xpForNextLevel(int _level);
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -55,12 +57,8 @@ public: //you need to set stats on creation
 	void Dismiss();
 	void setRoom(Room* _room);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
-	void addHealth(); //adds to the maximum and current health
-	void addDefense(); //adds to the defense
-	void addAttack(); //adds to the attack
-	void addToughness();
-	void addPierce();
-	void addSpeed();
+	void addExp(int _exp);
+	
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
@@ -76,7 +74,7 @@ protected:
 	char recruitmentDialogue[255];
 	char dismissalDialogue[255];
 	//the npcs say a random one of these phrases when attacking
-	vector<char*> battleCries;
+	char battleCry[255];
 
 	char attackDescription[255]; //describes how the npc is attacking (eg. shot a laser at)
 
@@ -91,5 +89,8 @@ protected:
 	int toughness;
 	int pierce;
 	int speed; //speed determines the order of movement; it's more like reaction time
+	
+	int level;
+	int exp;
 };
 #endif
