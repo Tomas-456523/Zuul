@@ -37,6 +37,7 @@ ENDING ACHIEVED: LAME ENDING
 #include "NPC.h"
 #include "Room.h"
 #include "Item.h"
+#include "Battle.h"
 using namespace std;
 
 //sets up the entire game world, including rooms, npcs, and items, and returns the starting room
@@ -303,7 +304,7 @@ void printParty(vector<NPC*>* party) {
 		if (strlen(npc->getTitle()) > 0) {
 			cout << " ";
 		}
-		cout << npc->getName();
+		cout << npc->getName() << " - LEVEL " << npc->getLevel();
 	}
 }
 
@@ -313,6 +314,9 @@ void printNPCData(NPC* npc) {
 		cout << " ";
 	}
 	cout << npc->getName() << " - " << npc->getDescription() << "\n  LEVEL " << npc->getLevel(); //if recruited should say something like LEVEL 30 (1932874 xp to LEVEL UP)
+	if (npc->getRecruited()) {
+		cout << " (" << npc->xpForNextLevel() << " xp to LEVEL UP)";
+	}
 	cout << "\n  HEALTH - " << npc->getHealthMax();
 	cout << "\t  DEFENSE - " << npc->getDefense();
 	cout << "\n  ATTACK - " << npc->getAttack();
@@ -370,13 +374,17 @@ void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 	item->buy(mony, inventory);
 }
 
-void printHelp(char validCommands[13][255], char validExtensions[13][255], char flavorText[16][255]) {
+void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
+	//initiate battle
+}
+
+void printHelp(char validCommands[14][255], char flavorText[16][255]) {
 	cout << "\n";
 	srand(time(NULL));
-	cout << flavorText[rand() % 15];
+	cout << flavorText[rand() % 16];
 	cout << "\nValid commands:";
-	for (int i = 0; i < 12; i++) {
-		cout << "\n" << validCommands[i] << " " << validExtensions[i];
+	for (int i = 0; i < 14; i++) {
+		cout << "\n" << validCommands[i];
 	}
 }
 
@@ -416,37 +424,20 @@ int main() {
 	};
 
 	char validCommands[14][255] = {
-		"GO",
-		"TAKE",
-		"DROP",
-		"USE",
-		"RECRUIT",
-		"DISMISS",
-		"ASK",
+		"GO [direction]",
+		"TAKE [item]",
+		"DROP [item]",
+		"USE [item]",
+		"RECRUIT [npc]",
+		"DISMISS [npc]",
+		"ASK [npc]",
 		"INVENTORY",
 		"PARTY",
-		"ANALYZE",
-		"FIGHT",
-		"BUY",
+		"ANALYZE [npc/item]",
+		"FIGHT [npc]",
+		"BUY [item]",
 		"HELP",
 		"QUIT"
-	};
-
-	char validExtensions[14][255] = {
-		"[direction]",
-		"[item]",
-		"[item]",
-		"[item]",
-		"[npc]",
-		"[npc]",
-		"[npc]",
-		"",
-		"",
-		"[npc/item]",
-		"[npc]",
-		"[item]",
-		"",
-		""
 	};
 
 	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.\nType HELP for help.\n";
@@ -493,7 +484,7 @@ int main() {
 		} else if (!strcmp(commandWord, "BUY")) {
 			buy(currentRoom, inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) {
-			printHelp(validCommands, validExtensions, flavorText);
+			printHelp(validCommands, flavorText);
 		} else if (!strcmp(commandWord, "QUIT")) {
 			continuing = false;
 		} else {

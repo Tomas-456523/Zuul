@@ -76,8 +76,8 @@ int NPC::getSpeed() {
 int NPC::getLevel() {
 	return level;
 }
-int NPC::xpForNextLevel(int _level) {
-	return _level * _level + 9;
+int NPC::xpForNextLevel() {
+	return level * level + 9 - xp;
 }
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
@@ -112,9 +112,13 @@ void NPC::setRoom(Room* _room) {
 	currentRoom = _room;
 	currentRoom->setNPC(this);
 }
-void NPC::addExp(int _exp) {
-	exp += _exp;
-	//level up based on brackets, idk
+void NPC::addXp(int _xp) {
+	xp += _xp;
+	while (xpForNextLevel() <= 0) {
+		xp = -xpForNextLevel();
+		level++;
+	}
+	//level up stuff
 }
 NPC::~NPC() {
 

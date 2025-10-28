@@ -44,7 +44,7 @@ public: //you need to set stats on creation
 	int getSpeed(); //gets the speed of the npc
 	Room* getHome(); //gets the home location of the npc
 	int getLevel(); //gets the level of the npc
-	int xpForNextLevel(int _level);
+	int xpForNextLevel();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -57,7 +57,7 @@ public: //you need to set stats on creation
 	void Dismiss();
 	void setRoom(Room* _room);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
-	void addExp(int _exp);
+	void addXp(int _xp);
 	
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
@@ -91,6 +91,6 @@ protected:
 	int speed; //speed determines the order of movement; it's more like reaction time
 	
 	int level;
-	int exp;
+	int xp;
 };
 #endif
