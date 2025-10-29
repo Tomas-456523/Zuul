@@ -2,62 +2,13 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <limits>
 #include "Battle.h"
 #include "NPC.h"
 #include "Item.h"
+#include "Helper.h"
 
 using namespace std;
-
-//THIS IS IMPORTED FROM MAIN.CPP, IDK IF THERE'S A BETTER PRACTICE, MAYBE MAKE A CLASS FOR IT
-////////////////////////////////////////////////////////////////////////////////
-void CinIgnoreAll() {
-	if (!cin) {
-		cin.clear();
-		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-	}
-}
-
-void AllCaps(char* text) {
-	for (int i = 0; i < strlen(text); i++) {
-		text[i] = toupper(text[i]);
-	}
-}
-
-void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
-	int i = 0;
-	while (commandP[i] != ' ' && commandP[i] != '\0') {
-		commandWordP[i] = commandP[i];
-		i++;
-	}
-	commandWordP[i] = '\0';
-	i++;
-	int j = i;
-	while (commandP[i] != '\0') {
-		commandExtensionP[i - j] = commandP[i];
-		i++;
-	}
-	commandExtensionP[i - j] = '\0';
-}
-
-NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname) {
-	for (NPC* npc : the_vector) {
-		if (!strcmp(npc->getName(), npcname)) {
-			return npc;
-		}
-	}
-	return NULL;
-}
-
-Item* getItemInVector(vector<Item*> the_vector, char* itemname) {
-	for (Item* item : the_vector) {
-		if (!strcmp(item->getName(), itemname)) {
-			return item;
-		}
-	}
-	return NULL;
-}
-//////////////////////////////////////////////////////////////////////////////////
+using namespace Helper;
 
 Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable) {
 	playerTeam = _playerTeam;

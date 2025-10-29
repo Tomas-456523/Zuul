@@ -14,9 +14,11 @@
 #include <vector>
 #include <stack>
 #include "Room.h"
+#include "Fighter.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
+struct Fighter;
 
 class NPC {
 public: //you need to set stats on creation
@@ -45,6 +47,7 @@ public: //you need to set stats on creation
 	Room* getHome(); //gets the home location of the npc
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
+	vector<Fighter> getParty();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -58,7 +61,8 @@ public: //you need to set stats on creation
 	void setRoom(Room* _room);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addXp(int _xp);
-	
+	void addMember(Fighter member);
+
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
@@ -66,6 +70,9 @@ protected:
 
 	Room* home;
 	Room* currentRoom;
+
+	vector<Fighter> party;
+	Fighter self;
 
 	//dialogue that the npc says when asked
 	char dialogue[255];
@@ -81,14 +88,6 @@ protected:
 	bool recruitable = false;
 	bool recruited = false;
 	bool isPlayer;
-
-	int health;
-	int maxHealth;
-	int defense;
-	int attack;
-	int toughness;
-	int pierce;
-	int speed; //speed determines the order of movement; it's more like reaction time
 	
 	int level;
 	int xp;

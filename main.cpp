@@ -30,7 +30,6 @@ ENDING ACHIEVED: LAME ENDING
 ... and then you get booted to the main menu like in hollow knight
 */
 #include <iostream>
-#include <limits>
 #include <vector>
 #include <cstring>
 #include <algorithm>
@@ -38,7 +37,11 @@ ENDING ACHIEVED: LAME ENDING
 #include "Room.h"
 #include "Item.h"
 #include "Battle.h"
+#include "Helper.h"
+#include "Fighter.h"
+
 using namespace std;
+using namespace Helper;
 
 //sets up the entire game world, including rooms, npcs, and items, and returns the starting room
 NPC* SetupWorld(vector<Room*>* rooms) {
@@ -67,7 +70,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* tenthome = new Room("in the developer's house.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
-	Room* casino = new Room("in the village casino, established shortly after the BURGER RESTAURANT. You should really leave before you develop a gambling addiction.");
+	//make a reason why fast travel is shut down at the beginning
+	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently for [SOME REASON].");
+
+	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
 
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 	//please raname the goofy forest before submitting
@@ -108,7 +114,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	devgun->setDenial("TOMAS - No you have to buy that first. But that's for playtesters, so pls don't buy that if you aren't.");
 	devgun->setBuyDesc("TOMAS - I trust that you are a playtester...");
 
-	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He speaks in an italian accent.", tentstore, 30, 10, 12, 50, 0, 5, 10);
+	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 	//probably give the store actual stock here
@@ -117,16 +123,37 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forest);
 	village->setExit(IN_TENT_1, tentstore);
-	village->setExit(IN_TENT_2, casino);
+	village->setExit(IN_TENT_2, tentstation);
 	village->setExit(IN_TENT_3, tenthome);
+	
 	tentstore->setExit(OUT, village);
-	casino->setExit(OUT, village);
+	tentstation->setExit(OUT, village);
 	tenthome->setExit(OUT, village);
 
 	docks->setExit(NORTH, village);
 	forest->setExit(WEST, village);
 	forest->setExit(NORTH, forest2);
 	forest2->setExit(SOUTH, forest);
+
+	//set up generic non-npc enemies
+	//verdant valley
+	Fighter prickly_hog = Fighter("PRICKLY HOG", "A small but ferocious hog with sharp prickles.", 10, 10, 5, 0, 20, 15);
+	Fighter medium_hog = Fighter("something HOG", "", 0, 0, 0, 0, 0, 0);
+	//vv boss?
+	Fighter savage_hog = Fighter("SAVAGE HOG", "A towering hog elder with sharp prickles.", 10, 10, 5, 0, 20, 15);
+
+
+	Fighter disease_amalgamate = Fighter("DISEASE AMALGAMATION", "A writhing mass of disease.", 500, 0, 80, 0, 999, 20);
+
+	Fighter jim_shady = Fighter("JIM SHADY", "The real Jim Shady.", 50, 10, 99999, 10, 99999, 0);
+	Fighter slim_jim = Fighter("SLIM JIM", "A Jim obsessed with athleticism and velocity.", 150, 0, 99999, 0, 99999, 99999); 
+	//this guy should appear in groups
+	Fighter jimmy = Fighter("JIMMY", "A small but deadly Jim.", 1, 0, 9999, 0, 9999, 40);
+	Fighter jim = Fighter("JIM", "The one and only Jim.", 1000, 200, 999999, 400, 999999, 99999);
+
+	//ENEMIES BLOCK EXITS, AND THEY RESPAWN AFTER YOU LEAVE THE ROOM, HOWEVER THE EXIT THEY WERE BLOCKING WILL NO LONGER BE BLOCKED
+	//YOU COULD USE THIS MECHANIC BY SAYING HOW YOU GO IN A ROOM BUT THEN AN ENEMY IS BLOCKING THE WAY BACK LIKE THEY WERE CORNERING YOU OR SOMETHING
+	//add a small random value to speed and attack each turn
 
 	return self; //returns the player character
 }
@@ -136,54 +163,6 @@ void PrintRoomData(Room* currentRoom) {
 	currentRoom->printExits();
 	currentRoom->printNPCs();
 	currentRoom->printItems();
-}
-
-void CinIgnoreAll() {
-	if (!cin) {
-		cin.clear();
-		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-	}
-}
-
-//takes a pointer to a char array as input, and capitalizes all the characters in it. Used for easier string comparison.
-void AllCaps(char* text) {
-	for (int i = 0; i < strlen(text); i++) {
-		text[i] = toupper(text[i]);
-	}
-}
-
-void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
-	int i = 0;
-	while (commandP[i] != ' ' && commandP[i] != '\0') {
-		commandWordP[i] = commandP[i];
-		i++;
-	}
-	commandWordP[i] = '\0';
-	i++;
-	int j = i;
-	while (commandP[i] != '\0') {
-		commandExtensionP[i-j] = commandP[i];
-		i++;
-	}
-	commandExtensionP[i-j] = '\0';
-}
-
-NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname) {
-	for (NPC* npc : the_vector) {
-		if (!strcmp(npc->getName(), npcname)) {
-			return npc;
-		}
-	}
-	return NULL;
-}
-
-Item* getItemInVector(vector<Item*> the_vector, char* itemname) {
-	for (Item* item : the_vector) {
-		if (!strcmp(item->getName(), itemname)) {
-			return item;
-		}
-	}
-	return NULL;
 }
 
 void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {

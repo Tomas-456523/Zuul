@@ -1,6 +1,9 @@
 #include <cstring>
 #include "NPC.h"
+#include "Fighter.h"
 using namespace std;
+
+struct Fighter;
 
 NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level, bool _player) {
 	strcpy(title, _title);
@@ -9,14 +12,7 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	home = room;
 	currentRoom = room;
 	room->setNPC(this);
-	maxHealth = _health;
-	health = _health;
-	defense = _defense;
-	attack = _attack;
-	toughness = _toughness;
-	pierce = _pierce;
-	speed = _speed;
-	level = _level;
+	self = Fighter(_name, _description, _health, _defense, _attack, _toughness, _pierce, _speed);
 	isPlayer = _player;
 }
 char* NPC::getTitle() {
@@ -53,25 +49,25 @@ Room* NPC::getHome() {
 	return home;
 }
 int NPC::getHealth() {
-	return health;
+	return self.health;
 }
 int NPC::getHealthMax() {
-	return maxHealth;
+	return self.maxHealth;
 }
 int NPC::getDefense() {
-	return defense;
+	return self.defense;
 }
 int NPC::getAttack() {
-	return attack;
+	return self.attack;
 }
 int NPC::getToughness() {
-	return toughness;
+	return self.toughness;
 }
 int NPC::getPierce() {
-	return pierce;
+	return self.pierce;
 }
 int NPC::getSpeed() {
-	return speed;
+	return self.speed;
 }
 int NPC::getLevel() {
 	return level;
