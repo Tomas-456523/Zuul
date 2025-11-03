@@ -12,7 +12,8 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	home = room;
 	currentRoom = room;
 	room->setNPC(this);
-	self = Fighter(_name, _description, _health, _defense, _attack, _toughness, _pierce, _speed);
+	level = _level;
+	self = Fighter(name, description, _health, _defense, _attack, _toughness, _pierce, _speed);
 	isPlayer = _player;
 }
 char* NPC::getTitle() {
@@ -74,6 +75,9 @@ int NPC::getLevel() {
 }
 int NPC::xpForNextLevel() {
 	return level * level + 9 - xp;
+}
+vector<Fighter>* NPC::getParty() {
+	return &party;
 }
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);

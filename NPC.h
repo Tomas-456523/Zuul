@@ -47,7 +47,7 @@ public: //you need to set stats on creation
 	Room* getHome(); //gets the home location of the npc
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
-	vector<Fighter> getParty();
+	vector<Fighter>* getParty();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc

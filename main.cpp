@@ -50,6 +50,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* SOUTH = new char[12];
 	char* WEST = new char[12];
 	char* EAST = new char[12];
+	char* NORTHWEST = new char[12];
+	char* NORTHEAST = new char[12];
+	char* SOUTHWEST = new char[12];
+	char* SOUTHEAST = new char[12];
 	//unique directions
 	char* OUT = new char[12];
 	char* IN_TENT_1 = new char[12];
@@ -60,6 +64,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(SOUTH, "SOUTH");
 	strcpy(WEST, "WEST");
 	strcpy(EAST, "EAST");
+
+	strcpy(NORTHWEST, "NORTHWEST");
+	strcpy(NORTHEAST, "NORTHEAST");
+	strcpy(SOUTHWEST, "SOUTHWEST");
+	strcpy(SOUTHEAST, "SOUTHEAST");
 
 	strcpy(OUT, "OUT");
 	strcpy(IN_TENT_1, "IN TENT 1");
@@ -76,9 +85,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
 
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
-	//please raname the goofy forest before submitting
-	Room* forest = new Room("at the entrance of the [goofy] forest. Smells like pine trees along the way.");
-	Room* forest2 = new Room("in the deer clearing, where deer frequently gather.");
+
+	Room* forest = new Room("at the entrance of the Waning Woodlands. Smells like pine trees along the way.");
+	Room* forest2 = new Room("");
+
+	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather.");
+	Room* foresttemple = new Room("in the temple of [SOMETHING]. [SOMETHING SOMETHING].");
 
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
@@ -91,6 +103,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//REPLACE AREA WITH WHEREVER THE BURGER HERETIC WILL BE. MAKE ABSOLUTELY CERTAIN YOU DON'T LEAVE THAT IN
 	archie->setDialogue("So I hear you are going on a BURGER QUEST? I would advise you to not recieve the BURGER; many are fooled and do not realize the great evil resonating in it. I would implore you to instead seek out my friend in the [AREA]; he can help you to annihilate the source.");
 	archie->setRejectionDialogue("I am sorry. I cannot join you on your BURGER QUEST. I must stay here and watch over the village, for my recruitable variable is set to false.");
+
+	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating");
 	
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 2);

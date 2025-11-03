@@ -37,6 +37,7 @@ public:
 	void removeNPC(NPC* npc);
 	void removeItem(Item* item);
 	void setExit(char* direction, Room* room);
+	void setDescription(const char _description[255]); //reset the description, used by items that change things
 private:
 	char description[255];
 

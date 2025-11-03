@@ -4,6 +4,7 @@
 #include <cstring>
 
 struct Fighter {
+	//char title[255];
 	char name[255];
 	char description[255];
 	int health;
@@ -13,10 +14,12 @@ struct Fighter {
 	int toughness;
 	int pierce;
 	int speed;
+	int level;
 
 	Fighter() {} //default constructor so NPC doesn't explode
 
 	Fighter(const char _name[255], const char _description[255], int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed) {
+		//strcpy(title, _title);
 		strcpy(name, _name);
 		strcpy(description, _description);
 		maxHealth = _health;

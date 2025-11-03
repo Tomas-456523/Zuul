@@ -95,3 +95,6 @@ void Room::removeItem(Item* item) {
 void Room::setExit(char* direction, Room* room) {
 	exits[direction] = room;
 }
+void Room::setDescription(const char _description[255]) {
+	strcpy(description, _description);
+}
