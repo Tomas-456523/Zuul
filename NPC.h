@@ -14,15 +14,15 @@
 #include <vector>
 #include <stack>
 #include "Room.h"
-#include "Fighter.h"
+//#include "Fighter.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
-struct Fighter;
+//struct Fighter;
 
 class NPC {
 public: //you need to set stats on creation
-	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level = 0, bool _player = false);
+	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level = 0, bool _isleader = false, bool _player = false);
 	~NPC();
 
 	char* getTitle(); //gets the title of the character
@@ -47,7 +47,8 @@ public: //you need to set stats on creation
 	Room* getHome(); //gets the home location of the npc
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
-	vector<Fighter>* getParty();
+	vector<NPC*>* getParty();
+	bool getLeader();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -59,10 +60,9 @@ public: //you need to set stats on creation
 	void Recruit();
 	void Dismiss();
 	void setRoom(Room* _room);
+	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addXp(int _xp);
-	void addMember(Fighter member);
-
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
@@ -71,8 +71,7 @@ protected:
 	Room* home;
 	Room* currentRoom;
 
-	vector<Fighter> party;
-	Fighter self;
+	vector<NPC*> party;
 
 	//dialogue that the npc says when asked
 	char dialogue[255];
@@ -88,6 +87,15 @@ protected:
 	bool recruitable = false;
 	bool recruited = false;
 	bool isPlayer;
+	bool isLeader;
+
+	int health;
+	int maxHealth;
+	int defense;
+	int attack;
+	int toughness;
+	int pierce;
+	int speed;
 	
 	int level;
 	int xp;

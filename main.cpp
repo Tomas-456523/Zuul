@@ -38,7 +38,7 @@ ENDING ACHIEVED: LAME ENDING
 #include "Item.h"
 #include "Battle.h"
 #include "Helper.h"
-#include "Fighter.h"
+//#include "Fighter.h"
 
 using namespace std;
 using namespace Helper;
@@ -75,6 +75,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(IN_TENT_2, "IN TENT 2");
 	strcpy(IN_TENT_3, "IN TENT 3");
 
+	//I send all the template enemy NPCs to limbo, since I need to set a room for them
+	Room* limbo = new Room("not supposed to be in this room; actually how did you get here?");
+
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* tenthome = new Room("in the developer's house.");
@@ -87,6 +90,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 
 	Room* forest = new Room("at the entrance of the Waning Woodlands. Smells like pine trees along the way.");
+	forest->setWelcome("WANING WOODLANDS!\n<<< THE FINAL FOREST >>>\nThe slowly decaying corner\nof the world, reminiscent of the times\nbefore evil.");
 	Room* forest2 = new Room("");
 
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather.");
@@ -95,7 +99,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
 
-	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 0, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 0, true, true);
 	self->setDialogue("Huh?");
 	self->Recruit();
 
@@ -151,10 +155,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	//set up generic non-npc enemies
 	//verdant valley
-	Fighter prickly_hog = Fighter("PRICKLY HOG", "A small but ferocious hog with sharp prickles.", 10, 10, 5, 0, 20, 15);
-	Fighter medium_hog = Fighter("something HOG", "", 0, 0, 0, 0, 0, 0);
-	//vv boss?
-	Fighter savage_hog = Fighter("SAVAGE HOG", "A towering hog elder with sharp prickles.", 10, 10, 5, 0, 20, 15);
+	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15);
+	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 0, 0, 0, 0, 0, 0);
+	/*Fighter savage_hog = Fighter("SAVAGE HOG", "A towering hog elder with sharp prickles.", 10, 10, 5, 0, 20, 15);
 
 
 	Fighter disease_amalgamate = Fighter("DISEASE AMALGAMATION", "A writhing mass of disease.", 500, 0, 80, 0, 999, 20);
@@ -163,7 +166,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Fighter slim_jim = Fighter("SLIM JIM", "A Jim obsessed with athleticism and velocity.", 150, 0, 99999, 0, 99999, 99999); 
 	//this guy should appear in groups
 	Fighter jimmy = Fighter("JIMMY", "A small but deadly Jim.", 1, 0, 9999, 0, 9999, 40);
-	Fighter jim = Fighter("JIM", "The one and only Jim.", 1000, 200, 999999, 400, 999999, 99999);
+	Fighter jim = Fighter("JIM", "The one and only Jim.", 1000, 200, 999999, 400, 999999, 99999);*/
 
 	//ENEMIES BLOCK EXITS, AND THEY RESPAWN AFTER YOU LEAVE THE ROOM, HOWEVER THE EXIT THEY WERE BLOCKING WILL NO LONGER BE BLOCKED
 	//YOU COULD USE THIS MECHANIC BY SAYING HOW YOU GO IN A ROOM BUT THEN AN ENEMY IS BLOCKING THE WAY BACK LIKE THEY WERE CORNERING YOU OR SOMETHING
@@ -173,6 +176,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 }
 
 void PrintRoomData(Room* currentRoom) {
+	currentRoom->printWelcome();
 	cout << "\nYou are " << currentRoom->getDescription();
 	currentRoom->printExits();
 	currentRoom->printNPCs();
@@ -389,9 +393,9 @@ int main() {
 	Room* currentRoom = self->getHome();
 
 	vector<Item*>* inventory = new vector<Item*>;
-	vector<NPC*>* party = new vector<NPC*>;
+	vector<NPC*>* party = self->getParty();
 
-	party->push_back(self);
+	//party->push_back(self);
 
 	int mony = 0; //monies are the currency in the BURGER QUEST multiverse.
 

@@ -1,20 +1,32 @@
 #include <cstring>
+#include <algorithm>
 #include "NPC.h"
-#include "Fighter.h"
+//#include "Fighter.h"
 using namespace std;
 
-struct Fighter;
+//struct Fighter;
 
-NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level, bool _player) {
+NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level, bool _isleader, bool _player) {
 	strcpy(title, _title);
 	strcpy(name, _name);
 	strcpy(description, _description);
 	home = room;
 	currentRoom = room;
 	room->setNPC(this);
-	level = _level;
-	self = Fighter(name, description, _health, _defense, _attack, _toughness, _pierce, _speed);
+	//self = Fighter(name, description, _health, _defense, _attack, _toughness, _pierce, _speed);
+	health = _health;
+	maxHealth = _health;
+	defense = _defense;
+	attack = _attack;
+	toughness = _toughness;
+	pierce = _pierce;
+	speed = _speed;
+	isLeader = _isleader;
 	isPlayer = _player;
+	level = _level;
+	if (isLeader) {
+		party.push_back(&*this);
+	}
 }
 char* NPC::getTitle() {
 	return &title[0];
@@ -50,25 +62,25 @@ Room* NPC::getHome() {
 	return home;
 }
 int NPC::getHealth() {
-	return self.health;
+	return health;
 }
 int NPC::getHealthMax() {
-	return self.maxHealth;
+	return maxHealth;
 }
 int NPC::getDefense() {
-	return self.defense;
+	return defense;
 }
 int NPC::getAttack() {
-	return self.attack;
+	return attack;
 }
 int NPC::getToughness() {
-	return self.toughness;
+	return toughness;
 }
 int NPC::getPierce() {
-	return self.pierce;
+	return pierce;
 }
 int NPC::getSpeed() {
-	return self.speed;
+	return speed;
 }
 int NPC::getLevel() {
 	return level;
@@ -76,8 +88,11 @@ int NPC::getLevel() {
 int NPC::xpForNextLevel() {
 	return level * level + 9 - xp;
 }
-vector<Fighter>* NPC::getParty() {
+vector<NPC*>* NPC::getParty() {
 	return &party;
+}
+bool NPC::getLeader() {
+	return isLeader;
 }
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
@@ -111,6 +126,20 @@ void NPC::setRoom(Room* _room) {
 	currentRoom->removeNPC(this);
 	currentRoom = _room;
 	currentRoom->setNPC(this);
+}
+void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4) {
+	for (int i = 1; i < party.size();) {
+		delete party[i];
+		party.erase(party.begin() + i);
+	}
+
+	NPC* npcs[] = { npc1, npc2, npc3, npc4 };
+	for (NPC* _npc : npcs) {
+		if (_npc != NULL) {
+			NPC* npc = new NPC(*_npc);
+			party.push_back(npc);
+		}
+	}
 }
 void NPC::addXp(int _xp) {
 	xp += _xp;

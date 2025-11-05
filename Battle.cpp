@@ -111,5 +111,5 @@ void Battle::FIGHT() {
 	}
 }
 Battle::~Battle() {
-
+	//delete npc copies
 }
