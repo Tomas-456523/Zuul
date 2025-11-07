@@ -14,7 +14,7 @@ public:
 	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable = true);
 	~Battle();
 
-	void FIGHT();
+	bool FIGHT();
 
 	void printTeam(vector<NPC*>* team);
 	void printInventory();

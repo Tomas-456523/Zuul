@@ -7,6 +7,7 @@
 
 namespace Helper {
 	void CinIgnoreAll();
+	void CinPause();
 	void AllCaps(char* text);
 	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP);
 	NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname);

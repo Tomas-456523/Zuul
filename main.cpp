@@ -82,15 +82,16 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* tenthome = new Room("in the developer's house.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
-	//make a reason why fast travel is shut down at the beginning
+	//tunnels are shut down due to a lobster infestation
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently for [SOME REASON].");
 
 	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
 
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 
-	Room* forest = new Room("at the entrance of the Waning Woodlands. Smells like pine trees along the way.");
-	forest->setWelcome("WANING WOODLANDS!\n<<< THE FINAL FOREST >>>\nThe slowly decaying corner\nof the world, reminiscent of the times\nbefore evil.");
+	Room* forestentrance = new Room("at the entrance of the woodlands.");
+	Room* forest = new Room("deep in the woodlands. Smells like pine trees along the way.");
+	forest->setWelcome("WANING WOODLANDS", "THE FINAL FOREST", "The slowly decaying corner of\nthe world, reminiscent of the\ntimes before evil.");
 	Room* forest2 = new Room("");
 
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather.");
@@ -104,11 +105,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	self->Recruit();
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 50);
-	//REPLACE AREA WITH WHEREVER THE BURGER HERETIC WILL BE. MAKE ABSOLUTELY CERTAIN YOU DON'T LEAVE THAT IN
-	archie->setDialogue("So I hear you are going on a BURGER QUEST? I would advise you to not recieve the BURGER; many are fooled and do not realize the great evil resonating in it. I would implore you to instead seek out my friend in the [AREA]; he can help you to annihilate the source.");
-	archie->setRejectionDialogue("I am sorry. I cannot join you on your BURGER QUEST. I must stay here and watch over the village, for my recruitable variable is set to false.");
+	archie->setDialogue("So you are going on a BURGER QUEST, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
+	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village, for my recruitable variable is set to false.");
 
-	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating");
+	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating BURGERs");
 	
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 2);
@@ -139,7 +139,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	//set up room exits
 	village->setExit(SOUTH, docks);
-	village->setExit(EAST, forest);
+	village->setExit(EAST, forestentrance);
 	village->setExit(IN_TENT_1, tentstore);
 	village->setExit(IN_TENT_2, tentstation);
 	village->setExit(IN_TENT_3, tenthome);
@@ -147,16 +147,34 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	tentstore->setExit(OUT, village);
 	tentstation->setExit(OUT, village);
 	tenthome->setExit(OUT, village);
-
 	docks->setExit(NORTH, village);
-	forest->setExit(WEST, village);
-	forest->setExit(NORTH, forest2);
-	forest2->setExit(SOUTH, forest);
+
+	forestentrance->setExit(WEST, village);
+	forestentrance->setExit(NORTH, forest);
+	forest->setExit(SOUTH, forestentrance);
+
+	Room* tunnel = new Room("in the tunnels that span the continent.");
+
+	NPC* tunnel_lobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnel, 200, 20, 10, 20, 10, 50, 0, true);
+	//you should also get a prompt to name it like
+	//                                                     (type your lobster's name here!)
+	//SELF - "Oh nice a pet lobster. I think I'll name you 
+	//Successfully tamed TUNNEL LOBSTER [FLORIAN]!
+	// 
+	//and then set the lobster's title to TUNNEL LOBSTER and the name to whatever was typed
+	// 
+	//if you just enter nothing self says
+	//SELF - "Ok nevermind I guess I won't name you."
+	//Successfully tamed TUNNEL LOBSTER!
+	// 
+	//reset the description to tamed instead of savage
+	tunnel_lobster->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (lobster noises).");
+	tunnel_lobster->setRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
 
 	//set up generic non-npc enemies
-	//verdant valley
 	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15);
 	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 0, 0, 0, 0, 0, 0);
+
 	/*Fighter savage_hog = Fighter("SAVAGE HOG", "A towering hog elder with sharp prickles.", 10, 10, 5, 0, 20, 15);
 
 
@@ -237,7 +255,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 		return;
 	}
 	if (npc->getPlayerness()) {
-		cout << "\nSELF - \"Huh?\"\n\nYou are already in your own party? ...";
+		cout << "\n" << (*party)[0]->getName() << " - \"Huh?\"\n\nYou are already in your own party? ...";
 		return;
 	}
 	if (!npc->getRecruitable()) {
@@ -261,7 +279,7 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 		return;
 	}
 	if (npc->getPlayerness()) {
-		cout << "\nSELF - \"Huh? You can't dismiss me bro I'm the main character!\"\nSELF was not dismissed.";
+		cout << "\n" << (*party)[0]->getName() << " - \"Huh? You can't dismiss me bro I'm the main character!\"\n" << (*party)[0]->getName() << " was not dismissed.";
 		return;
 	}
 	if (!npc->getRecruited()) {
@@ -372,7 +390,14 @@ void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 }
 
 void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
-	//initiate battle
+	//find npc we fighting
+	//check if we can fight that guy or if that guy even exists, etc.
+	//Battle battle = Battle(NULL, NULL, NULL, NULL, true);
+	//bool victory = battle.FIGHT();
+	//if (victory) {
+	//	//add experience
+	//}
+	//some stuff
 }
 
 void printHelp(char validCommands[14][255], char flavorText[16][255]) {
@@ -409,7 +434,7 @@ int main() {
 		"You forgor.",
 		"You accidentally find spoilers for the ending of BURGER QUEST 2. It is very concerning...",
 		"You realize you don't have an oven.",
-		"You spot a billboard advertising the new BURGER RESTAURANT. When you look away you realize you still don't know what a BURGER looks like.",
+		"You spot a billboard advertising the new BURGER RESTAURANT in BURGERSBURG.",
 		"You ask a passerby what the valid commands are. The guy looks at you really confused.",
 		"You stop it and get some help.",
 		"We have been trying to reach you about your car's extended warranty.",
@@ -438,9 +463,26 @@ int main() {
 	};
 
 	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.\nType HELP for help.\n";
-	PrintRoomData(currentRoom);
 
-	//player should name him/herself here
+	cout << "             (type your name here!)\nYour name is ";
+
+	char name[255];
+	cin.getline(name, 255);
+
+	if (!strcmp(name, "")) {
+		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"\n";
+		CinPause();
+	} else {
+		self->setName(name);
+	} 
+	if(!strcmp(name, "BERNARD")) {
+		cout << "\nBERNARD - \"Oh wow that's my actual name!\"\n";
+		CinPause();
+	}
+	
+	CinIgnoreAll();
+
+	PrintRoomData(currentRoom);
 
 	bool continuing = true;
 	while (continuing) {

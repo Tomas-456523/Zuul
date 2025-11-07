@@ -23,7 +23,6 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 			break;
 		}
 	}
-	FIGHT();
 }
 void Battle::printTeam(vector<NPC*>* team) {
 	for (NPC* npc : *team) {
@@ -100,7 +99,8 @@ bool Battle::playerTurn() {
 
 	return continuing;
 }
-void Battle::FIGHT() {
+//begins the battle process and returns true if the player team won
+bool Battle::FIGHT() {
 	bool continuing = true;
 	while (continuing) {
 		//get current npc
@@ -109,6 +109,7 @@ void Battle::FIGHT() {
 			continuing = playerTurn();
 		//}
 	}
+	return false; //return false because the player ran away
 }
 Battle::~Battle() {
 	//delete npc copies

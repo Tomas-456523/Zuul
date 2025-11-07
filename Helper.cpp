@@ -11,6 +11,9 @@ namespace Helper {
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		}
 	}
+	void CinPause() { //pauses until the user inputs enter, and also ignores any characters inputted meanwhile
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	}
 	//takes a pointer to a char array as input, and capitalizes all the characters in it. Used for easier string comparison.
 	void AllCaps(char* text) {
 		for (int i = 0; i < strlen(text); i++) {

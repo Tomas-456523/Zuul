@@ -4,8 +4,9 @@
 #include <cstring>
 #include <iostream>
 #include <algorithm>
-#include <windows.h> //for Sleep()
+#include "Helper.h"
 using namespace std;
+using namespace Helper;
 
 Room::Room(const char _description[255]) {
 	strcpy(description, _description);
@@ -85,8 +86,12 @@ void Room::printWelcome() {
 	if (!welcome) {
 		return;
 	}
-	cout << "\nWelcome to " << welcomeMessage << "\n";
-	//seperate welcome message into 3: name, title, description, and do Sleep() in between printing them
+	cout << "\nWelcome to " << welcomeMessage << "!";
+	CinPause();
+	cout << "<<< " << welcomeTitle << " >>>";
+	CinPause();
+	cout << welcomeDescription;
+	CinPause();
 	welcome = false; //we only do the welcome once
 }
 void Room::setItem(Item* item) {
@@ -107,7 +112,9 @@ void Room::setExit(char* direction, Room* room) {
 void Room::setDescription(const char _description[255]) {
 	strcpy(description, _description);
 }
-void Room::setWelcome(const char _welcome[255]) {
+void Room::setWelcome(const char _welcome[255], const char _title[255], const char _description[255]) {
 	strcpy(welcomeMessage, _welcome);
+	strcpy(welcomeTitle, _title);
+	strcpy(welcomeDescription, _description);
 	welcome = true;
 }

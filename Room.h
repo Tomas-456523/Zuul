@@ -40,10 +40,12 @@ public:
 	void removeItem(Item* item);
 	void setExit(char* direction, Room* room);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
-	void setWelcome(const char _welcome[255]); //set a welcome to an area
+	void setWelcome(const char _welcome[255], const char _title[255], const char _description[255]); //set a welcome to an area
 private:
 	char description[255];
 	char welcomeMessage[255];
+	char welcomeTitle[255];
+	char welcomeDescription[255];
 
 	bool welcome = false; //if this room has a welcome message for an area
 

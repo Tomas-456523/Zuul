@@ -61,6 +61,7 @@ public: //you need to set stats on creation
 	void Dismiss();
 	void setRoom(Room* _room);
 	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL);
+	void setName(const char _name[255]);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addXp(int _xp);
 protected:

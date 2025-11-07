@@ -141,6 +141,9 @@ void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4) {
 		}
 	}
 }
+void NPC::setName(const char _name[255]) {
+	strcpy(name, _name);
+}
 void NPC::addXp(int _xp) {
 	xp += _xp;
 	while (xpForNextLevel() <= 0) {
