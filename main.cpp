@@ -15,6 +15,7 @@ FEATURES I NEED TO IMPLEMENT
 - ACHIEVEMENTS
 - SOME SORT OF SHOPPING SYSTEM
 - QUEST SYSTEM (like, to make npcs recruitable)
+- FISHING MINIGAME
 */
 /*
 If you get the lame ending it gives a reference to the "Don't be lame clause"
@@ -76,7 +77,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(IN_TENT_3, "IN TENT 3");
 
 	//I send all the template enemy NPCs to limbo, since I need to set a room for them
-	Room* limbo = new Room("not supposed to be in this room; actually how did you get here?");
+	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
@@ -87,6 +88,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
 
+	//put a fishing rod here and a fishing minigame :)
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
@@ -105,7 +107,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	self->Recruit();
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 50);
-	archie->setDialogue("So you are going on a BURGER QUEST, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
+	archie->setDialogue("So you are going on a BURGER QUEST too, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
 	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village, for my recruitable variable is set to false.");
 
 	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating BURGERs");
@@ -464,19 +466,24 @@ int main() {
 
 	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.\nType HELP for help.\n";
 
-	cout << "             (type your name here!)\nYour name is ";
+	cout << "\n             (type your name here!)\nYour name is ";
 
 	char name[255];
 	cin.getline(name, 255);
 
+	AllCaps(&name[0]);
+
 	if (!strcmp(name, "")) {
-		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"\n";
+		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"";
 		CinPause();
 	} else {
 		self->setName(name);
 	} 
-	if(!strcmp(name, "BERNARD")) {
-		cout << "\nBERNARD - \"Oh wow that's my actual name!\"\n";
+	if (!strcmp(name, "BERNARD")) {
+		cout << "\nBERNARD - \"Oh wow that's my actual name!\"";
+		CinPause();
+	} else if (!strcmp(name, "===DEVM0ND===")) {
+		cout << "\nDeveloper mode activated!";
 		CinPause();
 	}
 	
