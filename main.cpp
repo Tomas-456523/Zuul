@@ -117,8 +117,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 	graham->setRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
-	NPC* burgerman = new NPC("", "BURGER MAN", "The BURGER MAN in charge of this particular BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
-	
+	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
+	//NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5);
+
 	NPC* burgerheretic = new NPC("BURGER HERETIC", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 80000000);
 	burgerheretic->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
 	burgerheretic->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
@@ -257,7 +258,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 		return;
 	}
 	if (npc->getPlayerness()) {
-		cout << "\n" << (*party)[0]->getName() << " - \"Huh?\"\n\nYou are already in your own party? ...";
+		cout << "\n" << npcname << " - \"Huh?\"\n\nYou are already in your own party? ...";
 		return;
 	}
 	if (!npc->getRecruitable()) {
@@ -281,7 +282,7 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 		return;
 	}
 	if (npc->getPlayerness()) {
-		cout << "\n" << (*party)[0]->getName() << " - \"Huh? You can't dismiss me bro I'm the main character!\"\n" << (*party)[0]->getName() << " was not dismissed.";
+		cout << "\n" << npcname << " - \"Huh? You can't dismiss me bro I'm the main character!\"\n" << npcname << " was not dismissed.";
 		return;
 	}
 	if (!npc->getRecruited()) {
@@ -378,7 +379,7 @@ void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getItems(), name);
 	if (item == NULL) {
 		Item* item = getItemInVector(*inventory, name);
-		if (item == NULL) {
+		if (item != NULL) {
 			cout << "\nYou already own this item!";
 			return;
 		}
@@ -392,8 +393,20 @@ void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 }
 
 void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
-	//find npc we fighting
-	//check if we can fight that guy or if that guy even exists, etc.
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name);
+	if (npc == NULL) {
+		cout << "\nThere is nobody named \"" << name << "\" here.";
+		return;
+	}
+	if (npc->getPlayerness()) {
+		cout << "\n" << name << " - \"Uhhhh you want me to fight myself?\"";
+		return;
+	}
+	if (!npc->getLeader()) {
+		cout << "\nYou can't fight " << name << "!";
+		return;
+	}
+
 	//Battle battle = Battle(NULL, NULL, NULL, NULL, true);
 	//bool victory = battle.FIGHT();
 	//if (victory) {
@@ -451,7 +464,7 @@ int main() {
 		"GO [direction]",
 		"TAKE [item]",
 		"DROP [item]",
-		"USE [item]",
+		"USE [item] (ON [npc])",
 		"RECRUIT [npc]",
 		"DISMISS [npc]",
 		"ASK [npc]",
@@ -482,7 +495,14 @@ int main() {
 	if (!strcmp(name, "BERNARD")) {
 		cout << "\nBERNARD - \"Oh wow that's my actual name!\"";
 		CinPause();
-	} else if (!strcmp(name, "===DEVM0ND===")) {
+	} else if (!strcmp(name, "HELP")) {
+		cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
+		CinPause();
+	} else if (!strcmp(name, "HELP FOR HELP") || !strcmp(name, "YOUR NAME") || !strcmp(name, "YOUR NAME HERE") || !strcmp(name, "YOUR NAME HERE!")) {
+		cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
+		CinPause();
+	//probably just make this an annoying string of text that you can only realistically copy/paste in
+	} else if (!strcmp(name, "BAGEL ADMINISTRATOR")) {
 		cout << "\nDeveloper mode activated!";
 		CinPause();
 	}
@@ -526,7 +546,7 @@ int main() {
 		} else if (!strcmp(commandWord, "ANALYZE")) {
 			analyze(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) {
-		
+			fight(currentRoom, party, inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "BUY")) {
 			buy(currentRoom, inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) {
@@ -540,5 +560,5 @@ int main() {
 		CinIgnoreAll();
 	}
 	//gives a friendly farewell to the player
-	cout << "\nEnjoy your next 24 hours.";
+	cout << "\nEnjoy your next 24 hours.\n";
 }

@@ -12,5 +12,6 @@ namespace Helper {
 	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP);
 	NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname);
 	Item* getItemInVector(vector<Item*> the_vector, char* itemname);
+	int Clamp(int num, int min, int max);
 }
 #endif
