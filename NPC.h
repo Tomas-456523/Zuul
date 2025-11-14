@@ -14,7 +14,8 @@
 #include <vector>
 #include <stack>
 #include "Room.h"
-//#include "Fighter.h"
+#include "Attack.h"
+#include "Effect.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
@@ -49,6 +50,7 @@ public: //you need to set stats on creation
 	int xpForNextLevel();
 	vector<NPC*>* getParty();
 	bool getLeader();
+	bool getHypnotized();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -64,6 +66,12 @@ public: //you need to set stats on creation
 	void setName(const char _name[255]);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addXp(int _xp);
+	void setLeader(bool _leader);
+	void setHypnotized(bool _hypnotized);
+	void damage(int power, int pierce);
+	void setLevel(int _level); //only used for enemy parties
+	void setStandardAttack(Attack* attack);
+	void addSpecialAttack(Attack* attack);
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
@@ -73,6 +81,11 @@ protected:
 	Room* currentRoom;
 
 	vector<NPC*> party;
+
+	Attack* standard_attack;
+	vector<Attack*> special_attacks;
+
+	vector<Effect> effects;
 
 	//dialogue that the npc says when asked
 	char dialogue[255];
@@ -100,5 +113,8 @@ protected:
 	
 	int level;
 	int xp;
+
+	bool hypnotized;
+	bool defeated;
 };
 #endif

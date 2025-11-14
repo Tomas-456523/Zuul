@@ -41,6 +41,8 @@ public:
 	void setExit(char* direction, Room* room);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
 	void setWelcome(const char _welcome[255], const char _title[255], const char _description[255]); //set a welcome to an area
+
+	void blockExit(char* direction, char* blocktype, const char reason[255]);
 private:
 	char description[255];
 	char welcomeMessage[255];
@@ -51,6 +53,11 @@ private:
 
 	vector<Item*> items;
 	vector<NPC*> npcs;
+	//input direction pointer and returns the room that is in that direction
 	map<char*, Room*, charComparer> exits;
+	vector<char*> blockedExits;
+	//input direction pointer and returns the reason why the exit is blocked
+	map<char*, const char[255], charComparer> blockReason;
+	map<char*, char*, charComparer> blockType;
 };
 #endif

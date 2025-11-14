@@ -5,17 +5,17 @@
 
 /*
 FEATURES I NEED TO IMPLEMENT
-- DIALOGUE
-- NPCS
+- BETTER DIALOGUE
 - TURN-BASED COMBAT
 - SAVE SYSTEM (OOOONNNNNNLLLLLYYY IF YOU HAVE TIME)
 - DYNAMIC HELP SYSTEM?
 - ITEMS
-- FINALIZE THE PLOT
-- ACHIEVEMENTS
-- SOME SORT OF SHOPPING SYSTEM
+- FINALIZE THE PLOT (almost done)
+- ACHIEVEMENTS (ehhhhhh idk anymore consider it if time permits)
+- IMPROVE SHOPPING SYSTEM
 - QUEST SYSTEM (like, to make npcs recruitable)
 - FISHING MINIGAME
+- BLOCKED EXITS
 */
 /*
 If you get the lame ending it gives a reference to the "Don't be lame clause"
@@ -39,7 +39,8 @@ ENDING ACHIEVED: LAME ENDING
 #include "Item.h"
 #include "Battle.h"
 #include "Helper.h"
-//#include "Fighter.h"
+#include "Attack.h"
+#include "Effect.h"
 
 using namespace std;
 using namespace Helper;
@@ -176,7 +177,19 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	//set up generic non-npc enemies
 	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15);
-	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 0, 0, 0, 0, 0, 0);
+	Attack* headbutt = new Attack("headbutted", -5, 5, 0, 1, 1, 1);
+	Attack* homing_prickle = new Attack("launched homing prickles at", 5, 3, 5, 2, 4, 3);
+	prickly_hog->setStandardAttack(headbutt);
+	prickly_hog->addSpecialAttack(homing_prickle);
+
+	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 20, 0, 0, 0, 0, 0);
+	greater_hog->setStandardAttack(headbutt);
+	greater_hog->addSpecialAttack(homing_prickle);
+
+	//set up npc enemies
+	NPC* forestguard = new NPC("", "GRASSMAN", "A really leafy humanoid who hates real humans.", forestentrance, 0, 0, 0, 0, 0, 0, 0, true);
+	forestguard->setDialogue("(angry bush noises)");
+	forestguard->setRejectionDialogue("(angry bush noises)");
 
 	/*Fighter savage_hog = Fighter("SAVAGE HOG", "A towering hog elder with sharp prickles.", 10, 10, 5, 0, 20, 15);
 
@@ -513,7 +526,6 @@ int main() {
 
 	bool continuing = true;
 	while (continuing) {
-		//im not sure if I should initialize these variables here, but it makes it so they're cleared every time which is pretty convenient
 		char command[255] = "";
 
 		char commandWord[255];

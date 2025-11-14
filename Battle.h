@@ -4,6 +4,7 @@
 #include "Battle.h"
 #include "NPC.h"
 #include "Item.h"
+#include "Effect.h"
 using namespace std;
 
 class NPC;
@@ -16,7 +17,7 @@ public:
 
 	bool FIGHT();
 
-	void printTeam(vector<NPC*>* team);
+	void printTeam(vector<NPC*> team);
 	void printInventory();
 	void printParty();
 	void analyze();
@@ -24,9 +25,11 @@ public:
 	bool runAway();
 	bool playerTurn();
 private:
-	vector<NPC*>* playerTeam;
-	vector<NPC*>* enemyTeam;
+	vector<NPC*> playerTeam;
+	vector<NPC*> enemyTeam;
 	vector<NPC*> everyone;
+
+	//vector<Effect> allEffects;
 
 	vector<Item*>* inventory;
 

@@ -118,3 +118,8 @@ void Room::setWelcome(const char _welcome[255], const char _title[255], const ch
 	strcpy(welcomeDescription, _description);
 	welcome = true;
 }
+void Room::blockExit(char* direction, char* blocktype, const char reason[255]) {
+	blockedExits.push_back(direction);
+	blockType[direction] = blocktype;
+	strcpy(blockReason[direction], reason);
+}

@@ -94,6 +94,9 @@ vector<NPC*>* NPC::getParty() {
 bool NPC::getLeader() {
 	return isLeader;
 }
+bool NPC::getHypnotized() {
+	return hypnotized;
+}
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
 }
@@ -151,6 +154,25 @@ void NPC::addXp(int _xp) {
 		level++;
 	}
 	//level up stuff
+}
+void NPC::setHypnotized(bool _hypnotized) {
+	hypnotized = _hypnotized;
+}
+void NPC::setLeader(bool _leader) {
+	isLeader = _leader;
+}
+void NPC::damage(int power, int pierce) {
+	//damage formula
+	//check if i am dead
+}
+void NPC::setLevel(int _level) {
+	level = _level;
+}
+void NPC::setStandardAttack(Attack* attack) {
+	standard_attack = attack;
+}
+void NPC::addSpecialAttack(Attack* attack) {
+	special_attacks.push_back(attack);
 }
 NPC::~NPC() {
 
