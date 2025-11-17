@@ -61,6 +61,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* IN_TENT_1 = new char[12];
 	char* IN_TENT_2 = new char[12];
 	char* IN_TENT_3 = new char[12];
+	char* IN_TENT = new char[12];
+	char* UPSTAIRS = new char[12];
+	char* DOWNSTAIRS = new char[12];
 
 	strcpy(NORTH, "NORTH");
 	strcpy(SOUTH, "SOUTH");
@@ -76,14 +79,29 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(IN_TENT_1, "IN TENT 1");
 	strcpy(IN_TENT_2, "IN TENT 2");
 	strcpy(IN_TENT_3, "IN TENT 3");
+	strcpy(IN_TENT, "IN TENT");
+	strcpy(UPSTAIRS, "UPSTAIRS");
+	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
+
+	//set up blockage reaons
+	char* ENEMY = new char[12];
+	char* CHASM = new char[12];
+	char* RIVER = new char[12];
+
+	strcpy(ENEMY, "ENEMY");
+	strcpy(CHASM, "CHASM");
+	strcpy(RIVER, "RIVER");
 
 	//I send all the template enemy NPCs to limbo, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
+	Room* villageleft = new Room("at the westernmost end of the village, where the tallest tent stands. It's only two stories, but it's comparatively a tent mansion.");
 	Room* tenthome = new Room("in the developer's house.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
+	Room* tentmansion = new Room("in the tent mansion's living room. There are way too many clocks here.");
+	Room* tentlab = new Room("in tent lab. [flavor text floavor text flavor text]");
 	//tunnels are shut down due to a lobster infestation
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently for [SOME REASON].");
 
@@ -144,9 +162,17 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//set up room exits
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forestentrance);
+	village->setExit(WEST, villageleft);
 	village->setExit(IN_TENT_1, tentstore);
 	village->setExit(IN_TENT_2, tentstation);
 	village->setExit(IN_TENT_3, tenthome);
+
+	villageleft->setExit(EAST, village);
+	villageleft->setExit(IN_TENT, tentmansion);
+
+	tentmansion->setExit(OUT, villageleft);
+	tentmansion->setExit(UPSTAIRS, tentlab);
+	tentlab->setExit(DOWNSTAIRS, tentmansion);
 	
 	tentstore->setExit(OUT, village);
 	tentstation->setExit(OUT, village);
@@ -191,6 +217,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	forestguard->setDialogue("(angry bush noises)");
 	forestguard->setRejectionDialogue("(angry bush noises)");
 
+	//forestentrance->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
+	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
+
 	/*Fighter savage_hog = Fighter("SAVAGE HOG", "A towering hog elder with sharp prickles.", 10, 10, 5, 0, 20, 15);
 
 
@@ -215,6 +244,7 @@ void PrintRoomData(Room* currentRoom) {
 	currentRoom->printExits();
 	currentRoom->printNPCs();
 	currentRoom->printItems();
+	currentRoom->printBlocks();
 }
 
 void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
@@ -225,6 +255,9 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
 		} else {
 			cout << "\nThere is no exit in that direction.";
 		}
+		return;
+	} else if (currentRoom->getBlocked(direction)) {
+		currentRoom->printBlock(direction);
 		return;
 	}
 	currentRoom = roomCanidate;
@@ -518,7 +551,7 @@ int main() {
 	} else if (!strcmp(name, "BAGEL ADMINISTRATOR")) {
 		cout << "\nDeveloper mode activated!";
 		CinPause();
-	}
+	} //have devmode bool, and do additional command checks for DEFEAT [npc], UNLOCK [exit], FORCERECRUIT [npc], GETMONEY, etc.
 	
 	CinIgnoreAll();
 

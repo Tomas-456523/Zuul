@@ -26,6 +26,14 @@ vector<NPC*> Room::getNpcs() {
 Room* Room::getExit(char* direction) {
 	return exits[direction];
 }
+bool Room::getBlocked(char* direction) {
+	for (char* exit : blockedExits) {
+		if (!strcmp(exit, direction)) {
+			return true;
+		}
+	}
+	return false;
+}
 //prints all the exits from this room; I tried just returning the map, but it was annoying because of the custom comparator so I just do this
 void Room::printExits() {
 	cout << "\nExits: ";
@@ -78,9 +86,20 @@ void Room::printNPCs() {
 	cout << "\nNPCs:";
 	for (NPC* npc : npcs) {
 		if (!npc->getRecruited()) {
-			cout << " " << npc->getTitle() << " " << npc->getName();
+			if (strlen(npc->getTitle()) > 0) {
+				cout << " ";
+			}
+			cout << npc->getTitle() << " " << npc->getName();
 		}
 	}
+}
+void Room::printBlocks() {
+	for (char* direction : blockedExits) {
+		cout << "\nThe " << direction << " exit is " << blockReason[direction];
+	}
+}
+void Room::printBlock(char* direction) {
+	cout << "\nThe " << direction << " exit is " << blockReason[direction];
 }
 void Room::printWelcome() {
 	if (!welcome) {
@@ -118,8 +137,13 @@ void Room::setWelcome(const char _welcome[255], const char _title[255], const ch
 	strcpy(welcomeDescription, _description);
 	welcome = true;
 }
-void Room::blockExit(char* direction, char* blocktype, const char reason[255]) {
+void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) {
 	blockedExits.push_back(direction);
-	blockType[direction] = blocktype;
-	strcpy(blockReason[direction], reason);
+	blockType[direction] = blocktype; //do we even need this?
+	char* reason = new char[255];
+	strcpy(reason, _reason);
+	blockReason[direction] = reason;
+}
+void Room::unblockExit(char* direction) {
+	blockedExits.erase(remove(blockedExits.begin(), blockedExits.end(), direction), blockedExits.end());
 }

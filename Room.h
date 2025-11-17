@@ -13,6 +13,7 @@ using namespace std;
 class NPC;
 class Item;
 
+//this makes everything be in alphabetical order unfortunately, but it does allow me to store use strings as keys
 struct charComparer {
 	bool operator()(char* a, char* b) const {
 		return strcmp(a,b) < 0;
@@ -28,11 +29,14 @@ public:
 	vector<Item*> getItems();
 	vector<NPC*> getNpcs();
 	Room* getExit(char* direction);
+	bool getBlocked(char* direction);
 
 	void printExits();
 	void printItems();
 	void printNPCs();
 	void printWelcome();
+	void printBlocks();
+	void printBlock(char* direction);
 
 	void setItem(Item* item);
 	void setNPC(NPC* npc);
@@ -43,6 +47,7 @@ public:
 	void setWelcome(const char _welcome[255], const char _title[255], const char _description[255]); //set a welcome to an area
 
 	void blockExit(char* direction, char* blocktype, const char reason[255]);
+	void unblockExit(char* direction);
 private:
 	char description[255];
 	char welcomeMessage[255];
@@ -57,7 +62,7 @@ private:
 	map<char*, Room*, charComparer> exits;
 	vector<char*> blockedExits;
 	//input direction pointer and returns the reason why the exit is blocked
-	map<char*, const char[255], charComparer> blockReason;
+	map<char*, char*, charComparer> blockReason;
 	map<char*, char*, charComparer> blockType;
 };
 #endif

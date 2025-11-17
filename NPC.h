@@ -72,6 +72,9 @@ public: //you need to set stats on creation
 	void setLevel(int _level); //only used for enemy parties
 	void setStandardAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
+	void blockExit(char* _exitBlocking, char* type, const char reason[255]);
+
+	void defeat();
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
@@ -116,5 +119,7 @@ protected:
 
 	bool hypnotized;
 	bool defeated;
+
+	char* exitBlocking; //enemy npcs may block an exit until they are defeated
 };
 #endif

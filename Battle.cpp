@@ -123,7 +123,8 @@ bool Battle::playerTurn() {
 bool Battle::FIGHT() {
 	bool continuing = true;
 	while (continuing) {
-		//get current npc
+		//make stack of npcs in order of speed
+		//get current npc that way
 		//npc turn
 		//if npc.getPlayerness() {
 			continuing = playerTurn();

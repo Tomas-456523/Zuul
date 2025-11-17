@@ -4,8 +4,6 @@
 //#include "Fighter.h"
 using namespace std;
 
-//struct Fighter;
-
 NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level, bool _isleader, bool _player) {
 	strcpy(title, _title);
 	strcpy(name, _name);
@@ -161,6 +159,10 @@ void NPC::setHypnotized(bool _hypnotized) {
 void NPC::setLeader(bool _leader) {
 	isLeader = _leader;
 }
+void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
+	exitBlocking = _exitBlocking;
+	currentRoom->blockExit(exitBlocking, type, reason);
+}
 void NPC::damage(int power, int pierce) {
 	//damage formula
 	//check if i am dead
@@ -173,6 +175,12 @@ void NPC::setStandardAttack(Attack* attack) {
 }
 void NPC::addSpecialAttack(Attack* attack) {
 	special_attacks.push_back(attack);
+}
+void NPC::defeat() {
+	if (exitBlocking != NULL) {
+		currentRoom->unblockExit(exitBlocking);
+	}
+	//set recruitable some other thing
 }
 NPC::~NPC() {
 
