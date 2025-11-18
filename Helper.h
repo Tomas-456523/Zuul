@@ -13,5 +13,6 @@ namespace Helper {
 	NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname);
 	Item* getItemInVector(vector<Item*> the_vector, char* itemname);
 	int Clamp(int num, int min, int max);
+	void sortBySpeed(vector<NPC*>& team);
 }
 #endif

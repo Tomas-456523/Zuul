@@ -23,7 +23,7 @@ class Room; //forward declares room because these two classes reference each oth
 
 class NPC {
 public: //you need to set stats on creation
-	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level = 0, bool _isleader = false, bool _player = false);
+	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level = 0, bool _isleader = false, bool _player = false);
 	~NPC();
 
 	char* getTitle(); //gets the title of the character
@@ -45,12 +45,15 @@ public: //you need to set stats on creation
 	int getToughness(); //gets the toughness of the npc
 	int getPierce(); //gets the pierce of the npc
 	int getSpeed(); //gets the speed of the npc
+	int getSP();
+	int getSPMax();
 	Room* getHome(); //gets the home location of the npc
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
 	vector<NPC*>* getParty();
 	bool getLeader();
 	bool getHypnotized();
+	bool getEscapable();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -64,8 +67,10 @@ public: //you need to set stats on creation
 	void setRoom(Room* _room);
 	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL);
 	void setName(const char _name[255]);
+	void setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp);
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addXp(int _xp);
+	void levelUp();
 	void setLeader(bool _leader);
 	void setHypnotized(bool _hypnotized);
 	void damage(int power, int pierce);
@@ -73,6 +78,7 @@ public: //you need to set stats on creation
 	void setStandardAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
 	void blockExit(char* _exitBlocking, char* type, const char reason[255]);
+	void setEscapable(bool _escapable);
 
 	void defeat();
 protected:
@@ -113,13 +119,24 @@ protected:
 	int toughness;
 	int pierce;
 	int speed;
+	int sp; //sp stands for skill points
+	int maxSP;
 	
 	int level;
 	int xp;
+
+	int healthScale = 0;
+	int defenseScale = 0;
+	int attackScale = 0;
+	int toughnessScale = 0;
+	int pierceScale = 0;
+	int speedScale = 0;
+	int spScale = 0;
 
 	bool hypnotized;
 	bool defeated;
 
 	char* exitBlocking; //enemy npcs may block an exit until they are defeated
+	bool escapable = true;
 };
 #endif

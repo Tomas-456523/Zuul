@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <stack>
 #include "Battle.h"
 #include "NPC.h"
 #include "Item.h"
@@ -21,6 +22,8 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	}
 	everyone.insert(everyone.begin(), playerTeam.begin(), playerTeam.end());
 	everyone.insert(everyone.end(), enemyTeam.begin(), enemyTeam.end());
+	sortBySpeed(&everyone);
+
 	inventory = _inventory;
 	escapable = _escapable;
 	for (NPC* npc : *_playerTeam) {
@@ -84,6 +87,9 @@ bool Battle::runAway() {
 	}
 	return escapable;
 }
+stack<NPC*> Battle::reorder() {
+
+}
 bool Battle::playerTurn() {
 	bool continuing = true;
 	char command[255] = "";
@@ -97,20 +103,22 @@ bool Battle::playerTurn() {
 
 	ParseCommand(command, commandWord, commandExtension);
 
-	if (!strcmp(commandWord, "ATTACK")) {
-
-	} else if (!strcmp(commandWord, "USE")) {
+	if (!strcmp(commandWord, "USE")) {
 
 	} else if (!strcmp(commandWord, "INVENTORY")) {
 
 	} else if (!strcmp(commandWord, "PARTY")) {
 
+	} else if (!strcmp(commandWord, "ATTACKS")) {
+
 	} else if (!strcmp(commandWord, "ANALYZE")) {
 
 	} else if (!strcmp(commandWord, "HELP")) {
-
+		printHelp();
 	} else if (!strcmp(commandWord, "RUN")) {
 		continuing = runAway();
+	} else if (!strcmp(commandWord, "[attack]")) {
+		//you have to check if it matches an attack name in our attack vector, and then use that attack to attack
 	} else {
 		cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
 	}
@@ -122,6 +130,14 @@ bool Battle::playerTurn() {
 //begins the battle process and returns true if the player team won
 bool Battle::FIGHT() {
 	bool continuing = true;
+	cout << "\nBATTLE BEGIN!";
+	printTeam(playerTeam);
+	cout << "\n<<< VERSUS >>>";
+	printTeam(enemyTeam);
+	CinPause();
+
+
+
 	while (continuing) {
 		//make stack of npcs in order of speed
 		//get current npc that way

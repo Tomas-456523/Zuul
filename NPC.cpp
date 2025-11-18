@@ -1,10 +1,11 @@
 #include <cstring>
 #include <algorithm>
+#include <random>
 #include "NPC.h"
 //#include "Fighter.h"
 using namespace std;
 
-NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _level, bool _isleader, bool _player) {
+NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level, bool _isleader, bool _player) {
 	strcpy(title, _title);
 	strcpy(name, _name);
 	strcpy(description, _description);
@@ -21,7 +22,10 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	speed = _speed;
 	isLeader = _isleader;
 	isPlayer = _player;
+	sp = _sp;
+	maxSP = _sp;
 	level = _level;
+	//scale stats to level
 	if (isLeader) {
 		party.push_back(&*this);
 	}
@@ -80,6 +84,12 @@ int NPC::getPierce() {
 int NPC::getSpeed() {
 	return speed;
 }
+int NPC::getSP() {
+	return sp;
+}
+int NPC::getSPMax() {
+	return maxSP;
+}
 int NPC::getLevel() {
 	return level;
 }
@@ -94,6 +104,9 @@ bool NPC::getLeader() {
 }
 bool NPC::getHypnotized() {
 	return hypnotized;
+}
+bool NPC::getEscapable() {
+	return escapable;
 }
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
@@ -153,6 +166,19 @@ void NPC::addXp(int _xp) {
 	}
 	//level up stuff
 }
+//when an npc levels up, we add either 0 or 1 to each stat, plus a base
+void NPC::levelUp() {
+	srand(time(NULL));
+	maxHealth += healthScale + rand() % 2;
+	health = maxHealth;
+	defense += defenseScale + rand() % 2;
+	attack += attackScale + rand() % 2;
+	toughness += toughnessScale + rand() % 2;
+	pierce += pierceScale + rand() % 2; //maybe I shouldn't upgrade this one?
+	speed += speedScale + rand() % 2;
+	maxSP += spScale + rand() % 2;
+	sp = maxSP;
+}
 void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
 }
@@ -170,11 +196,23 @@ void NPC::damage(int power, int pierce) {
 void NPC::setLevel(int _level) {
 	level = _level;
 }
+void NPC::setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp) {
+	healthScale = _health;
+	defenseScale = _defense;
+	attackScale = _attack;
+	toughnessScale = _toughness;
+	pierceScale = _pierce;
+	speedScale = _speed;
+	spScale = _sp;
+}
 void NPC::setStandardAttack(Attack* attack) {
 	standard_attack = attack;
 }
 void NPC::addSpecialAttack(Attack* attack) {
 	special_attacks.push_back(attack);
+}
+void NPC::setEscapable(bool _escapable) {
+	escapable = _escapable;
 }
 void NPC::defeat() {
 	if (exitBlocking != NULL) {

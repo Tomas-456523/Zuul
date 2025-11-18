@@ -101,7 +101,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* tenthome = new Room("in the developer's house.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
 	Room* tentmansion = new Room("in the tent mansion's living room. There are way too many clocks here.");
-	Room* tentlab = new Room("in tent lab. [flavor text floavor text flavor text]");
+	Room* tentlab = new Room("in the tent lab. [flavor text floavor text flavor text]");
 	//tunnels are shut down due to a lobster infestation
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently for [SOME REASON].");
 
@@ -112,7 +112,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
 	Room* forest = new Room("deep in the woodlands. Smells like pine trees along the way.");
-	forest->setWelcome("WANING WOODLANDS", "THE FINAL FOREST", "The slowly decaying corner of\nthe world, reminiscent of the\ntimes before evil.");
+	forest->setWelcome("WANING WOODLANDS", "THE FINAL FOREST", "The slowly decaying corner of the world, vaguely reminiscent of the times before evil.");
 	Room* forest2 = new Room("");
 
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather.");
@@ -121,31 +121,41 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
 
-	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 0, true, true);
+	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
+	Attack* punch = new Attack("PUNCH", "punched", -2, 2, 0, 1, 1, 1);
+
+	//SET START ROOM TO VILLAGE
+	NPC* self = new NPC("\0", "SELF", "It's a me.", forestentrance, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
+	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
 
-	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 50);
+	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
 	archie->setDialogue("So you are going on a BURGER QUEST too, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
 	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village, for my recruitable variable is set to false.");
 
 	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating BURGERs");
-	
+
+	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 15, 2, 3, 10, 10, 2, 10, 10);
+	egadwick->setDialogue("Ah hello kiddo.[][][][][][][]");
+	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you can destroy it I could probably go.");
+	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
+
 	//REPLACE PLACEHOLDER STATS
-	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 2);
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 0, 2);
 	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 	graham->setRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
-	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
+	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
 	//NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5);
 
-	NPC* burgerheretic = new NPC("BURGER HERETIC", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 80000000);
+	NPC* burgerheretic = new NPC("BURGER HERETIC", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
 	burgerheretic->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
 	burgerheretic->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
 	//it's a me
 	//I should sell the developer gun
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0);
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
 	developer->setDialogue("Yo wassup.");
 	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 
@@ -154,7 +164,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	devgun->setDenial("TOMAS - No you have to buy that first. But that's for playtesters, so pls don't buy that if you aren't.");
 	devgun->setBuyDesc("TOMAS - I trust that you are a playtester...");
 
-	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 30);
+	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 50, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 	//probably give the store actual stock here
@@ -185,7 +195,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* tunnel = new Room("in the tunnels that span the continent.");
 
-	NPC* tunnel_lobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnel, 200, 20, 10, 20, 10, 50, 0, true);
+	NPC* tunnel_lobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnel, 200, 20, 10, 20, 10, 50, 10, 30, true);
 	//you should also get a prompt to name it like
 	//                                                     (type your lobster's name here!)
 	//SELF - "Oh nice a pet lobster. I think I'll name you 
@@ -202,18 +212,18 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	tunnel_lobster->setRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
 
 	//set up generic non-npc enemies
-	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15);
-	Attack* headbutt = new Attack("headbutted", -5, 5, 0, 1, 1, 1);
-	Attack* homing_prickle = new Attack("launched homing prickles at", 5, 3, 5, 2, 4, 3);
+	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15, 5);
+	Attack* headbutt = new Attack("", "headbutted", -5, 5, 0, 1, 1, 1);
+	Attack* homing_prickle = new Attack("", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
 	prickly_hog->setStandardAttack(headbutt);
 	prickly_hog->addSpecialAttack(homing_prickle);
 
-	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 20, 0, 0, 0, 0, 0);
+	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 20, 0, 0, 0, 0, 0, 0);
 	greater_hog->setStandardAttack(headbutt);
 	greater_hog->addSpecialAttack(homing_prickle);
 
 	//set up npc enemies
-	NPC* forestguard = new NPC("", "GRASSMAN", "A really leafy humanoid who hates real humans.", forestentrance, 0, 0, 0, 0, 0, 0, 0, true);
+	NPC* forestguard = new NPC("", "GRASSMAN", "A really leafy humanoid who hates real humans.", forestentrance, 16, 0, 5, 0, 2, 5, 5, 1, true);
 	forestguard->setDialogue("(angry bush noises)");
 	forestguard->setRejectionDialogue("(angry bush noises)");
 
@@ -225,11 +235,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Fighter disease_amalgamate = Fighter("DISEASE AMALGAMATION", "A writhing mass of disease.", 500, 0, 80, 0, 999, 20);
 
-	Fighter jim_shady = Fighter("JIM SHADY", "The real Jim Shady.", 50, 10, 99999, 10, 99999, 0);
+	Fighter jim_shady = Fighter("JIM SHADY", "This Jim Shady is just imitating.", 50, 10, 99999, 10, 99999, 0);
 	Fighter slim_jim = Fighter("SLIM JIM", "A Jim obsessed with athleticism and velocity.", 150, 0, 99999, 0, 99999, 99999); 
 	//this guy should appear in groups
-	Fighter jimmy = Fighter("JIMMY", "A small but deadly Jim.", 1, 0, 9999, 0, 9999, 40);
-	Fighter jim = Fighter("JIM", "The one and only Jim.", 1000, 200, 999999, 400, 999999, 99999);*/
+	Fighter jimmy = Fighter("JIMMY SHIMMY", "A small but deadly Jim.", 1, 0, 9999, 0, 9999, 40);
+	Fighter jim = Fighter("THE REAL", "JIM SHADY", "He's Jim Shady. The REAL Jim Shady.", 1000, 200, 999999, 400, 999999, 99999);*/
 
 	//ENEMIES BLOCK EXITS, AND THEY RESPAWN AFTER YOU LEAVE THE ROOM, HOWEVER THE EXIT THEY WERE BLOCKING WILL NO LONGER BE BLOCKED
 	//YOU COULD USE THIS MECHANIC BY SAYING HOW YOU GO IN A ROOM BUT THEN AN ENEMY IS BLOCKING THE WAY BACK LIKE THEY WERE CORNERING YOU OR SOMETHING
@@ -387,6 +397,7 @@ void printNPCData(NPC* npc) {
 	cout << "\t  TOUGHNESS - " << npc->getToughness();
 	cout << "\n  PIERCE - " << npc->getPierce();
 	cout << "\t  SPEED - " << npc->getSpeed();
+	cout << "\n  SKILL - " << npc->getSPMax();
 }
 
 void printItemData(Item* item) {
@@ -453,12 +464,14 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 		return;
 	}
 
-	//Battle battle = Battle(NULL, NULL, NULL, NULL, true);
-	//bool victory = battle.FIGHT();
-	//if (victory) {
-	//	//add experience
-	//}
-	//some stuff
+	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
+	bool victory = battle.FIGHT();
+	if (victory) {
+		//add experience
+		//add money
+	} else {
+	
+	}
 }
 
 void printHelp(char validCommands[14][255], char flavorText[16][255]) {
@@ -528,13 +541,15 @@ int main() {
 	cout << "\n             (type your name here!)\nYour name is ";
 
 	char name[255];
-	cin.getline(name, 255);
+	//uncomment this, I just don't want to type the name every time I want to test something
+	//cin.getline(name, 255);
 
 	AllCaps(&name[0]);
 
 	if (!strcmp(name, "")) {
 		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"";
-		CinPause();
+		//uncomment this too
+		//CinPause();
 	} else {
 		self->setName(name);
 	} 

@@ -7,6 +7,7 @@
 using namespace std;
 
 struct Attack {
+	char name[255]; //the name of the attack and how you call it
 	char description[255]; //describes how the attack was carried out, (e.g. "threw a shuriken")
 	int cost; //how much sp the attack costs to use
 	int power; //how much damage the attack does, added onto npc's base attack
@@ -24,7 +25,7 @@ struct Attack {
 
 	Attack() {} //default constructor so NPC doesn't throw error
 
-	Attack(const char _description[255], int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, float _lifesteal = 0) {
+	Attack(const char _name[255], const char _description[255], int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, float _lifesteal = 0) {
 		strcpy(description, _description);
 		cost = _cost;
 		power = _power;

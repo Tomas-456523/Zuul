@@ -60,4 +60,10 @@ namespace Helper {
 		}
 		return num;
 	}
+	bool speedCompare(const NPC* a, const NPC* b) {
+		return a->getSpeed() < b->getSpeed();
+	}
+	void sortBySpeed(vector<NPC*>& team) {
+		everyone.sort(eveyrone.begin(), everyone.end(), speedCompare);
+	}
 }

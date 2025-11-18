@@ -24,6 +24,8 @@ public:
 	void printHelp();
 	bool runAway();
 	bool playerTurn();
+
+	stack<NPC*> sortBySpeed();
 private:
 	vector<NPC*> playerTeam;
 	vector<NPC*> enemyTeam;
@@ -49,11 +51,12 @@ private:
 		"You get distracted by a squirrel."
 	};
 
-	char validCommands[7][255] = {
-		"ATTACK [npc]",
+	char validCommands[8][255] = {
+		"[attack] [npc]",
 		"USE [item]",
 		"INVENTORY",
 		"PARTY",
+		"ATTACKS",
 		"ANALYZE [npc/item]",
 		"HELP",
 		"RUN"
