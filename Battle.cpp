@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <stack>
+#include <queue>
 #include "Battle.h"
 #include "NPC.h"
 #include "Item.h"
@@ -36,15 +36,21 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	for (NPC* npc : *_enemyTeam) {
 		if (npc->getLeader()) {
 			enemyLevel = npc->getLevel();
+			xpReward += npc->getXpReward();
+			monyReward += npc->getMonyReward();
 			break;
 		}
 	}
 	for (NPC* npc : *_enemyTeam) {
 		if (!npc->getLeader()) {
 			//add xp to the npc to scale them to the leader's level
-			npc->addXp(1);
+			npc->setLevel(enemyLevel);
+			xpReward += npc->getXpReward();
+			monyReward += npc->getMonyReward();
 		}
 	}
+	xpReward *= enemyLevel;
+	monyReward *= enemyLevel;
 }
 void Battle::printTeam(vector<NPC*> team) {
 	for (NPC* npc : team) {
@@ -80,14 +86,18 @@ void Battle::printHelp() {
 bool Battle::runAway() {
 	if (escapable) {
 		cout << "\nYou successfully ran away!";
+		CinPause();
 	} else {
 		cout << "\nThere is no escape.";
 	}
 	return escapable;
 }
-stack<NPC*> Battle::reorder() {
-	stack<NPC*> amogus;
-	return amogus;
+queue<NPC*> Battle::reorder() {
+	queue<NPC*> orderly_fashion;
+	for (NPC* npc : everyone) {
+		orderly_fashion.emplace(npc);
+	}
+	return orderly_fashion;
 }
 bool Battle::playerTurn() {
 	bool continuing = true;
@@ -96,7 +106,7 @@ bool Battle::playerTurn() {
 	char commandWord[255];
 	char commandExtension[255];
 
-	cout << "\n> ";
+	cout << "\nWhat will you do?\n> ";
 	cin.getline(command, 255);
 	AllCaps(command);
 
@@ -115,7 +125,7 @@ bool Battle::playerTurn() {
 	} else if (!strcmp(commandWord, "HELP")) {
 		printHelp();
 	} else if (!strcmp(commandWord, "RUN")) {
-		continuing = runAway();
+		continuing = !runAway();
 	} else if (!strcmp(commandWord, "[attack]")) {
 		//you have to check if it matches an attack name in our attack vector, and then use that attack to attack
 	} else {
@@ -126,8 +136,11 @@ bool Battle::playerTurn() {
 
 	return continuing;
 }
-//begins the battle process and returns true if the player team won
-bool Battle::FIGHT() {
+void Battle::npcTurn() {
+
+}
+//begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away
+int Battle::FIGHT() {
 	bool continuing = true;
 	cout << "\nBATTLE BEGIN!";
 	printTeam(playerTeam);
@@ -135,17 +148,29 @@ bool Battle::FIGHT() {
 	printTeam(enemyTeam);
 	CinPause();
 
-
+	queue<NPC*> turn = reorder();
+	NPC* current;
 
 	while (continuing) {
-		//make stack of npcs in order of speed
-		//get current npc that way
-		//npc turn
-		//if npc.getPlayerness() {
+		current = turn.front();
+		if (current->getPlayerness()) {
 			continuing = playerTurn();
-		//}
+		} else {
+			//choose random move
+		}
+		turn.pop();
+		//check the player team and enemy team for if they've lost all hp, and returns win or loss based on that result
+		if (aliveCount(playerTeam) <= 0) {
+			return 0; //lose
+		} else if (aliveCount(enemyTeam) <= 0) {
+			return 1; //win
+		}
+		if (turn.size() <= 0) {
+			turn = reorder();
+			//tick effects
+		}
 	}
-	return false; //return false because the player ran away
+	return 2; //return false because the player ran away
 }
 Battle::~Battle() {
 	//delete npc copies

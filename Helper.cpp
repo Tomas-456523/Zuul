@@ -61,10 +61,21 @@ namespace Helper {
 		}
 		return num;
 	}
+	//sorts vector of npcs from fastest to slowest
 	bool speedCompare(NPC* a, NPC* b) {
-		return a->getSpeed() < b->getSpeed();
+		return a->getSpeed() > b->getSpeed();
 	}
 	void sortBySpeed(vector<NPC*>& team) {
 		sort(team.begin(), team.end(), speedCompare);
+	}
+	//get how many npcs in a team have at least 1 hp
+	int aliveCount(vector<NPC*> team) {
+		int i = 0;
+		for (NPC* npc : team) {
+			if (npc->getHealth() > 0) {
+				i++;
+			}
+		}
+		return i;
 	}
 }

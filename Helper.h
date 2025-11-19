@@ -14,5 +14,6 @@ namespace Helper {
 	Item* getItemInVector(vector<Item*> the_vector, char* itemname);
 	int Clamp(int num, int min, int max);
 	void sortBySpeed(vector<NPC*>& team);
+	int aliveCount(vector<NPC*> team);
 }
 #endif

@@ -108,6 +108,15 @@ bool NPC::getHypnotized() {
 bool NPC::getEscapable() {
 	return escapable;
 }
+Attack* NPC::getCheapestAttack() {
+	return cheapest_attack;
+}
+int NPC::getXpReward() {
+	return xpReward;
+}
+int NPC::getMonyReward() {
+	return monyReward;
+}
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
 }
@@ -181,8 +190,12 @@ void NPC::levelUp() {
 void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
 }
-void NPC::setLeader(bool _leader) {
+void NPC::setLeader(bool _leader, int _level) {
 	isLeader = _leader;
+	if (isLeader) {
+		setLevel(_level);
+		party.push_back(&*this);
+	}
 }
 void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
@@ -193,7 +206,8 @@ void NPC::damage(int power, int pierce) {
 	//check if i am dead
 }
 void NPC::setLevel(int _level) {
-	level = _level;
+	//level = _level; not this
+	//addXp() based on the level
 }
 void NPC::setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp) {
 	healthScale = _health;

@@ -222,8 +222,13 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	greater_hog->setStandardAttack(headbutt);
 	greater_hog->addSpecialAttack(homing_prickle);
 
+	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", forestentrance, 16, 0, 5, 0, 2, 5, 5);
+	Attack* grassslap = new Attack("", "grassily slapped", 0, 3, 0, 1, 1, 1);
+	grassman->setStandardAttack(grassslap);
+
 	//set up npc enemies
-	NPC* forestguard = new NPC("", "GRASSMAN", "A really leafy humanoid who hates real humans.", forestentrance, 16, 0, 5, 0, 2, 5, 5, 1, true);
+	NPC* forestguard = new NPC(*grassman);
+	forestguard->setLeader(true, 1);
 	forestguard->setDialogue("(angry bush noises)");
 	forestguard->setRejectionDialogue("(angry bush noises)");
 
@@ -465,12 +470,14 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 	}
 
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
-	bool victory = battle.FIGHT();
-	if (victory) {
+	int battlestatus = battle.FIGHT();
+	if (battlestatus == 0) { //lose
+		//lose money
+	} else if (battlestatus == 1) { //win
 		//add experience
 		//add money
-	} else {
-	
+	} else { //ran away
+		PrintRoomData(currentRoom);
 	}
 }
 

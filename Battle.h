@@ -1,6 +1,7 @@
 #ifndef BATTLE
 #define BATTLE
 
+#include <queue>
 #include "Battle.h"
 #include "NPC.h"
 #include "Item.h"
@@ -15,7 +16,7 @@ public:
 	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable = true);
 	~Battle();
 
-	bool FIGHT();
+	int FIGHT();
 
 	void printTeam(vector<NPC*> team);
 	void printInventory();
@@ -24,8 +25,9 @@ public:
 	void printHelp();
 	bool runAway();
 	bool playerTurn();
+	void npcTurn();
 
-	stack<NPC*> reorder();
+	queue<NPC*> reorder();
 private:
 	vector<NPC*> playerTeam;
 	vector<NPC*> enemyTeam;
@@ -40,6 +42,9 @@ private:
 
 	bool escapable;
 
+	int xpReward;
+	int monyReward;
+
 	char flavorText[8][255] = {
 		"You are locked the heck in.",
 		"You ask your opponent what the valid command words are. They look at you really confused.",
@@ -47,7 +52,7 @@ private:
 		"You are beginning to believe.",
 		"You forgor.",
 		"You all take your legally mandated lunch break.",
-		"You wonder why everyone just stands there and takes the hit.",
+		"You wonder why everyone just agreed to attack each other in an orderly fashion.",
 		"You get distracted by a squirrel."
 	};
 
