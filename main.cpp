@@ -476,7 +476,6 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 
 void printHelp(char validCommands[14][255], char flavorText[16][255]) {
 	cout << "\n";
-	srand(time(NULL));
 	cout << flavorText[rand() % 16];
 	cout << "\nValid commands:";
 	for (int i = 0; i < 14; i++) {
@@ -485,6 +484,8 @@ void printHelp(char validCommands[14][255], char flavorText[16][255]) {
 }
 
 int main() {
+	srand(time(NULL));
+	
 	vector<Room*>* rooms = new vector<Room*>;
 	
 	//sets up the game world and places the player at the current room

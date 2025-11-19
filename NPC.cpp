@@ -168,7 +168,6 @@ void NPC::addXp(int _xp) {
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
 void NPC::levelUp() {
-	srand(time(NULL));
 	maxHealth += healthScale + rand() % 2;
 	health = maxHealth;
 	defense += defenseScale + rand() % 2;

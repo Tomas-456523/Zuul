@@ -25,7 +25,7 @@ public:
 	bool runAway();
 	bool playerTurn();
 
-	stack<NPC*> sortBySpeed();
+	stack<NPC*> reorder();
 private:
 	vector<NPC*> playerTeam;
 	vector<NPC*> enemyTeam;

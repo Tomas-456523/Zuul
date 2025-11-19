@@ -2,6 +2,7 @@
 #include <cstring>
 #include <iostream>
 #include <limits>
+#include <algorithm>
 using namespace std;
 
 namespace Helper {
@@ -60,10 +61,10 @@ namespace Helper {
 		}
 		return num;
 	}
-	bool speedCompare(const NPC* a, const NPC* b) {
+	bool speedCompare(NPC* a, NPC* b) {
 		return a->getSpeed() < b->getSpeed();
 	}
 	void sortBySpeed(vector<NPC*>& team) {
-		everyone.sort(eveyrone.begin(), everyone.end(), speedCompare);
+		sort(team.begin(), team.end(), speedCompare);
 	}
 }

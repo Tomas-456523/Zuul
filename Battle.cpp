@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <random>
 #include <stack>
 #include "Battle.h"
 #include "NPC.h"
@@ -22,7 +21,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	}
 	everyone.insert(everyone.begin(), playerTeam.begin(), playerTeam.end());
 	everyone.insert(everyone.end(), enemyTeam.begin(), enemyTeam.end());
-	sortBySpeed(&everyone);
+	sortBySpeed(everyone);
 
 	inventory = _inventory;
 	escapable = _escapable;
@@ -72,7 +71,6 @@ void Battle::analyze() {
 }
 void Battle::printHelp() {
 	cout << "\n";
-	srand(time(NULL));
 	cout << flavorText[rand() % 8];
 	cout << "\nValid commands:";
 	for (int i = 0; i < 7; i++) {
@@ -88,7 +86,8 @@ bool Battle::runAway() {
 	return escapable;
 }
 stack<NPC*> Battle::reorder() {
-
+	stack<NPC*> amogus;
+	return amogus;
 }
 bool Battle::playerTurn() {
 	bool continuing = true;
