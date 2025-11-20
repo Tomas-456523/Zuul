@@ -123,12 +123,14 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	Attack* punch = new Attack("PUNCH", "punched", -2, 2, 0, 1, 1, 1);
+	punch->addDescription("Throw a simple punch at the target.");
 
 	//SET START ROOM TO VILLAGE
 	NPC* self = new NPC("\0", "SELF", "It's a me.", forestentrance, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
+	self->setBasicAttack(punch);
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
 	archie->setDialogue("So you are going on a BURGER QUEST too, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
@@ -215,20 +217,20 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15, 5);
 	Attack* headbutt = new Attack("", "headbutted", -5, 5, 0, 1, 1, 1);
 	Attack* homing_prickle = new Attack("", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
-	prickly_hog->setStandardAttack(headbutt);
+	prickly_hog->setBasicAttack(headbutt);
 	prickly_hog->addSpecialAttack(homing_prickle);
 
 	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 20, 0, 0, 0, 0, 0, 0);
-	greater_hog->setStandardAttack(headbutt);
+	greater_hog->setBasicAttack(headbutt);
 	greater_hog->addSpecialAttack(homing_prickle);
 
-	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", forestentrance, 16, 0, 5, 0, 2, 5, 5);
+	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 16, 0, 5, 0, 2, 5, 5);
 	Attack* grassslap = new Attack("", "grassily slapped", 0, 3, 0, 1, 1, 1);
-	grassman->setStandardAttack(grassslap);
+	grassman->setBasicAttack(grassslap);
 
 	//set up npc enemies
 	NPC* forestguard = new NPC(*grassman);
-	forestguard->setLeader(true, 1);
+	forestguard->setLeader(true, 1, forestentrance);
 	forestguard->setDialogue("(angry bush noises)");
 	forestguard->setRejectionDialogue("(angry bush noises)");
 
@@ -308,7 +310,8 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	cout << "\nYou dropped the " << itemname << ".";
 }
 
-void useItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
+//use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
+void useItem(Room* currentRoom, vector<Item*>* inventory, char* commandExtensionP) {
 	//do stuff with the item
 }
 

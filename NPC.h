@@ -57,6 +57,8 @@ public: //you need to set stats on creation
 	Attack* getCheapestAttack();
 	int getXpReward();
 	int getMonyReward();
+	Attack* getBasicAttack();
+	vector<Attack*> getSpecialAttacks();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -74,11 +76,11 @@ public: //you need to set stats on creation
 	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addXp(int _xp);
 	void levelUp();
-	void setLeader(bool _leader, int _level = 0);
+	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
 	void setHypnotized(bool _hypnotized);
 	void damage(int power, int pierce);
 	void setLevel(int _level); //only used for enemy parties
-	void setStandardAttack(Attack* attack);
+	void setBasicAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
 	void blockExit(char* _exitBlocking, char* type, const char reason[255]);
 	void setEscapable(bool _escapable);

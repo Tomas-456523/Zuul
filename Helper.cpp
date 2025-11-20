@@ -21,10 +21,14 @@ namespace Helper {
 			text[i] = toupper(text[i]);
 		}
 	}
-	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP) {
+	//takes commandP, puts the first word into commandWordP, and the rest into commandExtensionP. some attacks used in Battle may be >1 word, so there's also an option to skip a certain amount of spaces
+	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP, int skipSpaces) {
 		int i = 0;
-		while (commandP[i] != ' ' && commandP[i] != '\0') {
+		while ((skipSpaces > 0 || commandP[i] != ' ') && commandP[i] != '\0') {
 			commandWordP[i] = commandP[i];
+			if (commandP[i] == ' ') {
+				skipSpaces--;
+			}
 			i++;
 		}
 		commandWordP[i] = '\0';

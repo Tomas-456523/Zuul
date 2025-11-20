@@ -52,9 +52,20 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	xpReward *= enemyLevel;
 	monyReward *= enemyLevel;
 }
-void Battle::printTeam(vector<NPC*> team) {
+//use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
+bool Battle::useItem(char* commandExtensionP) {
+	//use the item
+	return false;
+}
+void Battle::printTeam(vector<NPC*> team, bool printLevel, bool printSP) {
 	for (NPC* npc : team) {
-		cout << "\n" << npc->getName() << " (" << npc->getHealth() << "/" << npc->getHealthMax() << ") - LEVEL " << npc->getLevel();
+		cout << "\n" << npc->getName() << " " << npc->getHealth() << "/" << npc->getHealthMax() << " HP";
+		if (printSP) {
+			cout << " " << npc->getSP() << "/" << npc->getSPMax() << " SP";
+		}
+		if (printLevel) {
+			cout << " - LEVEL " << npc->getLevel();
+		}
 	}
 }
 void Battle::printInventory() {
@@ -70,16 +81,29 @@ void Battle::printInventory() {
 }
 void Battle::printParty() {
 	cout << "\nMembers of your party:";
-	printTeam(playerTeam);
+	printTeam(playerTeam, true, true);
+}
+void Battle::printAttacks(NPC* npc) {
+	cout << "\nBasic attack:\n";
+	Attack* attack = npc->getBasicAttack();
+	cout << attack->name << " - " << attack->trueDesc << " - Generates " << -attack->cost << " SP";
+	if (npc->getSpecialAttacks().size() > 0) {
+		cout << "\nSpecial attacks :";
+	}
+	for (Attack* attack : npc->getSpecialAttacks()) {
+		if (attack->minLevel <= npc->getLevel()) {
+			cout << "\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
+		}
+	}
 }
 void Battle::analyze() {
-
+	//YOU HAVEN'T IMPLEMENTED THIS YET
 }
 void Battle::printHelp() {
 	cout << "\n";
 	cout << flavorText[rand() % 8];
 	cout << "\nValid commands:";
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 8; i++) {
 		cout << "\n" << validCommands[i];
 	}
 }
@@ -99,42 +123,70 @@ queue<NPC*> Battle::reorder() {
 	}
 	return orderly_fashion;
 }
+//interpret and carry out player attacks, and return whether we should move on from the player turn based on if an attack was successfully launched or not
+bool Battle::ParseAttack(char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble) {
+	if (!strcmp(commandWordP, player->getBasicAttack()->name)) {
+		//attack the enemy and return if an enemy was found to attack
+		cout << "amogus";
+		return true;
+	} else {
+		for (Attack* attack : player->getSpecialAttacks()) {
+			if (attack->minLevel <= player->getLevel() && strcmp(commandWordP, attack->name)) {
+				//attack the enemy and return if an enemy was found to attack
+			}
+		}
+		return true;
+	}
+	if (!checkDouble) {
+		cout << "\nInvalid command or attack \"" << commandWordP << "\" (type HELP for help, or ATTACKS for list of attacks).";
+	//if no enemy was found at all, check for double word attacks
+	} else if (true) {
+		//clear commandWordP & commandExtensionP?
+		ParseCommand(commandP, commandWordP, commandExtensionP, 1);
+		ParseAttack(commandP, commandWordP, commandExtensionP, false);
+	}
+
+	//remove this later (unless it works i guess)
+	return false;
+}
 bool Battle::playerTurn() {
 	bool continuing = true;
-	char command[255] = "";
+	bool keepFighting = true;
 
-	char commandWord[255];
-	char commandExtension[255];
+	while (continuing) {
+		char command[255] = "";
 
-	cout << "\nWhat will you do?\n> ";
-	cin.getline(command, 255);
-	AllCaps(command);
+		char commandWord[255];
+		char commandExtension[255];
 
-	ParseCommand(command, commandWord, commandExtension);
+		cout << "\n> ";
+		cin.getline(command, 255);
+		AllCaps(command);
 
-	if (!strcmp(commandWord, "USE")) {
+		ParseCommand(command, commandWord, commandExtension);
 
-	} else if (!strcmp(commandWord, "INVENTORY")) {
-
-	} else if (!strcmp(commandWord, "PARTY")) {
-
-	} else if (!strcmp(commandWord, "ATTACKS")) {
-
-	} else if (!strcmp(commandWord, "ANALYZE")) {
-
-	} else if (!strcmp(commandWord, "HELP")) {
-		printHelp();
-	} else if (!strcmp(commandWord, "RUN")) {
-		continuing = !runAway();
-	} else if (!strcmp(commandWord, "[attack]")) {
-		//you have to check if it matches an attack name in our attack vector, and then use that attack to attack
-	} else {
-		cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
+		if (!strcmp(commandWord, "USE")) {
+			continuing = useItem(commandExtension);
+		} else if (!strcmp(commandWord, "INVENTORY")) {
+			printInventory();
+		} else if (!strcmp(commandWord, "PARTY")) {
+			printParty();
+		} else if (!strcmp(commandWord, "ATTACKS")) {
+			printAttacks(player);
+		} else if (!strcmp(commandWord, "ANALYZE")) {
+			analyze();
+		} else if (!strcmp(commandWord, "HELP")) {
+			printHelp();
+		} else if (!strcmp(commandWord, "RUN")) {
+			keepFighting = continuing = !runAway();
+		} else {
+			continuing = ParseAttack(command, commandWord, commandExtension);
+		}
 	}
 
 	CinIgnoreAll();
 
-	return continuing;
+	return keepFighting;
 }
 void Battle::npcTurn() {
 
@@ -154,6 +206,7 @@ int Battle::FIGHT() {
 	while (continuing) {
 		current = turn.front();
 		if (current->getPlayerness()) {
+			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn();
 		} else {
 			//choose random move

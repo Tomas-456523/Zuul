@@ -9,7 +9,7 @@ namespace Helper {
 	void CinIgnoreAll();
 	void CinPause();
 	void AllCaps(char* text);
-	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP);
+	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP, int skipSpaces = 0);
 	NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname);
 	Item* getItemInVector(vector<Item*> the_vector, char* itemname);
 	int Clamp(int num, int min, int max);

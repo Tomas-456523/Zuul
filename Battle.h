@@ -18,12 +18,15 @@ public:
 
 	int FIGHT();
 
-	void printTeam(vector<NPC*> team);
+	bool useItem(char* commandExtensionP);
+	void printTeam(vector<NPC*> team, bool printLevel = true, bool printSP = false);
 	void printInventory();
 	void printParty();
+	void printAttacks(NPC* npc);
 	void analyze();
 	void printHelp();
 	bool runAway();
+	bool ParseAttack(char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble = true);
 	bool playerTurn();
 	void npcTurn();
 

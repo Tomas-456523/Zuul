@@ -117,6 +117,12 @@ int NPC::getXpReward() {
 int NPC::getMonyReward() {
 	return monyReward;
 }
+Attack* NPC::getBasicAttack() {
+	return standard_attack;
+}
+vector<Attack*> NPC::getSpecialAttacks() {
+	return special_attacks;
+}
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
 }
@@ -190,11 +196,12 @@ void NPC::levelUp() {
 void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
 }
-void NPC::setLeader(bool _leader, int _level) {
+void NPC::setLeader(bool _leader, int _level, Room* room) {
 	isLeader = _leader;
 	if (isLeader) {
 		setLevel(_level);
 		party.push_back(&*this);
+		setRoom(room);
 	}
 }
 void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
@@ -218,7 +225,7 @@ void NPC::setScale(int _health, int _defense, int _attack, int _toughness, int _
 	speedScale = _speed;
 	spScale = _sp;
 }
-void NPC::setStandardAttack(Attack* attack) {
+void NPC::setBasicAttack(Attack* attack) {
 	standard_attack = attack;
 }
 void NPC::addSpecialAttack(Attack* attack) {
