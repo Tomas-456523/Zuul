@@ -84,12 +84,16 @@ void Room::printNPCs() {
 		return;
 	}
 	cout << "\nNPCs:";
+	int j = 0;
 	for (NPC* npc : npcs) {
 		if (!npc->getRecruited()) {
 			if (strlen(npc->getTitle()) > 0) {
 				cout << " ";
 			}
 			cout << npc->getTitle() << " " << npc->getName();
+			if (++j != i) {
+				cout << ",";
+			}
 		}
 	}
 }

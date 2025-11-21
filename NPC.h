@@ -50,6 +50,7 @@ public: //you need to set stats on creation
 	Room* getHome(); //gets the home location of the npc
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
+	int xpForLevel(int level);
 	vector<NPC*>* getParty();
 	bool getLeader();
 	bool getHypnotized();
@@ -128,8 +129,8 @@ protected:
 	int sp; //sp stands for skill points
 	int maxSP;
 	
-	int level;
-	int xp;
+	int level = 0;
+	int xp = 0;
 
 	int healthScale = 0;
 	int defenseScale = 0;
@@ -139,8 +140,8 @@ protected:
 	int speedScale = 0;
 	int spScale = 0;
 
-	bool hypnotized;
-	bool defeated;
+	bool hypnotized = false;
+	bool defeated = false;
 
 	char* exitBlocking; //enemy npcs may block an exit until they are defeated
 	bool escapable = true;

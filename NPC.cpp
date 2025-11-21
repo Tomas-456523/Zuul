@@ -24,10 +24,11 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	isPlayer = _player;
 	sp = _sp;
 	maxSP = _sp;
-	level = _level;
-	//scale stats to level
 	if (isLeader) {
 		party.push_back(&*this);
+	}
+	if (_level != 0) {
+		setLevel(_level);
 	}
 }
 char* NPC::getTitle() {
@@ -95,6 +96,9 @@ int NPC::getLevel() {
 }
 int NPC::xpForNextLevel() {
 	return level * level + 9 - xp;
+}
+int NPC::xpForLevel(int level) {
+	return ((level-1)*(2*level-1)*level/6) + 9*level;
 }
 vector<NPC*>* NPC::getParty() {
 	return &party;
@@ -177,9 +181,8 @@ void NPC::addXp(int _xp) {
 	xp += _xp;
 	while (xpForNextLevel() <= 0) {
 		xp = -xpForNextLevel();
-		level++;
+		levelUp();
 	}
-	//level up stuff
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
 void NPC::levelUp() {
@@ -192,6 +195,7 @@ void NPC::levelUp() {
 	speed += speedScale + rand() % 2;
 	maxSP += spScale + rand() % 2;
 	sp = maxSP;
+	level++;
 }
 void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
@@ -213,8 +217,7 @@ void NPC::damage(int power, int pierce) {
 	//check if i am dead
 }
 void NPC::setLevel(int _level) {
-	//level = _level; not this
-	//addXp() based on the level
+	addXp(xpForLevel(_level));
 }
 void NPC::setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp) {
 	healthScale = _health;

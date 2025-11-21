@@ -228,6 +228,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Attack* grassslap = new Attack("", "grassily slapped", 0, 3, 0, 1, 1, 1);
 	grassman->setBasicAttack(grassslap);
 
+	//for npcs you can actually fight, make sure to set their level as 0 at construction, then set the level manually after setting the scale, otherwise stats will be off
+
 	//set up npc enemies
 	NPC* forestguard = new NPC(*grassman);
 	forestguard->setLeader(true, 1, forestentrance);
@@ -525,7 +527,7 @@ int main() {
 		"We have been trying to reach you about your car's extended warranty.",
 		"You spot a quick brown fox jumping over a lazy dog.",
 		"You say hello to the world.",
-		"You win the lottery. It's not a BURGER so who cares.",
+		"I could really go for a burger right now. Too bad they only sell BURGERs here.",
 		"You have a cake and eat it too.",
 		"You take a potato chip... and eat it."
 	};
