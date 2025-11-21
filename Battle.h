@@ -28,7 +28,7 @@ public:
 	bool runAway();
 	bool ParseAttack(char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble = true);
 	bool playerTurn();
-	void npcTurn();
+	void npcTurn(NPC* npc);
 
 	queue<NPC*> reorder();
 private:
@@ -36,7 +36,7 @@ private:
 	vector<NPC*> enemyTeam;
 	vector<NPC*> everyone;
 
-	//vector<Effect> allEffects;
+	vector<Effect> allEffects;
 
 	vector<Item*>* inventory;
 

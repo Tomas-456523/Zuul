@@ -13,6 +13,7 @@
 
 #include <vector>
 #include <stack>
+#include <map>
 #include "Room.h"
 #include "Attack.h"
 #include "Effect.h"
@@ -58,8 +59,10 @@ public: //you need to set stats on creation
 	Attack* getCheapestAttack();
 	int getXpReward();
 	int getMonyReward();
+	bool getEnemy();
 	Attack* getBasicAttack();
 	vector<Attack*> getSpecialAttacks();
+	map<Attack*, int> getWeights();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -74,7 +77,6 @@ public: //you need to set stats on creation
 	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL);
 	void setName(const char _name[255]);
 	void setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp);
-	//the game never needs to set stats for the characters past creation, but they can be upgraded with these methods
 	void addXp(int _xp);
 	void levelUp();
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
@@ -85,6 +87,9 @@ public: //you need to set stats on creation
 	void addSpecialAttack(Attack* attack);
 	void blockExit(char* _exitBlocking, char* type, const char reason[255]);
 	void setEscapable(bool _escapable);
+	void calculateWeights();
+	void setEnemy(bool _enemy);
+	void alterSp(int amount);
 
 	void defeat();
 protected:
@@ -102,6 +107,7 @@ protected:
 	Attack* cheapest_attack;
 
 	vector<Effect> effects;
+	map<Attack*, int> attackWeight;
 
 	//dialogue that the npc says when asked
 	char dialogue[255];
@@ -118,6 +124,7 @@ protected:
 	bool recruited = false;
 	bool isPlayer;
 	bool isLeader;
+	bool isEnemy = false;
 
 	int health;
 	int maxHealth;

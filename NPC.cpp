@@ -2,8 +2,10 @@
 #include <algorithm>
 #include <random>
 #include "NPC.h"
+#include "Helper.h"
 //#include "Fighter.h"
 using namespace std;
+using namespace Helper;
 
 NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level, bool _isleader, bool _player) {
 	strcpy(title, _title);
@@ -127,6 +129,12 @@ Attack* NPC::getBasicAttack() {
 vector<Attack*> NPC::getSpecialAttacks() {
 	return special_attacks;
 }
+map<Attack*, int> NPC::getWeights() {
+	return attackWeight;
+}
+bool NPC::getEnemy() {
+	return isEnemy;
+}
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
 }
@@ -202,11 +210,15 @@ void NPC::setHypnotized(bool _hypnotized) {
 }
 void NPC::setLeader(bool _leader, int _level, Room* room) {
 	isLeader = _leader;
+	isEnemy = true;
 	if (isLeader) {
 		setLevel(_level);
 		party.push_back(&*this);
 		setRoom(room);
 	}
+}
+void NPC::setEnemy(bool _enemy) {
+	isEnemy = _enemy;
 }
 void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
@@ -236,6 +248,19 @@ void NPC::addSpecialAttack(Attack* attack) {
 }
 void NPC::setEscapable(bool _escapable) {
 	escapable = _escapable;
+}
+void NPC::calculateWeights() {
+	int maxWeight = 90;
+	int totalSpCost = 0;
+	for (Attack* attack : special_attacks) {
+		totalSpCost += attack->cost;
+	}
+	for (Attack* attack : special_attacks) {
+		attackWeight[attack] = maxWeight*attack->cost/totalSpCost;
+	}
+}
+void NPC::alterSp(int amount) {
+	sp = Clamp(sp + amount, 0, maxSP);
 }
 void NPC::defeat() {
 	if (exitBlocking != NULL) {

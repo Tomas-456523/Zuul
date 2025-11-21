@@ -122,8 +122,14 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
 
 	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
-	Attack* punch = new Attack("PUNCH", "punched", -2, 2, 0, 1, 1, 1);
+	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target.");
+
+	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1, 0);
+	energyball->addDescription("Throw a ball of pure kinetic energy at the target.");
+
+	Attack* precisionstrike = new Attack("PRECISION STRIKE", "", 10, 35, 15, 1, 1, 1, 10);
+	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
 
 	//SET START ROOM TO VILLAGE
 	NPC* self = new NPC("\0", "SELF", "It's a me.", forestentrance, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
@@ -131,6 +137,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	self->setDialogue("Huh?");
 	self->Recruit();
 	self->setBasicAttack(punch);
+	self->addSpecialAttack(energyball);
+	self->addSpecialAttack(precisionstrike);
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
 	archie->setDialogue("So you are going on a BURGER QUEST too, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
@@ -215,8 +223,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	//set up generic non-npc enemies
 	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15, 5);
-	Attack* headbutt = new Attack("", "headbutted", -5, 5, 0, 1, 1, 1);
-	Attack* homing_prickle = new Attack("", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
+	Attack* headbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
+	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
 	prickly_hog->setBasicAttack(headbutt);
 	prickly_hog->addSpecialAttack(homing_prickle);
 
@@ -225,7 +233,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	greater_hog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 16, 0, 5, 0, 2, 5, 5);
-	Attack* grassslap = new Attack("", "grassily slapped", 0, 3, 0, 1, 1, 1);
+	Attack* grassslap = new Attack("GRASSSLAP", "grassily slapped", 0, 3, 0, 1, 1, 1);
 	grassman->setBasicAttack(grassslap);
 
 	//for npcs you can actually fight, make sure to set their level as 0 at construction, then set the level manually after setting the scale, otherwise stats will be off

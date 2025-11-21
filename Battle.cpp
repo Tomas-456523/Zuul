@@ -45,6 +45,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 		if (!npc->getLeader()) {
 			//add xp to the npc to scale them to the leader's level
 			npc->setLevel(enemyLevel);
+			npc->setEnemy(true);
 			xpReward += npc->getXpReward();
 			monyReward += npc->getMonyReward();
 		}
@@ -88,7 +89,7 @@ void Battle::printAttacks(NPC* npc) {
 	Attack* attack = npc->getBasicAttack();
 	cout << attack->name << " - " << attack->trueDesc << " - Generates " << -attack->cost << " SP";
 	if (npc->getSpecialAttacks().size() > 0) {
-		cout << "\nSpecial attacks :";
+		cout << "\nSpecial attacks:";
 	}
 	for (Attack* attack : npc->getSpecialAttacks()) {
 		if (attack->minLevel <= npc->getLevel()) {
@@ -123,27 +124,33 @@ queue<NPC*> Battle::reorder() {
 	}
 	return orderly_fashion;
 }
-//interpret and carry out player attacks, and return whether we should move on from the player turn based on if an attack was successfully launched or not
+//interpret and carry out player attacks, and return whether we successfully launched an attack
 bool Battle::ParseAttack(char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble) {
 	if (!strcmp(commandWordP, player->getBasicAttack()->name)) {
 		//attack the enemy and return if an enemy was found to attack
 		cout << "amogus";
 		return true;
 	} else {
+		bool attacked = false;
 		for (Attack* attack : player->getSpecialAttacks()) {
-			if (attack->minLevel <= player->getLevel() && strcmp(commandWordP, attack->name)) {
+			if (attack->minLevel <= player->getLevel() && !strcmp(commandWordP, attack->name)) {
 				//attack the enemy and return if an enemy was found to attack
+				cout << "sp attack";
+				attacked = true;
 			}
 		}
-		return true;
+		if (attacked) {
+			return true;
+		}
 	}
 	if (!checkDouble) {
 		cout << "\nInvalid command or attack \"" << commandWordP << "\" (type HELP for help, or ATTACKS for list of attacks).";
+		return false;
 	//if no enemy was found at all, check for double word attacks
 	} else if (true) {
 		//clear commandWordP & commandExtensionP?
 		ParseCommand(commandP, commandWordP, commandExtensionP, 1);
-		ParseAttack(commandP, commandWordP, commandExtensionP, false);
+		return ParseAttack(commandP, commandWordP, commandExtensionP, false);
 	}
 
 	//remove this later (unless it works i guess)
@@ -180,7 +187,7 @@ bool Battle::playerTurn() {
 		} else if (!strcmp(commandWord, "RUN")) {
 			keepFighting = continuing = !runAway();
 		} else {
-			continuing = ParseAttack(command, commandWord, commandExtension);
+			continuing = !ParseAttack(command, commandWord, commandExtension);
 		}
 	}
 
@@ -188,8 +195,44 @@ bool Battle::playerTurn() {
 
 	return keepFighting;
 }
-void Battle::npcTurn() {
-
+void Battle::npcTurn(NPC* npc) {
+	cout << "\n" << npc->getName() << "'s turn!";
+	CinPause();
+	int r = rand()%100;
+	int limit = 0;
+	Attack* attack = NULL;
+	for (Attack* _attack : npc->getSpecialAttacks()) {
+		if (_attack->cost > npc->getSP()) {
+			continue;
+		}
+		limit += npc->getWeights()[_attack];
+		if (r <= limit) {
+			attack = _attack;
+			break;
+		}
+	}
+	if (attack == NULL) {
+		attack = npc->getBasicAttack();
+	}
+	NPC* target = NULL;
+	while (target == NULL) {
+		if (npc->getEnemy()) {
+			target = playerTeam[rand()%playerTeam.size()];
+			if (target->getHealth() <= 0) {
+				target = NULL;
+			}
+		} else {
+			target = enemyTeam[rand()%enemyTeam.size()];
+			if (target->getHealth() <= 0) {
+				target = NULL;
+			}
+		}
+	}
+	npc->alterSp(-attack->cost);
+	target->damage(attack->power, attack->pierce); //calculate this based on stats as well
+	//also add effects
+	cout << "\n" << npc->getName() << " used " << attack->name << "!\n" << npc->getName() << " " << attack->description << " " << target->getName() << "!";
+	CinPause();
 }
 //begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away
 int Battle::FIGHT() {
@@ -209,7 +252,7 @@ int Battle::FIGHT() {
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn();
 		} else {
-			//choose random move
+			npcTurn(current);
 		}
 		turn.pop();
 		//check the player team and enemy team for if they've lost all hp, and returns win or loss based on that result
