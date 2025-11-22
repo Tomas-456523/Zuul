@@ -84,6 +84,10 @@ void Battle::printParty() {
 	cout << "\nMembers of your party:";
 	printTeam(playerTeam, true, true);
 }
+void Battle::printEnemies() {
+	cout << "\nEnemy party:";
+	printTeam(enemyTeam, true);
+}
 void Battle::printAttacks(NPC* npc) {
 	cout << "\nBasic attack:\n";
 	Attack* attack = npc->getBasicAttack();
@@ -97,14 +101,24 @@ void Battle::printAttacks(NPC* npc) {
 		}
 	}
 }
-void Battle::analyze() {
-	//YOU HAVEN'T IMPLEMENTED THIS YET
+void Battle::analyze(char* name) {
+	NPC* npc = getNPCInVector(everyone, name);
+	if (npc != NULL) {
+		printNPCData(npc);
+		return;
+	}
+	Item* item = getItemInVector(*inventory, name);
+	if (item != NULL) {
+		printItemData(item);
+		return;
+	}
+	cout << "\nThere is no item or person named \"" << name << "\" here!";
 }
 void Battle::printHelp() {
 	cout << "\n";
 	cout << flavorText[rand() % 8];
 	cout << "\nValid commands:";
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 9; i++) {
 		cout << "\n" << validCommands[i];
 	}
 }
@@ -125,22 +139,33 @@ queue<NPC*> Battle::reorder() {
 	return orderly_fashion;
 }
 //interpret and carry out player attacks, and return whether we successfully launched an attack
-bool Battle::ParseAttack(char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble) {
+bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble) {
+	NPC* target = getNPCInVector(enemyTeam, commandExtensionP);
+	if (target == NULL && !checkDouble) {
+		return false;
+	}
 	if (!strcmp(commandWordP, player->getBasicAttack()->name)) {
-		//attack the enemy and return if an enemy was found to attack
-		cout << "amogus";
+		//replace with carryOutAttack function {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+		Attack* attack = player->getBasicAttack();
+		plr->alterSp(-attack->cost);
+		//also add effects
+		cout << "\n" << plr->getName() << " used " << attack->name << "!\n" << plr->getName() << " " << attack->description << " " << target->getName() << "!";
+		CinPause();
+		cout << "\n" << target->getName() << " took " << target->damage(attack->power+plr->getAttack(), attack->pierce+plr->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
+		CinPause();
 		return true;
 	} else {
-		bool attacked = false;
 		for (Attack* attack : player->getSpecialAttacks()) {
 			if (attack->minLevel <= player->getLevel() && !strcmp(commandWordP, attack->name)) {
-				//attack the enemy and return if an enemy was found to attack
-				cout << "sp attack";
-				attacked = true;
+				//replace with carryOutAttack function {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+				plr->alterSp(-attack->cost);
+				//also add effects
+				cout << "\n" << plr->getName() << " used " << attack->name << "!\n" << plr->getName() << " " << attack->description << " " << target->getName() << "!";
+				CinPause();
+				cout << "\n" << target->getName() << " took " << target->damage(attack->power+plr->getAttack(), attack->pierce+plr->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
+				CinPause();
+				return true;
 			}
-		}
-		if (attacked) {
-			return true;
 		}
 	}
 	if (!checkDouble) {
@@ -150,13 +175,10 @@ bool Battle::ParseAttack(char* commandP, char* commandWordP, char* commandExtens
 	} else if (true) {
 		//clear commandWordP & commandExtensionP?
 		ParseCommand(commandP, commandWordP, commandExtensionP, 1);
-		return ParseAttack(commandP, commandWordP, commandExtensionP, false);
+		return ParseAttack(plr, commandP, commandWordP, commandExtensionP, false);
 	}
-
-	//remove this later (unless it works i guess)
-	return false;
 }
-bool Battle::playerTurn() {
+bool Battle::playerTurn(NPC* plr) {
 	bool continuing = true;
 	bool keepFighting = true;
 
@@ -178,16 +200,18 @@ bool Battle::playerTurn() {
 			printInventory();
 		} else if (!strcmp(commandWord, "PARTY")) {
 			printParty();
+		} else if (!strcmp(commandWord, "ENEMIES")) {
+			printEnemies();
 		} else if (!strcmp(commandWord, "ATTACKS")) {
 			printAttacks(player);
 		} else if (!strcmp(commandWord, "ANALYZE")) {
-			analyze();
+			analyze(commandExtension);
 		} else if (!strcmp(commandWord, "HELP")) {
 			printHelp();
 		} else if (!strcmp(commandWord, "RUN")) {
 			keepFighting = continuing = !runAway();
 		} else {
-			continuing = !ParseAttack(command, commandWord, commandExtension);
+			continuing = !ParseAttack(plr, command, commandWord, commandExtension);
 		}
 	}
 
@@ -228,10 +252,12 @@ void Battle::npcTurn(NPC* npc) {
 			}
 		}
 	}
+	//replace with carryOutAttack function {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 	npc->alterSp(-attack->cost);
-	target->damage(attack->power, attack->pierce); //calculate this based on stats as well
 	//also add effects
 	cout << "\n" << npc->getName() << " used " << attack->name << "!\n" << npc->getName() << " " << attack->description << " " << target->getName() << "!";
+	CinPause();
+	cout << "\n" << target->getName() << " took " << target->damage(attack->power+npc->getAttack(), attack->pierce+npc->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
 	CinPause();
 }
 //begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away
@@ -248,12 +274,15 @@ int Battle::FIGHT() {
 
 	while (continuing) {
 		current = turn.front();
-		if (current->getPlayerness()) {
+		if (current->getHealth() <= 0) {
+			//do a backflip idk
+		} else if (current->getPlayerness()) {
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
-			continuing = playerTurn();
+			continuing = playerTurn(current);
 		} else {
 			npcTurn(current);
 		}
+		
 		turn.pop();
 		//check the player team and enemy team for if they've lost all hp, and returns win or loss based on that result
 		if (aliveCount(playerTeam) <= 0) {

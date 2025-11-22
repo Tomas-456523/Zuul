@@ -56,7 +56,45 @@ namespace Helper {
 		}
 		return NULL;
 	}
+	void printNPCData(NPC* npc) {
+		cout << "\n" << npc->getTitle();
+		if (strlen(npc->getTitle()) > 0) {
+			cout << " ";
+		}
+		cout << npc->getName() << " - " << npc->getDescription() << "\n  LEVEL " << npc->getLevel(); //if recruited should say something like LEVEL 30 (1932874 xp to LEVEL UP)
+		if (npc->getRecruited()) {
+			cout << " (" << npc->xpForNextLevel() << " xp to LEVEL UP)";
+		}
+		cout << "\n  HEALTH - " << npc->getHealthMax();
+		cout << "\t  DEFENSE - " << npc->getDefense();
+		cout << "\n  ATTACK - " << npc->getAttack();
+		cout << "\t  TOUGHNESS - " << npc->getToughness();
+		cout << "\n  PIERCE - " << npc->getPierce();
+		cout << "\t  SPEED - " << npc->getSpeed();
+		cout << "\n  SKILL - " << npc->getSPMax();
+	}
+
+	void printItemData(Item* item) {
+		cout << "\n" << item->getName() << " - " << item->getDescription();
+		if (!item->getTakable()) {
+			cout << " Costs " << item->getPrice() << " mon";
+			if (item->getPrice() == 1) {
+				cout << "y.";
+			} else {
+				cout << "ies.";
+			}
+		}
+	}
 	int Clamp(int num, int min, int max) {
+		if (num < min) {
+			return min;
+		}
+		if (num > max) {
+			return max;
+		}
+		return num;
+	}
+	float ClampF(float num, float min, float max) {
 		if (num < min) {
 			return min;
 		}

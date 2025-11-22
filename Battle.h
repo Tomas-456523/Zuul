@@ -22,12 +22,13 @@ public:
 	void printTeam(vector<NPC*> team, bool printLevel = true, bool printSP = false);
 	void printInventory();
 	void printParty();
+	void printEnemies();
 	void printAttacks(NPC* npc);
-	void analyze();
+	void analyze(char* name);
 	void printHelp();
 	bool runAway();
-	bool ParseAttack(char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble = true);
-	bool playerTurn();
+	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble = true);
+	bool playerTurn(NPC* plr);
 	void npcTurn(NPC* npc);
 
 	queue<NPC*> reorder();
@@ -59,11 +60,12 @@ private:
 		"You get distracted by a squirrel."
 	};
 
-	char validCommands[8][255] = {
+	char validCommands[9][255] = {
 		"[attack] [npc]",
 		"USE [item]",
 		"INVENTORY",
 		"PARTY",
+		"ENEMIES",
 		"ATTACKS",
 		"ANALYZE [npc/item]",
 		"HELP",

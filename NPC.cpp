@@ -1,6 +1,7 @@
 #include <cstring>
 #include <algorithm>
 #include <random>
+#include <cmath>
 #include "NPC.h"
 #include "Helper.h"
 //#include "Fighter.h"
@@ -224,9 +225,14 @@ void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
 	currentRoom->blockExit(exitBlocking, type, reason);
 }
-void NPC::damage(int power, int pierce) {
-	//damage formula
-	//check if i am dead
+int NPC::damage(float power, float pierce) {
+	float damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
+	float defenseF = defense;
+	float toughnessF = toughness;
+	int damage = (int)ceil(power * (10.0f/(10.0f + ClampF(defenseF - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessF)),0,defenseF))));
+	int totalDamage = Clamp(damage,0,health);
+	health -= totalDamage;
+	return totalDamage;
 }
 void NPC::setLevel(int _level) {
 	addXp(xpForLevel(_level));

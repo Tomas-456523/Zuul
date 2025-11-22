@@ -81,7 +81,7 @@ public: //you need to set stats on creation
 	void levelUp();
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
 	void setHypnotized(bool _hypnotized);
-	void damage(int power, int pierce);
+	int damage(float power, float pierce);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);

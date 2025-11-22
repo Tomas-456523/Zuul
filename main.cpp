@@ -400,36 +400,6 @@ void printParty(vector<NPC*>* party) {
 	}
 }
 
-void printNPCData(NPC* npc) {
-	cout << "\n" << npc->getTitle();
-	if (strlen(npc->getTitle()) > 0) {
-		cout << " ";
-	}
-	cout << npc->getName() << " - " << npc->getDescription() << "\n  LEVEL " << npc->getLevel(); //if recruited should say something like LEVEL 30 (1932874 xp to LEVEL UP)
-	if (npc->getRecruited()) {
-		cout << " (" << npc->xpForNextLevel() << " xp to LEVEL UP)";
-	}
-	cout << "\n  HEALTH - " << npc->getHealthMax();
-	cout << "\t  DEFENSE - " << npc->getDefense();
-	cout << "\n  ATTACK - " << npc->getAttack();
-	cout << "\t  TOUGHNESS - " << npc->getToughness();
-	cout << "\n  PIERCE - " << npc->getPierce();
-	cout << "\t  SPEED - " << npc->getSpeed();
-	cout << "\n  SKILL - " << npc->getSPMax();
-}
-
-void printItemData(Item* item) {
-	cout << "\n" << item->getName() << " - " << item->getDescription();
-	if (!item->getTakable()) {
-		cout << " Costs " << item->getPrice() << " mon";
-		if (item->getPrice() == 1) {
-			cout << "y.";
-		} else {
-			cout << "ies.";
-		}
-	}
-}
-
 void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name);
 	if (npc == NULL) {
