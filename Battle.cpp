@@ -33,15 +33,16 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	}
 	//give the enemies xp corresponding with the enemy's level, in order to scale them to that level
 	int enemyLevel;
-	for (NPC* npc : *_enemyTeam) {
+	for (NPC* npc : enemyTeam) {
 		if (npc->getLeader()) {
+			npc->setEnemy(true);
 			enemyLevel = npc->getLevel();
 			xpReward += npc->getXpReward();
 			monyReward += npc->getMonyReward();
 			break;
 		}
 	}
-	for (NPC* npc : *_enemyTeam) {
+	for (NPC* npc : enemyTeam) {
 		if (!npc->getLeader()) {
 			//add xp to the npc to scale them to the leader's level
 			npc->setLevel(enemyLevel);
@@ -52,6 +53,41 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	}
 	xpReward *= enemyLevel;
 	monyReward *= enemyLevel;
+	vector<char*> names;
+	vector<int> amount;
+	vector<int> count;
+	for (NPC* npc : enemyTeam) {
+		char* name = new char[255];
+		strcpy(name, npc->getName());
+		bool namefound = false;
+		for (int i = 0; i < names.size(); i++) {
+			if (!strcmp(name, names[i])) {
+				amount[i]++;
+				namefound = true;
+				break;
+			}
+		}
+		if (!namefound) {
+			names.push_back(name);
+			amount.push_back(1);
+			count.push_back(0);
+		}
+	}
+	for (NPC* npc : enemyTeam) {
+		for (int i = 0; i < names.size(); i++) {
+			if (!strcmp(npc->getName(), names[i])) {
+				if (amount[i] > 1) {
+					char suffix[3] = "  "; //do not edit this string
+					suffix[1] = '0' + ++count[i];
+					npc->addSuffix(suffix);
+				}
+				break;
+			}
+		}
+	}
+	for (char* name : names) {
+		delete[] name;
+	}
 }
 //use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
 bool Battle::useItem(char* commandExtensionP) {
@@ -138,32 +174,29 @@ queue<NPC*> Battle::reorder() {
 	}
 	return orderly_fashion;
 }
+void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
+	attacker->alterSp(-attack->cost);
+	//also add effects
+	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
+	CinPause();
+	cout << "\n" << target->getName() << " took " << target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
+	CinPause();
+}
 //interpret and carry out player attacks, and return whether we successfully launched an attack
+//this function's code is yucky garbage I need to fix it
+//also you can punch NULL targets, fix that (eg. try "PUNCH [NONEXISTENT NPC]")
 bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble) {
 	NPC* target = getNPCInVector(enemyTeam, commandExtensionP);
 	if (target == NULL && !checkDouble) {
 		return false;
 	}
 	if (!strcmp(commandWordP, player->getBasicAttack()->name)) {
-		//replace with carryOutAttack function {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-		Attack* attack = player->getBasicAttack();
-		plr->alterSp(-attack->cost);
-		//also add effects
-		cout << "\n" << plr->getName() << " used " << attack->name << "!\n" << plr->getName() << " " << attack->description << " " << target->getName() << "!";
-		CinPause();
-		cout << "\n" << target->getName() << " took " << target->damage(attack->power+plr->getAttack(), attack->pierce+plr->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
-		CinPause();
+		carryOutAttack(player->getBasicAttack(), plr, target);
 		return true;
 	} else {
 		for (Attack* attack : player->getSpecialAttacks()) {
 			if (attack->minLevel <= player->getLevel() && !strcmp(commandWordP, attack->name)) {
-				//replace with carryOutAttack function {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-				plr->alterSp(-attack->cost);
-				//also add effects
-				cout << "\n" << plr->getName() << " used " << attack->name << "!\n" << plr->getName() << " " << attack->description << " " << target->getName() << "!";
-				CinPause();
-				cout << "\n" << target->getName() << " took " << target->damage(attack->power+plr->getAttack(), attack->pierce+plr->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
-				CinPause();
+				carryOutAttack(attack, plr, target);
 				return true;
 			}
 		}
@@ -252,13 +285,7 @@ void Battle::npcTurn(NPC* npc) {
 			}
 		}
 	}
-	//replace with carryOutAttack function {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-	npc->alterSp(-attack->cost);
-	//also add effects
-	cout << "\n" << npc->getName() << " used " << attack->name << "!\n" << npc->getName() << " " << attack->description << " " << target->getName() << "!";
-	CinPause();
-	cout << "\n" << target->getName() << " took " << target->damage(attack->power+npc->getAttack(), attack->pierce+npc->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
-	CinPause();
+	carryOutAttack(attack, npc, target);
 }
 //begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away
 int Battle::FIGHT() {
@@ -296,6 +323,12 @@ int Battle::FIGHT() {
 		}
 	}
 	return 2; //return false because the player ran away
+}
+int Battle::getXpReward() {
+	return xpReward;
+}
+int Battle::getMonyReward() {
+	return monyReward;
 }
 Battle::~Battle() {
 	//delete npc copies

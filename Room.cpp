@@ -20,11 +20,18 @@ char* Room::getDescription() {
 vector<Item*> Room::getItems() {
 	return items;
 }
+vector<Item*> Room::getStock() {
+	return stock;
+}
 vector<NPC*> Room::getNpcs() {
 	return npcs;
 }
 Room* Room::getExit(char* direction) {
-	return exits[direction];
+	map<char*, Room*, charComparer>::iterator exiterator = exits.find(direction);
+	if (exiterator == exits.end()) {
+		return NULL;
+	}
+	return exiterator->second;
 }
 bool Room::getBlocked(char* direction) {
 	for (char* exit : blockedExits) {
@@ -73,10 +80,30 @@ void Room::printItems() {
 	}
 	cout << "here.";
 }
+void Room::printStock() {
+	int len = stock.size();
+	if (len < 1) {
+		return;
+	}
+	cout << "\nItems for sale:";
+	int i = 0;
+	for (Item* item : stock) {
+		int price = item->getPrice();
+		cout << " " << item->getName() << " (" << price << " mon";
+		if (price == 1) {
+			cout << "y)";
+		} else {
+			cout << "ies)";
+		}
+		if (i++ != 0) {
+			cout << ",";
+		}
+	}
+}
 void Room::printNPCs() {
 	int i = 0;
 	for (NPC* npc : npcs) {
-		if (!npc->getRecruited()) {
+		if (!npc->getRecruited() && !npc->getDefeated()) {
 			i++;
 		}
 	}
@@ -86,7 +113,7 @@ void Room::printNPCs() {
 	cout << "\nNPCs:";
 	int j = 0;
 	for (NPC* npc : npcs) {
-		if (!npc->getRecruited()) {
+		if (!npc->getRecruited() && !npc->getDefeated()) {
 			if (strlen(npc->getTitle()) > 0) {
 				cout << " ";
 			}
@@ -141,6 +168,14 @@ void Room::setWelcome(const char _welcome[255], const char _title[255], const ch
 	strcpy(welcomeDescription, _description);
 	welcome = true;
 }
+void Room::setStock(Item* item, int amount, int price, const char buydesc[255]) {
+	item->setStock(amount, price, buydesc);
+	stock.push_back(item);
+}
+void Room::removeStock(Item* item) {
+	delete item;
+	stock.erase(remove(stock.begin(), stock.end(), item), stock.end());
+}
 void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) {
 	blockedExits.push_back(direction);
 	blockType[direction] = blocktype; //do we even need this?
@@ -150,4 +185,12 @@ void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) 
 }
 void Room::unblockExit(char* direction) {
 	blockedExits.erase(remove(blockedExits.begin(), blockedExits.end(), direction), blockedExits.end());
+}
+void Room::undefeatEnemies() {
+	for (NPC* npc : npcs) {
+		//probbaly do a check if you should undefeat them
+		if (npc->getDefeated()) {
+			npc->undefeat();
+		}
+	}
 }

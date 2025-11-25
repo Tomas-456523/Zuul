@@ -63,6 +63,8 @@ public: //you need to set stats on creation
 	Attack* getBasicAttack();
 	vector<Attack*> getSpecialAttacks();
 	map<Attack*, int> getWeights();
+	bool getLevelUp();
+	bool getDefeated();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -78,7 +80,7 @@ public: //you need to set stats on creation
 	void setName(const char _name[255]);
 	void setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp);
 	void addXp(int _xp);
-	void levelUp();
+	void levelUp(bool trackLevelUp = false);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
 	void setHypnotized(bool _hypnotized);
 	int damage(float power, float pierce);
@@ -90,8 +92,11 @@ public: //you need to set stats on creation
 	void calculateWeights();
 	void setEnemy(bool _enemy);
 	void alterSp(int amount);
+	void setLevelUp(bool _leveledUp);
+	void addSuffix(const char suffix[3]);
 
 	void defeat();
+	void undefeat();
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
 	char name[255];
@@ -139,6 +144,8 @@ protected:
 	int level = 0;
 	int xp = 0;
 
+	bool leveledUp;
+
 	int healthScale = 0;
 	int defenseScale = 0;
 	int attackScale = 0;
@@ -151,9 +158,10 @@ protected:
 	bool defeated = false;
 
 	char* exitBlocking; //enemy npcs may block an exit until they are defeated
+
 	bool escapable = true;
 
-	int xpReward;
-	int monyReward;
+	//int xpReward;
+	//int monyReward;
 };
 #endif

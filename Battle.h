@@ -27,9 +27,13 @@ public:
 	void analyze(char* name);
 	void printHelp();
 	bool runAway();
+	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target);
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble = true);
 	bool playerTurn(NPC* plr);
 	void npcTurn(NPC* npc);
+
+	int getXpReward();
+	int getMonyReward();
 
 	queue<NPC*> reorder();
 private:
@@ -42,12 +46,11 @@ private:
 	vector<Item*>* inventory;
 
 	NPC* player;
-	int mony;
 
 	bool escapable;
 
-	int xpReward;
-	int monyReward;
+	int xpReward = 0;
+	int monyReward = 0;
 
 	char flavorText[8][255] = {
 		"You are locked the heck in.",

@@ -12,10 +12,9 @@ FEATURES I NEED TO IMPLEMENT
 - ITEMS
 - FINALIZE THE PLOT (almost done)
 - ACHIEVEMENTS (ehhhhhh idk anymore consider it if time permits)
-- IMPROVE SHOPPING SYSTEM
 - QUEST SYSTEM (like, to make npcs recruitable)
 - FISHING MINIGAME
-- BLOCKED EXITS
+- RECAP COMMAND?
 */
 /*
 If you get the lame ending it gives a reference to the "Don't be lame clause"
@@ -45,7 +44,7 @@ ENDING ACHIEVED: LAME ENDING
 using namespace std;
 using namespace Helper;
 
-//sets up the entire game world, including rooms, npcs, and items, and returns the starting room
+//sets up the entire game world, including rooms, npcs, and items, and returns the player character
 NPC* SetupWorld(vector<Room*>* rooms) {
 	//set up directions
 	char* NORTH = new char[12];
@@ -65,16 +64,15 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* UPSTAIRS = new char[12];
 	char* DOWNSTAIRS = new char[12];
 
+	//set the text for the directions
 	strcpy(NORTH, "NORTH");
 	strcpy(SOUTH, "SOUTH");
 	strcpy(WEST, "WEST");
 	strcpy(EAST, "EAST");
-
 	strcpy(NORTHWEST, "NORTHWEST");
 	strcpy(NORTHEAST, "NORTHEAST");
 	strcpy(SOUTHWEST, "SOUTHWEST");
 	strcpy(SOUTHEAST, "SOUTHEAST");
-
 	strcpy(OUT, "OUT");
 	strcpy(IN_TENT_1, "IN TENT 1");
 	strcpy(IN_TENT_2, "IN TENT 2");
@@ -87,41 +85,80 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* ENEMY = new char[12];
 	char* CHASM = new char[12];
 	char* RIVER = new char[12];
-
+	char* TEMPLE = new char[12];
+	
+	//set up blockage reason text
 	strcpy(ENEMY, "ENEMY");
 	strcpy(CHASM, "CHASM");
 	strcpy(RIVER, "RIVER");
+	strcpy(TEMPLE, "TEMPLE");
 
-	//I send all the template enemy NPCs to limbo, since I need to set a room for them
+	//I send all the template enemy NPCs and also shop items, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
+	//create all WANING WOODLANDS rooms
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* villageleft = new Room("at the westernmost end of the village, where the tallest tent stands. It's only two stories, but it's comparatively a tent mansion.");
-	Room* tenthome = new Room("in the developer's house.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
 	Room* tentmansion = new Room("in the tent mansion's living room. There are way too many clocks here.");
-	Room* tentlab = new Room("in the tent lab. [flavor text floavor text flavor text]");
-	//tunnels are shut down due to a lobster infestation
+	//put a telescope here, and maybe a launchpad outside which may or may bit do something
+	Room* tentlab = new Room("in the tent lab. There's a ton of machinery, and many generic science beakers with colored liquids.");
+	//(put a sign here) tunnels are shut down due to a lobster infestation
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently for [SOME REASON].");
-
-	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
-
-	//put a fishing rod here and a fishing minigame :)
+	//make the church get repaired post game and Archibald goes here
+	Room* tentchurch = new Room("in the village church. Nobody really goes here anymore, especially since the priest disappeared a long time ago.");
+	//put a fishing rod here and a fishing minigame :) NONONONNONNONONONONONONONONONNNNO THATS ENOUGH SCOPE
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
 	Room* forest = new Room("deep in the woodlands. Smells like pine trees along the way.");
-	forest->setWelcome("WANING WOODLANDS", "THE FINAL FOREST", "The slowly decaying corner of the world, vaguely reminiscent of the times before evil.");
-	Room* forest2 = new Room("");
+	forest->setWelcome("Welcome to WANING WOODLANDS!", "<<< THE FINAL FOREST >>>", "The slowly decaying corner of the world, vaguely reminiscent of the times before evil.");
+	
+	Room* forestleft = new Room("walking down the left path of the woodlands. It feels like a deer is watching you.");
+	Room* forestright = new Room("walking down the right path of the woodlands. It feels like a ninja is watching you.");
 
-	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather.");
+	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather."); //talk to the deer to get the key
+	Room* ninjaland = new Room("underneath the ninja village. It's probably supposed to be hidden but you looked up and there it was.");
+	//make sure the desc gets updated after plot device quest
+	Room* fortementrance = new Room("in the glade where the ancient forest temple stands. No matter what anyone has tried, nobody has ever made it in.");
+	Room* foreststairs = new Room("on the steps that go into the ancient forest temple.");
 	Room* foresttemple = new Room("in the temple of [SOMETHING]. [SOMETHING SOMETHING].");
 
-	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
-	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
+	Room* flowerfield = new Room("in the aromatic flower fields. Your sister likes hanging out here.");
+	Room* flowerfield2 = new Room("deep in the flower fields. A really nice river flows over here.");
+	//fix this
+	flowerfield2->setWelcome("FLORIA - Hey! Aren't these flowers just so lovely?","[main character] - NO THESE FLOWERS SUCK THEY TRIED TO EAT ME.","");
+
+	Room* forcrossroad = new Room("at another fork in the road. I hope we don't come across a spoon in the road.");
+	Item* fork = new Item("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n - Oxford Languages", forcrossroad);
+
+	Room* garden = new Room("a strange section of the forest. All the trees have been neatly trimmed and organized to an unnatural extent.");
+
+	Room* forestgate = new Room("at the border between the woodlands and the rest of the world, seperated by a huge wall. It was meant to keep evil at bay, but it didn't really work.");
+	Room* forestgrave = new Room("in a sparse wooden graveyard.");
+
+	Room* outsidegate = new Room("at a spork in the road, but no sporks are to be seen anywhere.");
+
+	Room* treasuretree = new Room("in the treasure grove, where the grass is golden and treasure chests sometimes appear.");
+	Room* treasurecliff = new Room("in the treasure cliff at the edge of the desert, where there is actualy treasure.");
+
+	Room* bossgrove = new Room("in the BOSS GROVE, where the boss of WANING WOODLANDS is known to appear.");
+
+	Room* fdintermission1 = new Room("on the path between the woodlands and the wastelands.");
+	Room* fdintermission2 = new Room("on the path between the woodlands and the wastelands. The foliage is sparse here. BURGERSBURG can be seen faintly in the distance.");
+	Room* fdintermission3 = new Room("on the path between the woodlands and the wastelands. Dead trees surround you. The BURGER RESTAURANT is just barely visible from here.");
+
+	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you!).");
+	desert->setWelcome("Welcome to DESOLATE DESERT", "<<< THE WASTELANDS BEYOND >>>", "The world beyond your forest, where life has been sucked out of the dirt. Surely there must be someone around here?");
+
+	//NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.");
 
 	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
+	////////////////////////
+	//DELETE THIS ATTACK, ONLY FOR TESTING
+	Attack* finishhim = new Attack("", "DESCRIPTION", 0, 99999999, 99999999, 1, 1, 1);
+	////////////////
 	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target.");
 
@@ -138,6 +175,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	self->Recruit();
 	self->setBasicAttack(punch);
 	self->addSpecialAttack(energyball);
+	self->addSpecialAttack(finishhim);
 	self->addSpecialAttack(precisionstrike);
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
@@ -150,6 +188,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	egadwick->setDialogue("Ah hello kiddo.[][][][][][][]");
 	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you can destroy it I could probably go.");
 	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
+
+	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
+	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
+	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
 
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 0, 2);
@@ -164,20 +206,18 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	burgerheretic->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
 	//it's a me
-	//I should sell the developer gun
+	Room* tenthome = new Room("in the developer's house.");
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
 	developer->setDialogue("Yo wassup.");
 	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 
-	//maybe make a secret code for the thing so regular people can't use it
-	Item* devgun = new Item("DEVELOPER GUN", "I made this in order to make playtesters' lives easier.", tenthome, false, 0);
-	devgun->setDenial("TOMAS - No you have to buy that first. But that's for playtesters, so pls don't buy that if you aren't.");
-	devgun->setBuyDesc("TOMAS - I trust that you are a playtester...");
-
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 50, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
-	//probably give the store actual stock here
+
+	//tent store stock
+	Item* ibuprofen = new Item("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
+	tentstore->setStock(ibuprofen, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage!");
 
 	//set up room exits
 	village->setExit(SOUTH, docks);
@@ -185,7 +225,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	village->setExit(WEST, villageleft);
 	village->setExit(IN_TENT_1, tentstore);
 	village->setExit(IN_TENT_2, tentstation);
-	village->setExit(IN_TENT_3, tenthome);
+	village->setExit(IN_TENT_3, tentchurch);
 
 	villageleft->setExit(EAST, village);
 	villageleft->setExit(IN_TENT, tentmansion);
@@ -196,7 +236,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	
 	tentstore->setExit(OUT, village);
 	tentstation->setExit(OUT, village);
-	tenthome->setExit(OUT, village);
+	tentchurch->setExit(OUT, village);
 	docks->setExit(NORTH, village);
 
 	forestentrance->setExit(WEST, village);
@@ -243,6 +283,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	forestguard->setLeader(true, 1, forestentrance);
 	forestguard->setDialogue("(angry bush noises)");
 	forestguard->setRejectionDialogue("(angry bush noises)");
+	//forestguard->setParty(grassman, grassman, grassman, prickly_hog);
 
 	//forestentrance->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
@@ -271,6 +312,7 @@ void PrintRoomData(Room* currentRoom) {
 	currentRoom->printExits();
 	currentRoom->printNPCs();
 	currentRoom->printItems();
+	currentRoom->printStock();
 	currentRoom->printBlocks();
 }
 
@@ -287,6 +329,7 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
 		currentRoom->printBlock(direction);
 		return;
 	}
+	roomCanidate->undefeatEnemies();
 	currentRoom = roomCanidate;
 	for (NPC* npc : (*party)) {
 		npc->setRoom(currentRoom);
@@ -297,6 +340,13 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
 void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	Item* item = getItemInVector(currentRoom->getItems(), itemname);
 	if (item == NULL) {
+		if (getItemInVector(currentRoom->getStock(), itemname) != NULL) {
+			cout << "\nThe " << itemname << " is for sale! You can't just take it.";
+			return;
+		} else if (getItemInVector(*inventory, itemname) != NULL) {
+			cout << "\nYou're already carrying this item!";
+			return;
+		}
 		cout << "\nThere is no \"" << itemname << "\" here.";
 		return;
 	}
@@ -312,7 +362,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	Item* item = getItemInVector(*inventory, itemname);
 	if (item == NULL) {
-		cout << "\nYou have no \"" << itemname << "\"."; //I know it's grammatically inaccurate but it looks way better
+		cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
 		return;
 	}
 	item->setRoom(currentRoom);
@@ -322,7 +372,10 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 
 //use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
 void useItem(Room* currentRoom, vector<Item*>* inventory, char* commandExtensionP) {
-	//do stuff with the item
+	/*if (!strcmp(item->getType(), "thingy")) {
+    	thingyItem* thingy = (thingyItem*)item;
+    	thingy->doTheThing();
+	}*/
 }
 
 void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
@@ -413,6 +466,9 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 	if (item == NULL) {
 		item = getItemInVector(*inventory, name);
 	}
+	if (item == NULL) {
+		item = getItemInVector(currentRoom->getStock(), name);
+	}
 	if (item != NULL) {
 		printItemData(item);
 		return;
@@ -421,20 +477,22 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 }
 
 void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
-	Item* item = getItemInVector(currentRoom->getItems(), name);
+	Item* item = getItemInVector(currentRoom->getStock(), name);
 	if (item == NULL) {
-		Item* item = getItemInVector(*inventory, name);
-		if (item != NULL) {
+		if (getItemInVector(currentRoom->getItems(), name) != NULL) {
+			cout << "\nNobody is selling the " << name << "; you can just take it.";
+			return;
+		} else if (getItemInVector(*inventory, name) != NULL) {
 			cout << "\nYou already own this item!";
 			return;
 		}
 		cout << "\nThere is no \"" << name << "\" here.";
 		return;
-	} else if (item->getTakable()) {
-		cout << "\nNobody is selling the " << name << "; you can just take it.";
-		return;
 	}
 	item->buy(mony, inventory);
+	if (item->getStock() <= 0) {
+		currentRoom->removeStock(item);
+	}
 }
 
 void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
@@ -455,20 +513,51 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
 	int battlestatus = battle.FIGHT();
 	if (battlestatus == 0) { //lose
-		//lose money
+		cout << "\nDEFEAT.";
+		CinPause();
+		int monyLoss = mony - mony/2;
+		mony -= monyLoss;
+		cout << "\nYou lost " << monyLoss << " mon";
+		if (monyLoss == 1) {
+			cout << "y.";
+		} else {
+			cout << "ies.";
+		}
+		CinPause();
 	} else if (battlestatus == 1) { //win
-		//add experience
-		//add money
-	} else { //ran away
-		PrintRoomData(currentRoom);
+		cout << "\nYOU WIN!";
+		CinPause();
+		mony += battle.getMonyReward(); 
+		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is literally never just 1
+		cout << "\nYou earned " << battle.getMonyReward() << " monies! Now you have " << mony << " monies!";
+		CinPause();
+		for (NPC* teammate : *party) {
+			teammate->addXp(battle.getXpReward());
+		}
+		cout << "\nYou";
+		if (party->size() > 1) {
+			cout << "r party members";
+		}
+		cout << " gained " << battle.getXpReward() << " XP!";
+		CinPause();
+		for (NPC* teammate : *party) {
+			if (teammate->getLevelUp()) {
+				cout << "\n" << teammate->getName() << " leveled up! " << teammate->getName() << " is now Level " << teammate->getLevel() << "!";
+				//I really want this to show stat changes
+				teammate->setLevelUp(false);
+				CinPause();
+			}
+		}
+		npc->defeat();
 	}
+	PrintRoomData(currentRoom);
 }
 
-void printHelp(char validCommands[14][255], char flavorText[16][255]) {
+void printHelp(char validCommands[15][255], char flavorText[16][255]) {
 	cout << "\n";
 	cout << flavorText[rand() % 16];
 	cout << "\nValid commands:";
-	for (int i = 0; i < 14; i++) {
+	for (int i = 0; i < 15; i++) {
 		cout << "\n" << validCommands[i];
 	}
 }
@@ -510,7 +599,7 @@ int main() {
 		"You take a potato chip... and eat it."
 	};
 
-	char validCommands[14][255] = {
+	char validCommands[15][255] = {
 		"GO [direction]",
 		"TAKE [item]",
 		"DROP [item]",
@@ -520,6 +609,7 @@ int main() {
 		"ASK [npc]",
 		"INVENTORY",
 		"PARTY",
+		"ROOM",
 		"ANALYZE [npc/item]",
 		"FIGHT [npc]",
 		"BUY [item]",
@@ -594,6 +684,8 @@ int main() {
 			printInventory(inventory, mony);
 		} else if (!strcmp(commandWord, "PARTY")) {
 			printParty(party);
+		} else if (!strcmp(commandWord, "ROOM")) {
+			PrintRoomData(currentRoom);
 		} else if (!strcmp(commandWord, "ANALYZE")) {
 			analyze(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) {

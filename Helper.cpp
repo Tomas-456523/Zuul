@@ -42,7 +42,7 @@ namespace Helper {
 	}
 	NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname) {
 		for (NPC* npc : the_vector) {
-			if (!strcmp(npc->getName(), npcname)) {
+			if (!npc->getDefeated() && !strcmp(npc->getName(), npcname)) {
 				return npc;
 			}
 		}

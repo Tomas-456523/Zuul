@@ -30,8 +30,11 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	if (isLeader) {
 		party.push_back(&*this);
 	}
-	if (_level != 0) {
+	if (_level != 0 && _level <= 100) {
 		setLevel(_level);
+	}
+	if (_level > 100) {
+		level = _level;
 	}
 }
 char* NPC::getTitle() {
@@ -119,10 +122,10 @@ Attack* NPC::getCheapestAttack() {
 	return cheapest_attack;
 }
 int NPC::getXpReward() {
-	return xpReward;
+	return level*level+5;
 }
 int NPC::getMonyReward() {
-	return monyReward;
+	return level*10;
 }
 Attack* NPC::getBasicAttack() {
 	return standard_attack;
@@ -133,8 +136,14 @@ vector<Attack*> NPC::getSpecialAttacks() {
 map<Attack*, int> NPC::getWeights() {
 	return attackWeight;
 }
+bool NPC::getLevelUp() {
+	return leveledUp;
+}
 bool NPC::getEnemy() {
 	return isEnemy;
+}
+bool NPC::getDefeated() {
+	return defeated;
 }
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
@@ -190,11 +199,11 @@ void NPC::addXp(int _xp) {
 	xp += _xp;
 	while (xpForNextLevel() <= 0) {
 		xp = -xpForNextLevel();
-		levelUp();
+		levelUp(true);
 	}
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
-void NPC::levelUp() {
+void NPC::levelUp(bool trackLevelUp) {
 	maxHealth += healthScale + rand() % 2;
 	health = maxHealth;
 	defense += defenseScale + rand() % 2;
@@ -205,6 +214,7 @@ void NPC::levelUp() {
 	maxSP += spScale + rand() % 2;
 	sp = maxSP;
 	level++;
+	leveledUp = trackLevelUp;
 }
 void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
@@ -235,7 +245,10 @@ int NPC::damage(float power, float pierce) {
 	return totalDamage;
 }
 void NPC::setLevel(int _level) {
-	addXp(xpForLevel(_level));
+	for (int i = 0; i < _level; i++) {
+		levelUp();
+	}
+	//addXp(xpForLevel(_level));
 }
 void NPC::setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp) {
 	healthScale = _health;
@@ -255,6 +268,9 @@ void NPC::addSpecialAttack(Attack* attack) {
 void NPC::setEscapable(bool _escapable) {
 	escapable = _escapable;
 }
+void NPC::setLevelUp(bool _leveledUp) {
+	leveledUp = _leveledUp;
+}
 void NPC::calculateWeights() {
 	int maxWeight = 90;
 	int totalSpCost = 0;
@@ -271,8 +287,16 @@ void NPC::alterSp(int amount) {
 void NPC::defeat() {
 	if (exitBlocking != NULL) {
 		currentRoom->unblockExit(exitBlocking);
+		exitBlocking = NULL;
 	}
+	defeated = true;
 	//set recruitable some other thing
+}
+void NPC::undefeat() {
+	defeated = false;
+}
+void NPC::addSuffix(const char suffix[3]) {
+	strcat(name, suffix);
 }
 NPC::~NPC() {
 

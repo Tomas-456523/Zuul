@@ -4,7 +4,6 @@
 #include <cstring>
 #include "NPC.h"
 
-
 class NPC;
 
 struct Effect {

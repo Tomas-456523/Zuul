@@ -27,12 +27,14 @@ public:
 
 	char* getDescription();
 	vector<Item*> getItems();
+	vector<Item*> getStock();
 	vector<NPC*> getNpcs();
 	Room* getExit(char* direction);
 	bool getBlocked(char* direction);
 
 	void printExits();
 	void printItems();
+	void printStock();
 	void printNPCs();
 	void printWelcome();
 	void printBlocks();
@@ -45,9 +47,13 @@ public:
 	void setExit(char* direction, Room* room);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
 	void setWelcome(const char _welcome[255], const char _title[255], const char _description[255]); //set a welcome to an area
+	void setStock(Item* item, int stock, int price, const char buydesc[255] = "");
+	void removeStock(Item* item);
 
 	void blockExit(char* direction, char* blocktype, const char reason[255]);
 	void unblockExit(char* direction);
+
+	void undefeatEnemies();
 private:
 	char description[255];
 	char welcomeMessage[255];
@@ -57,6 +63,7 @@ private:
 	bool welcome = false; //if this room has a welcome message for an area
 
 	vector<Item*> items;
+	vector<Item*> stock;
 	vector<NPC*> npcs;
 	//input direction pointer and returns the room that is in that direction
 	map<char*, Room*, charComparer> exits;
