@@ -44,9 +44,9 @@ public:
 	void setNPC(NPC* npc);
 	void removeNPC(NPC* npc);
 	void removeItem(Item* item);
-	void setExit(char* direction, Room* room);
+	void setExit(char* direction, Room* room, char* blocktype = NULL, char* _reason = NULL);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
-	void setWelcome(const char _welcome[255], const char _title[255], const char _description[255]); //set a welcome to an area
+	void setWelcome(const char text[255]); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char buydesc[255] = "");
 	void removeStock(Item* item);
 
@@ -56,9 +56,8 @@ public:
 	void undefeatEnemies();
 private:
 	char description[255];
-	char welcomeMessage[255];
-	char welcomeTitle[255];
-	char welcomeDescription[255];
+	
+	vector<const char*> welcomeText;
 
 	bool welcome = false; //if this room has a welcome message for an area
 

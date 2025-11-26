@@ -4,7 +4,6 @@
 #define ITEM
 
 //ITEM TYPES WE WILL NEED:
-//Key / Weapon
 //Movement / Weapon
 //Info
 //FISHING ROD OH NO
@@ -60,7 +59,7 @@ protected:
 	Room* room;
 };
 
-class XpItem : Item {
+class XpItem : public Item {
 public:
 	XpItem();
 	virtual ~XpItem();
@@ -70,7 +69,7 @@ private:
 	int xp;
 };
 
-class SpItem : Item {
+class SpItem : public Item {
 public:
 	SpItem();
 	virtual ~SpItem();
@@ -80,7 +79,7 @@ private:
 	int sp;
 };
 
-class HpItem : Item {
+class HpItem : public Item {
 public:
 	HpItem(const char _name[255], const char _description[255], Room* _room, int _hp);
 	virtual ~HpItem();
@@ -93,13 +92,13 @@ private:
 };
 
 //this should be very rare and non-renewable
-class ReviveItem : Item {
+class ReviveItem : public Item {
 public:
 	ReviveItem();
 	virtual ~ReviveItem();
 };
 
-class MonyItem : Item {
+class MonyItem : public Item {
 public:
 	MonyItem();
 	virtual ~MonyItem();
@@ -109,7 +108,7 @@ private:
 	int mony;
 };
 
-class EffectItem : Item {
+class EffectItem : public Item {
 public:
 	EffectItem();
 	virtual ~EffectItem();
@@ -119,25 +118,29 @@ private:
 	Effect* effect;
 };
 
-class MaterialItem : Item {
+class MaterialItem : public Item {
 public:
 	MaterialItem(const char _name[255], const char _description[255], Room* _room);
 	virtual ~MaterialItem();
 };
 
-class BURGERItem : Item {
+class BURGERItem : public Item {
 public:
 	BURGERItem();
 	virtual ~BURGERItem();
+
+	virtual Item* Duplicate() override;
 };
 
-class EducationItem : Item {
+class EducationItem : public Item {
 public:
-	EducationItem();
+	EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack);
 	virtual ~EducationItem();
 
-	void setAttack(Attack* attack);
+	void setAttack(Attack* attack); //set extra attacks
 	vector<Attack*> getAttacks();
+
+	virtual Item* Duplicate() override;
 private:
 	vector<Attack*> attacks;
 };
@@ -148,7 +151,7 @@ private:
 //toll items set station bool to true
 //toll items unlock locked exits and immediately block them again lol
 //tent station is unlocked always
-class CallerItem : Item {
+class CallerItem : public Item {
 public:
 	CallerItem(NPC* npc);
 	virtual ~CallerItem();
@@ -158,18 +161,21 @@ private:
 	NPC* npc_called; //the guy you're calling
 };
 
-class TollItem : Item {
+class TollItem : public Item {
 public:
 	TollItem();
 	virtual ~TollItem();
 };
 
-class KeyItem : Item {
+class KeyItem : public Item {
 public:
-	KeyItem(char* _unlockType, Attack* _attack = NULL);
+	KeyItem(const char _name[255], const char _description[255], Room* _room, char* _unlockType, Attack* _attack = NULL);
 	virtual ~KeyItem();
 
 	Room* getTarget();
+	void setTarget(Room* target);
+
+	virtual Item* Duplicate() override;
 private:
 	char* unlockType;
 	Attack* attack;
@@ -178,9 +184,9 @@ private:
 };
 
 //paves a new path
-class PaverItem : Item {
+class PaverItem : public Item {
 public:
-	PaverItem(Room* _usableRoom, char* _direction, Room* _destination);
+	PaverItem(const char _name[255], const char _description[255], Room* _room, Room* _usableRoom, char* _direction, Room* _destination);
 	virtual ~PaverItem();
 
 	Room* getRoom(); //gets the room that it's usable in
@@ -189,5 +195,15 @@ private:
 	Room* usableRoom; //the room it's usable in
 	char* direction; //the direction that it creates the new exit in
 	Room* destination; //the room that the new exit leads to
+};
+
+class InfoItem : public Item {
+public:
+	InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room, Room* _usableRoom);
+	virtual ~InfoItem();
+
+	char* getText();
+private:
+	char text[255];
 };
 #endif

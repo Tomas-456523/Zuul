@@ -136,12 +136,16 @@ void Room::printWelcome() {
 	if (!welcome) {
 		return;
 	}
-	cout << "\nWelcome to " << welcomeMessage << "!";
+	for (const char* text : welcomeText) {
+		cout << text;
+		CinPause();
+	}
+	/*cout << "\nWelcome to " << welcomeMessage << "!";
 	CinPause();
 	cout << "<<< " << welcomeTitle << " >>>";
 	CinPause();
 	cout << welcomeDescription;
-	CinPause();
+	CinPause();*/
 	welcome = false; //we only do the welcome once
 }
 void Room::setItem(Item* item) {
@@ -156,16 +160,21 @@ void Room::removeNPC(NPC* npc) {
 void Room::removeItem(Item* item) {
 	items.erase(remove(items.begin(), items.end(), item), items.end());
 }
-void Room::setExit(char* direction, Room* room) {
+//do we ever use the last two arguments? remove if no
+void Room::setExit(char* direction, Room* room, char* blocktype, char* _reason) {
 	exits[direction] = room;
+	if (blocktype != NULL) {
+		blockExit(direction, blocktype, _reason);
+	}
 }
 void Room::setDescription(const char _description[255]) {
 	strcpy(description, _description);
 }
-void Room::setWelcome(const char _welcome[255], const char _title[255], const char _description[255]) {
-	strcpy(welcomeMessage, _welcome);
+void Room::setWelcome(const char text[255]) {
+	welcomeText.push_back(text);
+	/*strcpy(welcomeMessage, _welcome);
 	strcpy(welcomeTitle, _title);
-	strcpy(welcomeDescription, _description);
+	strcpy(welcomeDescription, _description);*/
 	welcome = true;
 }
 void Room::setStock(Item* item, int amount, int price, const char buydesc[255]) {
@@ -176,7 +185,7 @@ void Room::removeStock(Item* item) {
 	delete item;
 	stock.erase(remove(stock.begin(), stock.end(), item), stock.end());
 }
-void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) {
+void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) {  
 	blockedExits.push_back(direction);
 	blockType[direction] = blocktype; //do we even need this?
 	char* reason = new char[255];

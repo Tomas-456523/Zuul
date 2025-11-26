@@ -174,6 +174,7 @@ queue<NPC*> Battle::reorder() {
 	}
 	return orderly_fashion;
 }
+//i should slightly randomly alter attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost);
 	//also add effects
@@ -183,33 +184,35 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	CinPause();
 }
 //interpret and carry out player attacks, and return whether we successfully launched an attack
-//this function's code is yucky garbage I need to fix it
-//also you can punch NULL targets, fix that (eg. try "PUNCH [NONEXISTENT NPC]")
-bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble) {
-	NPC* target = getNPCInVector(enemyTeam, commandExtensionP);
-	if (target == NULL && !checkDouble) {
-		return false;
-	}
-	if (!strcmp(commandWordP, player->getBasicAttack()->name)) {
-		carryOutAttack(player->getBasicAttack(), plr, target);
-		return true;
-	} else {
-		for (Attack* attack : player->getSpecialAttacks()) {
-			if (attack->minLevel <= player->getLevel() && !strcmp(commandWordP, attack->name)) {
+bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax) {
+	for (int i = 0; i <= checkMax; i++) {
+		if (i > 0) { //if it's the first one, we've already parsed it the same, no need to parse
+			ParseCommand(commandP, commandWordP, commandExtensionP, i);
+		}
+
+		NPC* target = getNPCInVector(enemyTeam, commandExtensionP);
+
+		if (target == NULL) {
+			if (i == checkMax) {
+				cout << "\nInvalid target \"" << commandExtensionP << "\".";
+				return false;
+			}
+			continue;
+		}
+		if (!strcmp(commandWordP, plr->getBasicAttack()->name)) {
+			carryOutAttack(plr->getBasicAttack(), plr, target);
+			return true;
+		}
+		for (Attack* attack : plr->getSpecialAttacks()) {
+			if (attack->minLevel <= plr->getLevel() && !strcmp(commandWordP, attack->name)) {
 				carryOutAttack(attack, plr, target);
 				return true;
 			}
 		}
 	}
-	if (!checkDouble) {
-		cout << "\nInvalid command or attack \"" << commandWordP << "\" (type HELP for help, or ATTACKS for list of attacks).";
-		return false;
-	//if no enemy was found at all, check for double word attacks
-	} else if (true) {
-		//clear commandWordP & commandExtensionP?
-		ParseCommand(commandP, commandWordP, commandExtensionP, 1);
-		return ParseAttack(plr, commandP, commandWordP, commandExtensionP, false);
-	}
+	
+	cout << "\nInvalid command or attack \"" << commandWordP << "\" (type HELP for help, or ATTACKS for list of attacks).";
+	return false;
 }
 bool Battle::playerTurn(NPC* plr) {
 	bool continuing = true;

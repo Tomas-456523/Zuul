@@ -12,7 +12,8 @@
 #define NPC_H
 
 #include <vector>
-#include <stack>
+#include <queue>
+#include <utility>
 #include <map>
 #include "Room.h"
 #include "Attack.h"
@@ -33,6 +34,7 @@ public: //you need to set stats on creation
 	char* getDialogue(); //gets the current dialogue
 	char* getRejectionDialogue(); //gets the rejection dialogue for the npc
 	char* getRecruitmentDialogue(); //gets the recruitment dialogue for the npc
+	char* getRecruitedDialogue();
 	char* getDismissalDialogue(); //gets the dismissal dialogue for the npc
 	char* getBattleCry(); //gets a random battle cry
 	char* getAttackDescription(); //gets the description of the npc's attack
@@ -69,6 +71,7 @@ public: //you need to set stats on creation
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
 	void setRecruitmentDialogue(const char _dialogue[255]); //sets the recruitment dialogue for the npc
+	void setRecruitedDialogue(const char _dialogue[255]); //sets the recruited dialogue for the npc
 	void setDismissalDialogue(const char _dialogue[255]); //sets the dismissal dialogue for the npc
 	void addBattleCry(); //adds a random battle cry to the npc
 	void setAttackDescription(); //sets the description of the attack
@@ -95,6 +98,9 @@ public: //you need to set stats on creation
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char suffix[3]);
 
+	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false);
+	void printDialogue();
+
 	void defeat();
 	void undefeat();
 protected:
@@ -114,16 +120,15 @@ protected:
 	vector<Effect> effects;
 	map<Attack*, int> attackWeight;
 
-	//dialogue that the npc says when asked
-	char dialogue[255];
-	char recruitedDialogue[255]; //dialogue that the npc says while recruited
-	char rejectionDialogue[255];
-	char recruitmentDialogue[255];
-	char dismissalDialogue[255];
+	queue<vector<pair<NPC*,const char*>>> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
+
+	char dialogue[255]; //dialogue that the npc says when asked, and no conversations are left
+	char recruitedDialogue[255]; //dialogue that the npc says while currently recruited
+	char rejectionDialogue[255]; //dialogue that the npc says when rejecting recruitment offer
+	char recruitmentDialogue[255]; //dialogue that the npc says when recruited
+	char dismissalDialogue[255]; //dialogue that the npc says when dismissed
 	//the npcs say a random one of these phrases when attacking
 	char battleCry[255];
-
-	char attackDescription[255]; //describes how the npc is attacking (eg. shot a laser at)
 
 	bool recruitable = false;
 	bool recruited = false;

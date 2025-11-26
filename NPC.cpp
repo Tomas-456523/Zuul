@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <random>
 #include <cmath>
+#include <iostream>
+#include <utility>
 #include "NPC.h"
 #include "Helper.h"
 //#include "Fighter.h"
@@ -53,6 +55,9 @@ char* NPC::getRejectionDialogue() {
 	return rejectionDialogue;
 }
 char* NPC::getRecruitmentDialogue() {
+	return recruitmentDialogue;
+}
+char* NPC::getRecruitedDialogue() {
 	return recruitmentDialogue;
 }
 char* NPC::getDismissalDialogue() {
@@ -154,13 +159,13 @@ void NPC::setRejectionDialogue(const char _dialogue[255]) {
 void NPC::setRecruitmentDialogue(const char _dialogue[255]) {
 	strcpy(recruitmentDialogue, _dialogue);
 }
+void NPC::setRecruitedDialogue(const char _dialogue[255]) {
+	strcpy(recruitedDialogue, _dialogue);
+}
 void NPC::setDismissalDialogue(const char _dialogue[255]) {
 	strcpy(dismissalDialogue, _dialogue);
 }
 void NPC::addBattleCry() {
-
-}
-void NPC::setAttackDescription() {
 
 }
 void NPC::setRecruitable(bool _recruitable) {
@@ -297,6 +302,29 @@ void NPC::undefeat() {
 }
 void NPC::addSuffix(const char suffix[3]) {
 	strcat(name, suffix);
+}
+void NPC::addConversation(NPC* speaker, const char dialogue[255], bool newConversation) {
+	if (newConversation || !conversations.size()) {
+		conversations.emplace();
+	}
+	conversations.back().emplace_back(speaker, dialogue);
+}
+void NPC::printDialogue() {
+	if (recruited) {
+		cout << "\n" << name << " - \"" << recruitedDialogue << "\"";
+	} else if (conversations.size() > 0) {
+		cout << "\n";
+		vector<pair<NPC*, const char*>>& convo = conversations.front();
+		for (int i = 0; i < convo.size(); i++) {
+			cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
+			if (i+1 < convo.size()) {
+				CinPause();
+			}
+		}
+		conversations.pop();
+	} else {
+		cout << "\n" << name << " - \"" << dialogue << "\"";
+	}
 }
 NPC::~NPC() {
 

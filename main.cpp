@@ -55,7 +55,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* NORTHEAST = new char[12];
 	char* SOUTHWEST = new char[12];
 	char* SOUTHEAST = new char[12];
-	//unique directions
+	char* UP = new char[12];
+	char* DOWN = new char[12];
 	char* OUT = new char[12];
 	char* IN_TENT_1 = new char[12];
 	char* IN_TENT_2 = new char[12];
@@ -73,6 +74,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(NORTHEAST, "NORTHEAST");
 	strcpy(SOUTHWEST, "SOUTHWEST");
 	strcpy(SOUTHEAST, "SOUTHEAST");
+	strcpy(UP, "UP");
+	strcpy(DOWN, "DOWN");
 	strcpy(OUT, "OUT");
 	strcpy(IN_TENT_1, "IN TENT 1");
 	strcpy(IN_TENT_2, "IN TENT 2");
@@ -86,18 +89,24 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* CHASM = new char[12];
 	char* RIVER = new char[12];
 	char* TEMPLE = new char[12];
+	char* RUBBLE = new char[12];
+	char* TUNNEL = new char[12];
+	char* LOCK = new char[12];
 	
 	//set up blockage reason text
 	strcpy(ENEMY, "ENEMY");
 	strcpy(CHASM, "CHASM");
 	strcpy(RIVER, "RIVER");
 	strcpy(TEMPLE, "TEMPLE");
+	strcpy(RUBBLE, "RUBBLE");
+	strcpy(TUNNEL, "TUNNEL");
+	strcpy(LOCK, "LOCK");
 
 	//I send all the template enemy NPCs and also shop items, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//for copy paste DELETE THIS LATER PLEASE: Room* village = new Room("");
-	//create all WANING WOODLANDS rooms
+	//create all WANING WOODLANDS rooms MARK: woodlands
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* villageleft = new Room("at the westernmost end of the village, where the tallest tent stands. It's only two stories, but it's comparatively a tent mansion.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
@@ -113,7 +122,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
 	Room* forest = new Room("deep in the woodlands. Smells like pine trees along the way.");
-	forest->setWelcome("Welcome to WANING WOODLANDS!", "<<< THE FINAL FOREST >>>", "The slowly decaying corner of the world, vaguely reminiscent of the times before evil.");
+	forest->setWelcome("Welcome to WANING WOODLANDS!");
+	forest->setWelcome("<<< THE FINAL FOREST >>>");
+	forest->setWelcome("The slowly decaying corner of the world, where you have lived your whole life.");
+	forest->setWelcome("But now, your BURGER QUEST begins!");
 	
 	Room* forestleft = new Room("walking down the left path of the woodlands. It feels like a deer is watching you.");
 	Room* forestright = new Room("walking down the right path of the woodlands. It feels like a ninja is watching you.");
@@ -121,26 +133,26 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather."); //talk to the deer to get the key
 	Room* ninjaland = new Room("underneath the ninja village. It's probably supposed to be hidden but you looked up and there it was.");
 	//make sure the desc gets updated after plot device quest
-	Room* fortementrance = new Room("in the glade where the ancient forest temple stands. No matter what anyone has tried, nobody has ever made it in.");
-	Room* foreststairs = new Room("on the steps that go into the ancient forest temple.");
+	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands. No matter what anyone has tried, nobody has ever made it in.");
+	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
 	Room* foresttemple = new Room("in the temple of [SOMETHING]. [SOMETHING SOMETHING].");
 
 	Room* flowerfield = new Room("in the aromatic flower fields. Your sister likes hanging out here.");
 	Room* flowerfield2 = new Room("deep in the flower fields. A really nice river flows over here.");
-	//fix this
-	flowerfield2->setWelcome("FLORIA - Hey! Aren't these flowers just so lovely?","[main character] - NO THESE FLOWERS SUCK THEY TRIED TO EAT ME.","");
 
-	Room* forcrossroad = new Room("at another fork in the road. I hope we don't come across a spoon in the road.");
-	Item* fork = new Item("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n - Oxford Languages", forcrossroad);
+	Room* forestfork = new Room("at another fork in the road. I hope we don't come across a spoon in the road.");
+	Item* fork = new Item("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork);
 
-	Room* garden = new Room("a strange section of the forest. All the trees have been neatly trimmed and organized to an unnatural extent.");
+	Room* forestgarden = new Room("a strange section of the forest. All the trees have been neatly trimmed and organized to an unnatural extent.");
 
 	Room* forestgate = new Room("at the border between the woodlands and the rest of the world, seperated by a huge wall. It was meant to keep evil at bay, but it didn't really work.");
+	Room* forestwall = new Room("walking along the southern side of the wooded wall. It's very misty here.");
 	Room* forestgrave = new Room("in a sparse wooden graveyard.");
 
-	Room* outsidegate = new Room("at a spork in the road, but no sporks are to be seen anywhere.");
+	Room* forestspork = new Room("at a spork in the road, but no sporks are to be seen anywhere.");
 
-	Room* treasuretree = new Room("in the treasure grove, where the grass is golden and treasure chests sometimes appear.");
+	Room* forestnice = new Room("at a really nice looking area of the forest. The lighting is very cool.");
+	Room* treasuregrove = new Room("in the treasure grove, where the grass is golden and treasure chests sometimes appear.");
 	Room* treasurecliff = new Room("in the treasure cliff at the edge of the desert, where there is actualy treasure.");
 
 	Room* bossgrove = new Room("in the BOSS GROVE, where the boss of WANING WOODLANDS is known to appear.");
@@ -149,11 +161,16 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* fdintermission2 = new Room("on the path between the woodlands and the wastelands. The foliage is sparse here. BURGERSBURG can be seen faintly in the distance.");
 	Room* fdintermission3 = new Room("on the path between the woodlands and the wastelands. Dead trees surround you. The BURGER RESTAURANT is just barely visible from here.");
 
+	//MARK: desert
 	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you!).");
-	desert->setWelcome("Welcome to DESOLATE DESERT", "<<< THE WASTELANDS BEYOND >>>", "The world beyond your forest, where life has been sucked out of the dirt. Surely there must be someone around here?");
-
-	//NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.");
-
+	desert->setWelcome("Welcome to DESOLATE DESERT");
+	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
+	desert->setWelcome("The world beyond your forest, where the life has been sucked out of the dirt.");
+	desert->setWelcome("Surely there must be someone around here?");
+	
+	//Room* 
+	
+	//MARK: set up NPCs
 	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	////////////////////////
 	//DELETE THIS ATTACK, ONLY FOR TESTING
@@ -178,9 +195,17 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	self->addSpecialAttack(finishhim);
 	self->addSpecialAttack(precisionstrike);
 
+	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 0, 0, 0, 0, 0, 0, 0);
+	floria->addConversation(floria, "Hey big brother! Aren't these flowers just so lovely?");
+	floria->addConversation(self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME.");
+	floria->setDialogue("I just love flowers!");
+	floria->setRecruitmentDialogue("Yay! I hope we see some new flowers!");
+	floria->setRecruitedDialogue("I must see all the flowers!");
+	floria->setDismissalDialogue("I'm going to go back to my flower field!");
+
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
-	archie->setDialogue("So you are going on a BURGER QUEST too, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
-	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village, for my recruitable variable is set to false.");
+	archie->setDialogue("So you are going on a BURGER QUEST, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
+	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
 
 	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating BURGERs");
 
@@ -188,6 +213,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	egadwick->setDialogue("Ah hello kiddo.[][][][][][][]");
 	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you can destroy it I could probably go.");
 	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
+	egadwick->setRecruitedDialogue("science");
 
 	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
@@ -199,11 +225,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	graham->setRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
-	//NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5);
+	NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5, 1);
 
-	NPC* burgerheretic = new NPC("BURGER HERETIC", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
-	burgerheretic->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
-	burgerheretic->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
+	NPC* antiburgerguy = new NPC("I REALIZED I SHOULD CHANGE THIS TITLE TO SOMETHING MORE CLEAR", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
+	antiburgerguy->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
+	antiburgerguy->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
 	//it's a me
 	Room* tenthome = new Room("in the developer's house.");
@@ -216,34 +242,97 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 
 	//tent store stock
-	Item* ibuprofen = new Item("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
+	Item* ibuprofen = new HpItem("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
 	tentstore->setStock(ibuprofen, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage!");
 
-	//set up room exits
+	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", limbo, 15000, 15000, 15000, 15000, 0, 2000, 25000);
+	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
+	wallelder->addConversation(self, "Indeed I am."); //what if the player has already started plot device quest? they probably haven't tho
+	wallelder->addConversation(wallelder, "Do not be fooled by the allure of BURGER. Do you not know why you crave it so?");
+	wallelder->addConversation(wallelder, "BURGER is formed from the essence of evil. Have you seen the desert above?");
+	wallelder->addConversation(self, "Uh huh.");
+	wallelder->addConversation(wallelder, "It used to be a beautiful forest, full of life like the one to the south.");
+	wallelder->addConversation(wallelder, "But the BURGER MAN parched the woods and reduced it to the wastes seen today, and he will continue to do so until nature has been expunged from this world.");
+	wallelder->addConversation(wallelder, "For by destroying the means to live, he guides the people by hunger and thirst to his city, where they will be more easily tempted by the BURGER RESTAURANT.");
+	wallelder->addConversation(self, "Dang that's crazy.");
+	wallelder->addConversation(wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below.");
+	wallelder->setDialogue("Always beware the temptation of BURGER.");
+	wallelder->setRejectionDialogue("I embedded myself in this heavy rock ages ago so that temptation could not possibly drag me to the BURGER RESTAURANT. I cannot move nor join you.");
+
+	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success since you're not a ninja.", 0, 7, 5, 0, 2, 3);
+	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
+	
+	//MARK: set up room exits
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forestentrance);
 	village->setExit(WEST, villageleft);
 	village->setExit(IN_TENT_1, tentstore);
 	village->setExit(IN_TENT_2, tentstation);
 	village->setExit(IN_TENT_3, tentchurch);
-
 	villageleft->setExit(EAST, village);
 	villageleft->setExit(IN_TENT, tentmansion);
-
 	tentmansion->setExit(OUT, villageleft);
 	tentmansion->setExit(UPSTAIRS, tentlab);
 	tentlab->setExit(DOWNSTAIRS, tentmansion);
-	
 	tentstore->setExit(OUT, village);
 	tentstation->setExit(OUT, village);
+	tentstation->setExit(WEST, limbo);
+	tentstation->setExit(EAST, limbo);
 	tentchurch->setExit(OUT, village);
 	docks->setExit(NORTH, village);
-
 	forestentrance->setExit(WEST, village);
 	forestentrance->setExit(NORTH, forest);
 	forest->setExit(SOUTH, forestentrance);
+	forest->setExit(NORTHWEST, forestleft);
+	forest->setExit(NORTHEAST, forestright);
+	forestleft->setExit(WEST, deerclearing);
+	forestleft->setExit(NORTHEAST, foresttempleentrance);
+	forestleft->setExit(SOUTHEAST, forest);
+	deerclearing->setExit(EAST, forestleft);
+	forestright->setExit(NORTHEAST, ninjaland);
+	forestright->setExit(NORTHWEST, foresttempleentrance);
+	forestright->setExit(SOUTHWEST, forest);
+	ninjaland->setExit(SOUTHWEST, forestright);
+	ninjaland->setExit(UP, limbo); //ninjas do not live in limbo but I didn't want to create a room you can't even reach
+	foresttempleentrance->setExit(SOUTHWEST, forestleft);
+	foresttempleentrance->setExit(SOUTHEAST, forestright);
+	foresttempleentrance->setExit(NORTHWEST, flowerfield);
+	foresttempleentrance->setExit(NORTH, forestfork);
+	foresttempleentrance->setExit(SOUTH, foresttemplestairs);
+	flowerfield->setExit(WEST, flowerfield2);
+	flowerfield->setExit(SOUTHEAST, foresttempleentrance);
+	flowerfield2->setExit(EAST, flowerfield);
+	forestfork->setExit(NORTHWEST, forestgarden);
+	forestfork->setExit(NORTHEAST, forestgate);
+	forestfork->setExit(SOUTH, foresttempleentrance);
+	forestgarden->setExit(SOUTHEAST, forestfork);
+	forestgate->setExit(EAST, forestwall);
+	forestgate->setExit(SOUTHWEST, forestfork);
+	forestgate->setExit(NORTH, forestspork);
+	forestwall->setExit(EAST, forestgrave);
+	forestwall->setExit(WEST, forestgate);
+	forestgrave->setExit(WEST, forestwall);
+	forestspork->setExit(SOUTH, forestgate);
+	forestspork->setExit(NORTHWEST, bossgrove);
+	forestspork->setExit(NORTHEAST, forestnice);
+	forestnice->setExit(SOUTHWEST, forestspork);
+	forestnice->setExit(EAST, treasuregrove);
+	treasuregrove->setExit(WEST, forestnice);
+	treasuregrove->setExit(NORTH, treasurecliff);
+	treasurecliff->setExit(SOUTH, treasuregrove);
+	bossgrove->setExit(SOUTHEAST, forestspork);
+	bossgrove->setExit(NORTH, fdintermission1);
+	fdintermission1->setExit(NORTH, fdintermission2);
+	fdintermission1->setExit(SOUTH, bossgrove);
+	fdintermission2->setExit(NORTH, fdintermission3);
+	fdintermission2->setExit(SOUTH, fdintermission1);
+	fdintermission3->setExit(NORTH, desert);
+	fdintermission3->setExit(SOUTH, fdintermission2);
+	desert->setExit(SOUTH, fdintermission3);
 
 	Room* tunnel = new Room("in the tunnels that span the continent.");
+
+	//MARK: set up enemies
 
 	NPC* tunnel_lobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnel, 200, 20, 10, 20, 10, 50, 10, 30, true);
 	//you should also get a prompt to name it like
@@ -273,8 +362,19 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	greater_hog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 16, 0, 5, 0, 2, 5, 5);
-	Attack* grassslap = new Attack("GRASSSLAP", "grassily slapped", 0, 3, 0, 1, 1, 1);
-	grassman->setBasicAttack(grassslap);
+	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", 0, 3, 0, 1, 1, 1);
+	grassman->setBasicAttack(grassstrike);
+
+	NPC* jimshady = new NPC("", "JIM SHADY", "This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
+	Attack* shirmplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 99999, 99999, 1, 1, 1);
+	jimshady->setBasicAttack(shirmplebeam);
+
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
+	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
+	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", 10, 10, 5, 1, 1, 1, 0.5f);
+
+	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
+	//NPC* npc = new NPC("TITLE", "NAME", "DESCRIPTION", limbo, hp, def, att, tou, pie, spe, ski);
 
 	//for npcs you can actually fight, make sure to set their level as 0 at construction, then set the level manually after setting the scale, otherwise stats will be off
 
@@ -285,23 +385,14 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	forestguard->setRejectionDialogue("(angry bush noises)");
 	//forestguard->setParty(grassman, grassman, grassman, prickly_hog);
 
-	//forestentrance->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
+	//MARK: block exits
+	tentstation->blockExit(EAST, TUNNEL, "blocked by a");
+	forestgate->blockExit(NORTH, LOCK, "sealed shut. There is a large keyhole you may be able to unlock it with.");
+	treasuregrove->blockExit(NORTH, CHASM, "blocked by a large chasm.");
+	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a large chasm.");
+
+	//exits blocked by enemies
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
-
-	/*Fighter savage_hog = Fighter("SAVAGE HOG", "A towering hog elder with sharp prickles.", 10, 10, 5, 0, 20, 15);
-
-
-	Fighter disease_amalgamate = Fighter("DISEASE AMALGAMATION", "A writhing mass of disease.", 500, 0, 80, 0, 999, 20);
-
-	Fighter jim_shady = Fighter("JIM SHADY", "This Jim Shady is just imitating.", 50, 10, 99999, 10, 99999, 0);
-	Fighter slim_jim = Fighter("SLIM JIM", "A Jim obsessed with athleticism and velocity.", 150, 0, 99999, 0, 99999, 99999); 
-	//this guy should appear in groups
-	Fighter jimmy = Fighter("JIMMY SHIMMY", "A small but deadly Jim.", 1, 0, 9999, 0, 9999, 40);
-	Fighter jim = Fighter("THE REAL", "JIM SHADY", "He's Jim Shady. The REAL Jim Shady.", 1000, 200, 999999, 400, 999999, 99999);*/
-
-	//ENEMIES BLOCK EXITS, AND THEY RESPAWN AFTER YOU LEAVE THE ROOM, HOWEVER THE EXIT THEY WERE BLOCKING WILL NO LONGER BE BLOCKED
-	//YOU COULD USE THIS MECHANIC BY SAYING HOW YOU GO IN A ROOM BUT THEN AN ENEMY IS BLOCKING THE WAY BACK LIKE THEY WERE CORNERING YOU OR SOMETHING
-	//add a small random value to speed and attack each turn
 
 	return self; //returns the player character
 }
@@ -427,7 +518,7 @@ void printNPCDialogue(Room* currentRoom, char* npcname) {
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
 	}
-	cout << "\n" << npcname << " - \"" << npc->getDialogue() << "\"";
+	npc->printDialogue();
 }
 
 void printInventory(vector<Item*>* inventory, int monies) {

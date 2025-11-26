@@ -32,6 +32,10 @@ namespace Helper {
 			i++;
 		}
 		commandWordP[i] = '\0';
+		if (commandP[i] == '\0') {
+			strcpy(commandExtensionP,"");
+			return;
+		}
 		i++;
 		int j = i;
 		while (commandP[i] != '\0') {

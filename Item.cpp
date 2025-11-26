@@ -21,6 +21,9 @@ char* Item::getName() {
 char* Item::getDescription() {
 	return description;
 }
+char* Item::getType() {
+	return type;
+}
 bool Item::getTakable() {
 	return takable;
 }
@@ -98,5 +101,22 @@ MaterialItem::MaterialItem(const char _name[255], const char _description[255], 
 	strcpy(type, "material");
 }
 MaterialItem::~MaterialItem() {
+
+}
+
+EducationItem::EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack) : Item(_name, _description, _room, true) {
+	attacks.push_back(_attack);
+	strcpy(type, "education");
+}
+void EducationItem::setAttack(Attack* attack) {
+	attacks.push_back(attack);
+}
+vector<Attack*> EducationItem::getAttacks() {
+	return attacks;
+}
+Item* EducationItem::Duplicate() {
+	return new EducationItem(*this);
+}
+EducationItem::~EducationItem() {
 
 }

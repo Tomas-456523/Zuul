@@ -28,7 +28,7 @@ public:
 	void printHelp();
 	bool runAway();
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target);
-	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, bool checkDouble = true);
+	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 1);
 	bool playerTurn(NPC* plr);
 	void npcTurn(NPC* npc);
 
