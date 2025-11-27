@@ -5,8 +5,8 @@
 
 //ITEM TYPES WE WILL NEED:
 //Movement / Weapon
-//Info
 //FISHING ROD OH NO
+//npc item (becomes npc, cactus)
 //treasure chest (can be trapped or not)
 
 #include <vector>
@@ -30,6 +30,7 @@ public:
 	char* getBuyDescription();
 	int getPrice();
 	int getStock();
+	bool getTargetNeeded();
 	
 	void buy(int& mony, vector<Item*>* inventory);
 	void setDenial(const char denial[255]);
@@ -58,7 +59,7 @@ protected:
 
 	Room* room;
 };
-
+//MARK:xp
 class XpItem : public Item {
 public:
 	XpItem();
@@ -68,7 +69,7 @@ public:
 private:
 	int xp;
 };
-
+//MARK:sp
 class SpItem : public Item {
 public:
 	SpItem();
@@ -78,7 +79,7 @@ public:
 private:
 	int sp;
 };
-
+//MARK: hp
 class HpItem : public Item {
 public:
 	HpItem(const char _name[255], const char _description[255], Room* _room, int _hp);
@@ -90,14 +91,14 @@ public:
 private:
 	int hp;
 };
-
+//MARK: revuve
 //this should be very rare and non-renewable
 class ReviveItem : public Item {
 public:
 	ReviveItem();
 	virtual ~ReviveItem();
 };
-
+//MARK: mony
 class MonyItem : public Item {
 public:
 	MonyItem();
@@ -107,7 +108,7 @@ public:
 private:
 	int mony;
 };
-
+//MARK: effect
 class EffectItem : public Item {
 public:
 	EffectItem();
@@ -117,13 +118,13 @@ public:
 private:
 	Effect* effect;
 };
-
+//MARK: material
 class MaterialItem : public Item {
 public:
 	MaterialItem(const char _name[255], const char _description[255], Room* _room);
 	virtual ~MaterialItem();
 };
-
+//MARK: BURGER
 class BURGERItem : public Item {
 public:
 	BURGERItem();
@@ -131,7 +132,7 @@ public:
 
 	virtual Item* Duplicate() override;
 };
-
+//MARK: education
 class EducationItem : public Item {
 public:
 	EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack);
@@ -145,6 +146,7 @@ private:
 	vector<Attack*> attacks;
 };
 
+//MARK: caller
 //you can buy caller from desert town
 //you can use caller in any station (rooms should have station bool)
 //caller summons lobster whether tamed or not
@@ -160,19 +162,23 @@ public:
 private:
 	NPC* npc_called; //the guy you're calling
 };
-
+//MARK: toll
 class TollItem : public Item {
 public:
 	TollItem();
 	virtual ~TollItem();
 };
-
+//MARK: key
 class KeyItem : public Item {
 public:
-	KeyItem(const char _name[255], const char _description[255], Room* _room, char* _unlockType, Attack* _attack = NULL);
+	KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, Attack* _attack = NULL);
 	virtual ~KeyItem();
 
 	Room* getTarget();
+	Attack* getAttack();
+	char* getUnlockType();
+	char* getUseText();
+
 	void setTarget(Room* target);
 
 	virtual Item* Duplicate() override;
@@ -181,9 +187,10 @@ private:
 	Attack* attack;
 
 	Room* targetRoom = NULL; //keys can be targeted keys, so no matter where you are, using them will remotely unblock the exit
+	char useText[255];
 };
 
-//paves a new path
+//paves a new path MARK: paver
 class PaverItem : public Item {
 public:
 	PaverItem(const char _name[255], const char _description[255], Room* _room, Room* _usableRoom, char* _direction, Room* _destination);
@@ -196,10 +203,10 @@ private:
 	char* direction; //the direction that it creates the new exit in
 	Room* destination; //the room that the new exit leads to
 };
-
+//MARK: info
 class InfoItem : public Item {
 public:
-	InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room, Room* _usableRoom);
+	InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room);
 	virtual ~InfoItem();
 
 	char* getText();

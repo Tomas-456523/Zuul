@@ -86,7 +86,7 @@ public: //you need to set stats on creation
 	void levelUp(bool trackLevelUp = false);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
 	void setHypnotized(bool _hypnotized);
-	int damage(float power, float pierce);
+	int damage(float power, float pierce, int hits = 1);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
@@ -97,6 +97,7 @@ public: //you need to set stats on creation
 	void alterSp(int amount);
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char suffix[3]);
+	void setGuard(int _guard);
 
 	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false);
 	void printDialogue();
@@ -165,6 +166,7 @@ protected:
 	char* exitBlocking; //enemy npcs may block an exit until they are defeated
 
 	bool escapable = true;
+	int guard = 0;
 
 	//int xpReward;
 	//int monyReward;

@@ -240,13 +240,36 @@ void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
 	currentRoom->blockExit(exitBlocking, type, reason);
 }
-int NPC::damage(float power, float pierce) {
+int NPC::damage(float power, float pierce, int hits) {
 	float damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
+	int totalhits = Clamp(hits - guard, 0, 999);
+	guard -= hits;
 	float defenseF = defense;
 	float toughnessF = toughness;
-	int damage = (int)ceil(power * (10.0f/(10.0f + ClampF(defenseF - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessF)),0,defenseF))));
+	int damage = (int)ceil(power * (10.0f/(10.0f + ClampF(defenseF - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessF)),0,defenseF)))) * totalhits;
 	int totalDamage = Clamp(damage,0,health);
-	health -= totalDamage;
+	if (hits > 1) {
+		cout << "\n" << name << " was hit " << hits << " times!";
+	}
+	if (hits < 1) {
+		cout << "\nThe attack missed!";
+	}
+	if (totalhits < hits) {
+		int blocks = hits - totalhits;
+		cout << "\n" << name;
+		if (blocks == 1) {
+			cout << " blocked the attack!";
+		} else {
+			cout << " blocked " << blocks << " hits!";
+		}
+		if (guard <= 0) {
+			cout << "\n" << name << "'s guard was broken!";
+		}
+	}
+	if (totalhits > 0) {
+		health -= totalDamage;
+		cout << "\n" << name << " took " << totalDamage << " damage!\n" << name << " now has " << health << "/" << maxHealth << " HP.";
+	}
 	return totalDamage;
 }
 void NPC::setLevel(int _level) {
@@ -275,6 +298,9 @@ void NPC::setEscapable(bool _escapable) {
 }
 void NPC::setLevelUp(bool _leveledUp) {
 	leveledUp = _leveledUp;
+}
+void NPC::setGuard(int _guard) {
+	guard = _guard;
 }
 void NPC::calculateWeights() {
 	int maxWeight = 90;

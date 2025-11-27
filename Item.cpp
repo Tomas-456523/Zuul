@@ -36,6 +36,9 @@ int Item::getPrice() {
 int Item::getStock() {
 	return stock;
 }
+bool Item::getTargetNeeded() {
+	return targetRequired;
+}
 void Item::setDenial(const char denial[255]) {
 	strcpy(denyDescription, denial);
 }
@@ -85,7 +88,7 @@ Item* Item::Duplicate() {
 Item::~Item() {
 
 }
-
+//MARK: hp
 HpItem::HpItem(const char _name[255], const char _description[255], Room* _room, int _hp) : Item(_name, _description, _room, true, true) {
 	hp = _hp;
 	strcpy(type, "hp");
@@ -96,14 +99,14 @@ Item* HpItem::Duplicate() {
 HpItem::~HpItem() {
 
 }
-
+//MARK: material
 MaterialItem::MaterialItem(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, true) {
 	strcpy(type, "material");
 }
 MaterialItem::~MaterialItem() {
 
 }
-
+//MARK: education
 EducationItem::EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack) : Item(_name, _description, _room, true) {
 	attacks.push_back(_attack);
 	strcpy(type, "education");
@@ -118,5 +121,45 @@ Item* EducationItem::Duplicate() {
 	return new EducationItem(*this);
 }
 EducationItem::~EducationItem() {
+
+}
+//MARK: key
+KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, Attack* _attack) : Item(_name, _description, _room, true, true) {
+	strcpy(unlockType, _unlockType);
+	strcpy(useText, _useText);
+	strcpy(type, "key");
+	attack = _attack;
+}
+Room* KeyItem::getTarget() {
+	return targetRoom;
+}
+Attack* KeyItem::getAttack() {
+	return attack;
+}
+char* KeyItem::getUnlockType() {
+	return unlockType;
+}
+char* KeyItem::getUseText() {
+	return useText;
+}
+void KeyItem::setTarget(Room* target) {
+	targetRoom = target;
+}
+Item* KeyItem::Duplicate() {
+	return new KeyItem(*this);
+}
+KeyItem::~KeyItem() {
+
+}
+
+//MARK: info
+InfoItem::InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room) : Item(_name, _description, _room, false) {
+	strcpy(text, _text);
+	strcpy(type, "info");
+}
+char* InfoItem::getText() {
+	return text;
+}
+InfoItem::~InfoItem() {
 
 }

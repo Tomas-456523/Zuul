@@ -21,6 +21,7 @@ struct Effect {
 	// - megadebuff (attack-- defense---)
 	// - despair (attack--- defense---) (only one teammate at a time)
 	// - memory leak (drains sp)
+	// - en garde! (for jim shadies)
 	//how many targets it hits (1, 3, or all)
 	//min and max amount of times it hits
 

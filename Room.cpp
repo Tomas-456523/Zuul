@@ -26,6 +26,9 @@ vector<Item*> Room::getStock() {
 vector<NPC*> Room::getNpcs() {
 	return npcs;
 }
+vector<char*> Room::getBlocks() {
+	return blockedExits;
+}
 Room* Room::getExit(char* direction) {
 	map<char*, Room*, charComparer>::iterator exiterator = exits.find(direction);
 	if (exiterator == exits.end()) {
@@ -41,6 +44,13 @@ bool Room::getBlocked(char* direction) {
 	}
 	return false;
 }
+char* Room::getBlockReason(char* direction) {
+	if (getBlocked(direction)) {
+		return blockReason[direction];
+	}
+	return NULL;
+}
+
 //prints all the exits from this room; I tried just returning the map, but it was annoying because of the custom comparator so I just do this
 void Room::printExits() {
 	cout << "\nExits: ";
@@ -136,6 +146,7 @@ void Room::printWelcome() {
 	if (!welcome) {
 		return;
 	}
+	cout << "\n";
 	for (const char* text : welcomeText) {
 		cout << text;
 		CinPause();
@@ -194,6 +205,16 @@ void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) 
 }
 void Room::unblockExit(char* direction) {
 	blockedExits.erase(remove(blockedExits.begin(), blockedExits.end(), direction), blockedExits.end());
+}
+vector<char*> Room::unblockAll(char* type) {
+	vector<char*> matches;
+	for (char* exit : blockedExits) {
+		if (blockType[exit] == type) {
+			unblockExit(exit);
+			matches.push_back(exit);
+		}
+	}
+	return matches;
 }
 void Room::undefeatEnemies() {
 	for (NPC* npc : npcs) {

@@ -180,7 +180,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	//also add effects
 	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
 	CinPause();
-	cout << "\n" << target->getName() << " took " << target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce()) << " damage!\n" << target->getName() << " now has " << target->getHealth() << "/" << target->getHealthMax() << " HP.";
+	target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce(), rand()%(attack->maxhits+1, attack->minhits) + attack->minhits);
 	CinPause();
 }
 //interpret and carry out player attacks, and return whether we successfully launched an attack
@@ -299,10 +299,15 @@ int Battle::FIGHT() {
 	printTeam(enemyTeam);
 	CinPause();
 
-	queue<NPC*> turn = reorder();
+	queue<NPC*> turn;
 	NPC* current;
 
 	while (continuing) {
+		if (turn.size() <= 0) {
+			turn = reorder();
+			//tick effects
+		}
+
 		current = turn.front();
 		if (current->getHealth() <= 0) {
 			//do a backflip idk
@@ -319,10 +324,6 @@ int Battle::FIGHT() {
 			return 0; //lose
 		} else if (aliveCount(enemyTeam) <= 0) {
 			return 1; //win
-		}
-		if (turn.size() <= 0) {
-			turn = reorder();
-			//tick effects
 		}
 	}
 	return 2; //return false because the player ran away

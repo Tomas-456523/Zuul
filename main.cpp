@@ -62,8 +62,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* IN_TENT_2 = new char[12];
 	char* IN_TENT_3 = new char[12];
 	char* IN_TENT = new char[12];
+	char* IN_HOUSE_1 = new char[12];
+	char* IN_HOUSE_2 = new char[12];
+	char* IN_HOUSE_3 = new char[12];
 	char* UPSTAIRS = new char[12];
 	char* DOWNSTAIRS = new char[12];
+	char* UNDERGROUND = new char[12];
 
 	//set the text for the directions
 	strcpy(NORTH, "NORTH");
@@ -81,8 +85,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(IN_TENT_2, "IN TENT 2");
 	strcpy(IN_TENT_3, "IN TENT 3");
 	strcpy(IN_TENT, "IN TENT");
+	strcpy(IN_HOUSE_1, "IN HOUSE 1");
+	strcpy(IN_HOUSE_2, "IN HOUSE 2");
+	strcpy(IN_HOUSE_3, "IN HOUSE 3");
 	strcpy(UPSTAIRS, "UPSTAIRS");
 	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
+	strcpy(UNDERGROUND, "UNDERGROUND");
 
 	//set up blockage reaons
 	char* ENEMY = new char[12];
@@ -114,7 +122,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//put a telescope here, and maybe a launchpad outside which may or may bit do something
 	Room* tentlab = new Room("in the tent lab. There's a ton of machinery, and many generic science beakers with colored liquids.");
 	//(put a sign here) tunnels are shut down due to a lobster infestation
-	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently for [SOME REASON].");
+	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently due to a lobster infestation.");
 	//make the church get repaired post game and Archibald goes here
 	Room* tentchurch = new Room("in the village church. Nobody really goes here anymore, especially since the priest disappeared a long time ago.");
 	//put a fishing rod here and a fishing minigame :) NONONONNONNONONONONONONONONONNNNO THATS ENOUGH SCOPE
@@ -141,7 +149,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* flowerfield2 = new Room("deep in the flower fields. A really nice river flows over here.");
 
 	Room* forestfork = new Room("at another fork in the road. I hope we don't come across a spoon in the road.");
-	Item* fork = new Item("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork);
+	Item* fork = new MaterialItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork);
 
 	Room* forestgarden = new Room("a strange section of the forest. All the trees have been neatly trimmed and organized to an unnatural extent.");
 
@@ -163,12 +171,83 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	//MARK: desert
 	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you!).");
-	desert->setWelcome("Welcome to DESOLATE DESERT");
+	desert->setWelcome("Welcome to DESOLATE DESERT!");
 	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
 	desert->setWelcome("The world beyond your forest, where the life has been sucked out of the dirt.");
-	desert->setWelcome("Surely there must be someone around here?");
+	desert->setWelcome("Surely there must be someone friendly around here?");
 	
-	//Room* 
+	Room* deserttempleentrance = new Room("on a large dune where an ancient desert temple pokes out of the sand. I'm sure nobody's ever been in this one, either.");
+	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
+
+	Room* desertdune = new Room("at a low point in the desert. A rare shadow is present where you can rest.");
+	Room* desertplain = new Room("at a really flat area of the desert.");
+	Room* desertgrave = new Room("deep in the desert. There's some sort of bovine skeleton here.");
+	Room* desertpole = new Room("deep in the desert. All you can see for miles is sand.");
+	Room* deserthill = new Room("on a very high dune. It'd be fun to roll all the way down, but your hair would be very annoying to clean afterwards.");
+
+	Room* deserttown = new Room("in the abandoned desert village. It's strange; where did everyone go?");
+	Room* desertshop = new Room("in an abandoned store. It would feel cozy if not for the smell of the expired products.");
+	Room* desertgym = new Room("in an abandoned gym. There's all the equipment you could ask for here, but no rock wall.");
+	Room* deserthouse = new Room("in some house with zero purpose. It only exists because the town would feel weird with only two houses.");
+
+	Room* oasis = new Room("in an oasis, presumably the town's source of water, though the water is long gone.");
+	Room* canyon = new Room("in a small canyon that cuts into a plateau. There's an entrance to an old mineshaft here.");
+	Room* thatcliff = new Room("on this cliff over here.");
+
+	Room* canyon1 = new Room("in a long, shaded canyon, forming YET ANOTHER fork in the road. You know, these would actually be really annoying forks if you think about it.");
+	Room* canyon2 = new Room("at the end of the canyon, though a path seems to have been made upwards.");
+	Room* canyon3 = new Room("at the end of the canyon. There's much evidence of mining here, and a mineshaft entrance here leads underground.");
+
+	Room* cliff1 = new Room("very high up on a cliff; the temperature almost feels normal!");
+	Room* cliff2 = new Room("on the highest cliff. You have a very good view of the volcanic, even wastier wastelands beyond the desert.");
+
+	Room* mineshaft = new Room("underground in the mineshaft. It was too hot outside, but now it's very cold :(");
+	Room* mineshaft2 = new Room("at a pickaxe in the road. That's not a utensil...");
+	Room* mineshaft3 = new Room("deep in the mineshaft. A huge face spans the wall; he looks very interesting.");
+	Room* minelight = new Room("pretty high up, though still underground. You can see the light at the end of the tunnel just up above; how lovely.");
+	Room* mineexit = new Room("at the high-up exit of the mineshaft. SO MANY STAIRS...");
+	Room* mineshaftside = new Room("in a side tunnel of the mineshaft. All the ores are left untouched; what were the miners looking for?"); //water that's what
+	Room* kaboomroom = new Room("in a very unstable looking room. It's filled to the brim with dynamite, which is concerning considering that maniac that hangs out here.");
+
+	Room* volcanoentrance = new Room("at the northernmost end of the mineshaft. Burning light and ash enter through the mineshaft entrance.");
+	//volcano welcome: the burger restaurant's image is seen, distorted by the heat
+
+	Room* desertstation = new Room("in a train station, which seems to have been accidentally intercepted by the mineshaft.");
+	Room* deserttunnel = new Room("in a long, dark train tunnel. You've never seen one that goes on for so long with no collapse.");
+
+	Room* minespring = new Room("at an underground spring, directly under the town oasis. There's many dead miners here.");
+
+	//MARK: volcano
+	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
+	volcano->setWelcome("WELCOME TO HELLISH HIGHLANDS!");
+	volcano->setWelcome("<<< THE END OF THE ROAD >>>");
+	volcano->setWelcome("The air burns your skin and ash fills your lungs.");
+	volcano->setWelcome("The BURGER RESTAURANT can be seen clearly, but its image is heavily distorted by the heat.");
+	volcano->setWelcome("You're almost there.");
+
+	//MARK: BURGERSBURG
+	Room* placeholder = new Room("this is the place.");
+
+	placeholder->setWelcome("Welcome to BURGERSBURG!");
+	placeholder->setWelcome("<<< THE CAPITAL OF SIN >>>");
+	placeholder->setWelcome("Massive skyscrapers blot out the sun, and the BURGER RESTAURANT towers above them all.");
+	placeholder->setWelcome("Crime is rampant on every corner.");
+	placeholder->setWelcome("Do not leave valuables in your vehicle!");
+
+	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
+
+	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no coming back.");
+	elevatortop->setWelcome("");
+	elevatortop->setWelcome("");
+	elevatortop->setWelcome("");
+	elevatortop->setWelcome("");
+	elevatortop->setWelcome("");
+	elevatortop->setWelcome("");
+	//bunch of exposition
+
+	Room* BURGERRESTAURANT = new Room("at the tippity top the BURGER RESTAURANT. You can see the sun barely shining under the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
+	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
+
 	
 	//MARK: set up NPCs
 	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
@@ -215,9 +294,6 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
 	egadwick->setRecruitedDialogue("science");
 
-	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
-	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. The BURGER MAN is waiting for you to order a BURGER.");
-	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
 
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 0, 2);
@@ -227,9 +303,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
 	NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5, 1);
 
-	NPC* antiburgerguy = new NPC("I REALIZED I SHOULD CHANGE THIS TITLE TO SOMETHING MORE CLEAR", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
-	antiburgerguy->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
-	antiburgerguy->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
+	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
+	burgerprisoner->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
+	burgerprisoner->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
 	//it's a me
 	Room* tenthome = new Room("in the developer's house.");
@@ -245,7 +321,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Item* ibuprofen = new HpItem("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
 	tentstore->setStock(ibuprofen, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage!");
 
-	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", limbo, 15000, 15000, 15000, 15000, 0, 2000, 25000);
+	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 25000);
 	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
 	wallelder->addConversation(self, "Indeed I am."); //what if the player has already started plot device quest? they probably haven't tho
 	wallelder->addConversation(wallelder, "Do not be fooled by the allure of BURGER. Do you not know why you crave it so?");
@@ -329,8 +405,76 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	fdintermission3->setExit(NORTH, desert);
 	fdintermission3->setExit(SOUTH, fdintermission2);
 	desert->setExit(SOUTH, fdintermission3);
+	desert->setExit(NORTHWEST, deserttempleentrance);
+	desert->setExit(NORTHEAST, desertdune);
+	desert->setExit(EAST, desertplain);
+	deserttempleentrance->setExit(WEST, deserttemplestairs);
+	deserttempleentrance->setExit(EAST, desertdune);
+	deserttempleentrance->setExit(NORTHEAST, deserthill);
+	desertdune->setExit(WEST, deserttempleentrance);
+	desertdune->setExit(NORTHEAST, desertgrave);
+	desertdune->setExit(SOUTHWEST, desert);
+	desertdune->setExit(SOUTHEAST, desertplain);
+	desertgrave->setExit(SOUTHWEST, desertdune);
+	desertplain->setExit(EAST, desertpole);
+	desertplain->setExit(WEST, desert);
+	desertplain->setExit(NORTHWEST, desertdune);
+	desertpole->setExit(WEST, desertplain);
+	deserthill->setExit(NORTH, deserttown);
+	deserthill->setExit(SOUTHWEST, deserttempleentrance);
+	deserttown->setExit(NORTH, canyon1);
+	deserttown->setExit(SOUTH, deserthill);
+	deserttown->setExit(EAST, oasis);
+	deserttown->setExit(WEST, canyon);
+	deserttown->setExit(IN_HOUSE_1, desertshop);
+	deserttown->setExit(IN_HOUSE_2, desertgym);
+	deserttown->setExit(IN_HOUSE_3, deserthouse);
+	desertshop->setExit(OUT,deserttown);
+	desertgym->setExit(OUT,deserttown);
+	deserthouse->setExit(OUT,deserttown);
+	oasis->setExit(WEST, deserttown);
+	canyon->setExit(UP, thatcliff);
+	canyon->setExit(EAST, deserttown);
+	canyon->setExit(UNDERGROUND, desertstation);
+	canyon1->setExit(SOUTH, deserttown);
+	canyon1->setExit(NORTHWEST, canyon2);
+	canyon1->setExit(NORTHEAST, canyon3);
+	canyon2->setExit(SOUTHEAST, canyon1);
+	canyon2->setExit(UP, cliff1);
+	canyon3->setExit(SOUTHWEST, canyon1);
+	canyon3->setExit(UNDERGROUND, mineshaft);
+	mineshaft->setExit(OUT, canyon3);
+	mineshaft->setExit(EAST, minespring);
+	mineshaft->setExit(WEST, mineshaft2);
+	minespring->setExit(NORTH, mineshaft);
+	mineshaft2->setExit(SOUTH, deserttunnel);
+	mineshaft2->setExit(NORTH, mineshaft3);
+	deserttunnel->setExit(NORTHEAST, limbo);
+	deserttunnel->setExit(SOUTHWEST, desertstation);
+	desertstation->setExit(NORTHEAST, deserttunnel);
+	desertstation->setExit(SOUTHWEST, limbo);
+	desertstation->setExit(OUT, canyon);
+	mineshaft3->setExit(WEST, mineshaftside);
+	mineshaft3->setExit(SOUTH, mineshaft2);
+	mineshaft3->setExit(NORTH, minelight);
+	mineshaftside->setExit(EAST, mineshaft3);
+	mineshaftside->setExit(SOUTHWEST, kaboomroom);
+	kaboomroom->setExit(NORTHEAST, mineshaftside);
+	minelight->setExit(UP, mineexit);
+	minelight->setExit(SOUTH, mineshaft3);
+	minelight->setExit(NORTH, volcanoentrance);
+	mineexit->setExit(OUT, cliff1);
+	mineexit->setExit(DOWN, minelight);
+	cliff1->setExit(UNDERGROUND, mineexit);
+	cliff1->setExit(DOWN, canyon2);
+	cliff1->setExit(UP, cliff2);
+	cliff2->setExit(DOWN, cliff1);
+	thatcliff->setExit(DOWN, canyon);
+	volcanoentrance->setExit(SOUTH, minelight);
+	volcanoentrance->setExit(OUT, volcano);
+	volcano->setExit(UNDERGROUND, volcanoentrance);
 
-	Room* tunnel = new Room("in the tunnels that span the continent.");
+	Room* tunnel = new Room("in the train tunnels that span the continent.");
 
 	//MARK: set up enemies
 
@@ -386,7 +530,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//forestguard->setParty(grassman, grassman, grassman, prickly_hog);
 
 	//MARK: block exits
-	tentstation->blockExit(EAST, TUNNEL, "blocked by a");
+	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
+	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "sealed shut. There is a large keyhole you may be able to unlock it with.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a large chasm.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a large chasm.");
@@ -461,15 +606,77 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	cout << "\nYou dropped the " << itemname << ".";
 }
 
-//use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
-void useItem(Room* currentRoom, vector<Item*>* inventory, char* commandExtensionP) {
-	/*if (!strcmp(item->getType(), "thingy")) {
-    	thingyItem* thingy = (thingyItem*)item;
-    	thingy->doTheThing();
-	}*/
+void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item) {
+
 }
 
-void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
+//MARK: useitem
+//use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
+void useItem(Room* currentRoom, vector<Item*>* inventory, char* itemname, int& mony) {
+	Item* item = getItemInVector(*inventory, itemname);
+	if (item == NULL) {
+		item = getItemInVector(currentRoom->getItems(), itemname);
+	}
+	if (item == NULL) {
+		cout << "\nYou have no \"" << itemname << "\".";
+		return;
+	}
+	NPC* target = NULL;
+	if (item->getTargetNeeded()) {
+		//get the target
+	}
+	if (!strcmp(item->getType(), "xp")) {
+
+	} else if (!strcmp(item->getType(), "mony")) {
+
+	} else if (!strcmp(item->getType(), "BURGER")) {
+
+	} else if (!strcmp(item->getType(), "education")) {
+
+	} else if (!strcmp(item->getType(), "caller")) {
+
+	} else if (!strcmp(item->getType(), "toll")) {
+
+	} else if (!strcmp(item->getType(), "key")) {
+		KeyItem* key = (KeyItem*)item;
+		vector<char*> exitsUnlocked;
+		Room* targetRoom = currentRoom;
+		bool used = false;
+		if (key->getTarget() != NULL) {
+			targetRoom = key->getTarget();
+			exitsUnlocked = targetRoom->unblockAll(key->getUnlockType());
+			used = true;
+		} else {
+			exitsUnlocked = currentRoom->unblockAll(key->getUnlockType());
+			used = exitsUnlocked.size() > 0;
+		}
+		if (!used) {
+			cout << "\nThere is nothing to use the " << itemname << " on here.";
+			return;
+		}
+		cout << "\n" << key->getUseText();
+
+		//change room description
+
+		//exactly one blocked exit in this game is also blocked from the other side, so I do this check and assume no exits in the game have mismatching blocks
+		for (char* exit : exitsUnlocked) {
+			targetRoom->getExit(exit)->unblockAll(key->getUnlockType());
+		}
+		//if (deletable) {
+		deleteItem(currentRoom, inventory, item);
+		//}
+	} else if (!strcmp(item->getType(), "paver")) {
+
+	} else if (!strcmp(item->getType(), "info")) {
+
+	} else if (!strcmp(item->getType(), "material")) {
+		cout << "\nYou can't use the " << itemname << "!";
+	} else {
+		cout << "\nThe " << itemname << " can only be used in battle!";
+	}
+}
+
+void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxParty = 4) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
@@ -488,9 +695,12 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 		cout << "\n" << npcname << " is already in your party...";
 		return;
 	}
+	if (party->size() == maxParty) {
+		cout << "\nYour party is full!";
+	}
 	party->push_back(npc);
 	cout << "\n" << npcname << " - \"" << npc->getRecruitmentDialogue() << "\"";
-	cout << "\n" << npcname << " was added to your party!";
+	cout << "\n" << npcname << " was added to your party!" << "(party size: " << party->size() << "/" << maxParty << ")";
 }
 
 void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
@@ -764,7 +974,7 @@ int main() {
 		} else if (!strcmp(commandWord, "DROP")) {
 			dropItem(currentRoom, inventory, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "USE")) {
-			useItem(currentRoom, inventory, &commandExtension[0]);
+			useItem(currentRoom, inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "RECRUIT")) {
 			recruitNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "DISMISS")) {

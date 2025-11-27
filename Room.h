@@ -29,8 +29,10 @@ public:
 	vector<Item*> getItems();
 	vector<Item*> getStock();
 	vector<NPC*> getNpcs();
+	vector<char*> getBlocks();
 	Room* getExit(char* direction);
 	bool getBlocked(char* direction);
+	char* getBlockReason(char* direction);
 
 	void printExits();
 	void printItems();
@@ -52,6 +54,7 @@ public:
 
 	void blockExit(char* direction, char* blocktype, const char reason[255]);
 	void unblockExit(char* direction);
+	vector<char*> unblockAll(char* type);
 
 	void undefeatEnemies();
 private:
