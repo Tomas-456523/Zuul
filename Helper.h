@@ -19,5 +19,6 @@ namespace Helper {
 	int Ceil(float num);
 	void sortBySpeed(vector<NPC*>& team);
 	int aliveCount(vector<NPC*> team);
+	//reverse directions helper?
 }
 #endif

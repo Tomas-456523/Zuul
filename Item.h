@@ -5,7 +5,7 @@
 
 //ITEM TYPES WE WILL NEED:
 //Movement / Weapon
-//FISHING ROD OH NO
+//manhole cover item
 //npc item (becomes npc, cactus)
 //treasure chest (can be trapped or not)
 

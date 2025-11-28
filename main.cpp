@@ -65,6 +65,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* IN_HOUSE_1 = new char[12];
 	char* IN_HOUSE_2 = new char[12];
 	char* IN_HOUSE_3 = new char[12];
+	char* IN_FACTORY = new char[12];
+	char* IN_CASTLE = new char[12];
 	char* UPSTAIRS = new char[12];
 	char* DOWNSTAIRS = new char[12];
 	char* UNDERGROUND = new char[12];
@@ -88,6 +90,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(IN_HOUSE_1, "IN HOUSE 1");
 	strcpy(IN_HOUSE_2, "IN HOUSE 2");
 	strcpy(IN_HOUSE_3, "IN HOUSE 3");
+	strcpy(IN_FACTORY, "IN FACTORY");
+	strcpy(IN_CASTLE, "IN CASTLE");
 	strcpy(UPSTAIRS, "UPSTAIRS");
 	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
 	strcpy(UNDERGROUND, "UNDERGROUND");
@@ -140,6 +144,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather."); //talk to the deer to get the key
 	Room* ninjaland = new Room("underneath the ninja village. It's probably supposed to be hidden but you looked up and there it was.");
+	Room* ninjavillage = new Room("in the ninja village. There's no bridges connecting the houses, you must simply jump between them like a true ninja.");
+	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many weapons and scrolls up on the walls.");
+	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of NINJABERRIES and ninjasteak and ninjafish and the diet isn't actually that strict.");
+	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here, and a large shuriken mold is currently in use.");
+
 	//make sure the desc gets updated after plot device quest
 	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands. No matter what anyone has tried, nobody has ever made it in.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
@@ -174,6 +183,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	desert->setWelcome("Welcome to DESOLATE DESERT!");
 	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
 	desert->setWelcome("The world beyond your forest, where the life has been sucked out of the dirt.");
+	desert->setWelcome("The sun beats down with no clouds in sight.");
 	desert->setWelcome("Surely there must be someone friendly around here?");
 	
 	Room* deserttempleentrance = new Room("on a large dune where an ancient desert temple pokes out of the sand. I'm sure nobody's ever been in this one, either.");
@@ -220,10 +230,94 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//MARK: volcano
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
 	volcano->setWelcome("WELCOME TO HELLISH HIGHLANDS!");
-	volcano->setWelcome("<<< THE END OF THE ROAD >>>");
+	volcano->setWelcome("<<< THE RING OF FIRE >>>"); //THE END OF THE ROAD?
 	volcano->setWelcome("The air burns your skin and ash fills your lungs.");
 	volcano->setWelcome("The BURGER RESTAURANT can be seen clearly, but its image is heavily distorted by the heat.");
 	volcano->setWelcome("You're almost there.");
+
+	Room* volcano1 = new Room("in the volcanic highlands. An old, abandoned factory stands to the EAST.");
+	Room* volcano2 = new Room("in a volcanic plain. The ashen remains of some plants can be seen here.");
+	Room* volcano3 = new Room("in the scorched remains of an old factory town. I don't think there's any hope of this one's citizens coming back.\nThere's stairs leading down to a train station.");
+	Room* volcanostation = new Room("in the factory town train station. Some lava has settled here, but the tunnels are probably still usable?");
+	Room* volcano4 = new Room("on a scorched path. It reminds you of pepperoni pizza.");
+	Room* volcano5 = new Room("at a... knife in the road.");
+	Room* volcano6 = new Room("in a volcanic valley. Another factory stands here, more charred than the rest, yet still holding up.");
+	Room* volcano7 = new Room("at the very edge of the volcanic valley. An huge old bridge forms a road to the city.");
+
+	Room* factory1 = new Room("in the factory, on a small grated bridge over a pool of lava.");
+	Room* factorykitchen = new Room("in a makeshift kitchen made from a factory observation room. Whatever was made here before, it now only churns out slag.");
+	Room* controlroom1 = new Room("in the factory control room. The machinery is in rather good condtion.");
+
+	Room* factory2 = new Room("in a factory. This one seems more suited for producing actual products.");
+	Room* switchroom = new Room("in an assembly line observation room.");
+	Room* conveyor1 = new Room("on an assembly line! You have to dodge the machinery lest you become a pancake.");
+	Room* factorycenter = new Room("in the central room of the factory. There's some charred furniture here.");
+	Room* conveyor2 = new Room("on an assembly line! This one makes a path to the upper factory.");
+	Room* factorystorage = new Room("in second story of the factory. It looks like they handle packaging here.");
+	Room* factorybalcony1 = new Room("on a balcony overlooking the entrance area.");
+	Room* switchroom2 = new Room("in the observation area, for observing the second floor.");
+	Room* conveyor4 = new Room("on an assembly line! This one makes a path between the main second floor rooms.");
+	Room* conveyor5 = new Room("on an assembly line! This one makes a path to a central balcony area.");
+	Room* factorybalcony2 = new Room("on a balcony overlooking the central area. You can also see a garden room of sorts from here, though there is no path to it.");
+	Room* factorygarden = new Room("in a garden which is not wheelchair-accessible. The plants look very unhealthy; they seem to have been experimenting with nuclear technology here.");
+	Room* conveyor3 = new Room("on an assembly line! This one makes a path to the control room.");
+	Room* controlroom2 = new Room("in the factory control room. The machinery looks usable depsite the lava; props to whoever made it!");
+
+	Room* factory3 = new Room("in the charred factory. The first floor is a large storage room, though its contents are long burnt to a crispy crisp.");
+	Room* factorynw = new Room("in the factory storage room. There's what appears to be the remains of a chair here.");
+	Room* factoryne = new Room("in the factory storage room. You can see the assembly line through a corner window, still going strong after so much time submerged in lava.");
+	Room* factoryse = new Room("in the factory storage room. You see heavy machinery poking out of the EASTern room. I love heavy machinery!");
+	Room* heavymachineryroom = new Room("in a room full of heavy machinery. Some of them are, incredibly, still operational.");
+	Room* factoryroofsw = new Room("poking out of the factory. The roof has caved in here.");
+	Room* factoryroofnw = new Room("high up in the factory. You can see the control room just up ahead.");
+	Room* controlroom3 = new Room("in the factory control room. This one's machinery is very rusty. Very icky.");
+	Room* factoryroofne = new Room("high up in the factory. You see a short hallway. It's a really nice hallway.");
+	Room* factoryhallway = new Room("at the end of the hallway. A ladder leads high upwards.");
+	Room* factorytower = new Room("at the top of the factory tower. It's full of computers and it smells like energy drink.");
+	Room* factoryroofse = new Room("high up in the factory. You see a corridor full of employee of the month awards.");
+	Room* factorytreasure = new Room("at the end of the corridor. JIM SHADY is the employee of the year. Good for him.");
+
+	Room* castleentrance = new Room("at the entrance of a large, crystaline castle. It has a very angular design.");
+	Room* castlehall = new Room("in the main hall of the castle. Ornate pillars and paintings of internet browsers pave the way towards the throne room.");
+	Room* castlethrone = new Room("in the throne room of the castle. The ceiling is reeeeeeally high up, and the throne almost reaches the top!");
+	castlethrone->setWelcome("PLUM - AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!");
+	castlethrone->setWelcome("BROWSER - GWAHAHAHAHAHA!");
+
+	Room* sewerentrance1 = new Room("on a ladder leading down to the sewer system.");
+	Room* sewerentrance2 = new Room("deep down on the ladder to the sewer system.");
+	Room* sewer = new Room("in the sewer system below the wastelands. Lava flows through the canal; better watch your step!");
+	Room* sewer2 = new Room("in the sewer system below the wastelands. Smells like you should see a pulmonologist.");
+	Room* sewercenter1 = new Room("in the huge central room of the sewers. The architecture here has green accents."); //south
+	Room* sewercenter2 = new Room("in the huge central room of the sewers. A massive lake of lava lies under your feet."); //north
+	Room* sewercenter3 = new Room("in the huge central room of the sewers. A natural stone wall and floor is exposed here."); //east
+	Room* sewercenter4 = new Room("in the huge central room of the sewers. A large, green doorway stands here."); //west
+	Room* sewerplant = new Room("in the main control room of the sewers. How does one maintain this lava maintenence system?");
+	Room* sewermineswest = new Room("at the esternmost end of a long minecart track. You can't see the end.");
+	Room* sewerminessouth = new Room("in a peculiar offshoot from the sewers which someone mined out.");
+	Room* mineshortcut = new Room("in stable room, full of mining supplies and explosives.");
+
+	Room* bridge1 = new Room("on the final bridge to BURGERSBURG. This is the only real entry point, due to the lava ocean that surrounds it.");
+	Room* bridge2 = new Room("");
+	Room* bridge3 = new Room("");
+
+	//MARK: mountain
+	Room* mountain = new Room("on a mountain, far, far away from anywhere you know. Dark clouds block view of both the sky and land.");
+	mountain->setWelcome("WELCOME TO MOUNT MINBUS!");
+	mountain->setWelcome("<<< THE EDGE OF THE WORLD >>>");
+	mountain->setWelcome("Frigid winds blast your face and dark clouds cover both land and sky.");
+	mountain->setWelcome("Ok have fun!");
+
+	Room* mountainmine = new Room("far away from the start of the track. A barrage of snow blows in from the exit.");
+	Room* mountain2 = new Room("on a little clearing on the mountain. The upwards path has a ski lift!");
+	Room* mountainlake = new Room("at a lake full of baby shrimp. The shrimple aura keeps the water from freezing.");
+	Room* mountain3 = new Room("at a sheer cliff. Whoever's in charge of this place should really invest in guardrails.");
+	Room* mountainpeak = new Room("at the peak of the mountain, watching over a sea of clouds. You can't even see the BURGER RESTAURANT from here; it really is so far away.\nThere's a tent here in the style of your home village.");
+
+	//it's a me
+	Room* tenthome = new Room("in the developer's house.");
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
+	developer->setDialogue("Yo wassup.");
+	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 
 	//MARK: BURGERSBURG
 	Room* placeholder = new Room("this is the place.");
@@ -307,12 +401,6 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	burgerprisoner->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
 	burgerprisoner->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
-	//it's a me
-	Room* tenthome = new Room("in the developer's house.");
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
-	developer->setDialogue("Yo wassup.");
-	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
-
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 50, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
@@ -369,7 +457,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	forestright->setExit(NORTHWEST, foresttempleentrance);
 	forestright->setExit(SOUTHWEST, forest);
 	ninjaland->setExit(SOUTHWEST, forestright);
-	ninjaland->setExit(UP, limbo); //ninjas do not live in limbo but I didn't want to create a room you can't even reach
+	ninjaland->setExit(UP, ninjavillage);
+	ninjavillage->setExit(IN_HOUSE_1, ninjacapitol);
+	ninjavillage->setExit(IN_HOUSE_2, ninjapantry);
+	ninjavillage->setExit(IN_HOUSE_3, ninjaforge);
 	foresttempleentrance->setExit(SOUTHWEST, forestleft);
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
 	foresttempleentrance->setExit(NORTHWEST, flowerfield);
@@ -473,6 +564,26 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	volcanoentrance->setExit(SOUTH, minelight);
 	volcanoentrance->setExit(OUT, volcano);
 	volcano->setExit(UNDERGROUND, volcanoentrance);
+	volcano->setExit(NORTH, volcano1);
+	volcano1->setExit(SOUTH, volcano);
+	volcano1->setExit(IN_FACTORY, factory1);
+	volcano1->setExit(NORTHWEST, volcano2);
+	volcano2->setExit(SOUTHEAST, volcano1);
+	volcano2->setExit(NORTH, volcano3);
+	volcano3->setExit(SOUTH, volcano2);
+	volcano3->setExit(DOWN, volcanostation);
+	volcano3->setExit(IN_FACTORY, factory2);
+	volcano3->setExit(NORTHEAST, volcano4);
+	volcano4->setExit(SOUTHWEST, volcano3);
+	volcano4->setExit(NORTHEAST, volcano5);
+	volcano5->setExit(NORTH, volcano6);
+	volcano5->setExit(SOUTHWEST, volcano4);
+	volcano6->setExit(SOUTH, volcano5);
+	volcano6->setExit(NORTHWEST, volcano7);
+	volcano6->setExit(IN_FACTORY, factory3);
+	volcano1->setExit(SOUTH, volcano);
+	volcano1->setExit(SOUTH, volcano);
+	volcano1->setExit(SOUTH, volcano);
 
 	Room* tunnel = new Room("in the train tunnels that span the continent.");
 
@@ -535,6 +646,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	forestgate->blockExit(NORTH, LOCK, "sealed shut. There is a large keyhole you may be able to unlock it with.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a large chasm.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a large chasm.");
+
+	//volcano factory exit is blocked by the caved-in roof
 
 	//exits blocked by enemies
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
