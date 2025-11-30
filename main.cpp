@@ -70,6 +70,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* UPSTAIRS = new char[12];
 	char* DOWNSTAIRS = new char[12];
 	char* UNDERGROUND = new char[12];
+	char* FORWARD = new char[12];
 
 	//set the text for the directions
 	strcpy(NORTH, "NORTH");
@@ -95,6 +96,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(UPSTAIRS, "UPSTAIRS");
 	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
 	strcpy(UNDERGROUND, "UNDERGROUND");
+	strcpy(FORWARD, "FORWARD");
 
 	//set up blockage reaons
 	char* ENEMY = new char[12];
@@ -128,8 +130,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//(put a sign here) tunnels are shut down due to a lobster infestation
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently due to a lobster infestation.");
 	//make the church get repaired post game and Archibald goes here
-	Room* tentchurch = new Room("in the village church. Nobody really goes here anymore, especially since the priest disappeared a long time ago.");
-	//put a fishing rod here and a fishing minigame :) NONONONNONNONONONONONONONONONNNNO THATS ENOUGH SCOPE
+	Room* tentchurch = new Room("in the village church. It's a really big tent, complete with stained glass and everything. Nobody really goes here anymore, especially since the priest mysteriously disappeared a long time ago.");
+	//NO FISHINH MINIGAME WHATSOEVER (ok so this place is useless then?)
 	Room* docks = new Room("at the village docks. Nobody owns a boat; why do we have this.");
 
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
@@ -230,7 +232,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//MARK: volcano
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
 	volcano->setWelcome("WELCOME TO HELLISH HIGHLANDS!");
-	volcano->setWelcome("<<< THE RING OF FIRE >>>"); //THE END OF THE ROAD?
+	volcano->setWelcome("<<< THE END OF THE ROAD >>>"); //THE RING OF FIRE?
 	volcano->setWelcome("The air burns your skin and ash fills your lungs.");
 	volcano->setWelcome("The BURGER RESTAURANT can be seen clearly, but its image is heavily distorted by the heat.");
 	volcano->setWelcome("You're almost there.");
@@ -285,8 +287,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* sewerentrance1 = new Room("on a ladder leading down to the sewer system.");
 	Room* sewerentrance2 = new Room("deep down on the ladder to the sewer system.");
-	Room* sewer = new Room("in the sewer system below the wastelands. Lava flows through the canal; better watch your step!");
-	Room* sewer2 = new Room("in the sewer system below the wastelands. Smells like you should see a pulmonologist.");
+	Room* sewer = new Room("in the sewer system below the wastelands. Smells like you should see a pulmonologist.");
+	Room* sewer2 = new Room("in the sewer system below the wastelands. Lava flows through the canal; better watch your step!");
 	Room* sewercenter1 = new Room("in the huge central room of the sewers. The architecture here has green accents."); //south
 	Room* sewercenter2 = new Room("in the huge central room of the sewers. A massive lake of lava lies under your feet."); //north
 	Room* sewercenter3 = new Room("in the huge central room of the sewers. A natural stone wall and floor is exposed here."); //east
@@ -296,9 +298,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* sewerminessouth = new Room("in a peculiar offshoot from the sewers which someone mined out.");
 	Room* mineshortcut = new Room("in stable room, full of mining supplies and explosives.");
 
-	Room* bridge1 = new Room("on the final bridge to BURGERSBURG. This is the only real entry point, due to the lava ocean that surrounds it.");
-	Room* bridge2 = new Room("");
-	Room* bridge3 = new Room("");
+	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple. The rock burns bright red.");
+
+	Room* bridge1 = new Room("on the final bridge to BURGERSBURG. The lava ocean crackles beneath your feet.");
+	Room* bridge2 = new Room("halfway through the bridge. An eternal night looms over the city.");
+	Room* bridge3 = new Room("on the far end of the bridge. The gate into BURGERSBURG stands right up ahead.");
 
 	//MARK: mountain
 	Room* mountain = new Room("on a mountain, far, far away from anywhere you know. Dark clouds block view of both the sky and land.");
@@ -320,17 +324,55 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 
 	//MARK: BURGERSBURG
-	Room* placeholder = new Room("this is the place.");
+	Room* BURGERSBURG = new Room("at the gate of BURGERSBURG. The BURGER RESTAURANT is just down main street.");
+	BURGERSBURG->setWelcome("Welcome to BURGERSBURG!");
+	BURGERSBURG->setWelcome("<<< THE CAPITAL OF SIN >>>");
+	BURGERSBURG->setWelcome("Massive skyscrapers blot out the sun, and the BURGER RESTAURANT towers above them all.");
+	BURGERSBURG->setWelcome("All but a few buildings are boarded up.");
+	BURGERSBURG->setWelcome("You don't want this city knowing where you live.");
+	BURGERSBURG->setWelcome("We are not responsible for theft or damage to vehicles or contents!");
 
-	placeholder->setWelcome("Welcome to BURGERSBURG!");
-	placeholder->setWelcome("<<< THE CAPITAL OF SIN >>>");
-	placeholder->setWelcome("Massive skyscrapers blot out the sun, and the BURGER RESTAURANT towers above them all.");
-	placeholder->setWelcome("Crime is rampant on every corner.");
-	placeholder->setWelcome("Do not leave valuables in your vehicle!");
+	Room* mainstreet1 = new Room("on main street. There's a few lopsided cars on fire here.");
+	Room* mainstreet2 = new Room("on main street. You hear an explosion somewhere in the distance.");
+	Room* mainstreet3 = new Room("on main street. You see a shady alley to the right."); //behind broken building "It's so close, but the BURGER RESTAURANT is hard to see with all the smoke
+	Room* mainstreet4 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting.");
+	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you.");
 
-	Room* casino = new Room("in a casino. You should really leave before you develop a gambling addiction.");
+	Room* leftstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
+	Room* leftstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
+	Room* leftstreet3 = new Room(".");
+	Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
+	Room* leftstreet5 = new Room(".");
 
-	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no coming back.");
+	//newstreet
+
+	//coolstreet
+
+	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
+	Room* rightstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
+	Room* rightstreet3 = new Room(".");
+	Room* rightstreet4 = new Room(".");
+	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
+
+	Room* richneighborhood1 = new Room("in the rich people corner of town. They own nice little suburban houses.");
+	Room* richneighborhood2 = new Room("in the rich neighborhood. You feel on guard with all the security systems looking at you. As soon as you step on a lawn, you'd probably be blown to smithereens.");
+	Room* richneighborhood3 = new Room("at a secluded corner of the rich neighborhood. Some guy's standing outside. What a daredevil.");
+	Room* richneighborhood4 = new Room("at the doorway of a huge bureaucratic-looking building. It's probably the second-tallest building in the city.");
+
+	Room* burgfish = new Room("in the fish building. A warm light shines down the stairs.");
+	Room* burgchurch = new Room("in a hidden church community. [descriptive text].");
+
+	Room* burgstore = new Room("in an abandoned store. Nobody bothers to stock the shelves anymore."); //up exit but bernard gets scared?
+	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses. You should really leave before you develop a gambling addiction.");
+	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged. Eh could be darker.");
+	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
+	Room* shrimpartment2 = new Room("on the second floor. The flowery wallpaper is peeling off.");
+	Room* shrimpartment3 = new Room("on the third floor. You see an open doorway leading to an unfurnished room; your instincts pull you away from it.");
+	Room* shrimproof = new Room("on the apartment rooftop. The pigeons are gone.");
+	Room* firedepartment = new Room("in the fire department. The fire alarm is going off SOMEONE TURN IT OFF PLEASE MY EARS");
+
+	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's one of those heavy-duty elevators.");
+	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no going back.");
 	elevatortop->setWelcome("");
 	elevatortop->setWelcome("");
 	elevatortop->setWelcome("");
@@ -340,7 +382,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//bunch of exposition
 
 	Room* BURGERRESTAURANT = new Room("at the tippity top the BURGER RESTAURANT. You can see the sun barely shining under the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
-	Room* BURGERPRISON = new Room("in the BURGER PRISON redacted from existence. There is one singular cell, holding one singular man.");
+	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 
 	
 	//MARK: set up NPCs
@@ -581,9 +623,127 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	volcano6->setExit(SOUTH, volcano5);
 	volcano6->setExit(NORTHWEST, volcano7);
 	volcano6->setExit(IN_FACTORY, factory3);
-	volcano1->setExit(SOUTH, volcano);
-	volcano1->setExit(SOUTH, volcano);
-	volcano1->setExit(SOUTH, volcano);
+	volcano7->setExit(NORTH, bridge1);
+	volcano7->setExit(SOUTHWEST, castleentrance);
+	volcano7->setExit(SOUTHEAST, volcano6);
+	castleentrance->setExit(NORTHEAST, volcano7);
+	castleentrance->setExit(IN_CASTLE, castlehall);
+	castlehall->setExit(OUT, castleentrance);
+	castlehall->setExit(SOUTH, castlethrone);
+	castlethrone->setExit(NORTH, castlehall);
+	factory1->setExit(OUT, volcano1);
+	factory1->setExit(EAST, factorykitchen);
+	factory1->setExit(UP, controlroom1);
+	factorykitchen->setExit(WEST, factory1);
+	controlroom1->setExit(DOWN, factory1);
+	volcanostation->setExit(OUT, volcano3);
+	factory2->setExit(OUT, volcano3);
+	factory2->setExit(NORTHWEST, switchroom);
+	factory2->setExit(NORTHEAST, conveyor1);
+	switchroom->setExit(SOUTHEAST, factory2);
+	conveyor1->setExit(FORWARD, factorycenter);
+	factorycenter->setExit(SOUTHWEST, conveyor1);
+	factorycenter->setExit(NORTHWEST, conveyor2);
+	factorycenter->setExit(NORTHEAST, conveyor3);
+	conveyor3->setExit(FORWARD, controlroom2);
+	controlroom2->setExit(SOUTHWEST, conveyor3);
+	conveyor2->setExit(FORWARD, factorystorage);
+	factorystorage->setExit(SOUTH, conveyor2);
+	factorystorage->setExit(NORTH, conveyor4);
+	factorystorage->setExit(EAST, conveyor5);
+	factorystorage->setExit(WEST, factorybalcony1);
+	factorybalcony1->setExit(EAST, factorystorage);
+	factorybalcony1->setExit(DOWN, switchroom);
+	factorybalcony1->setExit(NORTHEAST, switchroom2);
+	conveyor4->setExit(FORWARD, switchroom2);
+	conveyor5->setExit(FORWARD, factorybalcony2);
+	switchroom2->setExit(SOUTHWEST, factorybalcony1);
+	switchroom2->setExit(SOUTH, conveyor4);
+	switchroom2->setExit(SOUTHEAST, factorybalcony2);
+	factorybalcony2->setExit(NORTHWEST, switchroom2);
+	factorybalcony2->setExit(WEST, conveyor5);
+	factorybalcony2->setExit(DOWN, factorycenter);
+	factorybalcony2->setExit(EAST, factorygarden);
+	factorygarden->setExit(WEST, factorybalcony2);
+	factorygarden->setExit(DOWN, factorycenter);
+	factory3->setExit(OUT, volcano6);
+	factory3->setExit(NORTH, factorynw);
+	factory3->setExit(EAST, factoryse);
+	factory3->setExit(UP, factoryroofsw);
+	factorynw->setExit(EAST, factoryne);
+	factorynw->setExit(SOUTH, factory3);
+	factorynw->setExit(UP, factoryroofnw);
+	factoryne->setExit(WEST, factorynw);
+	factoryne->setExit(SOUTH, factoryse);
+	factoryne->setExit(UP, factoryroofne);
+	factoryse->setExit(NORTH, factoryne);
+	factoryse->setExit(WEST, factory3);
+	factoryse->setExit(EAST, heavymachineryroom);
+	factoryse->setExit(UP, factoryroofse);
+	heavymachineryroom->setExit(WEST, factoryse);
+	factoryroofsw->setExit(DOWN, factory3);
+	factoryroofnw->setExit(DOWN, factorynw);
+	factoryroofnw->setExit(NORTH, controlroom3);
+	controlroom3->setExit(SOUTH, factoryroofnw);
+	factoryroofne->setExit(DOWN, factoryne);
+	factoryroofne->setExit(EAST, factoryhallway);
+	factoryhallway->setExit(WEST, factoryroofne);
+	factoryhallway->setExit(UP, factorytower);
+	factorytower->setExit(DOWN, factoryhallway);
+	factoryroofse->setExit(DOWN, factoryse);
+	factoryroofse->setExit(EAST, factorytreasure);
+	factorytreasure->setExit(WEST, factoryroofse);
+	sewerentrance1->setExit(DOWN, sewerentrance2);
+	sewerentrance1->setExit(UP, volcano2);
+	sewerentrance2->setExit(DOWN, sewer);
+	sewerentrance2->setExit(UP, sewerentrance1);
+	sewer->setExit(NORTH, sewercenter1);
+	sewer->setExit(UP, sewerentrance2);
+	sewer->setExit(SOUTHWEST, sewerminessouth);
+	sewerminessouth->setExit(NORTHEAST, sewer);
+	sewerminessouth->setExit(SOUTH, mineshortcut);
+	mineshortcut->setExit(NORTH, sewerminessouth);
+	sewer2->setExit(SOUTHWEST, sewercenter2);
+	sewer2->setExit(UP, volcano6);
+	sewercenter1->setExit(SOUTH, sewer);
+	sewercenter1->setExit(NORTH, sewerplant);
+	sewercenter1->setExit(NORTHWEST, sewercenter4);
+	sewercenter1->setExit(NORTHEAST, sewercenter3);
+	sewercenter2->setExit(NORTHEAST, sewer2);
+	sewercenter2->setExit(SOUTH, sewerplant);
+	sewercenter2->setExit(SOUTHWEST, sewercenter4);
+	sewercenter2->setExit(SOUTHEAST, sewercenter3);
+	sewercenter3->setExit(NORTHWEST, sewercenter2);
+	sewercenter3->setExit(SOUTHWEST, sewercenter1);
+	sewercenter3->setExit(DOWN, volcanotempleentrance);
+	volcanotempleentrance->setExit(UP, sewercenter3);
+	sewercenter4->setExit(NORTHEAST, sewercenter2);
+	sewercenter4->setExit(SOUTHEAST, sewercenter1);
+	sewercenter4->setExit(WEST, sewermineswest);
+	sewermineswest->setExit(EAST, sewercenter4);
+	sewermineswest->setExit(WEST, mountainmine);
+	sewerplant->setExit(NORTH, sewercenter2);
+	sewerplant->setExit(SOUTH, sewercenter1);
+	mountainmine->setExit(EAST, sewermineswest);
+	mountainmine->setExit(OUT, mountain);
+	mountain->setExit(UNDERGROUND, mountainmine);
+	mountain->setExit(UP, mountain2);
+	mountain2->setExit(WEST, mountainlake);
+	mountain2->setExit(UP, mountain3);
+	mountain2->setExit(DOWN, mountain);
+	mountainlake->setExit(EAST, mountain2);
+	mountain3->setExit(UP, mountainpeak);
+	mountain3->setExit(DOWN, mountain2);
+	mountainpeak->setExit(IN_TENT, tenthome);
+	mountainpeak->setExit(DOWN, mountain3);
+	tenthome->setExit(OUT, mountainpeak);
+	bridge1->setExit(NORTH, bridge2);
+	bridge1->setExit(SOUTH, volcano7);
+	bridge2->setExit(NORTH, bridge1);
+	bridge2->setExit(SOUTH, bridge3);
+	bridge3->setExit(NORTH, BURGERSBURG);
+	bridge3->setExit(SOUTH, bridge2);
+	
 
 	Room* tunnel = new Room("in the train tunnels that span the continent.");
 
@@ -620,7 +780,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", 0, 3, 0, 1, 1, 1);
 	grassman->setBasicAttack(grassstrike);
 
-	NPC* jimshady = new NPC("", "JIM SHADY", "This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
+	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
 	Attack* shirmplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 99999, 99999, 1, 1, 1);
 	jimshady->setBasicAttack(shirmplebeam);
 
@@ -1031,7 +1191,7 @@ int main() {
 		"QUIT"
 	};
 
-	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER.\nType HELP for help.\n";
+	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
 
 	cout << "\n             (type your name here!)\nYour name is ";
 
