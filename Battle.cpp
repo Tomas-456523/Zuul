@@ -179,8 +179,23 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost);
 	//also add effects
 	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
+	vector<NPC*> tarparty;
+	if (target->getEnemy()) {
+		tarparty = enemyTeam;
+	} else {
+		tarparty = playerTeam;
+	}
+	if (attack->targets == 3 && tarparty.size() > 1) {
+		cout << "\n" << attacker->getName() << "'s surrounding teammates were also hit!";
+	}
 	CinPause();
-	target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce(), rand()%(attack->maxhits+1, attack->minhits) + attack->minhits);
+	int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
+	for (int i = 0; i < tarparty.size(); i++) {
+		if (tarPos - attack->targets/2 <= i && i < tarPos + attack->targets - attack->targets/2) {
+			tarparty[i]->damage(attack->power + attacker->getAttack(), attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
+		}
+	}
+	//target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce(), rand()%(attack->maxhits+1, attack->minhits) + attack->minhits);
 	CinPause();
 }
 //interpret and carry out player attacks, and return whether we successfully launched an attack

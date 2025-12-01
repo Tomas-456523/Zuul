@@ -106,6 +106,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* RUBBLE = new char[12];
 	char* TUNNEL = new char[12];
 	char* LOCK = new char[12];
+	char* MISC = new char[12];
 	
 	//set up blockage reason text
 	strcpy(ENEMY, "ENEMY");
@@ -115,6 +116,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(RUBBLE, "RUBBLE");
 	strcpy(TUNNEL, "TUNNEL");
 	strcpy(LOCK, "LOCK");
+	strcpy(MISC, "MISC");
 
 	//I send all the template enemy NPCs and also shop items, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
@@ -151,8 +153,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of NINJABERRIES and ninjasteak and ninjafish and the diet isn't actually that strict.");
 	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here, and a large shuriken mold is currently in use.");
 
+	NPC* mrdeer = new NPC("", "MR. DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
+	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole.");
+	mrdeer->setGift
+
 	//make sure the desc gets updated after plot device quest
-	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands. No matter what anyone has tried, nobody has ever made it in.");
+	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
 	Room* foresttemple = new Room("in the temple of [SOMETHING]. [SOMETHING SOMETHING].");
 
@@ -406,11 +412,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	self->setDialogue("Huh?");
 	self->Recruit();
 	self->setBasicAttack(punch);
-	self->addSpecialAttack(energyball);
 	self->addSpecialAttack(finishhim);
 	self->addSpecialAttack(precisionstrike);
 
-	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 0, 0, 0, 0, 0, 0, 0);
+	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 16, 5, 4, 0, 1, 5, 2);
 	floria->addConversation(floria, "Hey big brother! Aren't these flowers just so lovely?");
 	floria->addConversation(self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME.");
 	floria->setDialogue("I just love flowers!");
@@ -418,17 +423,18 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	floria->setRecruitedDialogue("I must see all the flowers!");
 	floria->setDismissalDialogue("I'm going to go back to my flower field!");
 
+	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 15, 2, 3, 10, 10, 2, 10, 10);
+	egadwick->setDialogue("Ah hello kiddo. How");
+	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you could destroy it I could probably go.");
+	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
+	egadwick->setRecruitedDialogue("I love science.");
+	egadwick->setDismissalDialogue("Great hanging out with you, kiddo! Well, I guess I'll go work on a better robot!");
+
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
 	archie->setDialogue("So you are going on a BURGER QUEST, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
 	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
 
 	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating BURGERs");
-
-	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 15, 2, 3, 10, 10, 2, 10, 10);
-	egadwick->setDialogue("Ah hello kiddo.[][][][][][][]");
-	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you can destroy it I could probably go.");
-	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
-	egadwick->setRecruitedDialogue("science");
 
 
 	//REPLACE PLACEHOLDER STATS
@@ -447,9 +453,16 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 
+	//NPC* fisho = new NPC("FISHERMAN", "FRED", "A middle-aged fisherman who frequently fishes at the village docks.", docks, 30, 10, );
+
+	Effect* minibuff = new Effect();
 	//tent store stock
 	Item* ibuprofen = new HpItem("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
 	tentstore->setStock(ibuprofen, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage!");
+	Item* energybook = new EducationItem("ENERGY MANIPULATION BEGINNER'S GUIDE", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, energyball);
+	//energybook->setAttack();
+	//energybook->setAttack();
+	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - Thank you for your patronage!");
 
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 25000);
 	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
@@ -465,7 +478,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
 	wallelder->setRejectionDialogue("I embedded myself in this heavy rock ages ago so that temptation could not possibly drag me to the BURGER RESTAURANT. I cannot move nor join you.");
 
-	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success since you're not a ninja.", 0, 7, 5, 0, 2, 3);
+	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success.", 0, 7, 5, 0, 2, 3);
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
 	//MARK: set up room exits
@@ -787,6 +800,26 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
 	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
 	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", 10, 10, 5, 1, 1, 1, 0.5f);
+	carnplant->setBasicAttack(bite);
+	carnplant->addSpecialAttack(nutrientabsorb);
+
+	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 50, 5, 7, 5, 5, 12, 24, 7, true);
+	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
+	//Attack* flowerpower = new Attack("FLOWER POWER", "used its planty power to buff", 16, 10, 5, 1, 1, 1);
+	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
+	flowerfiend->setBasicAttack(crunch);
+	flowerfiend->addSpecialAttack(nutrientabsorb);
+	//flowerfiend->addSpecialAttack(flowerpower);
+	flowerfiend->addSpecialAttack(solarbeam);
+
+	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
+	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
+	roguerobot->setBasicAttack(snip);
+	roguerobot->setLink(egadwick);
+	roguerobot->addLinkedConvo(egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?");
+	roguerobot->addLinkedConvo(self, "Yep I did.");
+	roguerobot->addLinkedConvo(egadwick, "Oh thank goodness! Thanks a bunch, kiddo!");
+	roguerobot->addLinkedConvo(egadwick, "Now I can safely be in the great outdoors!");
 
 	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	//NPC* npc = new NPC("TITLE", "NAME", "DESCRIPTION", limbo, hp, def, att, tou, pie, spe, ski);
@@ -804,8 +837,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "sealed shut. There is a large keyhole you may be able to unlock it with.");
+	foresttempleentrance->blockExit(SOUTH, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a large chasm.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a large chasm.");
+	ninjaland->blockExit(UP, MISC, "too high. You need ninja abilities to scale the trees.");
 
 	//volcano factory exit is blocked by the caved-in roof
 
@@ -972,7 +1007,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxPa
 		cout << "\nYour party is full!";
 	}
 	party->push_back(npc);
-	cout << "\n" << npcname << " - \"" << npc->getRecruitmentDialogue() << "\"";
+	npc->Recruit();
 	cout << "\n" << npcname << " was added to your party!" << "(party size: " << party->size() << "/" << maxParty << ")";
 }
 

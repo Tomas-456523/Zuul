@@ -10,6 +10,15 @@ struct Effect {
 	char name[255]; //the name of the effect, (e.g. "POISON")
 	int duration; //how long the effect lasts
 
+	int damage;
+	int attackbuff;
+	int defensebuff;
+	int toughbuff;
+	int piercebuff;
+	bool freeze;
+
+	int guardset;
+
 	//status effects
 	// - poison
 	// - burn
@@ -22,8 +31,6 @@ struct Effect {
 	// - despair (attack--- defense---) (only one teammate at a time)
 	// - memory leak (drains sp)
 	// - en garde! (for jim shadies)
-	//how many targets it hits (1, 3, or all)
-	//min and max amount of times it hits
 
 	Effect() {}
 

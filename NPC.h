@@ -21,6 +21,7 @@
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
+class Item;
 //struct Fighter;
 
 class NPC {
@@ -67,6 +68,7 @@ public: //you need to set stats on creation
 	map<Attack*, int> getWeights();
 	bool getLevelUp();
 	bool getDefeated();
+	Item* getGift();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -98,8 +100,11 @@ public: //you need to set stats on creation
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char suffix[3]);
 	void setGuard(int _guard);
+	void setLink(NPC* npc);
+	void setGift(Item* item);
 
 	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false);
+	void addLinkedConvo(NPC* speaker, const char dialogue[255]);
 	void printDialogue();
 
 	void defeat();
@@ -130,6 +135,8 @@ protected:
 	char dismissalDialogue[255]; //dialogue that the npc says when dismissed
 	//the npcs say a random one of these phrases when attacking
 	char battleCry[255];
+
+	Item* gift; //item that the npc holds and gifts to the player after talking
 
 	bool recruitable = false;
 	bool recruited = false;
@@ -164,6 +171,8 @@ protected:
 	bool defeated = false;
 
 	char* exitBlocking; //enemy npcs may block an exit until they are defeated
+	NPC* linkedNPC; //we set this npc to recruitable when robot is defeated
+	vector<pair<NPC*, const char*>> linkedDialogue; //we add this dialogue to the linked npc when defeated
 
 	bool escapable = true;
 	int guard = 0;

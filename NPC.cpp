@@ -27,7 +27,7 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	speed = _speed;
 	isLeader = _isleader;
 	isPlayer = _player;
-	sp = _sp;
+	sp = 0;
 	maxSP = _sp;
 	if (isLeader) {
 		party.push_back(&*this);
@@ -150,6 +150,9 @@ bool NPC::getEnemy() {
 bool NPC::getDefeated() {
 	return defeated;
 }
+Item* NPC::getGift() {
+	return gift;
+}
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
 }
@@ -172,6 +175,10 @@ void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
 void NPC::Recruit() {
+	if (conversations.size() > 0) {
+		printDialogue();
+	}
+	cout << "\n" << name << " - \"" << recruitmentDialogue << "\"";
 	recruited = true;
 }
 void NPC::Dismiss() {
@@ -302,6 +309,12 @@ void NPC::setLevelUp(bool _leveledUp) {
 void NPC::setGuard(int _guard) {
 	guard = _guard;
 }
+void NPC::setLink(NPC* npc) {
+	linkedNPC = npc;
+}
+void NPC::setGift(Item* item) {
+	gift = item;
+}
 void NPC::calculateWeights() {
 	int maxWeight = 90;
 	int totalSpCost = 0;
@@ -320,6 +333,13 @@ void NPC::defeat() {
 		currentRoom->unblockExit(exitBlocking);
 		exitBlocking = NULL;
 	}
+	if (linkedNPC != NULL) {
+		linkedNPC->setRecruitable(true);
+		for (int i = 0; i < linkedDialogue.size(); i++) {
+			//linkedNPC->addConversation(linkedDialogue[i].first(), linkedDialogue[i].second());
+		}
+		linkedNPC = NULL;
+	}
 	defeated = true;
 	//set recruitable some other thing
 }
@@ -334,6 +354,9 @@ void NPC::addConversation(NPC* speaker, const char dialogue[255], bool newConver
 		conversations.emplace();
 	}
 	conversations.back().emplace_back(speaker, dialogue);
+}
+void NPC::addLinkedConvo(NPC* speaker, const char dialogue[255]) {
+	//linkedDialogue.push_back((speaker, dialogue));
 }
 void NPC::printDialogue() {
 	if (recruited) {
