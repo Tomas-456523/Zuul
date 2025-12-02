@@ -154,8 +154,18 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here, and a large shuriken mold is currently in use.");
 
 	NPC* mrdeer = new NPC("", "MR. DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
-	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole.");
-	mrdeer->setGift
+	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
+	mrdeer->setGift(deerkey);
+	mrdeer->addConversation(self, "Hello MR. DEER!");
+	mrdeer->addConversation(mrdeer, "(salutatory deer noises)");
+	mrdeer->addConversation(self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key.");
+	mrdeer->addConversation(mrdeer, "(warning deer noises)");
+	mrdeer->addConversation(mrdeer, "(concerned deer noise)");
+	mrdeer->addConversation(mrdeer, "(thinking deer noises)");
+	mrdeer->addConversation(mrdeer, "...");
+	mrdeer->addConversation(self, "I hope he gives me the key...");
+	mrdeer->addConversation(mrdeer, "(reluctantly affirmative deer noise)");
+	mrdeer->addConversation(self, "AYYY thank you so much MR. DEER!");
 
 	//make sure the desc gets updated after plot device quest
 	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands.");
@@ -170,7 +180,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* forestgarden = new Room("a strange section of the forest. All the trees have been neatly trimmed and organized to an unnatural extent.");
 
-	Room* forestgate = new Room("at the border between the woodlands and the rest of the world, seperated by a huge wall. It was meant to keep evil at bay, but it didn't really work.");
+	Room* forestgate = new Room("at the great forest wall. It seperates the inner forest and the rest of the world.");
 	Room* forestwall = new Room("walking along the southern side of the wooded wall. It's very misty here.");
 	Room* forestgrave = new Room("in a sparse wooden graveyard.");
 
@@ -221,6 +231,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* mineshaft = new Room("underground in the mineshaft. It was too hot outside, but now it's very cold :(");
 	Room* mineshaft2 = new Room("at a pickaxe in the road. That's not a utensil...");
+	Item* pickaxe = new MaterialItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", mineshaft2);
 	Room* mineshaft3 = new Room("deep in the mineshaft. A huge face spans the wall; he looks very interesting.");
 	Room* minelight = new Room("pretty high up, though still underground. You can see the light at the end of the tunnel just up above; how lovely.");
 	Room* mineexit = new Room("at the high-up exit of the mineshaft. SO MANY STAIRS...");
@@ -249,6 +260,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* volcanostation = new Room("in the factory town train station. Some lava has settled here, but the tunnels are probably still usable?");
 	Room* volcano4 = new Room("on a scorched path. It reminds you of pepperoni pizza.");
 	Room* volcano5 = new Room("at a... knife in the road.");
+	Item* knife = new MaterialItem("KNIFE","\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", volcano5);
 	Room* volcano6 = new Room("in a volcanic valley. Another factory stands here, more charred than the rest, yet still holding up.");
 	Room* volcano7 = new Room("at the very edge of the volcanic valley. An huge old bridge forms a road to the city.");
 
@@ -804,6 +816,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	carnplant->addSpecialAttack(nutrientabsorb);
 
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 50, 5, 7, 5, 5, 12, 24, 7, true);
+	flowerfiend->setParty(carnplant, carnplant);
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
 	//Attack* flowerpower = new Attack("FLOWER POWER", "used its planty power to buff", 16, 10, 5, 1, 1, 1);
 	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
@@ -811,6 +824,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	flowerfiend->addSpecialAttack(nutrientabsorb);
 	//flowerfiend->addSpecialAttack(flowerpower);
 	flowerfiend->addSpecialAttack(solarbeam);
+
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
 
 	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
@@ -836,7 +851,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//MARK: block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
-	forestgate->blockExit(NORTH, LOCK, "sealed shut. There is a large keyhole you may be able to unlock it with.");
+	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
 	foresttempleentrance->blockExit(SOUTH, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a large chasm.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a large chasm.");
@@ -1313,4 +1328,5 @@ int main() {
 	}
 	//gives a friendly farewell to the player
 	cout << "\nEnjoy your next 24 hours.\n";
+
 }
