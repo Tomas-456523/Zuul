@@ -150,6 +150,9 @@ bool NPC::getEnemy() {
 bool NPC::getDefeated() {
 	return defeated;
 }
+vector<Effect> NPC::getEffects() {
+	return effects;
+}
 Item* NPC::takeGift() {
 	Item* item = gift;
 	gift = NULL;
@@ -249,7 +252,7 @@ void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
 	currentRoom->blockExit(exitBlocking, type, reason);
 }
-void NPC::printDamage(int damage) {
+void NPC::printDamage(int damage, char* status) {
 	if (damage >= 0) {
 		cout << "\n" << name << " took " << damage << " damage!\n" << name << " now has " << health << "/" << maxHealth << " HP.";
 	} else {
@@ -329,6 +332,12 @@ void NPC::setLink(NPC* npc) {
 }
 void NPC::setGift(Item* item) {
 	gift = item;
+}
+void NPC::setEffect(Effect* effect) {
+	//effects.push_back(effect);
+}
+void NPC::removeEffect(Effect& effect) {
+	//effects.erase(remove(effects.begin(), effects.end(), effect), effects.end());
 }
 void NPC::calculateWeights() {
 	int maxWeight = 90;

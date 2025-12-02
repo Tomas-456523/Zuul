@@ -174,6 +174,18 @@ queue<NPC*> Battle::reorder() {
 	}
 	return orderly_fashion;
 }
+void Battle::tickEffect(Effect& effect) {
+	NPC* npc = effect.npc;
+	if (--effect.duration <= 0) {
+		npc->removeEffect(effect);
+		cout << npc->getName() << "'s " << effect.name << " wore off!";
+		CinPause();
+		return;
+	}
+	if (effect.damage != 0) {
+		npc->directDamage(effect.damage);
+	}
+}
 //i should slightly randomly alter attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost);
@@ -292,12 +304,20 @@ void Battle::npcTurn(NPC* npc) {
 	NPC* target = NULL;
 	while (target == NULL) {
 		if (npc->getEnemy()) {
-			target = playerTeam[rand()%playerTeam.size()];
+			if (!attack->targetAlly) {
+				target = playerTeam[rand()%playerTeam.size()];
+			} else {
+				target = enemyTeam[rand() % enemyTeam.size()];
+			}
 			if (target->getHealth() <= 0) {
 				target = NULL;
 			}
 		} else {
-			target = enemyTeam[rand()%enemyTeam.size()];
+			if (!attack->targetAlly) {
+				target = enemyTeam[rand() % enemyTeam.size()];
+			} else {
+				target = playerTeam[rand() % playerTeam.size()];
+			}
 			if (target->getHealth() <= 0) {
 				target = NULL;
 			}

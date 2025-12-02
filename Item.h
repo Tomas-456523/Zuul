@@ -4,7 +4,6 @@
 #define ITEM
 
 //ITEM TYPES WE WILL NEED:
-//Movement / Weapon
 //manhole cover item
 //npc item (becomes npc, cactus)
 //treasure chest (can be trapped or not)
@@ -187,6 +186,27 @@ private:
 	Attack* attack;
 
 	Room* targetRoom = NULL; //keys can be targeted keys, so no matter where you are, using them will remotely unblock the exit
+	char useText[255];
+};
+//MARK: movement
+class MovementItem : public Item {
+public:
+	MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable = true, Attack* _attack = NULL);
+	virtual ~MovementItem();
+
+	Room* getTarget();
+	Attack* getAttack();
+	char* getUnlockType();
+	char* getUseText();
+
+	void setTarget(Room* target);
+
+	virtual Item* Duplicate() override;
+private:
+	char* unlockType;
+	Attack* attack;
+
+	Room* targetRoom = NULL; //movement items sometimes just go to a specific location
 	char useText[255];
 };
 

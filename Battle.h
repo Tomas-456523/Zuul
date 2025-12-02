@@ -27,6 +27,7 @@ public:
 	void analyze(char* name);
 	void printHelp();
 	bool runAway();
+	void tickEffect(Effect& effect);
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target);
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 1);
 	bool playerTurn(NPC* plr);
@@ -41,7 +42,7 @@ private:
 	vector<NPC*> enemyTeam;
 	vector<NPC*> everyone;
 
-	vector<Effect> allEffects;
+	vector<Effect*> allEffects;
 
 	vector<Item*>* inventory;
 

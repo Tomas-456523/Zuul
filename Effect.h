@@ -35,25 +35,14 @@ struct Effect {
 
 	Effect() {}
 
-	Effect(const char _name[255], int _duration) {
+	Effect(const char _name[255], int _duration, int _damage = 0, int _attackbuff = 0, int _defensebuff = 0, int _toughbuff = 0, int _piercebuff = 0) {
 		strcpy(name, _name);
 		duration = _duration;
+		damage = _damage;
+		attackbuff = _attackbuff;
+		defensebuff = _defensebuff;
+		toughbuff = _toughbuff;
+		piercebuff = _piercebuff;
 	}
-
-	void setDuration(int _duration) {
-		duration = _duration;
-	}
-
-	/*void tick(NPC* npc) {
-		duration--;
-		if (duration <= 0) {
-			//remove the effect from the npc
-			return;
-		}
-		if (damage != 0) {
-			npc->directDamage(damage); //but we don't print damage reason...
-		}
-	}*/
 };
-
 #endif // !EFFECT

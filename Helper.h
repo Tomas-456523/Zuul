@@ -4,6 +4,7 @@
 #include "NPC.h"
 #include "Item.h"
 #include <vector>
+#include <map>
 
 namespace Helper {
 	void CinIgnoreAll();
@@ -16,9 +17,8 @@ namespace Helper {
 	void printItemData(Item* item);
 	int Clamp(int num, int min, int max);
 	float ClampF(float num, float min, float max);
-	int Ceil(float num);
 	void sortBySpeed(vector<NPC*>& team);
 	int aliveCount(vector<NPC*> team);
-	//reverse directions helper?
+	extern map<const char*, const char*> ReverseDirection; //NAMESPACES CAN HAVE VARIABLES???? THATS INCREDIBLE I LOVE THAT SO MUCH!!!!
 }
 #endif

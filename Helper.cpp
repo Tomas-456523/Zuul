@@ -124,4 +124,5 @@ namespace Helper {
 		}
 		return i;
 	}
+	map<const char*, const char*> ReverseDirection;
 }

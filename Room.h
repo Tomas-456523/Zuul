@@ -53,7 +53,7 @@ public:
 	void removeStock(Item* item);
 
 	void blockExit(char* direction, char* blocktype, const char reason[255]);
-	void unblockExit(char* direction);
+	void unblockExit(const char* direction);
 	vector<char*> unblockAll(char* type);
 
 	void undefeatEnemies();

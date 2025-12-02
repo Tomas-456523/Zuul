@@ -203,7 +203,7 @@ void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) 
 	strcpy(reason, _reason);
 	blockReason[direction] = reason;
 }
-void Room::unblockExit(char* direction) {
+void Room::unblockExit(const char* direction) {
 	blockedExits.erase(remove(blockedExits.begin(), blockedExits.end(), direction), blockedExits.end());
 }
 vector<char*> Room::unblockAll(char* type) {

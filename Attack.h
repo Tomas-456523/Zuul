@@ -16,6 +16,7 @@ struct Attack {
 	int targets; //how many targets the attack hits (1 hits just the target, 3 hits their surrounding allies, and 4 hits their entire team, and I don't really use 2)
 	int minhits; //the attack can hit from minhits to maxhits amount of times
 	int maxhits;
+	bool targetAlly;
 
 	int minLevel; //must be at least this level to use the attack
 
@@ -28,7 +29,7 @@ struct Attack {
 
 	Attack() {} //default constructor so NPC doesn't throw error
 
-	Attack(const char _name[255], const char _description[255], int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, int _minlevel = 0, float _lifesteal = 0) {
+	Attack(const char _name[255], const char _description[255], int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, bool _targetAlly = false, int _minlevel = 0, float _lifesteal = 0) {
 		strcpy(name, _name);
 		strcpy(description, _description);
 		cost = _cost;
@@ -37,6 +38,7 @@ struct Attack {
 		targets = _targets;
 		minhits = _minhits;
 		maxhits = _maxhits;
+		targetAlly = _targetAlly;
 		minLevel = _minlevel;
 		lifesteal = _lifesteal;
 	}

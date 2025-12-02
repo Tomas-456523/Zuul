@@ -98,6 +98,19 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(UNDERGROUND, "UNDERGROUND");
 	strcpy(FORWARD, "FORWARD");
 
+	ReverseDirection[NORTH] = SOUTH;
+	ReverseDirection[SOUTH] = NORTH;
+	ReverseDirection[EAST] = WEST;
+	ReverseDirection[WEST] = EAST;
+	ReverseDirection[UP] = DOWN;
+	ReverseDirection[DOWN] = UP;
+	ReverseDirection[OUT] = UNDERGROUND;
+	ReverseDirection[UNDERGROUND] = OUT;
+	ReverseDirection[NORTHEAST] = SOUTHWEST;
+	ReverseDirection[NORTHWEST] = SOUTHEAST;
+	ReverseDirection[SOUTHEAST] = NORTHWEST;
+	ReverseDirection[SOUTHWEST] = NORTHEAST;
+
 	//set up blockage reaons
 	char* ENEMY = new char[12];
 	char* CHASM = new char[12];
@@ -406,10 +419,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target.");
 
-	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1, 0);
+	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1);
 	energyball->addDescription("Throw a ball of pure kinetic energy at the target.");
 
-	Attack* precisionstrike = new Attack("PRECISION STRIKE", "", 10, 35, 15, 1, 1, 1, 10);
+	Attack* precisionstrike = new Attack("PRECISION STRIKE", "", 10, 35, 15, 1, 1, 1, false, 10);
 	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
 
 	//SET START ROOM TO VILLAGE
@@ -828,11 +841,13 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 50, 5, 7, 5, 5, 12, 24, 7, true);
 	flowerfiend->setParty(carnplant, carnplant);
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
-	//Attack* flowerpower = new Attack("FLOWER POWER", "used its planty power to buff", 16, 10, 5, 1, 1, 1);
+	Effect flowerpower = Effect("FLOWER POWER", 3, 0, 5);
+	Attack* flowerempower = new Attack("FLOWER POWER", "used its planty power to buff", 16, 10, 5, 1, 1, 1, true);
+	flowerempower->applied_effects.push_back(flowerpower);
 	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
 	flowerfiend->setBasicAttack(crunch);
 	flowerfiend->addSpecialAttack(nutrientabsorb);
-	//flowerfiend->addSpecialAttack(flowerpower);
+	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
 	//NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
@@ -885,7 +900,7 @@ void PrintRoomData(Room* currentRoom) {
 	currentRoom->printBlocks();
 }
 
-void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
+void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool forceTravel = false) {
 	Room* roomCanidate = currentRoom->getExit(direction);
 	if (roomCanidate == NULL) {
 		if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
@@ -894,7 +909,7 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party) {
 			cout << "\nThere is no exit in that direction.";
 		}
 		return;
-	} else if (currentRoom->getBlocked(direction)) {
+	} else if (!forceTravel && currentRoom->getBlocked(direction)) {
 		currentRoom->printBlock(direction);
 		return;
 	}
@@ -945,7 +960,7 @@ void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item) {
 
 //MARK: useitem
 //use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
-void useItem(Room* currentRoom, vector<Item*>* inventory, char* itemname, int& mony) {
+void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
 	Item* item = getItemInVector(*inventory, itemname);
 	if (item == NULL) {
 		item = getItemInVector(currentRoom->getItems(), itemname);
@@ -991,13 +1006,26 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, char* itemname, int& m
 
 		//change room description
 
-		//exactly one blocked exit in this game is also blocked from the other side, so I do this check and assume no exits in the game have mismatching blocks
 		for (char* exit : exitsUnlocked) {
-			targetRoom->getExit(exit)->unblockAll(key->getUnlockType());
+			Room* thatroom = currentRoom->getExit(exit);
+			if (thatroom->getBlocked(exit)) {
+				thatroom->unblockExit(ReverseDirection[exit]);
+			}
 		}
 		//if (deletable) {
 		deleteItem(currentRoom, inventory, item);
 		//}
+	} else if (!strcmp(item->getType(), "movement")) {
+		MovementItem* mover = (MovementItem*)item;
+		for (char* exit : currentRoom->getBlocks()) {
+			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
+				cout << "\nYou " << mover->getUseText();
+				//cinpause?
+				travel(currentRoom, exit, party, true);
+				return;
+			}
+			cout << "\nYou can't use the " << itemname << " here.";
+		}
 	} else if (!strcmp(item->getType(), "paver")) {
 
 	} else if (!strcmp(item->getType(), "info")) {
@@ -1313,7 +1341,7 @@ int main() {
 		} else if (!strcmp(commandWord, "DROP")) {
 			dropItem(currentRoom, inventory, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "USE")) {
-			useItem(currentRoom, inventory, &commandExtension[0], mony);
+			useItem(currentRoom, inventory, party, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "RECRUIT")) {
 			recruitNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "DISMISS")) {

@@ -69,6 +69,7 @@ public: //you need to set stats on creation
 	bool getLevelUp();
 	bool getDefeated();
 	Item* takeGift();
+	vector<Effect> getEffects();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -76,7 +77,6 @@ public: //you need to set stats on creation
 	void setRecruitedDialogue(const char _dialogue[255]); //sets the recruited dialogue for the npc
 	void setDismissalDialogue(const char _dialogue[255]); //sets the dismissal dialogue for the npc
 	void addBattleCry(); //adds a random battle cry to the npc
-	void setAttackDescription(); //sets the description of the attack
 	void setRecruitable(bool _recruitable);
 	void Recruit();
 	void Dismiss();
@@ -103,11 +103,13 @@ public: //you need to set stats on creation
 	void setGuard(int _guard);
 	void setLink(NPC* npc);
 	void setGift(Item* item);
+	void setEffect(Effect* effect);
+	void removeEffect(Effect& effect);
 
 	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false);
 	void addLinkedConvo(NPC* speaker, const char dialogue[255]);
 	void printDialogue();
-	void printDamage(int damage);
+	void printDamage(int damage, char* status = NULL);
 
 	void defeat();
 	void undefeat();
@@ -135,8 +137,6 @@ protected:
 	char rejectionDialogue[255]; //dialogue that the npc says when rejecting recruitment offer
 	char recruitmentDialogue[255]; //dialogue that the npc says when recruited
 	char dismissalDialogue[255]; //dialogue that the npc says when dismissed
-	//the npcs say a random one of these phrases when attacking
-	char battleCry[255];
 
 	Item* gift; //item that the npc holds and gifts to the player after talking
 

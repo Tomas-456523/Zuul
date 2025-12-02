@@ -152,6 +152,35 @@ KeyItem::~KeyItem() {
 
 }
 
+//MARK: movement
+MovementItem::MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, true) {
+	unlockType = _unlockType;
+	strcpy(useText, _useText);
+	strcpy(type, "movement");
+	attack = _attack;
+}
+Room* MovementItem::getTarget() {
+	return targetRoom;
+}
+Attack* MovementItem::getAttack() {
+	return attack;
+}
+char* MovementItem::getUnlockType() {
+	return unlockType;
+}
+char* MovementItem::getUseText() {
+	return useText;
+}
+void MovementItem::setTarget(Room* target) {
+	targetRoom = target;
+}
+Item* MovementItem::Duplicate() {
+	return new MovementItem(*this);
+}
+MovementItem::~MovementItem() {
+
+}
+
 //MARK: info
 InfoItem::InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room) : Item(_name, _description, _room, false) {
 	strcpy(text, _text);
