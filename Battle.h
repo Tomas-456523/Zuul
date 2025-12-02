@@ -6,7 +6,7 @@
 #include "NPC.h"
 #include "Item.h"
 #include "Effect.h"
-using namespace std;
+//using namespace std;
 
 class NPC;
 class Item;

@@ -2,7 +2,6 @@
 #define EFFECT
 
 #include <cstring>
-#include "NPC.h"
 
 class NPC;
 
@@ -18,6 +17,8 @@ struct Effect {
 	bool freeze;
 
 	int guardset;
+
+	NPC* npc;
 
 	//status effects
 	// - poison
@@ -43,12 +44,16 @@ struct Effect {
 		duration = _duration;
 	}
 
-	void tick(NPC* npc) {
+	/*void tick(NPC* npc) {
 		duration--;
 		if (duration <= 0) {
 			//remove the effect from the npc
+			return;
 		}
-	}
+		if (damage != 0) {
+			npc->directDamage(damage); //but we don't print damage reason...
+		}
+	}*/
 };
 
 #endif // !EFFECT

@@ -16,8 +16,8 @@
 #include <utility>
 #include <map>
 #include "Room.h"
-#include "Attack.h"
 #include "Effect.h"
+#include "Attack.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
@@ -68,7 +68,7 @@ public: //you need to set stats on creation
 	map<Attack*, int> getWeights();
 	bool getLevelUp();
 	bool getDefeated();
-	Item* getGift();
+	Item* takeGift();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -89,6 +89,7 @@ public: //you need to set stats on creation
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
 	void setHypnotized(bool _hypnotized);
 	int damage(float power, float pierce, int hits = 1);
+	void directDamage(int damage);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
@@ -106,6 +107,7 @@ public: //you need to set stats on creation
 	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false);
 	void addLinkedConvo(NPC* speaker, const char dialogue[255]);
 	void printDialogue();
+	void printDamage(int damage);
 
 	void defeat();
 	void undefeat();
@@ -157,7 +159,7 @@ protected:
 	int level = 0;
 	int xp = 0;
 
-	bool leveledUp;
+	bool leveledUp = false;
 
 	int healthScale = 0;
 	int defenseScale = 0;
@@ -170,8 +172,8 @@ protected:
 	bool hypnotized = false;
 	bool defeated = false;
 
-	char* exitBlocking; //enemy npcs may block an exit until they are defeated
-	NPC* linkedNPC; //we set this npc to recruitable when robot is defeated
+	char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated
+	NPC* linkedNPC = NULL; //we set this npc to recruitable when robot is defeated
 	vector<pair<NPC*, const char*>> linkedDialogue; //we add this dialogue to the linked npc when defeated
 
 	bool escapable = true;

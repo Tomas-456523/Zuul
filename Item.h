@@ -57,7 +57,7 @@ protected:
 
 	bool targetRequired;
 
-	Room* room;
+	Room* room = NULL;
 };
 //MARK:xp
 class XpItem : public Item {

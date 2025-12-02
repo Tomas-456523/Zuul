@@ -153,20 +153,6 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of NINJABERRIES and ninjasteak and ninjafish and the diet isn't actually that strict.");
 	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here, and a large shuriken mold is currently in use.");
 
-	NPC* mrdeer = new NPC("", "MR. DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
-	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
-	mrdeer->setGift(deerkey);
-	mrdeer->addConversation(self, "Hello MR. DEER!");
-	mrdeer->addConversation(mrdeer, "(salutatory deer noises)");
-	mrdeer->addConversation(self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key.");
-	mrdeer->addConversation(mrdeer, "(warning deer noises)");
-	mrdeer->addConversation(mrdeer, "(concerned deer noise)");
-	mrdeer->addConversation(mrdeer, "(thinking deer noises)");
-	mrdeer->addConversation(mrdeer, "...");
-	mrdeer->addConversation(self, "I hope he gives me the key...");
-	mrdeer->addConversation(mrdeer, "(reluctantly affirmative deer noise)");
-	mrdeer->addConversation(self, "AYYY thank you so much MR. DEER!");
-
 	//make sure the desc gets updated after plot device quest
 	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
@@ -362,20 +348,28 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
 	Room* leftstreet5 = new Room(".");
 
-	//newstreet
+	Room* newstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
+	Room* newstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
+	Room* newstreet3 = new Room(".");
+	Room* newstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
+	Room* newstreet5 = new Room(".");
 
-	//coolstreet
+	Room* coolstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
+	Room* coolstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
+	Room* coolstreet3 = new Room(".");
+	Room* coolstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
+	Room* coolstreet5 = new Room(".");
 
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
-	Room* rightstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
-	Room* rightstreet3 = new Room(".");
+	Room* rightstreet2 = new Room(".");
+	Room* rightstreet3 = new Room("in at an old glass factory. You see two guys carrying.");
 	Room* rightstreet4 = new Room(".");
 	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
 
-	Room* richneighborhood1 = new Room("in the rich people corner of town. They own nice little suburban houses.");
+	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to only one person.");
 	Room* richneighborhood2 = new Room("in the rich neighborhood. You feel on guard with all the security systems looking at you. As soon as you step on a lawn, you'd probably be blown to smithereens.");
 	Room* richneighborhood3 = new Room("at a secluded corner of the rich neighborhood. Some guy's standing outside. What a daredevil.");
-	Room* richneighborhood4 = new Room("at the doorway of a huge bureaucratic-looking building. It's probably the second-tallest building in the city.");
+	Room* richneighborhood4 = new Room("at the doorway of a huge layered bureaucratic-looking building. It's probably the second-tallest building in the city.");
 
 	Room* burgfish = new Room("in the fish building. A warm light shines down the stairs.");
 	Room* burgchurch = new Room("in a hidden church community. [descriptive text].");
@@ -419,7 +413,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
 
 	//SET START ROOM TO VILLAGE
-	NPC* self = new NPC("\0", "SELF", "It's a me.", forestentrance, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", deerclearing, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
@@ -475,6 +469,22 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//energybook->setAttack();
 	//energybook->setAttack();
 	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - Thank you for your patronage!");
+
+	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
+	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
+	mrdeer->setGift(deerkey);
+	mrdeer->addConversation(self, "Hello MR. DEER!");
+	mrdeer->addConversation(mrdeer, "(salutatory deer noises)");
+	mrdeer->addConversation(self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key.");
+	mrdeer->addConversation(mrdeer, "(warning deer noises)");
+	mrdeer->addConversation(mrdeer, "(concerned deer noise)");
+	mrdeer->addConversation(mrdeer, "(thinking deer noises)");
+	mrdeer->addConversation(mrdeer, "...");
+	mrdeer->addConversation(self, "I hope he gives me the key...");
+	mrdeer->addConversation(mrdeer, "(reluctantly affirmative deer noise)");
+	mrdeer->addConversation(self, "AYYY thank you so much MR. DEER!");
+	mrdeer->setDialogue("(deer noises)");
+	mrdeer->setRejectionDialogue("(disinclined deer noise)");
 
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 25000);
 	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
@@ -764,8 +774,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	tenthome->setExit(OUT, mountainpeak);
 	bridge1->setExit(NORTH, bridge2);
 	bridge1->setExit(SOUTH, volcano7);
-	bridge2->setExit(NORTH, bridge1);
-	bridge2->setExit(SOUTH, bridge3);
+	bridge2->setExit(NORTH, bridge3);
+	bridge2->setExit(SOUTH, bridge1);
 	bridge3->setExit(NORTH, BURGERSBURG);
 	bridge3->setExit(SOUTH, bridge2);
 	
@@ -825,7 +835,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//flowerfiend->addSpecialAttack(flowerpower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
-	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
+	//NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
 
 	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
@@ -977,7 +987,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, char* itemname, int& m
 			cout << "\nThere is nothing to use the " << itemname << " on here.";
 			return;
 		}
-		cout << "\n" << key->getUseText();
+		cout << "\nYou " << key->getUseText();
 
 		//change room description
 
@@ -1045,13 +1055,19 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 	cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
 }
 
-void printNPCDialogue(Room* currentRoom, char* npcname) {
+void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
 	}
 	npc->printDialogue();
+	Item* item = npc->takeGift();
+	if (item != NULL) {
+		inventory->push_back(item);
+		CinPause();
+		cout << npcname << " gave you the " << item->getName() << "!";
+	}
 }
 
 void printInventory(vector<Item*>* inventory, int monies) {
@@ -1245,7 +1261,7 @@ int main() {
 
 	cout << "\n             (type your name here!)\nYour name is ";
 
-	char name[255];
+	char name[255] = ""; //remove the = "" after done testing
 	//uncomment this, I just don't want to type the name every time I want to test something
 	//cin.getline(name, 255);
 
@@ -1303,7 +1319,7 @@ int main() {
 		} else if (!strcmp(commandWord, "DISMISS")) {
 			dismissNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "ASK")) {
-			printNPCDialogue(currentRoom, &commandExtension[0]);
+			printNPCDialogue(currentRoom, &commandExtension[0], inventory);
 		} else if (!strcmp(commandWord, "INVENTORY")) {
 			printInventory(inventory, mony);
 		} else if (!strcmp(commandWord, "PARTY")) {

@@ -125,7 +125,7 @@ EducationItem::~EducationItem() {
 }
 //MARK: key
 KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, Attack* _attack) : Item(_name, _description, _room, true, true) {
-	strcpy(unlockType, _unlockType);
+	unlockType = _unlockType;
 	strcpy(useText, _useText);
 	strcpy(type, "key");
 	attack = _attack;

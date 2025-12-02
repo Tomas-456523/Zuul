@@ -150,8 +150,10 @@ bool NPC::getEnemy() {
 bool NPC::getDefeated() {
 	return defeated;
 }
-Item* NPC::getGift() {
-	return gift;
+Item* NPC::takeGift() {
+	Item* item = gift;
+	gift = NULL;
+	return item;
 }
 void NPC::setDialogue(const char _dialogue[255]) {
 	strcpy(dialogue, _dialogue);
@@ -247,6 +249,14 @@ void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
 	currentRoom->blockExit(exitBlocking, type, reason);
 }
+void NPC::printDamage(int damage) {
+	if (damage >= 0) {
+		cout << "\n" << name << " took " << damage << " damage!\n" << name << " now has " << health << "/" << maxHealth << " HP.";
+	} else {
+		cout << "\n" << name << " recovered " << -damage << " damage!";
+	}
+	cout << "\n" << name << " now has " << health << "/" << maxHealth << " HP.";
+}
 int NPC::damage(float power, float pierce, int hits) {
 	float damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
 	int totalhits = Clamp(hits - guard, 0, 999);
@@ -254,7 +264,7 @@ int NPC::damage(float power, float pierce, int hits) {
 	float defenseF = defense;
 	float toughnessF = toughness;
 	int damage = (int)ceil(power * (10.0f/(10.0f + ClampF(defenseF - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessF)),0,defenseF)))) * totalhits;
-	int totalDamage = Clamp(damage,0,health);
+	int totalDamage = Clamp(damage,health-maxHealth,health);
 	if (hits > 1) {
 		cout << "\n" << name << " was hit " << hits << " times!";
 	}
@@ -275,9 +285,14 @@ int NPC::damage(float power, float pierce, int hits) {
 	}
 	if (totalhits > 0) {
 		health -= totalDamage;
-		cout << "\n" << name << " took " << totalDamage << " damage!\n" << name << " now has " << health << "/" << maxHealth << " HP.";
+		printDamage(totalDamage);
 	}
 	return totalDamage;
+}
+void NPC::directDamage(int damage) {
+	int totalDamage = Clamp(damage,health-maxHealth,health);
+	health -= totalDamage;
+	printDamage(totalDamage);
 }
 void NPC::setLevel(int _level) {
 	for (int i = 0; i < _level; i++) {
