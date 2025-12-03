@@ -4,7 +4,6 @@
 #define ITEM
 
 //ITEM TYPES WE WILL NEED:
-//manhole cover item
 //npc item (becomes npc, cactus)
 //treasure chest (can be trapped or not)
 
@@ -18,7 +17,7 @@ struct Effect;
 
 class Item {
 public:
-	Item(const char _name[255], const char _description[255], Room* _room = NULL, bool _takable = true, bool _target = false);
+	Item(const char _name[255], const char _description[255], Room* _room = NULL, bool _takable = true, bool _consumable = false, bool _target = false);
 	virtual ~Item();
 
 	char* getName();
@@ -26,10 +25,11 @@ public:
 	char* getType();
 	bool getTakable();
 	char* getDenial();
-	char* getBuyDescription();
+	//char* getBuyDescription();
 	int getPrice();
 	int getStock();
 	bool getTargetNeeded();
+	bool getConsumable();
 	
 	void buy(int& mony, vector<Item*>* inventory);
 	void setDenial(const char denial[255]);
@@ -170,7 +170,7 @@ public:
 //MARK: key
 class KeyItem : public Item {
 public:
-	KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, Attack* _attack = NULL);
+	KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable = true, Attack* _attack = NULL);
 	virtual ~KeyItem();
 
 	Room* getTarget();
@@ -213,14 +213,24 @@ private:
 //paves a new path MARK: paver
 class PaverItem : public Item {
 public:
-	PaverItem(const char _name[255], const char _description[255], Room* _room, Room* _usableRoom, char* _direction, Room* _destination);
+	PaverItem(const char _name[255], const char _description[255], Room* _room, /*Room* _usableRoom, */ char* _direction, Room* _destination);
 	virtual ~PaverItem();
 
-	Room* getRoom(); //gets the room that it's usable in
-	void setExit(); //sets the exit in the designated room
+	Room* getDestination(); //gets the room that it leads to
+	char* getExit(); //gets the direction it leads to
 private:
-	Room* usableRoom; //the room it's usable in
+	//Room* usableRoom; //the room it's usable in
 	char* direction; //the direction that it creates the new exit in
+	Room* destination; //the room that the new exit leads to
+};
+class ManholeItem : public Item {
+public:
+	ManholeItem(const char _name[255], const char _description[255], Room* _room, Room* _destination, Attack* attack);
+	virtual ~ManholeItem();
+
+	Room* getRoom(); //gets the room that it's usable in
+private:
+	Attack* attack; //you can throw a manhole cover at an enemy, pretty good attack
 	Room* destination; //the room that the new exit leads to
 };
 //MARK: info

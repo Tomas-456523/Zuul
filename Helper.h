@@ -11,6 +11,7 @@ namespace Helper {
 	void CinPause();
 	void AllCaps(char* text);
 	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP, int skipSpaces = 0);
+	void ParseWithON(char* commandExtensionP, char* itemNameP, char* npcNameP);
 	NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname);
 	Item* getItemInVector(vector<Item*> the_vector, char* itemname);
 	void printNPCData(NPC* npc);

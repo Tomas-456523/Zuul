@@ -36,6 +36,9 @@ Room* Room::getExit(char* direction) {
 	}
 	return exiterator->second;
 }
+Room* Room::getRedirect() {
+	return redirect;
+}
 bool Room::getBlocked(char* direction) {
 	for (char* exit : blockedExits) {
 		if (!strcmp(exit, direction)) {
@@ -177,6 +180,9 @@ void Room::setExit(char* direction, Room* room, char* blocktype, char* _reason) 
 	if (blocktype != NULL) {
 		blockExit(direction, blocktype, _reason);
 	}
+}
+void Room::setRedirect(Room* room) {
+	redirect = room;
 }
 void Room::setDescription(const char _description[255]) {
 	strcpy(description, _description);

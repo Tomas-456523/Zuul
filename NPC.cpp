@@ -117,9 +117,6 @@ vector<NPC*>* NPC::getParty() {
 bool NPC::getLeader() {
 	return isLeader;
 }
-bool NPC::getHypnotized() {
-	return hypnotized;
-}
 bool NPC::getEscapable() {
 	return escapable;
 }
@@ -150,8 +147,20 @@ bool NPC::getEnemy() {
 bool NPC::getDefeated() {
 	return defeated;
 }
-vector<Effect> NPC::getEffects() {
+vector<Effect>& NPC::getEffects() {
 	return effects;
+}
+int NPC::getHypnotized() {
+	return hypnosis;
+}
+int NPC::getFrozen() {
+	return freeze;
+}
+bool NPC::getTalkOnDefeat() {
+	return talkOnDefeat;
+}
+int NPC::getConvoSize() {
+	return conversations.size();
 }
 Item* NPC::takeGift() {
 	Item* item = gift;
@@ -233,9 +242,9 @@ void NPC::levelUp(bool trackLevelUp) {
 	level++;
 	leveledUp = trackLevelUp;
 }
-void NPC::setHypnotized(bool _hypnotized) {
+/*void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
-}
+}*/
 void NPC::setLeader(bool _leader, int _level, Room* room) {
 	isLeader = _leader;
 	isEnemy = true;
@@ -254,11 +263,36 @@ void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 }
 void NPC::printDamage(int damage, char* status) {
 	if (damage >= 0) {
-		cout << "\n" << name << " took " << damage << " damage!\n" << name << " now has " << health << "/" << maxHealth << " HP.";
+		cout << "\n" << name << " took " << damage << " damage";
 	} else {
-		cout << "\n" << name << " recovered " << -damage << " damage!";
+		cout << "\n" << name << " recovered " << -damage << " HP";
 	}
-	cout << "\n" << name << " now has " << health << "/" << maxHealth << " HP.";
+	if (status != NULL) {
+		cout << " due to " << status;
+	}
+	cout << "!\n" << name << " now has " << health << "/" << maxHealth << " HP.";
+	if (health <= 0) {
+		CinPause();
+		cout << "\n" << name << " is incapacitated!";
+	}
+}
+void NPC::printEffects() {
+	int size = effects.size();
+	if (size <= 0) {
+		return;
+	}
+	cout << "\n  Status effects: ";
+	int i = 0;
+	for (Effect& effect : effects) {
+		cout << effect.name;
+		if (effect.duration < 100) {
+			cout << " (" << effect.duration << " ticks left)";
+		}
+		if (++i != size) {
+			cout << ", ";
+		}
+	}
+	cout << "\n";
 }
 int NPC::damage(float power, float pierce, int hits) {
 	float damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
@@ -292,10 +326,10 @@ int NPC::damage(float power, float pierce, int hits) {
 	}
 	return totalDamage;
 }
-void NPC::directDamage(int damage) {
+void NPC::directDamage(int damage, char* status) {
 	int totalDamage = Clamp(damage,health-maxHealth,health);
 	health -= totalDamage;
-	printDamage(totalDamage);
+	printDamage(totalDamage, status);
 }
 void NPC::setLevel(int _level) {
 	for (int i = 0; i < _level; i++) {
@@ -333,11 +367,64 @@ void NPC::setLink(NPC* npc) {
 void NPC::setGift(Item* item) {
 	gift = item;
 }
-void NPC::setEffect(Effect* effect) {
-	//effects.push_back(effect);
+void NPC::setRedirect(Room* room1, Room* room2) {
+	redirectRoom = make_pair(room1, room2);
+}
+void NPC::setTalkOnDefeat(bool talk) {
+	talkOnDefeat = talk;
+}
+/*void NPC::setHypnotized(bool _hypnotized) {
+	hypnotized = _hypnotized;
+}
+void NPC::setFrozen(bool _frozen) {
+	frozen = _frozen;
+}*/
+void NPC::setEffect(Effect* _effect, bool battle) {
+	Effect effect = *_effect;
+	for (Effect& ef : effects) {
+		if (!strcmp(effect.name, ef.name)) {
+			ef.duration = effect.duration;
+			return;
+		}
+	}
+	if (battle) {
+		attack += effect.attackbuff;
+		defense += effect.defensebuff;
+		toughness += effect.toughbuff;
+		pierce += effect.piercebuff;
+	}
+	if (effect.freeze) {
+		if (!freeze) {
+			cout << "\n" << name << " was frozen in place!";
+		}
+		freeze += 1;
+	}
+	if (effect.hypnotize) {
+		if (!hypnosis) {
+			cout << "\n" << name << " is now fighting for the enemy!";
+		}
+		hypnosis += 1;
+	}
+	effect.npc = this;
+	effects.push_back(effect);
 }
 void NPC::removeEffect(Effect& effect) {
-	//effects.erase(remove(effects.begin(), effects.end(), effect), effects.end());
+	for (int i = 0; i < effects.size(); i++) {
+		if (!strcmp(effect.name, effects[i].name)) {
+			attack -= effects[i].attackbuff;
+			defense -= effects[i].defensebuff;
+			toughness -= effects[i].toughbuff;
+			pierce -= effects[i].piercebuff;
+			if (effect.freeze) {
+				freeze -= 1;
+			}
+			if (effect.hypnotize) {
+				hypnosis -= 1;
+			}
+			effects.erase(effects.begin() + i);
+			return;
+		}
+	}
 }
 void NPC::calculateWeights() {
 	int maxWeight = 90;
@@ -360,15 +447,32 @@ void NPC::defeat() {
 	if (linkedNPC != NULL) {
 		linkedNPC->setRecruitable(true);
 		for (int i = 0; i < linkedDialogue.size(); i++) {
-			//linkedNPC->addConversation(linkedDialogue[i].first(), linkedDialogue[i].second());
+			linkedNPC->addConversation(linkedDialogue[i].first, linkedDialogue[i].second);
 		}
 		linkedNPC = NULL;
 	}
+	if (redirectRoom.first != NULL) {
+		redirectRoom.first->setRedirect(redirectRoom.second);
+		redirectRoom = make_pair((Room*)NULL, (Room*)NULL);
+	}
+	if (defeatChange) {
+		strcmp(title, defeatTitle);
+		strcmp(description, defeatDescription);
+		strcmp(dialogue, defeatDialogue);
+		setRoom(defeatRoom);
+		defeatChange = false;
+	}
 	defeated = true;
-	//set recruitable some other thing
 }
 void NPC::undefeat() {
 	defeated = false;
+}
+void NPC::setDefeatNPC(const char newTitle[255], const char newDesc[255], const char newDialogue[255], Room* newRoom) {
+	strcmp(defeatTitle, newTitle);
+	strcmp(defeatDescription, newDesc);
+	strcmp(defeatDialogue, newDialogue);
+	defeatRoom = newRoom;
+	defeatChange = true;
 }
 void NPC::addSuffix(const char suffix[3]) {
 	strcat(name, suffix);
@@ -380,7 +484,7 @@ void NPC::addConversation(NPC* speaker, const char dialogue[255], bool newConver
 	conversations.back().emplace_back(speaker, dialogue);
 }
 void NPC::addLinkedConvo(NPC* speaker, const char dialogue[255]) {
-	//linkedDialogue.push_back((speaker, dialogue));
+	linkedDialogue.emplace_back(speaker, dialogue);
 }
 void NPC::printDialogue() {
 	if (recruited) {

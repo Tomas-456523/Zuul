@@ -4,11 +4,12 @@
 #include "Room.h"
 using namespace std;
 
-Item::Item(const char _name[255], const char _description[255], Room* _room, bool _takable, bool _target) {
+Item::Item(const char _name[255], const char _description[255], Room* _room, bool _takable, bool _consumable, bool _target) {
 	strcpy(name, _name);
 	strcpy(description, _description);
 	strcpy(type, "default");
 	takable = _takable;
+	consumable = _consumable;
 	targetRequired = _target;
 	//price = _price;
 	if (_room != NULL) {
@@ -38,6 +39,9 @@ int Item::getStock() {
 }
 bool Item::getTargetNeeded() {
 	return targetRequired;
+}
+bool Item::getConsumable() {
+	return consumable;
 }
 void Item::setDenial(const char denial[255]) {
 	strcpy(denyDescription, denial);
@@ -89,7 +93,7 @@ Item::~Item() {
 
 }
 //MARK: hp
-HpItem::HpItem(const char _name[255], const char _description[255], Room* _room, int _hp) : Item(_name, _description, _room, true, true) {
+HpItem::HpItem(const char _name[255], const char _description[255], Room* _room, int _hp) : Item(_name, _description, _room, true, true, true) {
 	hp = _hp;
 	strcpy(type, "hp");
 }
@@ -100,14 +104,14 @@ HpItem::~HpItem() {
 
 }
 //MARK: material
-MaterialItem::MaterialItem(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, true) {
+MaterialItem::MaterialItem(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, true, true) {
 	strcpy(type, "material");
 }
 MaterialItem::~MaterialItem() {
 
 }
 //MARK: education
-EducationItem::EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack) : Item(_name, _description, _room, true) {
+EducationItem::EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack) : Item(_name, _description, _room, true, true) {
 	attacks.push_back(_attack);
 	strcpy(type, "education");
 }
@@ -124,7 +128,7 @@ EducationItem::~EducationItem() {
 
 }
 //MARK: key
-KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, Attack* _attack) : Item(_name, _description, _room, true, true) {
+KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true) {
 	unlockType = _unlockType;
 	strcpy(useText, _useText);
 	strcpy(type, "key");
@@ -153,7 +157,7 @@ KeyItem::~KeyItem() {
 }
 
 //MARK: movement
-MovementItem::MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, true) {
+MovementItem::MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true) {
 	unlockType = _unlockType;
 	strcpy(useText, _useText);
 	strcpy(type, "movement");
@@ -180,9 +184,35 @@ Item* MovementItem::Duplicate() {
 MovementItem::~MovementItem() {
 
 }
+//MARK: paver
+PaverItem::PaverItem(const char _name[255], const char _description[255], Room* _room, char* _direction, Room* _destination) : Item(_name, _description, _room, false, true) {
+	destination = _destination;
+	direction = _direction;
+	strcpy(type, "paver");
+}
+PaverItem::~PaverItem() {
 
+}
+Room* PaverItem::getDestination() {
+	return destination;
+}
+char* PaverItem::getExit() {
+	return direction;
+}
+//MARK: manhole cover
+ManholeItem::ManholeItem(const char _name[255], const char _description[255], Room* _room, Room* _destination, Attack* _attack) : Item(_name, _description, _room, true, true, true) {
+	destination = _destination;
+	strcpy(type, "manhole");
+	attack = _attack;
+}
+ManholeItem::~ManholeItem() {
+
+}
+Room* ManholeItem::getRoom() {
+	return destination;
+}
 //MARK: info
-InfoItem::InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room) : Item(_name, _description, _room, false) {
+InfoItem::InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room) : Item(_name, _description, _room, false, false) {
 	strcpy(text, _text);
 	strcpy(type, "info");
 }

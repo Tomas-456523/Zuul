@@ -10,11 +10,14 @@ struct Effect {
 	int duration; //how long the effect lasts
 
 	int damage;
+
+	//buffs (additive)
 	int attackbuff;
 	int defensebuff;
 	int toughbuff;
 	int piercebuff;
 	bool freeze;
+	bool hypnotize;
 
 	int guardset;
 

@@ -174,16 +174,37 @@ queue<NPC*> Battle::reorder() {
 	}
 	return orderly_fashion;
 }
-void Battle::tickEffect(Effect& effect) {
+/*void Battle::logEffect(Effect& effect) {
+	allEffects.push_back(effect);
+}*/
+//tick the individual effect
+void Battle::tickEffect(Effect& effect, vector<Effect*>& choppingBlock) {
 	NPC* npc = effect.npc;
+	//we decrement effect durations, and add them to the chopping block if duration is at 0 (we don't delete immediately in order to not create dangling pointers in allEffects)
 	if (--effect.duration <= 0) {
-		npc->removeEffect(effect);
-		cout << npc->getName() << "'s " << effect.name << " wore off!";
-		CinPause();
+		choppingBlock.push_back(&effect);
 		return;
 	}
 	if (effect.damage != 0) {
-		npc->directDamage(effect.damage);
+		npc->directDamage(effect.damage, effect.name);
+	}
+	if (effect.guardset != 0) {
+		npc->setGuard(effect.guardset);
+	}
+}
+void Battle::tickEffects() {
+	//I have to build this here every turn or else modifying the npc's effect vectors would dangle the pointers
+	//vector<Effect*> allEffects;
+	vector<Effect*> choppingBlock;
+	for (NPC* npc : everyone) {
+		for (Effect& effect : npc->getEffects()) {
+			tickEffect(effect, choppingBlock);
+		}
+	}
+	for (Effect* effect : choppingBlock) {
+		cout << effect->npc->getName() << "'s " << effect->name << " wore off!";
+		effect->npc->removeEffect(*effect);
+		CinPause();
 	}
 }
 //i should slightly randomly alter attack
@@ -302,25 +323,21 @@ void Battle::npcTurn(NPC* npc) {
 		attack = npc->getBasicAttack();
 	}
 	NPC* target = NULL;
+	bool attackPlayer = npc->getEnemy();
+	if (attack->targetAlly) {
+		attackPlayer = !attackPlayer;
+	}
+	if (npc->getHypnotized()) {
+		attackPlayer = !attackPlayer;
+	}
 	while (target == NULL) {
-		if (npc->getEnemy()) {
-			if (!attack->targetAlly) {
-				target = playerTeam[rand()%playerTeam.size()];
-			} else {
-				target = enemyTeam[rand() % enemyTeam.size()];
-			}
-			if (target->getHealth() <= 0) {
-				target = NULL;
-			}
+		if (attackPlayer) {
+			target = playerTeam[rand() % playerTeam.size()];
 		} else {
-			if (!attack->targetAlly) {
-				target = enemyTeam[rand() % enemyTeam.size()];
-			} else {
-				target = playerTeam[rand() % playerTeam.size()];
-			}
-			if (target->getHealth() <= 0) {
-				target = NULL;
-			}
+			target = enemyTeam[rand() % enemyTeam.size()];
+		}
+		if (target->getHealth() <= 0) {
+			target = NULL;
 		}
 	}
 	carryOutAttack(attack, npc, target);
@@ -340,12 +357,14 @@ int Battle::FIGHT() {
 	while (continuing) {
 		if (turn.size() <= 0) {
 			turn = reorder();
-			//tick effects
+			tickEffects();
 		}
 
 		current = turn.front();
 		if (current->getHealth() <= 0) {
 			//do a backflip idk
+		} else if (current->getFrozen()) {
+			cout << "\n" << player->getName() << " tried to move but is frozen in place!";
 		} else if (current->getPlayerness()) {
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn(current);

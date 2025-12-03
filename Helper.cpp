@@ -44,6 +44,27 @@ namespace Helper {
 		}
 		commandExtensionP[i - j] = '\0';
 	}
+	void ParseWithON(char* commandExtensionP, char* itemNameP, char* npcNameP) {
+		char* on = strstr(commandExtensionP, " ON ");
+		if (on == NULL) {
+			strcpy(itemNameP, "");
+			strcpy(npcNameP, "");
+			return;
+		}
+		int i = 0;
+		while (&commandExtensionP[i] != on) {
+			itemNameP[i] = commandExtensionP[i];
+			i++;
+		}
+		itemNameP[i] = '\0';
+		i += 4;
+		int j = i;
+		while (commandExtensionP[i] != '\0') {
+			npcNameP[i - j] = commandExtensionP[i];
+			i++;
+		}
+		npcNameP[i - j] = '\0';
+	}
 	NPC* getNPCInVector(vector<NPC*> the_vector, char* npcname) {
 		for (NPC* npc : the_vector) {
 			if (!npc->getDefeated() && !strcmp(npc->getName(), npcname)) {
@@ -69,6 +90,7 @@ namespace Helper {
 		if (npc->getRecruited()) {
 			cout << " (" << npc->xpForNextLevel() << " xp to LEVEL UP)";
 		}
+		npc->printEffects();
 		cout << "\n  HEALTH - " << npc->getHealthMax();
 		cout << "\t  DEFENSE - " << npc->getDefense();
 		cout << "\n  ATTACK - " << npc->getAttack();
