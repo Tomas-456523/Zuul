@@ -57,7 +57,6 @@ public: //you need to set stats on creation
 	int xpForLevel(int level);
 	vector<NPC*>* getParty();
 	bool getLeader();
-	bool getHypnotized();
 	bool getEscapable();
 	Attack* getCheapestAttack();
 	int getXpReward();
@@ -69,7 +68,9 @@ public: //you need to set stats on creation
 	bool getLevelUp();
 	bool getDefeated();
 	Item* takeGift();
-	vector<Effect> getEffects();
+	vector<Effect>& getEffects();
+	int getHypnotized();
+	int getFrozen();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -89,7 +90,7 @@ public: //you need to set stats on creation
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
 	void setHypnotized(bool _hypnotized);
 	int damage(float power, float pierce, int hits = 1);
-	void directDamage(int damage);
+	void directDamage(int damage, char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
@@ -103,13 +104,17 @@ public: //you need to set stats on creation
 	void setGuard(int _guard);
 	void setLink(NPC* npc);
 	void setGift(Item* item);
-	void setEffect(Effect* effect);
+	void setRedirect(Room* room1, Room* room2);
+	//void setHypnotized(bool _hypnotized);
+	//void setFrozen(bool _frozen);
+	void setEffect(Effect* effect, bool battle = true);
 	void removeEffect(Effect& effect);
 
 	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false);
 	void addLinkedConvo(NPC* speaker, const char dialogue[255]);
 	void printDialogue();
 	void printDamage(int damage, char* status = NULL);
+	void printEffects();
 
 	void defeat();
 	void undefeat();
@@ -169,7 +174,8 @@ protected:
 	int speedScale = 0;
 	int spScale = 0;
 
-	bool hypnotized = false;
+	int hypnosis = 0;
+	int freeze = 0;
 	bool defeated = false;
 
 	char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated
@@ -178,6 +184,8 @@ protected:
 
 	bool escapable = true;
 	int guard = 0;
+
+	pair<Room*, Room*> redirectRoom; //after defeat, the first room is redirected to the second room
 
 	//int xpReward;
 	//int monyReward;

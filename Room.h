@@ -15,7 +15,7 @@ class Item;
 
 //this makes everything be in alphabetical order unfortunately, but it does allow me to store use strings as keys
 struct charComparer {
-	bool operator()(char* a, char* b) const {
+	bool operator()(const char* a, const char* b) const {
 		return strcmp(a,b) < 0;
 	}
 };
@@ -31,6 +31,7 @@ public:
 	vector<NPC*> getNpcs();
 	vector<char*> getBlocks();
 	Room* getExit(char* direction);
+	Room* getRedirect();
 	bool getBlocked(char* direction);
 	char* getBlockReason(char* direction);
 
@@ -47,6 +48,7 @@ public:
 	void removeNPC(NPC* npc);
 	void removeItem(Item* item);
 	void setExit(char* direction, Room* room, char* blocktype = NULL, char* _reason = NULL);
+	void setRedirect(Room* room);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
 	void setWelcome(const char text[255]); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char buydesc[255] = "");
@@ -73,5 +75,7 @@ private:
 	//input direction pointer and returns the reason why the exit is blocked
 	map<char*, char*, charComparer> blockReason;
 	map<char*, char*, charComparer> blockType;
+
+	Room* redirect = NULL;
 };
 #endif

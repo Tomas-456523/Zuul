@@ -69,6 +69,7 @@ namespace Helper {
 		if (npc->getRecruited()) {
 			cout << " (" << npc->xpForNextLevel() << " xp to LEVEL UP)";
 		}
+		npc->printEffects();
 		cout << "\n  HEALTH - " << npc->getHealthMax();
 		cout << "\t  DEFENSE - " << npc->getDefense();
 		cout << "\n  ATTACK - " << npc->getAttack();

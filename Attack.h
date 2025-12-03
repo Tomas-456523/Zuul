@@ -22,7 +22,7 @@ struct Attack {
 
 	float lifesteal; //what % of damage dealt is stolen and added to the npc's health
 
-	vector<Effect> applied_effects;
+	Effect* appliedeffect;
 
 	//how many targets it hits (1, 3, or all)
 	//min and max amount of times it hits
@@ -43,9 +43,9 @@ struct Attack {
 		lifesteal = _lifesteal;
 	}
 
-	void addEffect(Effect effect) {
+	/*void addEffect(Effect effect) {
 		applied_effects.push_back(effect);
-	}
+	}*/
 
 	void addDescription(const char desc[255]) {
 		strcpy(trueDesc, desc);

@@ -15,6 +15,8 @@ FEATURES I NEED TO IMPLEMENT
 - QUEST SYSTEM (like, to make npcs recruitable)
 - FISHING MINIGAME
 - RECAP COMMAND?
+
+/////////////////SET TEAMMATE NPC SCALING REMEMBER TO ACTUALLY USE THIS FEATURE
 */
 /*
 If you get the lame ending it gives a reference to the "Don't be lame clause"
@@ -118,6 +120,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* TEMPLE = new char[12];
 	char* RUBBLE = new char[12];
 	char* TUNNEL = new char[12];
+	char* TRACK = new char[12];
 	char* LOCK = new char[12];
 	char* MISC = new char[12];
 	
@@ -128,6 +131,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(TEMPLE, "TEMPLE");
 	strcpy(RUBBLE, "RUBBLE");
 	strcpy(TUNNEL, "TUNNEL");
+	strcpy(TRACK, "TRACK");
 	strcpy(LOCK, "LOCK");
 	strcpy(MISC, "MISC");
 
@@ -216,6 +220,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* desertshop = new Room("in an abandoned store. It would feel cozy if not for the smell of the expired products.");
 	Room* desertgym = new Room("in an abandoned gym. There's all the equipment you could ask for here, but no rock wall.");
 	Room* deserthouse = new Room("in some house with zero purpose. It only exists because the town would feel weird with only two houses.");
+
+	Room* deserttownfixed = new Room("in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
+	Room* desertshopfixed = new Room("in the desert store. It smells like pastries and medicine.");
+	Room* desertgymfixed = new Room("in the desert gym. Now that it's back in business it's time to get on that GRIND!");
+	//bro use your creativity surely you can put SOMETHING here
+	Room* deserthousefixed = new Room("in some house which still has zero purpose.");
 
 	Room* oasis = new Room("in an oasis, presumably the town's source of water, though the water is long gone.");
 	Room* canyon = new Room("in a small canyon that cuts into a plateau. There's an entrance to an old mineshaft here.");
@@ -349,28 +359,28 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	BURGERSBURG->setWelcome("You don't want this city knowing where you live.");
 	BURGERSBURG->setWelcome("We are not responsible for theft or damage to vehicles or contents!");
 
-	Room* mainstreet1 = new Room("on main street. There's a few lopsided cars on fire here.");
-	Room* mainstreet2 = new Room("on main street. You hear an explosion somewhere in the distance.");
-	Room* mainstreet3 = new Room("on main street. You see a shady alley to the right."); //behind broken building "It's so close, but the BURGER RESTAURANT is hard to see with all the smoke
-	Room* mainstreet4 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting.");
-	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you.");
-
 	Room* leftstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
 	Room* leftstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
 	Room* leftstreet3 = new Room(".");
 	Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
 	Room* leftstreet5 = new Room(".");
 
-	Room* newstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
-	Room* newstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
+	Room* newstreet1 = new Room(".");
+	Room* newstreet2 = new Room(".");
 	Room* newstreet3 = new Room(".");
-	Room* newstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
+	Room* newstreet4 = new Room(".");
 	Room* newstreet5 = new Room(".");
 
-	Room* coolstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
-	Room* coolstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
+	Room* mainstreet1 = new Room("on main street. There's a few lopsided cars on fire here.");
+	Room* mainstreet2 = new Room("on main street. You hear an explosion somewhere in the distance.");
+	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting."); //behind broken building "It's so close, but the BURGER RESTAURANT is hard to see with all the smoke
+	Room* mainstreet4 = new Room("on main street. There's a stairway here leading down to the BURGERSBURG train station.");
+	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you. BURGER TENDRILS wrap around its base.");
+
+	Room* coolstreet1 = new Room(".");
+	Room* coolstreet2 = new Room(".");
 	Room* coolstreet3 = new Room(".");
-	Room* coolstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
+	Room* coolstreet4 = new Room("at the entrance to a dark alley. Eh could be darker.");
 	Room* coolstreet5 = new Room(".");
 
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
@@ -379,7 +389,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* rightstreet4 = new Room(".");
 	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
 
-	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to only one person.");
+	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
 	Room* richneighborhood2 = new Room("in the rich neighborhood. You feel on guard with all the security systems looking at you. As soon as you step on a lawn, you'd probably be blown to smithereens.");
 	Room* richneighborhood3 = new Room("at a secluded corner of the rich neighborhood. Some guy's standing outside. What a daredevil.");
 	Room* richneighborhood4 = new Room("at the doorway of a huge layered bureaucratic-looking building. It's probably the second-tallest building in the city.");
@@ -389,12 +399,13 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* burgstore = new Room("in an abandoned store. Nobody bothers to stock the shelves anymore."); //up exit but bernard gets scared?
 	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses. You should really leave before you develop a gambling addiction.");
-	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged. Eh could be darker.");
+	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
 	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
 	Room* shrimpartment2 = new Room("on the second floor. The flowery wallpaper is peeling off.");
 	Room* shrimpartment3 = new Room("on the third floor. You see an open doorway leading to an unfurnished room; your instincts pull you away from it.");
-	Room* shrimproof = new Room("on the apartment rooftop. The pigeons are gone.");
+	Room* shrimproof = new Room("on the apartment rooftop. You have a view.");
 	Room* firedepartment = new Room("in the fire department. The fire alarm is going off SOMEONE TURN IT OFF PLEASE MY EARS");
+	Room* burgstation = new Room("in the BURGERSBURG train station. [interesting flavor text]");
 
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's one of those heavy-duty elevators.");
 	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no going back.");
@@ -791,7 +802,6 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	bridge2->setExit(SOUTH, bridge1);
 	bridge3->setExit(NORTH, BURGERSBURG);
 	bridge3->setExit(SOUTH, bridge2);
-	
 
 	Room* tunnel = new Room("in the train tunnels that span the continent.");
 
@@ -831,6 +841,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
 	Attack* shirmplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 99999, 99999, 1, 1, 1);
 	jimshady->setBasicAttack(shirmplebeam);
+	Effect* engarde = new Effect("EN GARDE!", 2147483647);
+	engarde->guardset = 1;
+	jimshady->setEffect(engarde, false);
 
 	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
 	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
@@ -841,9 +854,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 50, 5, 7, 5, 5, 12, 24, 7, true);
 	flowerfiend->setParty(carnplant, carnplant);
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
-	Effect flowerpower = Effect("FLOWER POWER", 3, 0, 5);
+	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 5);
 	Attack* flowerempower = new Attack("FLOWER POWER", "used its planty power to buff", 16, 10, 5, 1, 1, 1, true);
-	flowerempower->applied_effects.push_back(flowerpower);
+	flowerempower->appliedeffect = flowerpower;
 	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
 	flowerfiend->setBasicAttack(crunch);
 	flowerfiend->addSpecialAttack(nutrientabsorb);
@@ -873,6 +886,16 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	forestguard->setRejectionDialogue("(angry bush noises)");
 	//forestguard->setParty(grassman, grassman, grassman, prickly_hog);
 
+	NPC* jimshady1 = new NPC(*jimshady);
+	jimshady1->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
+	jimshady1->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
+	jimshady1->addConversation(self, "No you aren't.");
+	jimshady1->addConversation(jimshady1, "Shut up.");
+	jimshady1->setRejectionDialogue("I'm JIM SHADY, yes I'm the REAL SHADY!");
+
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 100, 20, 20, 10, true);
+	tkviola->setRedirect(deserttown, deserttownfixed);
+
 	//MARK: block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
@@ -886,6 +909,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	//exits blocked by enemies
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
+	forestwall->blockExit(EAST, ENEMY, "blocked by JIM SHADY.");
 
 	return self; //returns the player character
 }
@@ -912,6 +936,9 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool force
 	} else if (!forceTravel && currentRoom->getBlocked(direction)) {
 		currentRoom->printBlock(direction);
 		return;
+	}
+	if (roomCanidate->getRedirect() != NULL) {
+		roomCanidate = roomCanidate->getRedirect();
 	}
 	roomCanidate->undefeatEnemies();
 	currentRoom = roomCanidate;
@@ -1007,8 +1034,8 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		//change room description
 
 		for (char* exit : exitsUnlocked) {
-			Room* thatroom = currentRoom->getExit(exit);
-			if (thatroom->getBlocked(exit)) {
+			Room* thatroom = targetRoom->getExit(exit);
+			if (thatroom->getBlocked(const_cast<char*>(ReverseDirection[exit]))) {
 				thatroom->unblockExit(ReverseDirection[exit]);
 			}
 		}
@@ -1024,8 +1051,8 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 				travel(currentRoom, exit, party, true);
 				return;
 			}
-			cout << "\nYou can't use the " << itemname << " here.";
 		}
+		cout << "\nYou can't use the " << itemname << " here.";
 	} else if (!strcmp(item->getType(), "paver")) {
 
 	} else if (!strcmp(item->getType(), "info")) {
@@ -1058,6 +1085,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxPa
 	}
 	if (party->size() == maxParty) {
 		cout << "\nYour party is full!";
+		return;
 	}
 	party->push_back(npc);
 	npc->Recruit();
@@ -1081,6 +1109,7 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 	party->erase(remove(party->begin(), party->end(), npc), party->end());
 	cout << "\n" << npcname << " - \"" << npc->getDismissalDialogue() << "\"";
 	cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
+	npc->Dismiss();
 }
 
 void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory) {
@@ -1193,7 +1222,8 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 		}
 		CinPause();
 	} else if (battlestatus == 1) { //win
-		cout << "\nYOU WIN!";
+		//describe how the enemy was defeated?
+		cout << "YOU WIN!";
 		CinPause();
 		mony += battle.getMonyReward(); 
 		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is literally never just 1
