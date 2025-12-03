@@ -404,6 +404,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* shrimpartment2 = new Room("on the second floor. The flowery wallpaper is peeling off.");
 	Room* shrimpartment3 = new Room("on the third floor. You see an open doorway leading to an unfurnished room; your instincts pull you away from it.");
 	Room* shrimproof = new Room("on the apartment rooftop. You have a nice view of the city lights.");
+
 	Room* firedepartment = new Room("in the fire department. The fire alarm is going off SOMEONE TURN IT OFF PLEASE MY EARS");
 	Room* burgstation = new Room("in the BURGERSBURG train station. [interesting flavor text]");
 

@@ -370,9 +370,12 @@ void NPC::setGift(Item* item) {
 void NPC::setRedirect(Room* room1, Room* room2) {
 	redirectRoom = make_pair(room1, room2);
 }
+<<<<<<< HEAD
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }
+=======
+>>>>>>> 996b6515c6cd9c7de57b780bc627240a7a8689dd
 /*void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
 }
@@ -455,6 +458,7 @@ void NPC::defeat() {
 		redirectRoom.first->setRedirect(redirectRoom.second);
 		redirectRoom = make_pair((Room*)NULL, (Room*)NULL);
 	}
+<<<<<<< HEAD
 	if (defeatChange) {
 		strcmp(title, defeatTitle);
 		strcmp(description, defeatDescription);
@@ -462,6 +466,8 @@ void NPC::defeat() {
 		setRoom(defeatRoom);
 		defeatChange = false;
 	}
+=======
+>>>>>>> 996b6515c6cd9c7de57b780bc627240a7a8689dd
 	defeated = true;
 }
 void NPC::undefeat() {
