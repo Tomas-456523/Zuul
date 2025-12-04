@@ -61,20 +61,24 @@ protected:
 //MARK:xp
 class XpItem : public Item {
 public:
-	XpItem();
+	XpItem(const char _name[255], const char _description[255], Room* _room, int _xp);
 	virtual ~XpItem();
 
 	int getXp();
+
+	virtual Item* Duplicate() override;
 private:
 	int xp;
 };
 //MARK:sp
 class SpItem : public Item {
 public:
-	SpItem();
+	SpItem(const char _name[255], const char _description[255], Room* _room, int _sp);
 	virtual ~SpItem();
 
 	int getSp();
+
+	virtual Item* Duplicate() override;
 private:
 	int sp;
 };
@@ -154,10 +158,10 @@ private:
 //tent station is unlocked always
 class CallerItem : public Item {
 public:
-	CallerItem(NPC* npc);
+	CallerItem(const char _name[255], const char _description[255], Room* _room, NPC* npc);
 	virtual ~CallerItem();
 
-	void callNPC(); //call the npc to the caller's current room
+	NPC* getCalledNPC(); //call the npc to the caller's current room
 private:
 	NPC* npc_called; //the guy you're calling
 };
@@ -213,15 +217,17 @@ private:
 //paves a new path MARK: paver
 class PaverItem : public Item {
 public:
-	PaverItem(const char _name[255], const char _description[255], Room* _room, /*Room* _usableRoom, */ char* _direction, Room* _destination);
+	PaverItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, /*Room* _usableRoom, */ char* _direction, Room* _destination);
 	virtual ~PaverItem();
 
 	Room* getDestination(); //gets the room that it leads to
-	char* getExit(); //gets the direction it leads to
+	char* getDirection(); //gets the direction it leads to
+	char* getUseText();
 private:
 	//Room* usableRoom; //the room it's usable in
 	char* direction; //the direction that it creates the new exit in
 	Room* destination; //the room that the new exit leads to
+	char useText[255];
 };
 class ManholeItem : public Item {
 public:

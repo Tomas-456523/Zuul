@@ -75,6 +75,9 @@ bool NPC::getPlayerness() {
 Room* NPC::getHome() {
 	return home;
 }
+Room* NPC::getRoom() {
+	return currentRoom;
+}
 int NPC::getHealth() {
 	return health;
 }
@@ -370,12 +373,9 @@ void NPC::setGift(Item* item) {
 void NPC::setRedirect(Room* room1, Room* room2) {
 	redirectRoom = make_pair(room1, room2);
 }
-<<<<<<< HEAD
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }
-=======
->>>>>>> 996b6515c6cd9c7de57b780bc627240a7a8689dd
 /*void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
 }
@@ -386,6 +386,12 @@ void NPC::setEffect(Effect* _effect, bool battle) {
 	Effect effect = *_effect;
 	for (Effect& ef : effects) {
 		if (!strcmp(effect.name, ef.name)) {
+			if (effect.duration < ef.duration) {
+				cout << name << " already has " << ef.name << "!";
+				ef.duration++;
+				return;
+			}
+			cout << name << "'s " << ef.name << " was extended!";
 			ef.duration = effect.duration;
 			return;
 		}
@@ -395,6 +401,18 @@ void NPC::setEffect(Effect* _effect, bool battle) {
 		defense += effect.defensebuff;
 		toughness += effect.toughbuff;
 		pierce += effect.piercebuff;
+		if (effect.attackbuff) {
+			cout << "\n" << name << "'s ATTACK went up!";
+		}
+		if (effect.defensebuff) {
+			cout << "\n" << name << "'s DEFENSE went up!";
+		}
+		if (effect.toughbuff) {
+			cout << "\n" << name << "'s TOUGHNESS went up!";
+		}
+		if (effect.piercebuff) {
+			cout << "\n" << name << "'s PIERCE went up!";
+		}
 	}
 	if (effect.freeze) {
 		if (!freeze) {
@@ -418,11 +436,29 @@ void NPC::removeEffect(Effect& effect) {
 			defense -= effects[i].defensebuff;
 			toughness -= effects[i].toughbuff;
 			pierce -= effects[i].piercebuff;
+			if (effects[i].attackbuff) {
+				cout << "\n" << name << "'s ATTACK went down!";
+			}
+			if (effects[i].defensebuff) {
+				cout << "\n" << name << "'s DEFENSE went down!";
+			}
+			if (effects[i].toughbuff) {
+				cout << "\n" << name << "'s TOUGHNESS went down!";
+			}
+			if (effects[i].piercebuff) {
+				cout << "\n" << name << "'s PIERCE went down!";
+			}
 			if (effect.freeze) {
 				freeze -= 1;
+				if (!freeze) {
+					cout << "\n" << name << "is no longer frozen!";
+				}
 			}
 			if (effect.hypnotize) {
 				hypnosis -= 1;
+				if (!hypnosis) {
+					cout << "\n" << name << " snapped out of it!";
+				}
 			}
 			effects.erase(effects.begin() + i);
 			return;
@@ -458,7 +494,6 @@ void NPC::defeat() {
 		redirectRoom.first->setRedirect(redirectRoom.second);
 		redirectRoom = make_pair((Room*)NULL, (Room*)NULL);
 	}
-<<<<<<< HEAD
 	if (defeatChange) {
 		strcmp(title, defeatTitle);
 		strcmp(description, defeatDescription);
@@ -466,8 +501,6 @@ void NPC::defeat() {
 		setRoom(defeatRoom);
 		defeatChange = false;
 	}
-=======
->>>>>>> 996b6515c6cd9c7de57b780bc627240a7a8689dd
 	defeated = true;
 }
 void NPC::undefeat() {

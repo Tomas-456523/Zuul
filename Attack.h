@@ -22,7 +22,7 @@ struct Attack {
 
 	float lifesteal; //what % of damage dealt is stolen and added to the npc's health
 
-	Effect* appliedeffect;
+	Effect* appliedeffect = NULL;
 
 	//how many targets it hits (1, 3, or all)
 	//min and max amount of times it hits

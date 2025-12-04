@@ -89,10 +89,75 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 		delete[] name;
 	}
 }
-//use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
-bool Battle::useItem(char* commandExtensionP) {
-	//use the item
-	return false;
+//if time permits you should make a Helper function that does the first bit modularly
+bool Battle::useItem(char* itemname) {
+	Item* item = getItemInVector(*inventory, commandExtensionP);
+	char itemName[255] = "";
+	char npcName[255] = "";
+	NPC* npc = NULL;
+	if (item == NULL) {
+		ParseWithON(itemname, &itemName[0], &npcName[0]);
+		item = getItemInVector(*inventory, itemName);
+		if (item != NULL) {
+			npc = getNPCInVector(*party, npcName);
+			if (!item->getTargetNeeded()) {
+				cout << "\nThe " << itemName << " doesn't need a target!";
+				return false;
+			} else if (npc == NULL) {
+				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
+				return false;
+			}
+		} else {
+			itemname = itemName; //makes the null item print not say "You have no [item] ON [npc]"
+		}
+	}
+	if (item == NULL) {
+		cout << "\nYou have no \"" << itemname << "\".";
+		return false;
+	} else if (item->getTargetNeeded() && npc == NULL) {
+		if (party->size() > 1) {
+			cout << "\nThis item needs a target!";
+			return false;
+		}
+		npc = (*party)[0]; //if we only have the player in the party we just use them because who else would we be targetting
+	}
+
+	if (!strcmp(item->getType(), "hp")) {
+		HpItem* hp = (HpItem*)item;
+
+	} else if (!strcmp(item->getType(), "sp")) {
+		SpItem* sp = (SpItem*)item;
+
+	} if (!strcmp(item->getType(), "revive")) {
+		ReviveItem* revive = (ReviveItem*)item;
+
+	} if (!strcmp(item->getType(), "effect")) {
+		EffectItem* affecter = (EffectItem*)item;
+
+	} else if (!strcmp(item->getType(), "BURGER")) {
+
+	//some key items have attacks
+	} else if (!strcmp(item->getType(), "key")) {
+		KeyItem* key = (KeyItem*)item;
+	//some movement items have attacks
+	} else if (!strcmp(item->getType(), "movement")) {
+		MovementItem* mover = (MovementItem*)item;
+	
+	//dont think I have any pickupable ones but if there is just uncomment this
+	//} else if (!strcmp(item->getType(), "paver")) {
+	//you can quickly read info items you have, in case you need to use it in battle for whatever reason
+	} else if (!strcmp(item->getType(), "info")) {
+		InfoItem* info = (InfoItem*)item;
+		cout << "\n" << info->getText();
+		return false;
+	} else {
+		cout << "\nThe " << itemname << " can't be used in battle!";
+		return false;
+	}
+	if (item->getConsumable()) {
+		deleteItem(NULL, inventory, item);
+	}
+	return true;
 }
 void Battle::printTeam(vector<NPC*> team, bool printLevel, bool printSP) {
 	for (NPC* npc : team) {
@@ -210,7 +275,6 @@ void Battle::tickEffects() {
 //i should slightly randomly alter attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost);
-	//also add effects
 	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
 	vector<NPC*> tarparty;
 	if (target->getEnemy()) {
@@ -226,6 +290,9 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	for (int i = 0; i < tarparty.size(); i++) {
 		if (tarPos - attack->targets/2 <= i && i < tarPos + attack->targets - attack->targets/2) {
 			tarparty[i]->damage(attack->power + attacker->getAttack(), attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
+			if (attack->appliedeffect != NULL) {
+				tarparty[i]->setEffect(attack->appliedeffect);
+			}
 		}
 	}
 	//target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce(), rand()%(attack->maxhits+1, attack->minhits) + attack->minhits);

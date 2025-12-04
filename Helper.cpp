@@ -99,7 +99,6 @@ namespace Helper {
 		cout << "\t  SPEED - " << npc->getSpeed();
 		cout << "\n  SKILL - " << npc->getSPMax();
 	}
-
 	void printItemData(Item* item) {
 		cout << "\n" << item->getName() << " - " << item->getDescription();
 		if (!item->getTakable()) {
@@ -110,6 +109,17 @@ namespace Helper {
 				cout << "ies.";
 			}
 		}
+	}
+	void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item) {
+		for (Item* _item : *inventory) {
+			if (_item == item) {
+				delete item;
+				inventory->erase(remove(inventory->begin(), inventory->end(), item), inventory->end());
+				return;
+			}
+		}
+		item->unRoom();
+		delete item;
 	}
 	int Clamp(int num, int min, int max) {
 		if (num < min) {

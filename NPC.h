@@ -50,6 +50,7 @@ public: //you need to set stats on creation
 	int getSP();
 	int getSPMax();
 	Room* getHome(); //gets the home location of the npc
+	Room* getRoom();
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
 	int xpForLevel(int level);

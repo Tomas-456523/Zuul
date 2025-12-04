@@ -32,6 +32,7 @@ public:
 	vector<char*> getBlocks();
 	Room* getExit(char* direction);
 	Room* getRedirect();
+	bool getStation();
 	bool getBlocked(char* direction);
 	char* getBlockReason(char* direction);
 
@@ -49,6 +50,7 @@ public:
 	void removeItem(Item* item);
 	void setExit(char* direction, Room* room, char* blocktype = NULL, char* _reason = NULL);
 	void setRedirect(Room* room);
+	void setStation(bool stat = true);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
 	void setWelcome(const char text[255]); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char buydesc[255] = "");
@@ -77,5 +79,7 @@ private:
 	map<char*, char*, charComparer> blockType;
 
 	Room* redirect = NULL;
+
+	bool station;
 };
 #endif

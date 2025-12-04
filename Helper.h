@@ -16,6 +16,7 @@ namespace Helper {
 	Item* getItemInVector(vector<Item*> the_vector, char* itemname);
 	void printNPCData(NPC* npc);
 	void printItemData(Item* item);
+	void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item);
 	int Clamp(int num, int min, int max);
 	float ClampF(float num, float min, float max);
 	void sortBySpeed(vector<NPC*>& team);

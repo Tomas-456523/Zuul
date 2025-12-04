@@ -1000,25 +1000,28 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	jimshady1->addConversation(jimshady1, "Shut up.");
 	jimshady1->setRejectionDialogue("No go away.");
 
-	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 100, 20, 20, 10, true);
+	//set up teammate viola
+	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 100, 20, 20, 0, true);
+	viola->setScale(0, 0, 1, 0, 1, 0, 2);
+	viola->setLevel(10);
 	viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
 	viola->addConversation(viola, "So what if I did?");
 	viola->addConversation(self, "Lady you can't just go kidnapping people.");
 	viola->addConversation(viola, "OH YEAH? FIGHT ME!");
 	viola->addConversation(self, "Ok.");
-	viola->setDialogue("AHAHAHH");
-	viola->setRejectionDialogue("");
-	viola->setRecruitmentDialogue("");
-	viola->setRecruitedDialogue("");
-	viola->setDismissalDialogue("Well I guess I'll just go back to that cliff over there.");
+	viola->setDialogue("AHAHAHAHAHAHAHA!");
+	viola->setRejectionDialogue("Sure you can join me and my friends if you want! AHAHAHA!");
+	viola->setRecruitmentDialogue("Yeah maybe I could do something good by following you. I think I'll go with. Thanks.");
+	viola->setRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
+	viola->setDismissalDialogue("Well I guess I can watch over the town from that cliff over there. That might be good.");
 	viola->setRedirect(deserttown, deserttownfixed);
 	viola->setLink(viola);
-	viola->addLinkedConvo(viola, "I'm sorry I'll free everyone...");
+	viola->addLinkedConvo(viola, "I'm sorry. I'll free everyone...");
 	viola->addLinkedConvo(viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them...");
-	viola->addLinkedConvo(self, "That's a dumb reason.");
+	viola->addLinkedConvo(self, "That reason is stupid.");
 	viola->addLinkedConvo(viola, "Yeah I know...");
 	viola->addLinkedConvo(viola, "I'm just going to go to that cliff over there...");
-	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager.", "I", thatcliff);
+	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
 	viola->setTalkOnDefeat(true);
 
 	//MARK: block exits
@@ -1026,9 +1029,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
 	foresttempleentrance->blockExit(SOUTH, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
-	treasuregrove->blockExit(NORTH, CHASM, "blocked by a large chasm.");
-	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a large chasm.");
+	treasuregrove->blockExit(NORTH, CHASM, "blocked by a steep ravine.");
+	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a steep ravine.");
 	ninjaland->blockExit(UP, MISC, "too high. You need ninja abilities to scale the trees.");
+
+	//desert is blocked by scorching sands, prevented with shoes
 
 	//volcano factory exit is blocked by the caved-in roof
 
@@ -1093,6 +1098,14 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	item->unRoom();
 	inventory->push_back(item);
 	cout << "\nYou took the " << itemname << ".";
+	//taking manhole covers reveals a new exit below! (only the first time you take it)
+	if (!strcmp(item->getType(), "manhole")) {
+		ManholeItem* cover = (ManholeItem*)item;
+		if (cover->getRoom() != NULL) {
+			currentRoom->setExit(const_cast<char*>("DOWN"), cover->getRoom());
+			cout << "\nAn exit DOWNwards was revealed!";
+		}
+	}
 }
 
 void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
@@ -1106,20 +1119,8 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	cout << "\nYou dropped the " << itemname << ".";
 }
 
-void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item) {
-	for (Item* _item : inventory) {
-		if (_item == item) {
-			delete item;
-			inventory->erase(remove(inventory->begin(), inventory->end(), item), inventory->end());
-			return;
-		}
-	}
-	item->unRoom();
-	delete item;
-}
-
 //MARK: useitem
-//use commands may be formatted "USE ITEM", or "USE ITEM ON NPC", or "USE ITEM NAME ON NPC", so have fun coding that
+//I PROGRAMMED THAT!
 void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
 	Item* item = getItemInVector(*inventory, itemname);
 	char itemName[255] = "";
@@ -1127,16 +1128,16 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	NPC* npc = NULL;
 	if (item == NULL) {
 		item = getItemInVector(currentRoom->getItems(), itemname);
-	} else if (item->getTargetNeeded()) {
-		cout << "\nThis item needs a target!";
-		return;
-	}
-	//may or may not work
+	} 
 	if (item == NULL) {
 		ParseWithON(itemname, &itemName[0], &npcName[0]);
-		item = getItemInVector(currentRoom->getItems(), itemName);
+		item = getItemInVector(*inventory, itemName);
+		if (item == NULL && getItemInVector(currentRoom->getItems(), itemName) != NULL) {
+			cout << "\nYou can't use the " << itemName << " if you aren't holding it!";
+			return;
+		}
 		if (item != NULL) {
-			npc = getNPCInVector(party, npcName);
+			npc = getNPCInVector(*party, npcName);
 			if (!item->getTargetNeeded()) {
 				cout << "\nThe " << itemName << " doesn't need a target!";
 				return;
@@ -1144,11 +1145,19 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
 				return;
 			}
+		} else {
+			itemname = itemName; //makes the null item print not say "You have no [item] ON [npc]"
 		}
 	}
 	if (item == NULL) {
 		cout << "\nYou have no \"" << itemname << "\".";
 		return;
+	} else if (item->getTargetNeeded() && npc == NULL) {
+		if (party->size() > 1) {
+			cout << "\nThis item needs a target!";
+			return;
+		}
+		npc = (*party)[0]; //if we only have the player in the party we just use them because who else would we be targetting
 	}
 
 	if (!strcmp(item->getType(), "xp")) {
@@ -1159,10 +1168,25 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		//uhhhh are we still adding this
 	} else if (!strcmp(item->getType(), "BURGER")) {
 
+	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
-
+		EducationItem* edu = (EducationItem*)item;
+		for (Attack* attack : edu->getAttacks()) {
+			(*party)[0]->addSpecialAttack(attack);
+		}
+	//summons the tunnel lobster to the current train station
 	} else if (!strcmp(item->getType(), "caller")) {
-
+		CallerItem* caller = (CallerItem*)item;
+		npc = caller->getCalledNPC();
+		if (!currentRoom->getStation()) {
+			cout << "\nThe " << itemname << " must be used in a train station!";
+			return;
+		} else if (npc->getRoom() == currentRoom) {
+			cout << "\n" << npc->getName() << " is already here!";
+			return;
+		}
+		npc->setRoom(currentRoom);
+		cout << "\n" << npc->getName() << " burst out of the rubble!";
 	} else if (!strcmp(item->getType(), "toll")) {
 
 	} else if (!strcmp(item->getType(), "key")) {
@@ -1204,13 +1228,19 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		}
 		cout << "\nYou can't use the " << itemname << " here.";
 	} else if (!strcmp(item->getType(), "paver")) {
-
+		PaverItem* paver = (PaverItem*)item;
+		currentRoom->setExit(paver->getDirection(), paver->getDestination());
+		paver->getDestination()->setExit(const_cast<char*>(ReverseDirection[paver->getDirection()]), currentRoom);
+		cout << "\nYou " << paver->getUseText();
 	} else if (!strcmp(item->getType(), "info")) {
-
+		InfoItem* info = (InfoItem*)item;
+		cout << "\n" << info->getText();
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
+		return;
 	} else {
 		cout << "\nThe " << itemname << " can only be used in battle!";
+		return;
 	}
 	if (item->getConsumable()) {
 		deleteItem(currentRoom, inventory, item);

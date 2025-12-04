@@ -92,6 +92,34 @@ Item* Item::Duplicate() {
 Item::~Item() {
 
 }
+//MARK: xp
+XpItem::XpItem(const char _name[255], const char _description[255], Room* _room, int _xp) : Item(_name, _description, _room, true, true, true) {
+	xp = _xp;
+	strcpy(type, "xp");
+}
+Item* XpItem::Duplicate() {
+	return new XpItem(*this);
+}
+int XpItem::getXp() {
+	return xp;
+}
+XpItem::~XpItem() {
+
+}
+//MARK: sp
+SpItem::SpItem(const char _name[255], const char _description[255], Room* _room, int _sp) : Item(_name, _description, _room, true, true, true) {
+	sp = _sp;
+	strcpy(type, "sp");
+}
+Item* SpItem::Duplicate() {
+	return new SpItem(*this);
+}
+int SpItem::getSp() {
+	return sp;
+}
+SpItem::~SpItem() {
+
+}
 //MARK: hp
 HpItem::HpItem(const char _name[255], const char _description[255], Room* _room, int _hp) : Item(_name, _description, _room, true, true, true) {
 	hp = _hp;
@@ -99,6 +127,9 @@ HpItem::HpItem(const char _name[255], const char _description[255], Room* _room,
 }
 Item* HpItem::Duplicate() {
 	return new HpItem(*this);
+}
+int HpItem::getHp() {
+	return hp;
 }
 HpItem::~HpItem() {
 
@@ -126,6 +157,17 @@ Item* EducationItem::Duplicate() {
 }
 EducationItem::~EducationItem() {
 
+}
+//MARK: caller
+CallerItem::CallerItem(const char _name[255], const char _description[255], Room* _room, NPC* npc) : Item(_name, _description, _room, true) {
+	npc_called = npc;
+	strcpy(type, "caller");
+}
+CallerItem::~CallerItem() {
+
+}
+NPC* CallerItem::getCalledNPC() {
+	return npc_called;
 }
 //MARK: key
 KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true) {
@@ -185,10 +227,11 @@ MovementItem::~MovementItem() {
 
 }
 //MARK: paver
-PaverItem::PaverItem(const char _name[255], const char _description[255], Room* _room, char* _direction, Room* _destination) : Item(_name, _description, _room, false, true) {
+PaverItem::PaverItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _direction, Room* _destination) : Item(_name, _description, _room, false, true) {
 	destination = _destination;
 	direction = _direction;
 	strcpy(type, "paver");
+	strcpy(useText, _useText);
 }
 PaverItem::~PaverItem() {
 
@@ -196,8 +239,11 @@ PaverItem::~PaverItem() {
 Room* PaverItem::getDestination() {
 	return destination;
 }
-char* PaverItem::getExit() {
+char* PaverItem::getDirection() {
 	return direction;
+}
+char* PaverItem::getUseText() {
+	return useText;
 }
 //MARK: manhole cover
 ManholeItem::ManholeItem(const char _name[255], const char _description[255], Room* _room, Room* _destination, Attack* _attack) : Item(_name, _description, _room, true, true, true) {
@@ -209,7 +255,9 @@ ManholeItem::~ManholeItem() {
 
 }
 Room* ManholeItem::getRoom() {
-	return destination;
+	Room* dest = destination;
+	destination = NULL;
+	return dest;
 }
 //MARK: info
 InfoItem::InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room) : Item(_name, _description, _room, false, false) {

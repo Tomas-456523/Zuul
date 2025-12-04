@@ -18,7 +18,7 @@ public:
 
 	int FIGHT();
 
-	bool useItem(char* commandExtensionP);
+	bool useItem(char* itemname);
 	void printTeam(vector<NPC*> team, bool printLevel = true, bool printSP = false);
 	void printInventory();
 	void printParty();
