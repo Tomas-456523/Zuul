@@ -17,7 +17,7 @@ struct Effect;
 
 class Item {
 public:
-	Item(const char _name[255], const char _description[255], Room* _room = NULL, bool _takable = true, bool _consumable = false, bool _target = false);
+	Item(const char _name[255], const char _description[255], Room* _room = NULL, bool _takable = true, bool _consumable = false, bool _target = false, bool useonenemy = false);
 	virtual ~Item();
 
 	char* getName();
@@ -30,6 +30,7 @@ public:
 	int getStock();
 	bool getTargetNeeded();
 	bool getConsumable();
+	bool getForEnemy();
 	
 	void buy(int& mony, vector<Item*>* inventory);
 	void setDenial(const char denial[255]);
@@ -55,6 +56,7 @@ protected:
 	bool consumable = false;
 
 	bool targetRequired;
+	bool useOnEnemy;
 
 	Room* room = NULL;
 };
@@ -98,8 +100,14 @@ private:
 //this should be very rare and non-renewable
 class ReviveItem : public Item {
 public:
-	ReviveItem();
+	ReviveItem(const char _name[255], const char _description[255], Room* _room, int _hp);
 	virtual ~ReviveItem();
+
+	int getHp();
+
+	virtual Item* Duplicate() override;
+private:
+	int hp;
 };
 //MARK: mony
 class MonyItem : public Item {

@@ -10,6 +10,7 @@ struct Effect {
 	int duration; //how long the effect lasts
 
 	int damage;
+	int spleak;
 
 	//buffs (additive)
 	int attackbuff;
@@ -38,10 +39,11 @@ struct Effect {
 
 	Effect() {}
 
-	Effect(const char _name[255], int _duration, int _damage = 0, int _attackbuff = 0, int _defensebuff = 0, int _toughbuff = 0, int _piercebuff = 0) {
+	Effect(const char _name[255], int _duration, int _damage = 0, int _spleak = 0, int _attackbuff = 0, int _defensebuff = 0, int _toughbuff = 0, int _piercebuff = 0) {
 		strcpy(name, _name);
 		duration = _duration;
 		damage = _damage;
+		spleak = _spleak;
 		attackbuff = _attackbuff;
 		defensebuff = _defensebuff;
 		toughbuff = _toughbuff;

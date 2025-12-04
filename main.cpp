@@ -76,6 +76,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* UNDERGROUND = new char[12];
 	char* FORWARD = new char[12];
 
+	char* TO_THE_VILLAGE = new char[20];
+	char* TO_THE_DESERT = new char[20];
+	char* TO_THE_HIGHLANDS = new char[20];
+	char* TO_BURGERSBURG = new char[20];
+	char* TO_THE_BASEMENT = new char[20];
+
 	//set the text for the directions
 	strcpy(NORTH, "NORTH");
 	strcpy(SOUTH, "SOUTH");
@@ -103,6 +109,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
 	strcpy(UNDERGROUND, "UNDERGROUND");
 	strcpy(FORWARD, "FORWARD");
+
+	strcpy(TO_THE_VILLAGE, "TO THE VILLAGE");
+	strcpy(TO_THE_DESERT, "TO THE DESERT");
+	strcpy(TO_THE_HIGHLANDS, "TO THE HIGHLANDS");
+	strcpy(TO_BURGERSBURG, "TO BURGERSBURG");
+	strcpy(TO_THE_BASEMENT, "TO THE BASEMENT");
 
 	ReverseDirection[NORTH] = SOUTH;
 	ReverseDirection[SOUTH] = NORTH;
@@ -424,6 +436,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* BURGERRESTAURANT = new Room("at the tippity top the BURGER RESTAURANT. You can see the sun barely shining under the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
+	Room* basestation = new Room("in some train station");
 
 	
 	//MARK: set up NPCs
@@ -909,11 +922,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	richneighborhood4->setExit(SOUTHEAST, richneighborhood3);
 	richneighborhood4->setExit(SOUTHWEST, richneighborhood1);
 
-	Room* tunnel = new Room("in the train tunnels that span the continent.");
+	Room* tunnels = new Room("in the train tunnels that span the continent.");
+	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 
 	//MARK: set up enemies
 
-	NPC* tunnel_lobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnel, 200, 20, 10, 20, 10, 50, 10, 30, true);
+	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnel, 200, 20, 10, 20, 10, 50, 10, 30, true);
 	//you should also get a prompt to name it like
 	//                                                     (type your lobster's name here!)
 	//SELF - "Oh nice a pet lobster. I think I'll name you 
@@ -926,8 +940,17 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//Successfully tamed TUNNEL LOBSTER!
 	// 
 	//reset the description to tamed instead of savage
-	tunnel_lobster->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (lobster noises).");
-	tunnel_lobster->setRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
+	tunnellobster->setLobster(tunnels);
+	tunnellobster->setLeader(true, 10, desertstation);
+	tunnellobster->setTunnelDirection(tentstation, TO_THE_VILLAGE);
+	tunnellobster->setTunnelDirection(desertstation, TO_THE_DESERT);
+	tunnellobster->setTunnelDirection(volcanostation, TO_THE_HIGHLANDS);
+	tunnellobster->setTunnelDirection(burgstation, TO_BURGERSBURG);
+	tunnellobster->setTunnelDirection(basestation, TO_THE_BASEMENT);
+	tunnellobster->setLink(tunnellobster);
+	tunnellobster->setDefeatNPC("", "An immense, tamed crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)." NULL);
+	tunnellobster->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
+	tunnellobster->setRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
 
 	//set up generic non-npc enemies
 	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15, 5);
@@ -960,7 +983,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 50, 5, 7, 5, 5, 12, 24, 7, true);
 	flowerfiend->setParty(carnplant, carnplant);
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
-	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 5);
+	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 5);
 	Attack* flowerempower = new Attack("FLOWER POWER", "used its planty power to buff", 16, 10, 5, 1, 1, 1, true);
 	flowerempower->appliedeffect = flowerpower;
 	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
@@ -1054,9 +1077,11 @@ void PrintRoomData(Room* currentRoom) {
 	currentRoom->printBlocks();
 }
 
-void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool forceTravel = false) {
+void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool forceTravel = false, Room* forceDest = NULL) {
 	Room* roomCanidate = currentRoom->getExit(direction);
-	if (roomCanidate == NULL) {
+	if (forceDest != NULL) {
+		roomCanidate = forceDest;
+	} else if (roomCanidate == NULL) {
 		if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
 			cout << "\nInvalid direction \"" << direction << "\".";
 		} else {
@@ -1071,10 +1096,15 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool force
 		roomCanidate = roomCanidate->getRedirect();
 	}
 	roomCanidate->undefeatEnemies();
-	currentRoom = roomCanidate;
 	for (NPC* npc : (*party)) {
-		npc->setRoom(currentRoom);
+		npc->setRoom(roomCanidate);
 	}
+	//this is bad practice but its functional practice and that's all that matters :)
+	NPC* lobster = getNPCInVector(currentRoom->getNpcs(), direction);
+	if (lobster != NULL && roomCanidate->getStation()) {
+		lobster->setRoom(roomCanidate);
+	}
+	currentRoom = roomCanidate;
 	PrintRoomData(currentRoom);
 }
 
@@ -1122,6 +1152,17 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 //MARK: useitem
 //I PROGRAMMED THAT!
 void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
+	NPC* lobster = getNPCInVector(currentRoom->getNpcs(), itemname);
+	if (lobster != NULL && lobster->getLobster()) {
+		if (lobster->getLeader()) {
+			cout << "\nYou can't use that untamed lobster!";
+			return;
+		}
+		cout << "\n" << itemname << " carried your party to the train station tunnels!";
+		lobster->getHome()->setExit(lobster->getTunnelDirection(currentRoom), currentRoom);
+		travel(currentRoom, NULL, party, true, lobster->getHome());
+		lobster->Dismiss();
+	}
 	Item* item = getItemInVector(*inventory, itemname);
 	char itemName[255] = "";
 	char npcName[255] = "";
@@ -1432,6 +1473,9 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 			}
 		}
 		npc->defeat();
+		if (npc->getLobster()) {
+			//continue here
+		}
 	}
 	PrintRoomData(currentRoom);
 }

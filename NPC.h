@@ -98,7 +98,7 @@ public: //you need to set stats on creation
 	void setEscapable(bool _escapable);
 	void calculateWeights();
 	void setEnemy(bool _enemy);
-	void alterSp(int amount);
+	void alterSp(int amount, char* status = NULL);
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char suffix[3]);
 	void setGuard(int _guard);
@@ -118,6 +118,12 @@ public: //you need to set stats on creation
 
 	bool getTalkOnDefeat();
 	void setTalkOnDefeat(bool talk);
+
+	bool getLobster();
+	void setLobster(Room* tunnels, bool lobster = true);
+
+	char* getTunnelDirection(Room* room);
+	void setTunnelDirection(Room* room, char* direction);
 
 	void setDefeatNPC(const char newTitle[255], const char newDesc[255], const char newDialogue[255], Room* newRoom);
 
@@ -155,6 +161,9 @@ protected:
 	bool isPlayer;
 	bool isLeader;
 	bool isEnemy = false;
+
+	bool isLobster = false;
+	map<Room*, char*> tunnelLinks;
 
 	int health;
 	int maxHealth;

@@ -4,13 +4,14 @@
 #include "Room.h"
 using namespace std;
 
-Item::Item(const char _name[255], const char _description[255], Room* _room, bool _takable, bool _consumable, bool _target) {
+Item::Item(const char _name[255], const char _description[255], Room* _room, bool _takable, bool _consumable, bool _target, bool useonenemy) {
 	strcpy(name, _name);
 	strcpy(description, _description);
 	strcpy(type, "default");
 	takable = _takable;
 	consumable = _consumable;
 	targetRequired = _target;
+	useOnEnemy = useonenemy;
 	//price = _price;
 	if (_room != NULL) {
 		setRoom(_room);
@@ -42,6 +43,9 @@ bool Item::getTargetNeeded() {
 }
 bool Item::getConsumable() {
 	return consumable;
+}
+bool Item::getForEnemy() {
+	return useOnEnemy;
 }
 void Item::setDenial(const char denial[255]) {
 	strcpy(denyDescription, denial);
@@ -134,6 +138,20 @@ int HpItem::getHp() {
 HpItem::~HpItem() {
 
 }
+//MARK: revive
+ReviveItem::ReviveItem(const char _name[255], const char _description[255], Room* _room, int _hp) : Item(_name, _description, _room, true, true, true) {
+	hp = _hp;
+	strcpy(type, "hp");
+}
+Item* ReviveItem::Duplicate() {
+	return new ReviveItem(*this);
+}
+int ReviveItem::getHp() {
+	return hp;
+}
+ReviveItem::~ReviveItem() {
+
+}
 //MARK: material
 MaterialItem::MaterialItem(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, true, true) {
 	strcpy(type, "material");
@@ -170,7 +188,7 @@ NPC* CallerItem::getCalledNPC() {
 	return npc_called;
 }
 //MARK: key
-KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true) {
+KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true, true) {
 	unlockType = _unlockType;
 	strcpy(useText, _useText);
 	strcpy(type, "key");
@@ -199,7 +217,7 @@ KeyItem::~KeyItem() {
 }
 
 //MARK: movement
-MovementItem::MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true) {
+MovementItem::MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true, true) {
 	unlockType = _unlockType;
 	strcpy(useText, _useText);
 	strcpy(type, "movement");
@@ -227,7 +245,7 @@ MovementItem::~MovementItem() {
 
 }
 //MARK: paver
-PaverItem::PaverItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _direction, Room* _destination) : Item(_name, _description, _room, false, true) {
+PaverItem::PaverItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _direction, Room* _destination) : Item(_name, _description, _room, false, true, true) {
 	destination = _destination;
 	direction = _direction;
 	strcpy(type, "paver");
@@ -246,7 +264,7 @@ char* PaverItem::getUseText() {
 	return useText;
 }
 //MARK: manhole cover
-ManholeItem::ManholeItem(const char _name[255], const char _description[255], Room* _room, Room* _destination, Attack* _attack) : Item(_name, _description, _room, true, true, true) {
+ManholeItem::ManholeItem(const char _name[255], const char _description[255], Room* _room, Room* _destination, Attack* _attack) : Item(_name, _description, _room, true, true, true, true) {
 	destination = _destination;
 	strcpy(type, "manhole");
 	attack = _attack;

@@ -89,6 +89,72 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 		delete[] name;
 	}
 }
+/*void Battle::logEffect(Effect& effect) {
+	allEffects.push_back(effect);
+}*/
+//tick the individual effect
+void Battle::tickEffect(Effect& effect, vector<Effect*>& choppingBlock) {
+	NPC* npc = effect.npc;
+	if (!npc->getHealth()) {
+		return;
+	}
+	//we decrement effect durations, and add them to the chopping block if duration is at 0 (we don't delete immediately in order to not create dangling pointers in allEffects)
+	if (--effect.duration <= 0) {
+		choppingBlock.push_back(&effect);
+		return;
+	}
+	if (effect.damage != 0) {
+		npc->directDamage(effect.damage, effect.name);
+	}
+	if (effect.spleak != 0) {
+		npc->alterSp(-effect.spleak, effect.name);
+	}
+	if (effect.guardset != 0) {
+		npc->setGuard(effect.guardset);
+	}
+}
+void Battle::tickEffects() {
+	//I have to build this here every turn or else modifying the npc's effect vectors would dangle the pointers
+	//vector<Effect*> allEffects;
+	vector<Effect*> choppingBlock;
+	for (NPC* npc : everyone) {
+		for (Effect& effect : npc->getEffects()) {
+			tickEffect(effect, choppingBlock);
+		}
+	}
+	for (Effect* effect : choppingBlock) {
+		cout << effect->npc->getName() << "'s " << effect->name << " wore off!";
+		effect->npc->removeEffect(*effect);
+		CinPause();
+	}
+}
+//i should slightly randomly alter attack
+void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
+	attacker->alterSp(-attack->cost);
+	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
+	vector<NPC*> tarparty;
+	if (target->getEnemy()) {
+		tarparty = enemyTeam;
+	}
+	else {
+		tarparty = playerTeam;
+	}
+	if (attack->targets == 3 && tarparty.size() > 1) {
+		cout << "\n" << attacker->getName() << "'s surrounding teammates were also hit!";
+	}
+	CinPause();
+	int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
+	for (int i = 0; i < tarparty.size(); i++) {
+		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2) {
+			tarparty[i]->damage(attack->power + attacker->getAttack(), attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
+			if (attack->appliedeffect != NULL) {
+				tarparty[i]->setEffect(attack->appliedeffect);
+			}
+		}
+	}
+	//target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce(), rand()%(attack->maxhits+1, attack->minhits) + attack->minhits);
+	CinPause();
+}
 //if time permits you should make a Helper function that does the first bit modularly
 bool Battle::useItem(char* itemname) {
 	Item* item = getItemInVector(*inventory, commandExtensionP);
@@ -99,12 +165,21 @@ bool Battle::useItem(char* itemname) {
 		ParseWithON(itemname, &itemName[0], &npcName[0]);
 		item = getItemInVector(*inventory, itemName);
 		if (item != NULL) {
-			npc = getNPCInVector(*party, npcName);
+			if (item->getForEnemy()) {
+				npc = getNPCInVector(enemyTeam, npcName);
+			} else {
+				npc = getNPCInVector(playerTeam, npcName);
+			}
 			if (!item->getTargetNeeded()) {
 				cout << "\nThe " << itemName << " doesn't need a target!";
 				return false;
-			} else if (npc == NULL) {
-				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
+			}
+			if (npc == NULL) {
+				if (item->getForEnemy()) {
+					cout << "\nThere is nobody named \"" << npcName << "\" on the enemy team!";
+				} else {
+					cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
+				}
 				return false;
 			}
 		} else {
@@ -115,34 +190,67 @@ bool Battle::useItem(char* itemname) {
 		cout << "\nYou have no \"" << itemname << "\".";
 		return false;
 	} else if (item->getTargetNeeded() && npc == NULL) {
-		if (party->size() > 1) {
-			cout << "\nThis item needs a target!";
-			return false;
+		if (item->getForEnemy()) {
+			if (enemyTeam.size() > 1) {
+				cout << "\nThis item needs a target!";
+				return false;
+			}
+			npc = enemyTeam[0];
+		} else {
+			if (playerTeam.size() > 1) {
+				cout << "\nThis item needs a target!";
+				return false;
+			}
+			npc = playerTeam[0];
 		}
-		npc = (*party)[0]; //if we only have the player in the party we just use them because who else would we be targetting
+		
 	}
 
 	if (!strcmp(item->getType(), "hp")) {
 		HpItem* hp = (HpItem*)item;
-
+		if (!npc->getHealth()) {
+			cout << npc->getName() << " is too damaged for the " << itemname << " to work!";
+			return false;
+		}
+		npc->directDamage(-hp->getHp());
 	} else if (!strcmp(item->getType(), "sp")) {
 		SpItem* sp = (SpItem*)item;
-
+		npc->alterSp(sp->getSp());
 	} if (!strcmp(item->getType(), "revive")) {
 		ReviveItem* revive = (ReviveItem*)item;
-
+		if (npc->getHealth()) {
+			cout << "The " << itemname << " must be saved for dire circumstances!";
+			return false;
+		}
+		cout << npc->getName() << " was recapacitated!";
+		npc->directDamage(-revive->getHp());
 	} if (!strcmp(item->getType(), "effect")) {
 		EffectItem* affecter = (EffectItem*)item;
-
+		if (!npc->getHealth()) {
+			cout << npc->getName() << " is incapacitated! The " << itemname << " won't work!";
+			return false;
+		}
+		npc->setEffect(affecter->getEffect());
 	} else if (!strcmp(item->getType(), "BURGER")) {
 
 	//some key items have attacks
 	} else if (!strcmp(item->getType(), "key")) {
 		KeyItem* key = (KeyItem*)item;
+		if (key->getAttack() == NULL) {
+			cout << "The " << itemname << " can't be used in battle!";
+			return false;
+		}
+		cout << "You used the " << itemname << " on " << npc->getName() << "!";
+		carryOutAttack(key->getAttack(), playerTeam[0], npc);
 	//some movement items have attacks
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item;
-	
+		if (mover->getAttack() == NULL) {
+			cout << "The " << itemname << " can't be used in battle!";
+			return false;
+		}
+		cout << "You used the " << itemname << " on " << npc->getName() << "!";
+		carryOutAttack(mover->getAttack(), playerTeam[0], npc);
 	//dont think I have any pickupable ones but if there is just uncomment this
 	//} else if (!strcmp(item->getType(), "paver")) {
 	//you can quickly read info items you have, in case you need to use it in battle for whatever reason
@@ -238,65 +346,6 @@ queue<NPC*> Battle::reorder() {
 		orderly_fashion.emplace(npc);
 	}
 	return orderly_fashion;
-}
-/*void Battle::logEffect(Effect& effect) {
-	allEffects.push_back(effect);
-}*/
-//tick the individual effect
-void Battle::tickEffect(Effect& effect, vector<Effect*>& choppingBlock) {
-	NPC* npc = effect.npc;
-	//we decrement effect durations, and add them to the chopping block if duration is at 0 (we don't delete immediately in order to not create dangling pointers in allEffects)
-	if (--effect.duration <= 0) {
-		choppingBlock.push_back(&effect);
-		return;
-	}
-	if (effect.damage != 0) {
-		npc->directDamage(effect.damage, effect.name);
-	}
-	if (effect.guardset != 0) {
-		npc->setGuard(effect.guardset);
-	}
-}
-void Battle::tickEffects() {
-	//I have to build this here every turn or else modifying the npc's effect vectors would dangle the pointers
-	//vector<Effect*> allEffects;
-	vector<Effect*> choppingBlock;
-	for (NPC* npc : everyone) {
-		for (Effect& effect : npc->getEffects()) {
-			tickEffect(effect, choppingBlock);
-		}
-	}
-	for (Effect* effect : choppingBlock) {
-		cout << effect->npc->getName() << "'s " << effect->name << " wore off!";
-		effect->npc->removeEffect(*effect);
-		CinPause();
-	}
-}
-//i should slightly randomly alter attack
-void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
-	attacker->alterSp(-attack->cost);
-	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
-	vector<NPC*> tarparty;
-	if (target->getEnemy()) {
-		tarparty = enemyTeam;
-	} else {
-		tarparty = playerTeam;
-	}
-	if (attack->targets == 3 && tarparty.size() > 1) {
-		cout << "\n" << attacker->getName() << "'s surrounding teammates were also hit!";
-	}
-	CinPause();
-	int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
-	for (int i = 0; i < tarparty.size(); i++) {
-		if (tarPos - attack->targets/2 <= i && i < tarPos + attack->targets - attack->targets/2) {
-			tarparty[i]->damage(attack->power + attacker->getAttack(), attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
-			if (attack->appliedeffect != NULL) {
-				tarparty[i]->setEffect(attack->appliedeffect);
-			}
-		}
-	}
-	//target->damage(attack->power+attacker->getAttack(), attack->pierce+attacker->getPierce(), rand()%(attack->maxhits+1, attack->minhits) + attack->minhits);
-	CinPause();
 }
 //interpret and carry out player attacks, and return whether we successfully launched an attack
 bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax) {

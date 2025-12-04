@@ -165,6 +165,12 @@ bool NPC::getTalkOnDefeat() {
 int NPC::getConvoSize() {
 	return conversations.size();
 }
+bool NPC::getLobster() {
+	return isLobster
+}
+char* NPC::getTunnelDirection(Room* room) {
+	return tunnelLinks[room];
+}
 Item* NPC::takeGift() {
 	Item* item = gift;
 	gift = NULL;
@@ -260,15 +266,22 @@ void NPC::setLeader(bool _leader, int _level, Room* room) {
 void NPC::setEnemy(bool _enemy) {
 	isEnemy = _enemy;
 }
+void NPC::setLobster(Room* tunnels, bool lobster) {
+	isLobster = lobster;
+	home = tunnels;
+}
+void NPC::setTunnelDirection(Room* room, char* direction) {
+	tunnelLinks[direction] = room;
+}
 void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
 	currentRoom->blockExit(exitBlocking, type, reason);
 }
 void NPC::printDamage(int damage, char* status) {
 	if (damage >= 0) {
-		cout << "\n" << name << " took " << damage << " damage";
+		cout << "\n" << name << " took " << damage << " damage!";
 	} else {
-		cout << "\n" << name << " recovered " << -damage << " HP";
+		cout << "\n" << name << " recovered " << -damage << " HP!";
 	}
 	if (status != NULL) {
 		cout << " due to " << status;
@@ -475,8 +488,19 @@ void NPC::calculateWeights() {
 		attackWeight[attack] = maxWeight*attack->cost/totalSpCost;
 	}
 }
-void NPC::alterSp(int amount) {
-	sp = Clamp(sp + amount, 0, maxSP);
+void NPC::alterSp(int amount, char* status) {
+	//sp = Clamp(sp + amount, 0, maxSP);
+	if (amount > 0) {
+		int alterAmount = Clamp(amount, 0, maxSP - sp);
+		sp += alterAmount;
+		if (status != NULL) {
+			cout << "\n" << name << " gained " << alterAmount << " SP due to " << status << "!";
+		}
+		return;
+	}
+	int alterAmount = Clamp(-amount, 0, sp);
+	sp -= alterAmount;
+	cout << "\n" << name << " leaked " << alterAmount << " SP due to " << status << "!";
 }
 void NPC::defeat() {
 	if (exitBlocking != NULL) {
@@ -484,7 +508,12 @@ void NPC::defeat() {
 		exitBlocking = NULL;
 	}
 	if (linkedNPC != NULL) {
-		linkedNPC->setRecruitable(true);
+		if (!linkedNPC->getLobster()) {
+			linkedNPC->setRecruitable(true);
+		}
+		if (linkedNPC->getLeader()) {
+			linkedNPC->setLeader(false);
+		}
 		for (int i = 0; i < linkedDialogue.size(); i++) {
 			linkedNPC->addConversation(linkedDialogue[i].first, linkedDialogue[i].second);
 		}
@@ -498,7 +527,9 @@ void NPC::defeat() {
 		strcmp(title, defeatTitle);
 		strcmp(description, defeatDescription);
 		strcmp(dialogue, defeatDialogue);
-		setRoom(defeatRoom);
+		if (defeatRoom != NULL) {
+			setRoom(defeatRoom);
+		}
 		defeatChange = false;
 	}
 	defeated = true;
