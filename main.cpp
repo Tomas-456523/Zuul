@@ -262,7 +262,6 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	volcanostation->setStation();
 	Room* volcano4 = new Room("on a scorched path. It reminds you of pepperoni pizza.");
 	Room* volcano5 = new Room("at a... knife in the road.");
-	Item* knife = new MaterialItem("KNIFE","\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", volcano5);
 	Room* volcano6 = new Room("in a volcanic valley. Another factory stands here, more charred than the rest, yet still holding up.");
 	Room* volcano7 = new Room("at the very edge of the volcanic valley. An huge old bridge forms a road to the city.");
 	//first factory, very small
@@ -284,6 +283,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* factorygarden = new Room("in a garden which is not wheelchair-accessible. The plants look very unhealthy; they seem to have been experimenting with nuclear technology here.");
 	Room* conveyor3 = new Room("on an assembly line! This one makes a path to the control room.");
 	Room* controlroom2 = new Room("in the factory control room. The machinery looks usable depsite the lava; props to whoever made it!");
+	conveyor1->setConveyor(factorycenter, FORWARD);
+	conveyor2->setConveyor(factorystorage, FORWARD);
+	conveyor3->setConveyor(factorycenter, FORWARD);
+	conveyor4->setConveyor(switchroom2, FORWARD);
+	conveyor5->setConveyor(factorybalcony2, FORWARD);
 	//third factory
 	Room* factory3 = new Room("in the charred factory. The first floor is a large storage room, though its contents are long burnt to a crispy crisp.");
 	Room* factorynw = new Room("in the factory storage room. There's what appears to be the remains of a chair here.");
@@ -557,10 +561,35 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	gymbro->setDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
 	gymbro->setRejectionDialogue("Sorry dude, I gotta stay on DAT GRIND to get DEM GAINS.");
 
+	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
+	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", 0, 1, 2, 1, 1, 1);
+	Attack* knifethrow = new Attack("KNIFE THROW", "threw a knife at", 0, 1, 1, 1, 1, 1);
+	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", 0, 180, 0, 1, 1, 1);
+
 	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope and saw an orbital office building.", tentlab);
-	Item* fork = new MaterialItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork);
-	Item* pickaxe = new MaterialItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", mineshaft2);
 	
+	Item* fork = new ManholeItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork, NULL, forkthrow);
+	Item* pickaxe = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", mineshaft2, NULL, pickthrow);
+	Item* knife = new ManholeItem("KNIFE", "\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", volcano5, NULL, knifethrow);
+
+	Item* mhcover1 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano2, sewerentrance1, coverthrow);
+	Item* mhcover2 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano6, sewer2, coverthrow);
+
+	Item* switch1 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom);
+	Item* switch2 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom2);
+	ConveyorSwitch* switchhelper1 = (ConveyorSwitch*)switch1;
+	ConveyorSwitch* switchhelper2 = (ConveyorSwitch*)switch2;
+	switchhelper1->setConveyor(conveyor1);
+	switchhelper1->setConveyor(conveyor2);
+	switchhelper1->setConveyor(conveyor3);
+	switchhelper1->setConveyor(conveyor4);
+	switchhelper1->setConveyor(conveyor5);
+	switchhelper2->setConveyor(conveyor1);
+	switchhelper2->setConveyor(conveyor2);
+	switchhelper2->setConveyor(conveyor3);
+	switchhelper2->setConveyor(conveyor4);
+	switchhelper2->setConveyor(conveyor5);
+
 	//Create exits between rooms MARK: set up room exits
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forestentrance);
@@ -1328,7 +1357,6 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 }
 
 //MARK: use item
-//I PROGRAMMED THAT!
 void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
 	//terrible practice to have this here :))))))))
 	NPC* lobster = getNPCInVector(currentRoom->getNpcs(), itemname);
@@ -1476,6 +1504,19 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item;
 		cout << "\n" << info->getText();
+	} else if (!strcmp(item->getType(), "treasure")) {
+		TreasureItem* treasure = (TreasureItem*)item;
+		/*if (treasure->getMimic() != NULL) {
+			fight(currentRoom, party, inventory, treasure->getMimic()->getName(), mony);
+		}*/ //hidden bool for npcs?
+		mony += treasure->getMony();
+		cout << "\nYou opened the " << itemname << " and got " << treasure->getMony() << " monies! You now have " << mony << " monies!";
+	} else if (!strcmp(item->getType(), "switch")) {
+		ConveyorSwitch* cswitch = (ConveyorSwitch*)item;
+		for (Room* cveyor : cswitch->getConveyors()) {
+			cveyor->switchConveyor();
+		}
+		cout << "\nYou pulled the switch to the other side. All the assembly lines have switched directions!";
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
 		return;

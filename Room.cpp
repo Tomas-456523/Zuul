@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 #include <algorithm>
+#include <utility>
 #include "Helper.h"
 using namespace std;
 using namespace Helper;
@@ -196,6 +197,10 @@ void Room::setStation(bool stat) {
 void Room::setGym(bool _gym) {
 	gym = _gym;
 }
+void Room::setConveyor(Room* altroom, char* conveyorexit) {
+	altRoom = altroom;
+	conveyorExit = conveyorexit;
+}
 void Room::setDescription(const char _description[255]) {
 	strcpy(description, _description);
 }
@@ -213,6 +218,9 @@ void Room::setStock(Item* item, int amount, int price, const char buydesc[255]) 
 void Room::removeStock(Item* item) {
 	delete item;
 	stock.erase(remove(stock.begin(), stock.end(), item), stock.end());
+}
+void Room::switchConveyor() {
+	swap(altRoom, exits[conveyorExit]);
 }
 void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) {  
 	blockedExits.push_back(direction);

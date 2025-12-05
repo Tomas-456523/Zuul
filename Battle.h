@@ -19,7 +19,7 @@ public:
 	int FIGHT();
 
 	bool useItem(char* itemname);
-	void printTeam(vector<NPC*> team, bool printLevel = true, bool printSP = false);
+	void printTeam(vector<NPC*> team, bool printLevel = true, bool printSP = false, bool printFainted = true);
 	void printInventory();
 	void printParty();
 	void printEnemies();
@@ -33,10 +33,12 @@ public:
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 1);
 	bool playerTurn(NPC* plr);
 	void npcTurn(NPC* npc);
-	//void logEffect(Effect& effect);
+	
+	void addNPC(NPC* npc);
 
 	int getXpReward();
 	int getMonyReward();
+
 
 	queue<NPC*> reorder();
 private:

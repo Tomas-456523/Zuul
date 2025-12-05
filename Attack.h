@@ -16,7 +16,8 @@ struct Attack {
 	int targets; //how many targets the attack hits (1 hits just the target, 3 hits their surrounding allies, and 4 hits their entire team, and I don't really use 2)
 	int minhits; //the attack can hit from minhits to maxhits amount of times
 	int maxhits;
-	bool targetAlly;
+	bool targetAlly = false;
+	bool targetFainted = false;
 
 	int minLevel; //must be at least this level to use the attack
 

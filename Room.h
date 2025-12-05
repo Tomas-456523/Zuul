@@ -53,10 +53,13 @@ public:
 	void setRedirect(Room* room);
 	void setStation(bool stat = true);
 	void setGym(bool _gym = true);
+	void setConveyor(Room* altroom, char* conveyorexit);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
 	void setWelcome(const char text[255]); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char buydesc[255] = "");
 	void removeStock(Item* item);
+
+	void switchConveyor(); //switches the direction of the conveyor
 
 	void blockExit(char* direction, char* blocktype, const char reason[255]);
 	void unblockExit(const char* direction);
@@ -83,6 +86,9 @@ private:
 	map<char*, char*, charComparer> blockType;
 
 	Room* redirect = NULL;
+
+	char* conveyorExit = NULL;
+	Room* altRoom = NULL; //uses by conveyor belts, their direction switches to altroom when a switch item is used
 
 	bool station;
 	bool gym;

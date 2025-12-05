@@ -260,4 +260,26 @@ public:
 private:
 	char text[255];
 };
+//MARK: treasure chest
+class TreasureItem : public Item {
+public:
+	TreasureItem(const char _name[255], const char _description[255], Room* _room, int _mony, NPC* _mimic);
+	virtual ~TreasureItem();
+
+	NPC* getMimic();
+	int getMony();
+private:
+	NPC* mimic;
+	int mony;
+};
+class ConveyorSwitch : public Item {
+public:
+	ConveyorSwitch(const char _name[255], const char _description[255], Room* _room);
+	virtual ~ConveyorSwitch();
+
+	void setConveyor(Room* room);
+	vector<Room*> getConveyors();
+private:
+	vector<Room*> conveyors;
+};
 #endif

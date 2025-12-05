@@ -305,3 +305,32 @@ char* InfoItem::getText() {
 InfoItem::~InfoItem() {
 
 }
+//MARK: treasure
+TreasureItem::TreasureItem(const char _name[255], const char _description[255], Room* _room, int _mony, NPC* _mimic) : Item(_name, _description, _room, false, true) {
+	strcpy(type, "treasure");
+	mimic = _mimic;
+	mony = _mony;
+}
+TreasureItem::~TreasureItem() {
+
+}
+
+NPC* TreasureItem::getMimic() {
+	return mimic;
+}
+int TreasureItem::getMony() {
+	return mony;
+}
+//MARK: switch
+ConveyorSwitch::ConveyorSwitch(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, false) {
+	strcpy(type, "switch");
+}
+ConveyorSwitch::~ConveyorSwitch() {
+
+}
+void ConveyorSwitch::setConveyor(Room* room) {
+	conveyors.push_back(room);
+}
+vector<Room*> ConveyorSwitch::getConveyors() {
+	return conveyors;
+}

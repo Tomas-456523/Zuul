@@ -89,10 +89,20 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 		delete[] name;
 	}
 }
-/*void Battle::logEffect(Effect& effect) {
-	allEffects.push_back(effect);
-}*/
-//tick the individual effect
+void Battle::addNPC(NPC* npc) {
+	vector<NPC*>& team = NULL;
+	if (npc->getEnemy()) {
+		enemyTeam.push_back(new NPC(*npc));
+		team = enemyTeam;
+	} else {
+		playerTeam.push_back(new NPC(*npc));
+		team = playerTeam;
+	}
+	char* name = new char[255];
+	for (int i = 0; i < team.size(); i++) {
+
+	}
+}
 void Battle::tickEffect(Effect& effect, vector<Effect*>& choppingBlock) {
 	NPC* npc = effect.npc;
 	if (!npc->getHealth()) {
@@ -268,8 +278,11 @@ bool Battle::useItem(char* itemname) {
 	}
 	return true;
 }
-void Battle::printTeam(vector<NPC*> team, bool printLevel, bool printSP) {
+void Battle::printTeam(vector<NPC*> team, bool printLevel, bool printSP, bool printFainted) {
 	for (NPC* npc : team) {
+		if (!printFainted && !npc->getHealth()) {
+			continue;
+		}
 		cout << "\n" << npc->getName() << " " << npc->getHealth() << "/" << npc->getHealthMax() << " HP";
 		if (printSP) {
 			cout << " " << npc->getSP() << "/" << npc->getSPMax() << " SP";
@@ -296,7 +309,7 @@ void Battle::printParty() {
 }
 void Battle::printEnemies() {
 	cout << "\nEnemy party:";
-	printTeam(enemyTeam, true);
+	printTeam(enemyTeam, true, false, false);
 }
 void Battle::printAttacks(NPC* npc) {
 	cout << "\nBasic attack:\n";
@@ -436,9 +449,6 @@ void Battle::npcTurn(NPC* npc) {
 			break;
 		}
 	}
-	if (attack == NULL) {
-		attack = npc->getBasicAttack();
-	}
 	NPC* target = NULL;
 	bool attackPlayer = npc->getEnemy();
 	if (attack->targetAlly) {
@@ -447,14 +457,25 @@ void Battle::npcTurn(NPC* npc) {
 	if (npc->getHypnotized()) {
 		attackPlayer = !attackPlayer;
 	}
+	int attempts = 0;
+	if (attack == NULL || (attackPlayer && attack->targetFainted && aliveCount(playerTeam) == playerTeam.size()) ||
+						  (!attackPlayer && attack->targetFainted && aliveCount(enemyTeam) == enemyTeam.size())) {
+		attack = npc->getBasicAttack();
+	}
 	while (target == NULL) {
 		if (attackPlayer) {
 			target = playerTeam[rand() % playerTeam.size()];
 		} else {
 			target = enemyTeam[rand() % enemyTeam.size()];
 		}
-		if (target->getHealth() <= 0) {
-			target = NULL;
+		if (!attack->targetFainted) {
+			if (target->getHealth() <= 0) {
+				target = NULL;
+			}
+		} else {
+			if (target->getHealth() > 0) {
+				target = NULL;
+			}
 		}
 	}
 	carryOutAttack(attack, npc, target);
