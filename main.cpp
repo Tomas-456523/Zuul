@@ -1296,409 +1296,451 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 			if (!strcmp(name, "FLORIAN")) {
 				cout << "\n" << (*party)[0]->getName() << " - \"Yeah that's what I was thinking too!\"";
 				CinPause();
-			} else if (!strcmp(name, "HELP")) {
+			} else if (!strcmp(name, "HELP")) { //reference to the initial naming help joke
 				cout << "\n" << (*party)[0]->getName() << " - \"...\"";
 				CinPause();
 			}
 			
 			cout << "\nSuccessfully tamed TUNNEL LOBSTER";
-			if (strcmp(name, "")) {
+			if (strcmp(name, "")) {//if we actually named the lobster, we print the rest of the name. We can get away with always printing "TUNNEL LOBSTER" because the original name and new title are the same
 				cout << " " << npc->getName();
 			}
 			cout << "!";
+			//gives instructions on how to use your new pet lobster, should be understandable enough
 			cout << "\nUtilize the abandoned train tunnels by USE-ing " << npc->getName() << ".";
 			CinPause();
 			
-			CinIgnoreAll();
+			CinIgnoreAll(); //clear extra text and potential error flags
 		}
 	}
+	//prints the room data after battle so that the player can reorient themselves
 	PrintRoomData(currentRoom);
 }
 
+//takes an item from the current room and adds it to the inventory
 void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
+	//finds the item in the room based on the name
 	Item* item = getItemInVector(currentRoom->getItems(), itemname);
+	//prints the reason you can't take the item based on the circumstances
 	if (item == NULL) {
+		//if the player tried to take an item on sale we say you can't steal
 		if (getItemInVector(currentRoom->getStock(), itemname) != NULL) {
 			cout << "\nThe " << itemname << " is for sale! You can't just take it.";
 			return;
+		//you can't take an item if you already took it
 		} else if (getItemInVector(*inventory, itemname) != NULL) {
 			cout << "\nYou're already carrying this item!";
 			return;
 		}
+		//otherwise the player is trying to take something that isn't even there
 		cout << "\nThere is no \"" << itemname << "\" here.";
 		return;
 	}
+	//you're not allowed to take items not marked as takable
 	if (!item->getTakable()) {
-		cout << "\n" << item->getDenial();
+		cout << "\n You can't take the " << itemname << "!" /*<< item->getDenial()*/;
 		return;
 	}
-	item->unRoom();
-	inventory->push_back(item);
+	item->unRoom(); //removes the item from the room
+	inventory->push_back(item); //adds it to the inventory
 	cout << "\nYou took the " << itemname << ".";
 	//taking manhole covers reveals a new exit below! (only the first time you take it)
 	if (!strcmp(item->getType(), "manhole")) {
+		//gets the item in its true form (the subclass)
 		ManholeItem* cover = (ManholeItem*)item;
-		if (cover->getRoom() != NULL) {
+		if (cover->getRoom() != NULL) { //if there is a room to reveal, we set an exit downwards (there's no horizontal manholes in this game)
 			currentRoom->setExit(const_cast<char*>("DOWN"), cover->getRoom());
 			cout << "\nAn exit DOWNwards was revealed!";
 		}
 	}
 }
 
+//drops an item from the inventory into the current room
 void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
-	Item* item = getItemInVector(*inventory, itemname);
-	if (item == NULL) {
+	Item* item = getItemInVector(*inventory, itemname); //finds the item in the inventory
+	if (item == NULL) { //gives error message if we have no itemname
 		cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
 		return;
 	}
-	item->setRoom(currentRoom);
+	item->setRoom(currentRoom); //puts the item in the current room
+	//erases the item from the inventory
 	inventory->erase(remove(inventory->begin(), inventory->end(), item), inventory->end());
 	cout << "\nYou dropped the " << itemname << ".";
 }
 
-//MARK: use item
+//uses an item, with functionality based on type MARK: use item
 void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
-	//terrible practice to have this here :))))))))
+	//in addition to items, you can also USE the tunnel lobster for fast travel
+	//it's probably bad practice to have this here, but it's functional practice! :)
 	NPC* lobster = getNPCInVector(currentRoom->getNpcs(), itemname);
-	if (lobster != NULL && lobster->getLobster()) {
-		if (lobster->getLeader()) {
+	if (lobster != NULL && lobster->getLobster()) { //checks the lobsteriness of the potential lobster
+		if (lobster->getLeader()) { //we can't use the lobster if it's still angry and undefeated
 			cout << "\nYou can't use that untamed lobster!";
 			return;
-		}
+		} //we can't use the lobster twice in a row, because that wouldn't make any sense
 		if (currentRoom == lobster->getHome()) {
 			cout << "\nYou are already in the tunnels!";
 			return;
-		}
+		} //prints flavor text based on if you have teammates or if it's just you
 		cout << "\n" << itemname << " carried you";
-		if (party->size()) {
+		if (party->size()) { //check for partymates
 			cout << "r party";
 		}
 		cout << " to the train station tunnels!";
 		CinPause();
+		//sets the tunnel exit back to the station. This way, you can only go to a station if you've already been there
+		//a side effect is that the desert fast travel is whichever one you fast travelled from first (since there's two), but they're right next to each other so it doesn't really matter
 		lobster->getHome()->setExit(lobster->getTunnelDirection(currentRoom), currentRoom);
+		//travels to the tunnels!
 		travel(currentRoom, NULL, party, true, lobster->getHome());
 		return;
 	}
-	Item* item = getItemInVector(*inventory, itemname);
+	//this is actually using item code
+	Item* item = getItemInVector(*inventory, itemname); //finds the item in our inventory
 	char itemName[255] = "";
 	char npcName[255] = "";
-	NPC* npc = NULL;
-	if (item == NULL) {
+	NPC* npc = NULL; //npc we may or may not target
+	if (item == NULL) { //finds the item in the room if not in the inventory
 		item = getItemInVector(currentRoom->getItems(), itemname);
-	} 
+	} //if the item is still null, we check if the player was trying to use an item ON an npc
 	if (item == NULL) {
-		ParseWithON(itemname, &itemName[0], &npcName[0]);
-		item = getItemInVector(*inventory, itemName);
-		if (item == NULL && getItemInVector(currentRoom->getItems(), itemName) != NULL) {
+		ParseWithON(itemname, &itemName[0], &npcName[0]); //parses the rest of the command, seperated by " ON "
+		item = getItemInVector(*inventory, itemName); //gets the item in the inventory
+		if (item == NULL && getItemInVector(currentRoom->getItems(), itemName) != NULL) { //if the item needs to clarify who to use it on, we're not allowed to use it unless we're holding it
 			cout << "\nYou can't use the " << itemName << " if you aren't holding it!";
 			return;
 		}
-		if (item != NULL) {
+		if (item != NULL) { //we try to find the npc we're targetting
 			npc = getNPCInVector(*party, npcName);
-			if (!item->getTargetNeeded()) {
+			if (!item->getTargetNeeded()) { //no need to clarify the target if one isn't required (we check for this because I thought the commands would look weird otherwise, like "USE SWITCH ON BOB", like what does Bob have to do with this? It's a switch!
 				cout << "\nThe " << itemName << " doesn't need a target!";
 				return;
-			} else if (npc == NULL) {
+			} else if (npc == NULL) { //print if no npc matching the name was found, also since we're not in battle you can only use targeted items on your party
 				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
 				return;
 			}
+		//if the item IS null and the name of the item isn't nothing (player didn't "USE " or "USE" <-- like that's the command we're checking for)
 		} else if (strcmp(itemName, "")) {
 			itemname = itemName; //makes the null item print not say "You have no [item] ON [npc]"
 		}
 	}
-	if (item == NULL) {
+	if (item == NULL) { //print that no item called itemname was found
 		cout << "\nYou have no \"" << itemname << "\".";
 		return;
-	} else if (item->getTargetNeeded() && npc == NULL) {
-		if (party->size() > 1) {
+	} else if (item->getTargetNeeded() && npc == NULL) { //if the item needed a target but no " ON " was given we give error text
+		if (party->size() > 1) { //if the party isn't only the player
 			cout << "\nThis item needs a target!";
 			return;
 		}
 		npc = (*party)[0]; //if we only have the player in the party we just use them because who else would we be targetting
 	}
 
+	//gives xp to the target
 	if (!strcmp(item->getType(), "xp")) {
-		XpItem* xp = (XpItem*)item;
+		XpItem* xp = (XpItem*)item; //converts to the corresponding subclass
 		cout << npc->getName() << " gained " << xp->getXp() << " XP!";
-		npc->addXp(xp->getXp());
-	} else if (!strcmp(item->getType(), "mony")) {
-		//uhhhh are we still adding this
+		npc->addXp(xp->getXp()); //adds the xp
+	//
 	} else if (!strcmp(item->getType(), "BURGER")) {
 
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
-		EducationItem* edu = (EducationItem*)item;
+		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass
+		//adds all the item's attacks to the player's vector of attacks
 		for (Attack* attack : edu->getAttacks()) {
 			(*party)[0]->addSpecialAttack(attack);
 		}
 	//summons the tunnel lobster to the current train station
 	} else if (!strcmp(item->getType(), "caller")) {
-		if (!currentRoom->getStation()) {
+		if (!currentRoom->getStation()) { //gives error if not used in a train station
 			cout << "\nThe " << itemname << " must be used in a train station!";
 			return;
-		}
+		} //converts to the corresponding subclass
 		CallerItem* caller = (CallerItem*)item;
-		npc = caller->getCalledNPC();
-		if (!npc->getLeader()) {
-			if (npc->getRoom() == currentRoom) {
+		npc = caller->getCalledNPC(); //makes the npc easier to reference
+		if (!npc->getLeader()) { //if the lobster is tamed
+			if (npc->getRoom() == currentRoom) { //if the lobster is already here he just dances
 				cout << "\n" << npc->getName() << " did a lobstery dance.";
 				return;
-			}
+			} //moves the lobster to the station
 			npc->setRoom(currentRoom);
-			cout << "\n" << npc->getName() << " burst out of the rubble!";
-		} else {
-			if (npc->getRoom() == currentRoom) {
+			cout << "\n" << npc->getName() << " burst out of the rubble!"; //flavor text
+		} else { //if the lobster is still untamed (undefeated)
+			if (npc->getRoom() == currentRoom) { //if the lobster is already here prints flavor text
 				cout << "\n" << npc->getName() << " shrieked angrily!";
-			} else {
+			} else { //moves the lobster here if not here
 				npc->setRoom(currentRoom);
 				cout << "\nA " << npc->getName() << " angrily burst out of the rubble!";
 			}
-			CinPause();
+			CinPause(); //the caller initiates a battle if lobster is untamed
 			fight(currentRoom, party, inventory, npc->getName(), mony);
 		}
+	//donation?????
 	} else if (!strcmp(item->getType(), "toll")) {
-
+		TollItem* toll = (TollItem*)item;
+	//used for unblocking blocked exits
 	} else if (!strcmp(item->getType(), "key")) {
-		KeyItem* key = (KeyItem*)item;
-		vector<char*> exitsUnlocked;
-		Room* targetRoom = currentRoom;
-		bool used = false;
-		if (key->getTarget() != NULL) {
+		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass
+		vector<char*> exitsUnlocked; //the exits that were unlocked in the key using process, so we can unlock the other side also
+		Room* targetRoom = currentRoom; //the room the key is targetting, the current room by default
+		bool used = false; //if we ended up actually using the key
+		if (key->getTarget() != NULL) { //some keys are remote keys, and unlock a specified target
 			targetRoom = key->getTarget();
+			//unblocks all the exits because it's easier than a for loop, and also gets the exits that were unlocked
 			exitsUnlocked = targetRoom->unblockAll(key->getUnlockType());
-			used = true;
-		} else {
+			used = true; //if I made a remote key its definitely unlocking something, so used = true 100% here of the time
+		} else { //unblocks exits in the current room
 			exitsUnlocked = currentRoom->unblockAll(key->getUnlockType());
-			used = exitsUnlocked.size() > 0;
-		}
+			used = exitsUnlocked.size() > 0; //we check the size of unblocked exits as a basis for if we used the item
+		} //if we didn't use it, we print an error message
 		if (!used) {
 			cout << "\nThere is nothing to use the " << itemname << " on here.";
 			return;
-		}
+		} //prints a description of what the key item did (because it's not only literal keys)
 		cout << "\nYou " << key->getUseText();
 
-		//change room description
-
+		//unblocks the other sides of the exits, because there's some double sided blocks
 		for (char* exit : exitsUnlocked) {
-			Room* thatroom = targetRoom->getExit(exit);
+			Room* thatroom = targetRoom->getExit(exit); //gets the room on the other side of the exit
+			//unblocks the reverse direction exit if it's blocked
 			if (thatroom->getBlocked(const_cast<char*>(ReverseDirection[exit]))) {
 				thatroom->unblockExit(ReverseDirection[exit]);
 			}
 		}
+	//movement items are used to go through a blocked exit despite the fact that it's blocked, for example a boat over a river
 	} else if (!strcmp(item->getType(), "movement")) {
-		MovementItem* mover = (MovementItem*)item;
-		for (char* exit : currentRoom->getBlocks()) {
+		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
+		for (char* exit : currentRoom->getBlocks()) { //tries to find a blocked exit that matches the movement item's block type
 			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
-				cout << "\nYou " << mover->getUseText();
-				//cinpause?
-				travel(currentRoom, exit, party, true);
-				return;
+				cout << "\nYou " << mover->getUseText(); //prints what exactly the movement item did
+				CinPause();
+				travel(currentRoom, exit, party, true); //force travels to the found room
+				return; //returns so we don't teleport to another room (and movement items don't get used up anyway, so no need for the deletion check)
 			}
-		}
+		} //prints error message if no matching blocked exit was found
 		cout << "\nYou can't use the " << itemname << " here.";
+	//paver items create a new exit
 	} else if (!strcmp(item->getType(), "paver")) {
-		PaverItem* paver = (PaverItem*)item;
+		PaverItem* paver = (PaverItem*)item; //converts to the corresponding subclass
+		//if the item isn't usable here we give an error message
+		if (!paver->getUsable(currentRoom)) {
+			cout << "\nYou can't use the " << itemname << " here!";
+			return;
+		}
+		//sets the exit to the room in the given direction
 		currentRoom->setExit(paver->getDirection(), paver->getDestination());
+		//sets the exit back to the current room in the reverse of the given direction
 		paver->getDestination()->setExit(const_cast<char*>(ReverseDirection[paver->getDirection()]), currentRoom);
+		//prints what exactly the paver item did
 		cout << "\nYou " << paver->getUseText();
+	//info items print some info
 	} else if (!strcmp(item->getType(), "info")) {
-		InfoItem* info = (InfoItem*)item;
-		cout << "\n" << info->getText();
+		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
+		cout << "\n" << info->getText(); //prints the info
+	//treasure chest items either give money or are trapped and start a battle
 	} else if (!strcmp(item->getType(), "treasure")) {
-		TreasureItem* treasure = (TreasureItem*)item;
+		TreasureItem* treasure = (TreasureItem*)item; //converts to the corresponding subclass
 		/*if (treasure->getMimic() != NULL) {
 			fight(currentRoom, party, inventory, treasure->getMimic()->getName(), mony);
 		}*/ //hidden bool for npcs?
-		mony += treasure->getMony();
-		cout << "\nYou opened the " << itemname << " and got " << treasure->getMony() << " monies! You now have " << mony << " monies!";
+		mony += treasure->getMony(); //adds the mony to the player's mony balance
+		cout << "\nYou opened the " << itemname << " and got " << treasure->getMony() << " monies! You now have " << mony << " monies!"; //says how much they got and new balance
+	//switch items are in one factory and switch the direction of all the conveyor belts
 	} else if (!strcmp(item->getType(), "switch")) {
-		ConveyorSwitch* cswitch = (ConveyorSwitch*)item;
+		ConveyorSwitch* cswitch = (ConveyorSwitch*)item; //converts to the corresponding subclass
+		//switches all the conveyors
 		for (Room* cveyor : cswitch->getConveyors()) {
 			cveyor->switchConveyor();
-		}
+		} //describes what just happened
 		cout << "\nYou pulled the switch to the other side. All the assembly lines have switched directions!";
+	//you can't use materials; they get a unique error message
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
 		return;
-	} else {
+	} else { //other types of items must be used in battles
 		cout << "\nThe " << itemname << " can only be used in battle!";
 		return;
 	}
+	//if the item is one-use only we delete the item
 	if (item->getConsumable()) {
 		deleteItem(currentRoom, inventory, item);
 	}
 }
 
-//MARK: recruit
+//recruit an npc into the player party MARK: recruit
 void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxParty = 4) {
-	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
-	if (npc == NULL) {
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc we're trying to recruit
+	if (npc == NULL) { //error message if nobody in the current room is named npcname
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
-	}
+	} //you can't recruit yourself because you're obviously in your own party
 	if (npc->getPlayerness()) {
 		cout << "\n" << npcname << " - \"Huh?\"\n\nYou are already in your own party? ...";
 		return;
-	}
+	} //if the npc isn't recruitable we give error message and the npc says something
 	if (!npc->getRecruitable()) {
 		cout << "\n" << npcname << " - \"" << npc->getRejectionDialogue() << "\"";
 		cout << "\n" << npcname << " was not added to your party.";
 		return;
-	}
+	} //you can't rerecruit npcs, we don't want them being extra recruited
 	if (npc->getRecruited()) {
 		cout << "\n" << npcname << " is already in your party...";
 		return;
-	}
+	} //you're not allowed to have more than 4 party members (including yourself) otherwise that would be so unbalanced
 	if (party->size() == maxParty) {
 		cout << "\nYour party is full!";
 		return;
 	}
+	//adds the npc to your party
 	party->push_back(npc);
-	npc->Recruit();
-	cout << "\n" << npcname << " was added to your party!" << "(party size: " << party->size() << "/" << maxParty << ")";
+	npc->Recruit(); //sets the npc to recruited
+	cout << "\n" << npcname << " was added to your party!" << "(party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 }
 
-//MARK: dismiss
+//decruit npcs from your party MARK: dismiss
 void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
-	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
-	if (npc == NULL) {
-		cout << "\nThere is nobody named \"" << npcname << "\" here.";
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc to dismiss
+	if (npc == NULL) { //error text if no npc named npcname was found
+		cout << "\nThere is nobody named \"" << npcname << "\" in your party.";
 		return;
-	}
+	} //you can't dismiss yourself/the main character because that makes no sense
 	if (npc->getPlayerness()) {
 		cout << "\n" << npcname << " - \"Huh? You can't dismiss me bro I'm the main character!\"\n" << npcname << " was not dismissed.";
 		return;
-	}
+	} //you can't dismiss someone who isn't recruited anyway
 	if (!npc->getRecruited()) {
 		cout << "\n" << npcname << " is not in your party...";
 		return;
-	}
+	} //removes the npc from your party
 	party->erase(remove(party->begin(), party->end(), npc), party->end());
+	//if you dismiss a partymate in the gym, it leaves them there so they can train, so we check for that
 	bool gym = currentRoom->getGym();
 	if (gym) {
 		cout << "\n" << npcname << " is now on the GRIND at the gym, and will now train to stay at your level!";
-	} else {
+	} else { //in every other room, they just say something and go back home
 		cout << "\n" << npcname << " - \"" << npc->getDismissalDialogue() << "\"";
 		cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
 	}
+	//sets the npc to dismissed
 	npc->Dismiss(!gym);
 }
 
+//prints anything the targeted npc has to say
 void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory, vector<NPC*>* party, int& mony) {
-	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
-	if (npc == NULL) {
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //finds the npc named npcname
+	if (npc == NULL) { //error message if no such npc is in the current room
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
-	}
+	} //tells the npc to print their dialogue
 	npc->printDialogue();
+	//some npcs give gifts after talking so we check for that here
 	Item* item = npc->takeGift();
-	if (item != NULL) {
+	if (item != NULL) { //adds the gift to the inventory
 		inventory->push_back(item);
 		CinPause();
-		cout << npcname << " gave you the " << item->getName() << "!";
+		cout << npcname << " gave you the " << item->getName() << "!"; //says that you got the thing
 	}
+	//some npcs fight you immediately after talking so if that's the case we initiate battle here
 	if (npc->getForceBattle()) {
 		fight(currentRoom, party, inventory, npcname, mony);
 	}
 }
 
+//prints the player's monies and inventory items
 void printInventory(vector<Item*>* inventory, int monies) {
-	cout << "\nYou have " << monies << " monies, and you";
-	if (inventory->size() < 1) {
+	cout << "\nYou have " << monies << " monies, and you"; //prints mony amount
+	if (inventory->size() < 1) { //if we have no items, we say that
 		cout << " have no items!";
 		return;
-	}
+	} //finishes the message
 	cout << "r items are:";
-	for (Item* item : *inventory) {
-		cout << "\n" << item->getName()/* << " - " << item->getDescription()*/;
+	for (Item* item : *inventory) { //prints the names of each item
+		cout << "\n" << item->getName();
 	}
 }
 
-//MARK: printparty
+//prints the player's party MARK: printparty
 void printParty(vector<NPC*>* party) {
 	cout << "\nMembers of your party:";
-	for (NPC* npc : *party) {
+	for (NPC* npc : *party) { //prints everyone's title if they have one, and then their name and level
 		cout << "\n" << npc->getTitle();
-		if (strlen(npc->getTitle()) > 0) {
+		if (strlen(npc->getTitle()) > 0) { //puts a space between the title and name if they have a title
 			cout << " ";
 		}
 		cout << npc->getName() << " - LEVEL " << npc->getLevel();
 	}
 }
 
-//MARK: analyze
+//analyzes either an item or npc of the given name MARK: analyze
 void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
-	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name);
-	if (npc == NULL) {
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //tries to find an npc in the room or party
+	/*if (npc == NULL) { //tries to find the npc in the party
 		npc = getNPCInVector(*party, name);
-	}
-	if (npc != NULL) {
+	}*/
+	if (npc != NULL) { //prints the data of the npc that was found
 		printNPCData(npc);
 		return;
-	}
+	} //if no npc was found, we try to find an item in the current room
 	Item* item = getItemInVector(currentRoom->getItems(), name);
-	if (item == NULL) {
+	if (item == NULL) { //if there was no item there, we look for the item in our inventory
 		item = getItemInVector(*inventory, name);
-	}
+	} //the item may also be for sale so we check that too
 	if (item == NULL) {
 		item = getItemInVector(currentRoom->getStock(), name);
-	}
+	} //prints the data of the item if one was found
 	if (item != NULL) {
 		printItemData(item);
 		return;
-	}
+	} //error message for invalid name
 	cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
-//MARK: buy
+//buys an item from the current room's catalogue MARK: buy
 void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
-	Item* item = getItemInVector(currentRoom->getStock(), name);
-	if (item == NULL) {
-		if (getItemInVector(currentRoom->getItems(), name) != NULL) {
+	Item* item = getItemInVector(currentRoom->getStock(), name); //finds the item in the current room's stock
+	if (item == NULL) { //gives error message based on other conditions
+		if (getItemInVector(currentRoom->getItems(), name) != NULL) { //if the item isn't for sale and it's just on the ground or something
 			cout << "\nNobody is selling the " << name << "; you can just take it.";
 			return;
-		} else if (getItemInVector(*inventory, name) != NULL) {
+		} else if (getItemInVector(*inventory, name) != NULL) { //if you're trying to buy your own item which you already own and are holding
 			cout << "\nYou already own this item!";
 			return;
-		}
+		} //error message if no item found of the given name
 		cout << "\nThere is no \"" << name << "\" here.";
 		return;
-	}
+	} //buys the item, subtracts the cost from the player's mony, and adds it to the inventory
 	item->buy(mony, inventory);
-	if (item->getStock() <= 0) {
+	if (item->getStock() <= 0) { //if we bought all of the item, we delete it from the store
 		currentRoom->removeStock(item);
 	}
 }
 
-//MARK: printhelp
+//prints all the available commands MARK: printhelp
 void printHelp(char validCommands[15][255], char flavorText[16][255]) {
-	cout << "\n";
+	cout << "\n"; //prints a random flavor text
 	cout << flavorText[rand() % 16];
-	cout << "\nValid commands:";
+	cout << "\nValid commands:"; //prints all the valid commands
 	for (int i = 0; i < 15; i++) {
 		cout << "\n" << validCommands[i];
 	}
 }
 
-//MARK: int main
+//the main function where everything is called MARK: int main
 int main() {
-	srand(time(NULL));
+	srand(time(NULL)); //seeds random
 	
-	vector<Room*>* rooms = new vector<Room*>;
+	vector<Room*>* rooms = new vector<Room*>; //creates a list of all rooms so we can delete them later
 	
 	//sets up the game world and places the player at the current room
 	NPC* self = SetupWorld(rooms);
-	Room* currentRoom = self->getHome();
+	Room* currentRoom = self->getHome(); //sets the current room to the player's starting position
 
-	vector<Item*>* inventory = new vector<Item*>;
-	vector<NPC*>* party = self->getParty();
+	vector<Item*>* inventory = new vector<Item*>; //the inventory of items
+	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
-	//party->push_back(self);
+	int mony = 0; //monies are the currency in the BURGER QUEST universe.
 
-	int mony = 0; //monies are the currency in the BURGER QUEST multiverse.
-
-	//command stuff used to be initialized here
-
+	//flavor text printed by printHelp()
 	char flavorText[16][255] = {
 		"What even is a BURGER?",
 		"You consider the state of the economy.",
@@ -1718,6 +1760,7 @@ int main() {
 		"You take a potato chip... and eat it."
 	};
 
+	//a list of the valid commands (and extensions) to be printed by printHelp()
 	char validCommands[15][255] = {
 		"GO [direction]",
 		"TAKE [item]",
@@ -1736,96 +1779,106 @@ int main() {
 		"QUIT"
 	};
 
+	//welcome message
 	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
 
+	//you get to name yourself!
 	cout << "\n             (type your name here!)\nYour name is ";
 
+	//gets the player's input and puts it into the player name
 	char name[255] = ""; //remove the = "" after done testing
 	//uncomment this, I just don't want to type the name every time I want to test something
 	//cin.getline(name, 255);
 
-	AllCaps(&name[0]);
+	AllCaps(&name[0]); //capitalizes the name because everything is capitalized
 
-	if (!strcmp(name, "")) {
+	if (!strcmp(name, "")) { //the main character complains if you didn't name him
 		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"";
-		//uncomment this too
+		//uncomment this too <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< if you see this line apparently I didn't
 		//CinPause();
-	} else {
+	} else { //otherwise we set the name to whatever the player inputted
 		self->setName(name);
 	} 
-	if (!strcmp(name, "BERNARD")) {
+	if (!strcmp(name, "BERNARD")) { //Bernard is the character's canonical name
 		cout << "\nBERNARD - \"Oh wow that's my actual name!\"";
 		CinPause();
-	} else if (!strcmp(name, "HELP")) {
+	} else if (!strcmp(name, "HELP")) { //Help complains if you followed the previous instructions and typed HELP (for help)
 		cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
 		CinPause();
+	//if the player typed anything by following the instructions too literally, the main character remarks on that
 	} else if (!strcmp(name, "HELP FOR HELP") || !strcmp(name, "YOUR NAME") || !strcmp(name, "YOUR NAME HERE") || !strcmp(name, "YOUR NAME HERE!")) {
 		cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
 		CinPause();
-	//probably just make this an annoying string of text that you can only realistically copy/paste in
-	} else if (!strcmp(name, "BAGEL ADMINISTRATOR")) {
-		cout << "\nDeveloper mode activated!";
-		CinPause();
-	} //have devmode bool, and do additional command checks for DEFEAT [npc], UNLOCK [exit], FORCERECRUIT [npc], GETMONEY, etc.
+	}
 	
-	CinIgnoreAll();
+	CinIgnoreAll(); //clears extra characters or invalid input
 
-	PrintRoomData(currentRoom);
-
-
+	PrintRoomData(currentRoom); //prints the data of the starting room
 	//MARK: main process
-	bool continuing = true;
-	while (continuing) {
-		char command[255] = "";
+	bool continuing = true; //we continue until continuing is set to false (when the player quits)
+	while (continuing) { //the main loop!
+		char command[255] = ""; //the charray that the player inputs into
 
-		char commandWord[255];
-		char commandExtension[255];
+		char commandWord[255]; //the first word of the player input (the command)
+		char commandExtension[255]; //the rest of the player's command (minus the space)
 
-		cout << "\n> ";
+		cout << "\n> "; //The > signifies it's time to type in a command. If there is no >, it's a cutscene or dialogue or something like that and you just have to ENTER until you get to the >.
 		cin.getline(command, 255);
-		AllCaps(command);
+		AllCaps(command); //capitalizes the command for easier parsing
 
-		ParseCommand(command, commandWord, commandExtension);
+		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
 
-		if (!strcmp(commandWord, "GO")) {
+		if (!strcmp(commandWord, "GO")) { //for going in a direction
 			travel(currentRoom, &commandExtension[0], party);
-		} else if (!strcmp(commandWord, "TAKE")) {
+		} else if (!strcmp(commandWord, "TAKE")) { //for taking an item
 			takeItem(currentRoom, inventory, &commandExtension[0]);
-		} else if (!strcmp(commandWord, "DROP")) {
+		} else if (!strcmp(commandWord, "DROP")) { //for dropping an item
 			dropItem(currentRoom, inventory, &commandExtension[0]);
-		} else if (!strcmp(commandWord, "USE")) {
+		} else if (!strcmp(commandWord, "USE")) { //for using an item (or tunnel lobster)
 			useItem(currentRoom, inventory, party, &commandExtension[0], mony);
-		} else if (!strcmp(commandWord, "RECRUIT")) {
+		} else if (!strcmp(commandWord, "RECRUIT")) { //for recruiting npcs
 			recruitNPC(currentRoom, &commandExtension[0], party);
-		} else if (!strcmp(commandWord, "DISMISS")) {
+		} else if (!strcmp(commandWord, "DISMISS")) { //for dismissing npcs
 			dismissNPC(currentRoom, &commandExtension[0], party);
-		} else if (!strcmp(commandWord, "ASK")) {
+		} else if (!strcmp(commandWord, "ASK")) { //for getting the dialogue of npcs
 			printNPCDialogue(currentRoom, &commandExtension[0], inventory, party, mony);
-		} else if (!strcmp(commandWord, "INVENTORY")) {
+		} else if (!strcmp(commandWord, "INVENTORY")) { //for printing the contents of your inventory and your monies
 			printInventory(inventory, mony);
-		} else if (!strcmp(commandWord, "PARTY")) {
+		} else if (!strcmp(commandWord, "PARTY")) { //for printing everyone in your party and their level
 			printParty(party);
-		} else if (!strcmp(commandWord, "ROOM")) {
+		} else if (!strcmp(commandWord, "ROOM")) { //for reprinting the contents of the current room (it was annoying having to scroll back up after doing a bunch of stuff in order to check the room data)
 			PrintRoomData(currentRoom);
-		} else if (!strcmp(commandWord, "ANALYZE")) {
+		} else if (!strcmp(commandWord, "ANALYZE")) { //for getting the data of an item or npc
 			analyze(currentRoom, &commandExtension[0], party, inventory);
-		} else if (!strcmp(commandWord, "FIGHT")) {
+		} else if (!strcmp(commandWord, "FIGHT")) { //for initiating battle with npcs
 			fight(currentRoom, party, inventory, &commandExtension[0], mony);
-		} else if (!strcmp(commandWord, "BUY")) {
+		} else if (!strcmp(commandWord, "BUY")) { //for buying items for sale
 			buy(currentRoom, inventory, &commandExtension[0], mony);
-		} else if (!strcmp(commandWord, "HELP")) {
+		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands
 			printHelp(validCommands, flavorText);
-		} else if (!strcmp(commandWord, "QUIT")) {
+		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game
 			continuing = false;
-		} else {
+		} else { //prints an error message if the player typed something that isn't an actual command
 			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
 		}
 
-		CinIgnoreAll();
+		CinIgnoreAll(); //clears extra or faulty input
 	}
+	
 	//gives a friendly farewell to the player
 	cout << "\nEnjoy your next 24 hours.\n";
 
+	//deletes all the rooms, which when deleted also delete their npcs and their items
+	for (Room* room : *rooms) {
+		delete room;
+	} //deletes any remaining items in the inventory
+	for (Item* item : *inventory) {
+		delete item;
+	} //deletes all the attacks
+	for (Attack* attack : *attacks) {
+		delete attack;
+	} //deletes all the effects
+	for (Effect* effect : *effects) {
+		delete effect;
+	}
 }
-
-
