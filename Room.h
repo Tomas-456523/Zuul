@@ -33,6 +33,7 @@ public:
 	Room* getExit(char* direction);
 	Room* getRedirect();
 	bool getStation();
+	bool getGym();
 	bool getBlocked(char* direction);
 	char* getBlockReason(char* direction);
 
@@ -51,6 +52,7 @@ public:
 	void setExit(char* direction, Room* room, char* blocktype = NULL, char* _reason = NULL);
 	void setRedirect(Room* room);
 	void setStation(bool stat = true);
+	void setGym(bool _gym = true);
 	void setDescription(const char _description[255]); //reset the description, used by items that change things
 	void setWelcome(const char text[255]); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char buydesc[255] = "");
@@ -59,6 +61,8 @@ public:
 	void blockExit(char* direction, char* blocktype, const char reason[255]);
 	void unblockExit(const char* direction);
 	vector<char*> unblockAll(char* type);
+
+	void scaleNPCs(int level);
 
 	void undefeatEnemies();
 private:
@@ -81,5 +85,6 @@ private:
 	Room* redirect = NULL;
 
 	bool station;
+	bool gym;
 };
 #endif

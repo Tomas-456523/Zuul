@@ -157,7 +157,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 }
 //if time permits you should make a Helper function that does the first bit modularly
 bool Battle::useItem(char* itemname) {
-	Item* item = getItemInVector(*inventory, commandExtensionP);
+	Item* item = getItemInVector(*inventory, itemname);
 	char itemName[255] = "";
 	char npcName[255] = "";
 	NPC* npc = NULL;
@@ -240,7 +240,6 @@ bool Battle::useItem(char* itemname) {
 			cout << "The " << itemname << " can't be used in battle!";
 			return false;
 		}
-		cout << "You used the " << itemname << " on " << npc->getName() << "!";
 		carryOutAttack(key->getAttack(), playerTeam[0], npc);
 	//some movement items have attacks
 	} else if (!strcmp(item->getType(), "movement")) {
@@ -249,8 +248,10 @@ bool Battle::useItem(char* itemname) {
 			cout << "The " << itemname << " can't be used in battle!";
 			return false;
 		}
-		cout << "You used the " << itemname << " on " << npc->getName() << "!";
 		carryOutAttack(mover->getAttack(), playerTeam[0], npc);
+	} else if (!strcmp(item->getType(), "manhole")) {
+		ManholeItem* cover = (ManholeItem*)item;
+		carryOutAttack(cover->getAttack(), playerTeam[0], npc);
 	//dont think I have any pickupable ones but if there is just uncomment this
 	//} else if (!strcmp(item->getType(), "paver")) {
 	//you can quickly read info items you have, in case you need to use it in battle for whatever reason

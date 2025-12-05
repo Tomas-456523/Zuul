@@ -122,10 +122,12 @@ private:
 //MARK: effect
 class EffectItem : public Item {
 public:
-	EffectItem();
+	EffectItem(const char _name[255], const char _description[255], Room* _room, Effect* _effect);
 	virtual ~EffectItem();
 
 	Effect* getEffect();
+
+	virtual Item* Duplicate() override;
 private:
 	Effect* effect;
 };
@@ -243,6 +245,7 @@ public:
 	virtual ~ManholeItem();
 
 	Room* getRoom(); //gets the room that it's usable in
+	Attack* getAttack();
 private:
 	Attack* attack; //you can throw a manhole cover at an enemy, pretty good attack
 	Room* destination; //the room that the new exit leads to

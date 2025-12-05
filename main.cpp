@@ -164,6 +164,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* tentlab = new Room("in the tent lab. There's a ton of machinery, and many generic science beakers with colored liquids.");
 	//(put a sign here) tunnels are shut down due to a lobster infestation
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently due to a lobster infestation.");
+	tentstation->setStation();
 	//make the church get repaired post game and Archibald goes here
 	Room* tentchurch = new Room("in the village church. It's a really big tent, complete with stained glass and everything. Nobody really goes here anymore, especially since the priest mysteriously disappeared a long time ago.");
 	//NO FISHINH MINIGAME WHATSOEVER (ok so this place is useless then?)
@@ -239,13 +240,16 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* deserttownfixed = new Room("in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
 	Room* desertshopfixed = new Room("in the desert store. It smells like pastries and medicine.");
-	Room* desertgymfixed = new Room("in the desert gym. Now that it's back in business it's time to get on that GRIND!");
+	Room* desertgymfixed = new Room("in the desert gym. Now that it's back in business it's time to get on that GRIND!\nSimply DISMISS your teammates here to make them stay in shape until you come back!");
+	desertgymfixed->setGym();
 	//bro use your creativity surely you can put SOMETHING here
 	Room* deserthousefixed = new Room("in some house which still has zero purpose.");
 
-	Room* oasis = new Room("in an oasis, presumably the town's source of water, though the water is long gone.");
-	Room* canyon = new Room("in a small canyon that cuts into a plateau. There's an entrance to an old mineshaft here.");
+	Room* oasis = new Room("in an oasis, presumably the town's source of water, though the water is long gone and the plants are dry husks.");
+	Room* canyon = new Room("in a small canyon that cuts into a plateau. There's an old-timey entrance to a train station here.");
 	Room* thatcliff = new Room("on this cliff over here.");
+
+	Room* oasisfixed = new Room("in the town oasis, now fully restored! Some signs of greenery are starting to appear.");
 
 	Room* canyon1 = new Room("in a long, shaded canyon, forming YET ANOTHER fork in the road. You know, these would actually be really annoying forks if you think about it.");
 	Room* canyon2 = new Room("at the end of the canyon, though a path seems to have been made upwards.");
@@ -267,9 +271,11 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//volcano welcome: the burger restaurant's image is seen, distorted by the heat
 
 	Room* desertstation = new Room("in a train station, which seems to have been accidentally intercepted by the mineshaft.");
+	desertstation->setStation();
 	Room* deserttunnel = new Room("in a long, dark train tunnel. You've never seen one that goes on for so long with no collapse.");
+	deserttunnel->setStation();
 
-	Room* minespring = new Room("at an underground spring, directly under the town oasis. There's many dead miners here.");
+	Room* minespring = new Room("at an underground spring which channels water into the town oasis. There's many dead miners here.");
 
 	//MARK: volcano
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
@@ -283,6 +289,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* volcano2 = new Room("in a volcanic plain. The ashen remains of some plants can be seen here.");
 	Room* volcano3 = new Room("in the scorched remains of an old factory town. I don't think there's any hope of this one's citizens coming back.\nThere's stairs leading down to a train station.");
 	Room* volcanostation = new Room("in the factory town train station. Some lava has settled here, but the tunnels are probably still usable?");
+	volcanostation->setStation();
 	Room* volcano4 = new Room("on a scorched path. It reminds you of pepperoni pizza.");
 	Room* volcano5 = new Room("at a... knife in the road.");
 	Item* knife = new MaterialItem("KNIFE","\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", volcano5);
@@ -423,6 +430,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* firedepartment = new Room("in the fire department. The fire alarm is going off SOMEONE TURN IT OFF PLEASE MY EARS");
 	Room* burgstation = new Room("in the BURGERSBURG train station. [interesting flavor text]");
+	burgstation->setStation();
 
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's one of those heavy-duty elevators.");
 	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no going back.");
@@ -437,6 +445,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* BURGERRESTAURANT = new Room("at the tippity top the BURGER RESTAURANT. You can see the sun barely shining under the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 	Room* basestation = new Room("in some train station");
+	basestation->setStation();
 
 	
 	//MARK: set up NPCs
@@ -455,7 +464,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
 
 	//SET START ROOM TO VILLAGE
-	NPC* self = new NPC("\0", "SELF", "It's a me.", deerclearing, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", desertstation, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
@@ -526,17 +535,18 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	mrdeer->addConversation(mrdeer, "(reluctantly affirmative deer noise)");
 	mrdeer->addConversation(self, "AYYY thank you so much MR. DEER!");
 	mrdeer->setDialogue("(deer noises)");
-	mrdeer->setRejectionDialogue("(disinclined deer noise)");
+	mrdeer->setRejectionDialogue("(no thank you deer noise)");
 
-	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 25000);
+	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 500, 25000);
 	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
 	wallelder->addConversation(self, "Indeed I am."); //what if the player has already started plot device quest? they probably haven't tho
 	wallelder->addConversation(wallelder, "Do not be fooled by the allure of BURGER. Do you not know why you crave it so?");
 	wallelder->addConversation(wallelder, "BURGER is formed from the essence of evil. Have you seen the desert above?");
 	wallelder->addConversation(self, "Uh huh.");
 	wallelder->addConversation(wallelder, "It used to be a beautiful forest, full of life like the one to the south.");
-	wallelder->addConversation(wallelder, "But the BURGER MAN parched the woods and reduced it to the wastes seen today, and he will continue to do so until nature has been expunged from this world.");
-	wallelder->addConversation(wallelder, "For by destroying the means to live, he guides the people by hunger and thirst to his city, where they will be more easily tempted by the BURGER RESTAURANT.");
+	wallelder->addConversation(wallelder, "But the BURGER MAN ordered the woods parched, and reduced it to the wastes seen today.");
+	wallelder->addConversation(wallelder, "He will continue to do so until nature has been expunged from this world.");
+	wallelder->addConversation(wallelder, "By destroying the means to live, he guides the people by hunger and thirst to his city, where they will be more easily tempted by the BURGER RESTAURANT.");
 	wallelder->addConversation(self, "Dang that's crazy.");
 	wallelder->addConversation(wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below.");
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
@@ -545,6 +555,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success.", 0, 7, 5, 0, 2, 3);
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
+	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 10, 10, 10, 10, 10, 10, 0);
+	gymbro->setDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
+	gymbro->setRejectionDialogue("Sorry dude, I gotta stay on DAT GRIND to get DEM GAINS.");
+
 	//MARK: set up room exits
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forestentrance);
@@ -642,7 +656,18 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	desertshop->setExit(OUT,deserttown);
 	desertgym->setExit(OUT,deserttown);
 	deserthouse->setExit(OUT,deserttown);
+	deserttownfixed->setExit(NORTH, canyon1);
+	deserttownfixed->setExit(SOUTH, deserthill);
+	deserttownfixed->setExit(EAST, oasis);
+	deserttownfixed->setExit(WEST, canyon);
+	deserttownfixed->setExit(IN_HOUSE_1, desertshopfixed);
+	deserttownfixed->setExit(IN_HOUSE_2, desertgymfixed);
+	deserttownfixed->setExit(IN_HOUSE_3, deserthousefixed);
+	desertshopfixed->setExit(OUT,deserttownfixed);
+	desertgymfixed->setExit(OUT,deserttownfixed);
+	deserthousefixed->setExit(OUT,deserttownfixed);
 	oasis->setExit(WEST, deserttown);
+	oasisfixed->setExit(WEST, deserttown);
 	canyon->setExit(UP, thatcliff);
 	canyon->setExit(EAST, deserttown);
 	canyon->setExit(UNDERGROUND, desertstation);
@@ -924,33 +949,25 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Room* tunnels = new Room("in the train tunnels that span the continent.");
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
+	tunnels->setStation();
 
 	//MARK: set up enemies
 
-	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnel, 200, 20, 10, 20, 10, 50, 10, 30, true);
-	//you should also get a prompt to name it like
-	//                                                     (type your lobster's name here!)
-	//SELF - "Oh nice a pet lobster. I think I'll name you 
-	//Successfully tamed TUNNEL LOBSTER [FLORIAN]!
-	// 
-	//and then set the lobster's title to TUNNEL LOBSTER and the name to whatever was typed
-	// 
-	//if you just enter nothing self says
-	//SELF - "Ok nevermind I guess I won't name you."
-	//Successfully tamed TUNNEL LOBSTER!
-	// 
-	//reset the description to tamed instead of savage
+	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnels, 200, 20, 10, 20, 10, /*5*/0, 10);
 	tunnellobster->setLobster(tunnels);
-	tunnellobster->setLeader(true, 10, desertstation);
+	tunnellobster->setLeader(true, 10, desertstation, false);
 	tunnellobster->setTunnelDirection(tentstation, TO_THE_VILLAGE);
 	tunnellobster->setTunnelDirection(desertstation, TO_THE_DESERT);
+	tunnellobster->setTunnelDirection(deserttunnel, TO_THE_DESERT);
 	tunnellobster->setTunnelDirection(volcanostation, TO_THE_HIGHLANDS);
 	tunnellobster->setTunnelDirection(burgstation, TO_BURGERSBURG);
 	tunnellobster->setTunnelDirection(basestation, TO_THE_BASEMENT);
 	tunnellobster->setLink(tunnellobster);
-	tunnellobster->setDefeatNPC("", "An immense, tamed crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)." NULL);
+	tunnellobster->setDefeatNPC("", "An immense, tamed crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises).", NULL);
 	tunnellobster->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
 	tunnellobster->setRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
+
+	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, tunnellobster);
 
 	//set up generic non-npc enemies
 	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15, 5);
@@ -1026,7 +1043,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//set up teammate viola
 	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 100, 20, 20, 0, true);
 	viola->setScale(0, 0, 1, 0, 1, 0, 2);
-	viola->setLevel(10);
+	viola->setLeader(true, 10);
 	viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
 	viola->addConversation(viola, "So what if I did?");
 	viola->addConversation(self, "Lady you can't just go kidnapping people.");
@@ -1044,8 +1061,35 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	viola->addLinkedConvo(self, "That reason is stupid.");
 	viola->addLinkedConvo(viola, "Yeah I know...");
 	viola->addLinkedConvo(viola, "I'm just going to go to that cliff over there...");
+	viola->addLinkedConvo(NULL, "VIOLA went to that cliff over there.");
 	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
-	viola->setTalkOnDefeat(true);
+	viola->setTalkOnDefeat();
+	viola->setForceBattle();
+	viola->setEscapable(false);
+
+	NPC* glutton = new NPC("BURGER GLUTTON", "GREER", "Greedy BURGER official sent to keep all the desert's remaining water for himself. He is bloated with water.", minespring, 100, 40, 10, 0, 0, 0, 10);
+	glutton->setLeader(true, 30, NULL, false);
+	glutton->addConversation(self, "Hey why are you drinking all that water?");
+	glutton->addConversation(self, "You don't need that much save it for everyone else!");
+	glutton->addConversation(glutton, "Ehehehehe... all da watah is all mine, pal.");
+	glutton->addConversation(glutton, "Official BOIGA MAN ordah.");
+	glutton->addConversation(self, "You can't just do that what the heck >:(");
+	glutton->addConversation(glutton, "If youse want da watah, youse gonna hafta go through me!");
+	glutton->addConversation(self, "Alright then.");
+	glutton->setRedirect(oasis, oasisfixed);
+	glutton->setLink(glutton);
+	glutton->setDialogue("Ehehehe... da watah's all fer me!");
+	glutton->setRejectionDialogue("Now why would I wanna join youse, huh?");
+	glutton->addLinkedConvo(glutton, "Ah you gots me...");
+	glutton->addLinkedConvo(glutton, "...");
+	glutton->addLinkedConvo(glutton, "I can'ts go back to da boss with a failya like dis...");
+	glutton->addLinkedConvo(glutton, "Hey what are you doing?!");
+	glutton->addLinkedConvo(glutton, "Great job lad.");
+	glutton->addLinkedConvo(NULL, "GREER walked off the cliff...");
+	glutton->addLinkedConvo(NULL, "The spring's water can now freely flow into the oasis!");
+	glutton->setTalkOnDefeat();
+	glutton->setForceBattle();
+	glutton->setEscapable(false);
 
 	//MARK: block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
@@ -1078,10 +1122,13 @@ void PrintRoomData(Room* currentRoom) {
 }
 
 void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool forceTravel = false, Room* forceDest = NULL) {
-	Room* roomCanidate = currentRoom->getExit(direction);
+	Room* roomCanidate = NULL;
 	if (forceDest != NULL) {
 		roomCanidate = forceDest;
-	} else if (roomCanidate == NULL) {
+	} else {
+		roomCanidate = currentRoom->getExit(direction);
+	}
+	if (roomCanidate == NULL) {
 		if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "WEST") && strcmp(direction, "EAST")) {
 			cout << "\nInvalid direction \"" << direction << "\".";
 		} else {
@@ -1096,15 +1143,124 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool force
 		roomCanidate = roomCanidate->getRedirect();
 	}
 	roomCanidate->undefeatEnemies();
+	if (roomCanidate->getGym()) {
+		roomCanidate->scaleNPCs((*party)[0]->getLevel()-1);
+	}
 	for (NPC* npc : (*party)) {
 		npc->setRoom(roomCanidate);
 	}
-	//this is bad practice but its functional practice and that's all that matters :)
-	NPC* lobster = getNPCInVector(currentRoom->getNpcs(), direction);
-	if (lobster != NULL && roomCanidate->getStation()) {
-		lobster->setRoom(roomCanidate);
+	if (currentRoom->getStation() && roomCanidate->getStation()) {
+		for (NPC* npc : currentRoom->getNpcs()) {
+			if (npc->getLobster() && !npc->getLeader()) {
+				npc->setRoom(roomCanidate);
+				break;
+			}
+		}
 	}
 	currentRoom = roomCanidate;
+	PrintRoomData(currentRoom);
+}
+
+//MARK: fight
+void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
+	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name);
+	if (npc == NULL) {
+		cout << "\nThere is nobody named \"" << name << "\" here.";
+		return;
+	}
+	if (npc->getPlayerness()) {
+		cout << "\n" << name << " - \"Uhhhh you want me to fight myself?\"";
+		return;
+	}
+	if (!npc->getLeader()) {
+		cout << "\nYou can't fight " << name << "!";
+		return;
+	}
+	if (npc->getConvoSize()) {
+		npc->printDialogue();
+	}
+	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
+	int battlestatus = battle.FIGHT();
+	if (battlestatus == 0) { //lose
+		cout << "\nDEFEAT.";
+		CinPause();
+		int monyLoss = mony - mony/2;
+		mony -= monyLoss;
+		cout << "\nYou lost " << monyLoss << " mon";
+		if (monyLoss == 1) {
+			cout << "y.";
+		} else {
+			cout << "ies.";
+		}
+		CinPause();
+	} else if (battlestatus == 1) { //win
+		//describe how the enemy was defeated?
+		cout << "YOU WIN!";
+		CinPause();
+		mony += battle.getMonyReward(); 
+		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is literally never just 1
+		cout << "\nYou earned " << battle.getMonyReward() << " monies! Now you have " << mony << " monies!";
+		CinPause();
+		for (NPC* teammate : *party) {
+			teammate->addXp(battle.getXpReward());
+		}
+		cout << "\nYou";
+		if (party->size() > 1) {
+			cout << "r party members";
+		}
+		cout << " gained " << battle.getXpReward() << " XP!";
+		CinPause();
+		for (NPC* teammate : *party) {
+			if (teammate->getLevelUp()) {
+				cout << teammate->getName() << " leveled up! " << teammate->getName() << " is now Level " << teammate->getLevel() << "!";
+				//I really want this to show stat changes
+				teammate->setLevelUp(false);
+				CinPause();
+			}
+		}
+		npc->defeat();
+		if (npc->getLobster()) {
+			cout << "\nThe TUNNEL LOBSTER, now defeated, appears docile.";
+			CinPause();
+			cout << "TUNNEL LOBSTER - \"HhHhhhHHhhHhhHhHhhHhhhHHhh (docile lobster noises)\"";
+			CinPause();
+			for (int i = 0; i < strlen((*party)[0]->getName()); i++) {
+				cout << " ";
+			}
+			cout <<                              "\n                                                     (type your lobster's name here!)";
+			cout << "\n" << (*party)[0]->getName() << " - \"Oh nice a pet lobster! I think I'll name you ";
+
+			char name[255];
+			cin.getline(name, 255);
+
+			AllCaps(&name[0]);
+
+			if (!strcmp(name, "")) {
+				cout << "SELF - \"Ok nevermind I guess I won't name you.\"";
+				CinPause();
+			} else {
+				npc->setName(name);
+				npc->setTitle("TUNNEL LOBSTER");
+			} 
+			if (!strcmp(name, "FLORIAN")) {
+				cout << "\n" << (*party)[0]->getName() << " - \"Yeah that's what I was thinking too!\"";
+				CinPause();
+			} else if (!strcmp(name, "HELP")) {
+				cout << "\n" << (*party)[0]->getName() << " - \"...\"";
+				CinPause();
+			}
+			
+			cout << "\nSuccessfully tamed TUNNEL LOBSTER";
+			if (strcmp(name, "")) {
+				cout << " " << npc->getName();
+			}
+			cout << "!";
+			cout << "\nUtilize the abandoned train tunnels by USE-ing " << npc->getName() << ".";
+			CinPause();
+			
+			CinIgnoreAll();
+		}
+	}
 	PrintRoomData(currentRoom);
 }
 
@@ -1149,19 +1305,29 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	cout << "\nYou dropped the " << itemname << ".";
 }
 
-//MARK: useitem
+//MARK: use item
 //I PROGRAMMED THAT!
 void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
+	//terrible practice to have this here :))))))))
 	NPC* lobster = getNPCInVector(currentRoom->getNpcs(), itemname);
 	if (lobster != NULL && lobster->getLobster()) {
 		if (lobster->getLeader()) {
 			cout << "\nYou can't use that untamed lobster!";
 			return;
 		}
-		cout << "\n" << itemname << " carried your party to the train station tunnels!";
+		if (currentRoom == lobster->getHome()) {
+			cout << "\nYou are already in the tunnels!";
+			return;
+		}
+		cout << "\n" << itemname << " carried you";
+		if (party->size()) {
+			cout << "r party";
+		}
+		cout << " to the train station tunnels!";
+		CinPause();
 		lobster->getHome()->setExit(lobster->getTunnelDirection(currentRoom), currentRoom);
 		travel(currentRoom, NULL, party, true, lobster->getHome());
-		lobster->Dismiss();
+		return;
 	}
 	Item* item = getItemInVector(*inventory, itemname);
 	char itemName[255] = "";
@@ -1186,7 +1352,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
 				return;
 			}
-		} else {
+		} else if (strcmp(itemName, "")) {
 			itemname = itemName; //makes the null item print not say "You have no [item] ON [npc]"
 		}
 	}
@@ -1217,17 +1383,29 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		}
 	//summons the tunnel lobster to the current train station
 	} else if (!strcmp(item->getType(), "caller")) {
-		CallerItem* caller = (CallerItem*)item;
-		npc = caller->getCalledNPC();
 		if (!currentRoom->getStation()) {
 			cout << "\nThe " << itemname << " must be used in a train station!";
 			return;
-		} else if (npc->getRoom() == currentRoom) {
-			cout << "\n" << npc->getName() << " is already here!";
-			return;
 		}
-		npc->setRoom(currentRoom);
-		cout << "\n" << npc->getName() << " burst out of the rubble!";
+		CallerItem* caller = (CallerItem*)item;
+		npc = caller->getCalledNPC();
+		if (!npc->getLeader()) {
+			if (npc->getRoom() == currentRoom) {
+				cout << "\n" << npc->getName() << " did a lobstery dance.";
+				return;
+			}
+			npc->setRoom(currentRoom);
+			cout << "\n" << npc->getName() << " burst out of the rubble!";
+		} else {
+			if (npc->getRoom() == currentRoom) {
+				cout << "\n" << npc->getName() << " shrieked angrily!";
+			} else {
+				npc->setRoom(currentRoom);
+				cout << "\nA " << npc->getName() << " angrily burst out of the rubble!";
+			}
+			CinPause();
+			fight(currentRoom, party, inventory, npc->getName(), mony);
+		}
 	} else if (!strcmp(item->getType(), "toll")) {
 
 	} else if (!strcmp(item->getType(), "key")) {
@@ -1288,6 +1466,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	}
 }
 
+//MARK: recruit
 void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxParty = 4) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
@@ -1316,6 +1495,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxPa
 	cout << "\n" << npcname << " was added to your party!" << "(party size: " << party->size() << "/" << maxParty << ")";
 }
 
+//MARK: dismiss
 void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
@@ -1331,12 +1511,17 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 		return;
 	}
 	party->erase(remove(party->begin(), party->end(), npc), party->end());
-	cout << "\n" << npcname << " - \"" << npc->getDismissalDialogue() << "\"";
-	cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
-	npc->Dismiss();
+	bool gym = currentRoom->getGym();
+	if (gym) {
+		cout << "\n" << npcname << " is now on the GRIND at the gym, and will now train to stay at your level!";
+	} else {
+		cout << "\n" << npcname << " - \"" << npc->getDismissalDialogue() << "\"";
+		cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
+	}
+	npc->Dismiss(!gym);
 }
 
-void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory) {
+void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory, vector<NPC*>* party, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname);
 	if (npc == NULL) {
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
@@ -1348,6 +1533,9 @@ void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory
 		inventory->push_back(item);
 		CinPause();
 		cout << npcname << " gave you the " << item->getName() << "!";
+	}
+	if (npc->getForceBattle()) {
+		fight(currentRoom, party, inventory, npcname, mony);
 	}
 }
 
@@ -1363,6 +1551,7 @@ void printInventory(vector<Item*>* inventory, int monies) {
 	}
 }
 
+//MARK: printparty
 void printParty(vector<NPC*>* party) {
 	cout << "\nMembers of your party:";
 	for (NPC* npc : *party) {
@@ -1374,6 +1563,7 @@ void printParty(vector<NPC*>* party) {
 	}
 }
 
+//MARK: analyze
 void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name);
 	if (npc == NULL) {
@@ -1397,6 +1587,7 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 	cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
+//MARK: buy
 void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getStock(), name);
 	if (item == NULL) {
@@ -1416,70 +1607,7 @@ void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 	}
 }
 
-void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
-	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name);
-	if (npc == NULL) {
-		cout << "\nThere is nobody named \"" << name << "\" here.";
-		return;
-	}
-	if (npc->getPlayerness()) {
-		cout << "\n" << name << " - \"Uhhhh you want me to fight myself?\"";
-		return;
-	}
-	if (!npc->getLeader()) {
-		cout << "\nYou can't fight " << name << "!";
-		return;
-	}
-	if (npc->getConvoSize()) {
-		npc->printDialogue();
-	}
-	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
-	int battlestatus = battle.FIGHT();
-	if (battlestatus == 0) { //lose
-		cout << "\nDEFEAT.";
-		CinPause();
-		int monyLoss = mony - mony/2;
-		mony -= monyLoss;
-		cout << "\nYou lost " << monyLoss << " mon";
-		if (monyLoss == 1) {
-			cout << "y.";
-		} else {
-			cout << "ies.";
-		}
-		CinPause();
-	} else if (battlestatus == 1) { //win
-		//describe how the enemy was defeated?
-		cout << "YOU WIN!";
-		CinPause();
-		mony += battle.getMonyReward(); 
-		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is literally never just 1
-		cout << "\nYou earned " << battle.getMonyReward() << " monies! Now you have " << mony << " monies!";
-		CinPause();
-		for (NPC* teammate : *party) {
-			teammate->addXp(battle.getXpReward());
-		}
-		cout << "\nYou";
-		if (party->size() > 1) {
-			cout << "r party members";
-		}
-		cout << " gained " << battle.getXpReward() << " XP!";
-		CinPause();
-		for (NPC* teammate : *party) {
-			if (teammate->getLevelUp()) {
-				cout << "\n" << teammate->getName() << " leveled up! " << teammate->getName() << " is now Level " << teammate->getLevel() << "!";
-				//I really want this to show stat changes
-				teammate->setLevelUp(false);
-				CinPause();
-			}
-		}
-		npc->defeat();
-		if (npc->getLobster()) {
-			//continue here
-		}
-	}
-	PrintRoomData(currentRoom);
-}
-
+//MARK: printhelp
 void printHelp(char validCommands[15][255], char flavorText[16][255]) {
 	cout << "\n";
 	cout << flavorText[rand() % 16];
@@ -1489,6 +1617,7 @@ void printHelp(char validCommands[15][255], char flavorText[16][255]) {
 	}
 }
 
+//MARK: int main
 int main() {
 	srand(time(NULL));
 	
@@ -1580,6 +1709,8 @@ int main() {
 
 	PrintRoomData(currentRoom);
 
+
+	//MARK: main process
 	bool continuing = true;
 	while (continuing) {
 		char command[255] = "";
@@ -1606,7 +1737,7 @@ int main() {
 		} else if (!strcmp(commandWord, "DISMISS")) {
 			dismissNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "ASK")) {
-			printNPCDialogue(currentRoom, &commandExtension[0], inventory);
+			printNPCDialogue(currentRoom, &commandExtension[0], inventory, party, mony);
 		} else if (!strcmp(commandWord, "INVENTORY")) {
 			printInventory(inventory, mony);
 		} else if (!strcmp(commandWord, "PARTY")) {

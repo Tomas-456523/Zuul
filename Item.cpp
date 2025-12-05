@@ -152,6 +152,20 @@ int ReviveItem::getHp() {
 ReviveItem::~ReviveItem() {
 
 }
+//MARK: effect
+EffectItem::EffectItem(const char _name[255], const char _description[255], Room* _room, Effect* _effect) : Item(_name, _description, _room, true, true) {
+	effect = _effect;
+	strcpy(type, "effect");
+}
+Effect* EffectItem::getEffect() {
+	return effect;
+}
+Item* EffectItem::Duplicate() {
+	return new EffectItem(*this);
+}
+EffectItem::~EffectItem() {
+
+}
 //MARK: material
 MaterialItem::MaterialItem(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, true, true) {
 	strcpy(type, "material");
@@ -276,6 +290,9 @@ Room* ManholeItem::getRoom() {
 	Room* dest = destination;
 	destination = NULL;
 	return dest;
+}
+Attack* ManholeItem::getAttack() {
+	return attack;
 }
 //MARK: info
 InfoItem::InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room) : Item(_name, _description, _room, false, false) {

@@ -71,6 +71,7 @@ public: //you need to set stats on creation
 	int getHypnotized();
 	int getFrozen();
 	int getConvoSize();
+	bool getRespawn();
 
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
@@ -80,14 +81,15 @@ public: //you need to set stats on creation
 	void addBattleCry(); //adds a random battle cry to the npc
 	void setRecruitable(bool _recruitable);
 	void Recruit();
-	void Dismiss();
+	void Dismiss(bool gohome = true);
 	void setRoom(Room* _room);
 	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL);
 	void setName(const char _name[255]);
+	void setTitle(const char _title[255]);
 	void setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp);
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false);
-	void setLeader(bool _leader, int _level = 0, Room* room = NULL);
+	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true);
 	void setHypnotized(bool _hypnotized);
 	int damage(float power, float pierce, int hits = 1);
 	void directDamage(int damage, char* status = NULL);
@@ -117,7 +119,10 @@ public: //you need to set stats on creation
 	void printEffects();
 
 	bool getTalkOnDefeat();
-	void setTalkOnDefeat(bool talk);
+	void setTalkOnDefeat(bool talk = true);
+
+	bool getForceBattle();
+	void setForceBattle(bool force = true);
 
 	bool getLobster();
 	void setLobster(Room* tunnels, bool lobster = true);
@@ -191,7 +196,9 @@ protected:
 	int hypnosis = 0;
 	int freeze = 0;
 	bool defeated = false;
+	bool respawns = true;
 
+	bool forcebattle = false;
 	bool talkOnDefeat = false;
 	bool defeatChange = false;
 

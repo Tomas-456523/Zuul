@@ -42,6 +42,9 @@ Room* Room::getRedirect() {
 bool Room::getStation() {
 	return station;
 }
+bool Room::getGym() {
+	return gym;
+}
 bool Room::getBlocked(char* direction) {
 	for (char* exit : blockedExits) {
 		if (!strcmp(exit, direction)) {
@@ -190,6 +193,9 @@ void Room::setRedirect(Room* room) {
 void Room::setStation(bool stat) {
 	station = stat;
 }
+void Room::setGym(bool _gym) {
+	gym = _gym;
+}
 void Room::setDescription(const char _description[255]) {
 	strcpy(description, _description);
 }
@@ -228,10 +234,15 @@ vector<char*> Room::unblockAll(char* type) {
 	}
 	return matches;
 }
+void Room::scaleNPCs(int level) {
+	for (NPC* npc : npcs) {
+		npc->setLevel(level);
+	}
+}
 void Room::undefeatEnemies() {
 	for (NPC* npc : npcs) {
 		//probbaly do a check if you should undefeat them
-		if (npc->getDefeated()) {
+		if (npc->getDefeated() && npc->getRespawn()) {
 			npc->undefeat();
 		}
 	}

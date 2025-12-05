@@ -58,7 +58,7 @@ char* NPC::getRecruitmentDialogue() {
 	return recruitmentDialogue;
 }
 char* NPC::getRecruitedDialogue() {
-	return recruitmentDialogue;
+	return recruitedDialogue;
 }
 char* NPC::getDismissalDialogue() {
 	return dismissalDialogue;
@@ -162,11 +162,17 @@ int NPC::getFrozen() {
 bool NPC::getTalkOnDefeat() {
 	return talkOnDefeat;
 }
+bool NPC::getForceBattle() {
+	return forcebattle;
+}
 int NPC::getConvoSize() {
 	return conversations.size();
 }
 bool NPC::getLobster() {
-	return isLobster
+	return isLobster;
+}
+bool NPC::getRespawn() {
+	return respawns;
 }
 char* NPC::getTunnelDirection(Room* room) {
 	return tunnelLinks[room];
@@ -204,9 +210,11 @@ void NPC::Recruit() {
 	cout << "\n" << name << " - \"" << recruitmentDialogue << "\"";
 	recruited = true;
 }
-void NPC::Dismiss() {
+void NPC::Dismiss(bool gohome) {
 	recruited = false;
-	setRoom(home);
+	if (gohome) {
+		setRoom(home);
+	}
 }
 void NPC::setRoom(Room* _room) {
 	currentRoom->removeNPC(this);
@@ -229,6 +237,9 @@ void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4) {
 }
 void NPC::setName(const char _name[255]) {
 	strcpy(name, _name);
+}
+void NPC::setTitle(const char _title[255]) {
+	strcpy(title, _title);
 }
 void NPC::addXp(int _xp) {
 	xp += _xp;
@@ -254,13 +265,16 @@ void NPC::levelUp(bool trackLevelUp) {
 /*void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
 }*/
-void NPC::setLeader(bool _leader, int _level, Room* room) {
+void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn) {
 	isLeader = _leader;
 	isEnemy = true;
+	respawns = respawn;
 	if (isLeader) {
 		setLevel(_level);
 		party.push_back(&*this);
-		setRoom(room);
+		if (room != NULL) {
+			setRoom(room);
+		}
 	}
 }
 void NPC::setEnemy(bool _enemy) {
@@ -271,7 +285,7 @@ void NPC::setLobster(Room* tunnels, bool lobster) {
 	home = tunnels;
 }
 void NPC::setTunnelDirection(Room* room, char* direction) {
-	tunnelLinks[direction] = room;
+	tunnelLinks[room] = direction;
 }
 void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 	exitBlocking = _exitBlocking;
@@ -279,9 +293,9 @@ void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) {
 }
 void NPC::printDamage(int damage, char* status) {
 	if (damage >= 0) {
-		cout << "\n" << name << " took " << damage << " damage!";
+		cout << "\n" << name << " took " << damage << " damage"; //no !, gets printed later
 	} else {
-		cout << "\n" << name << " recovered " << -damage << " HP!";
+		cout << "\n" << name << " recovered " << -damage << " HP"; //no !
 	}
 	if (status != NULL) {
 		cout << " due to " << status;
@@ -348,7 +362,7 @@ void NPC::directDamage(int damage, char* status) {
 	printDamage(totalDamage, status);
 }
 void NPC::setLevel(int _level) {
-	for (int i = 0; i < _level; i++) {
+	for (int i = level; i < _level; i++) {
 		levelUp();
 	}
 	//addXp(xpForLevel(_level));
@@ -388,6 +402,9 @@ void NPC::setRedirect(Room* room1, Room* room2) {
 }
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
+}
+void NPC::setForceBattle(bool force) {
+	forcebattle = force;
 }
 /*void NPC::setHypnotized(bool _hypnotized) {
 	hypnotized = _hypnotized;
@@ -500,9 +517,12 @@ void NPC::alterSp(int amount, char* status) {
 	}
 	int alterAmount = Clamp(-amount, 0, sp);
 	sp -= alterAmount;
-	cout << "\n" << name << " leaked " << alterAmount << " SP due to " << status << "!";
+	if (status != NULL) {
+		cout << "\n" << name << " leaked " << alterAmount << " SP due to " << status << "!";
+	}
 }
 void NPC::defeat() {
+	defeated = true;
 	if (exitBlocking != NULL) {
 		currentRoom->unblockExit(exitBlocking);
 		exitBlocking = NULL;
@@ -513,6 +533,7 @@ void NPC::defeat() {
 		}
 		if (linkedNPC->getLeader()) {
 			linkedNPC->setLeader(false);
+			linkedNPC->undefeat();
 		}
 		for (int i = 0; i < linkedDialogue.size(); i++) {
 			linkedNPC->addConversation(linkedDialogue[i].first, linkedDialogue[i].second);
@@ -524,23 +545,22 @@ void NPC::defeat() {
 		redirectRoom = make_pair((Room*)NULL, (Room*)NULL);
 	}
 	if (defeatChange) {
-		strcmp(title, defeatTitle);
-		strcmp(description, defeatDescription);
-		strcmp(dialogue, defeatDialogue);
+		strcpy(title, defeatTitle);
+		strcpy(description, defeatDescription);
+		strcpy(dialogue, defeatDialogue);
 		if (defeatRoom != NULL) {
 			setRoom(defeatRoom);
 		}
 		defeatChange = false;
 	}
-	defeated = true;
 }
 void NPC::undefeat() {
 	defeated = false;
 }
 void NPC::setDefeatNPC(const char newTitle[255], const char newDesc[255], const char newDialogue[255], Room* newRoom) {
-	strcmp(defeatTitle, newTitle);
-	strcmp(defeatDescription, newDesc);
-	strcmp(defeatDialogue, newDialogue);
+	strcpy(defeatTitle, newTitle);
+	strcpy(defeatDescription, newDesc);
+	strcpy(defeatDialogue, newDialogue);
 	defeatRoom = newRoom;
 	defeatChange = true;
 }
@@ -563,7 +583,11 @@ void NPC::printDialogue() {
 		cout << "\n";
 		vector<pair<NPC*, const char*>>& convo = conversations.front();
 		for (int i = 0; i < convo.size(); i++) {
-			cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
+			if (convo[i].first != NULL) {
+				cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
+			} else {
+				cout << convo[i].second;
+			}
 			if (i+1 < convo.size()) {
 				CinPause();
 			}
