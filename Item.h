@@ -3,10 +3,6 @@
 #ifndef ITEM
 #define ITEM
 
-//ITEM TYPES WE WILL NEED:
-//npc item (becomes npc, cactus)
-//treasure chest (can be trapped or not)
-
 #include <vector>
 using namespace std;
 
@@ -15,271 +11,250 @@ class NPC;
 struct Attack;
 struct Effect;
 
-class Item {
+class Item { //the default item
 public:
 	Item(const char _name[255], const char _description[255], Room* _room = NULL, bool _takable = true, bool _consumable = false, bool _target = false, bool useonenemy = false);
-	virtual ~Item();
+	virtual ~Item(); //virtual destructor, necessary since there's many item subclasses
 
-	char* getName();
-	char* getDescription();
-	char* getType();
-	bool getTakable();
-	char* getDenial();
-	//char* getBuyDescription();
-	int getPrice();
-	int getStock();
-	bool getTargetNeeded();
-	bool getConsumable();
-	bool getForEnemy();
+	char* getName(); //gets the name of the item
+	char* getDescription(); //gets the description of the item
+	char* getType(); //gets the type of the item (eg. "key")
+	bool getTakable(); //gets if you can take the item
+	char* getDenial(); //gets description of why you can't take the item
+	int getPrice(); //gets the price of the item if it's for sale
+	int getStock(); //gets how many of the item are left if it's for sale
+	bool getTargetNeeded(); //gets if the item needs a target (if you have to specify who to use it on)
+	bool getConsumable(); //gets if the item gets deleted after use
+	bool getForEnemy(); //gets if it's meant to hit the opponents in battle as opposed to for your team
 	
-	void buy(int& mony, vector<Item*>* inventory);
-	void setDenial(const char denial[255]);
-	//void setBuyDesc(const char buydesc[255]);
-	void setRoom(Room* _room);
-	void unRoom();
+	void buy(int& mony, vector<Item*>* inventory); //buys a copy of the item and adds it to the inventory
+	void setDenial(const char denial[255]); //sets a description of why you can't take the item
+	void setRoom(Room* _room); //sets the item's current room
+	void unRoom(); //removes the item from the room
 
-	void setStock(int _stock, int _price, const char buydesc[255] = "");
-	//void unStock();
+	void setStock(int _stock, int _price, const char buydesc[255] = ""); //makes the item for sale
 
-	virtual Item* Duplicate();
+	virtual Item* Duplicate(); //duplicates the item, used by buy and overwritten by all buyable item subclasses in order to prevent splitting when duplicating them
 protected:
-	char name[255];
-	char description[255];
-	char type[255];
+	char name[255]; //what the item is called
+	char description[255]; //describes the item and what it's used for
+	char type[255]; //what subclass of item it is
 
-	bool takable;
+	bool takable; //if you can take the item
 	char denyDescription[255] = ""; //description of why you can't take the item
-	char buyDescription[255] = "";
-	int price;
-	int stock = 0;
+	char buyDescription[255] = ""; //prints this when buying the item
+	int price; //how much the item costs to buy
+	int stock = 0; //how much of the item you can buy before it's sold out
 
-	bool consumable = false;
+	bool consumable = false; //if the item gets used up when USEd
 
-	bool targetRequired;
-	bool useOnEnemy;
+	bool targetRequired; //if the item needs a target specified before using it
+	bool useOnEnemy; //if the target has to be an enemy in battle
 
-	Room* room = NULL;
+	Room* room = NULL; //the room that the item is in
 };
-//MARK:xp
+
+//xp items for adding xp to an npc
 class XpItem : public Item {
 public:
 	XpItem(const char _name[255], const char _description[255], Room* _room, int _xp);
-	virtual ~XpItem();
 
-	int getXp();
+	int getXp(); //get how much xp to add
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	int xp;
+	int xp; //how much xp to add
 };
-//MARK:sp
+
+//sp items for adding sp to an npc
 class SpItem : public Item {
 public:
 	SpItem(const char _name[255], const char _description[255], Room* _room, int _sp);
-	virtual ~SpItem();
 
-	int getSp();
+	int getSp(); //gets how much sp to add
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	int sp;
+	int sp; //how much sp to add
 };
-//MARK: hp
+
+//hp items for adding hp to an npc
 class HpItem : public Item {
 public:
 	HpItem(const char _name[255], const char _description[255], Room* _room, int _hp);
-	virtual ~HpItem();
 
-	int getHp();
+	int getHp(); //gets how much hp to add
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	int hp;
+	int hp; //how much hp to add
 };
-//MARK: revuve
-//this should be very rare and non-renewable
+
+//revive items for reviving npcs
 class ReviveItem : public Item {
 public:
 	ReviveItem(const char _name[255], const char _description[255], Room* _room, int _hp);
-	virtual ~ReviveItem();
 
-	int getHp();
+	int getHp(); //gets how much hp to add
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	int hp;
+	int hp; //how much hp to add
 };
-//MARK: mony
-class MonyItem : public Item {
-public:
-	MonyItem();
-	virtual ~MonyItem();
 
-	int getMony();
-private:
-	int mony;
-};
-//MARK: effect
+//effect items for affecting npcs with an effect
 class EffectItem : public Item {
 public:
 	EffectItem(const char _name[255], const char _description[255], Room* _room, Effect* _effect);
-	virtual ~EffectItem();
 
-	Effect* getEffect();
+	Effect* getEffect(); //gets the effect to add
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	Effect* effect;
+	Effect* effect; //the effect this item affects with
 };
-//MARK: material
+
+//material items which do nothing except exist
 class MaterialItem : public Item {
 public:
 	MaterialItem(const char _name[255], const char _description[255], Room* _room);
-	virtual ~MaterialItem();
 };
-//MARK: BURGER
+
+//BURGER items which are used for endgame stuff and are only different than materials due to having a Duplicate() and having a different type
 class BURGERItem : public Item {
 public:
-	BURGERItem();
-	virtual ~BURGERItem();
+	BURGERItem(const char _name[255], const char _description[255], Room* _room);
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 };
-//MARK: education
+
+//education items for learning new attacks
 class EducationItem : public Item {
 public:
 	EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack);
-	virtual ~EducationItem();
 
 	void setAttack(Attack* attack); //set extra attacks
-	vector<Attack*> getAttacks();
+	vector<Attack*>& getAttacks(); //gets the attacks this item teacher
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	vector<Attack*> attacks;
+	vector<Attack*> attacks; //the attacks this item teacher
 };
 
-//MARK: caller
-//you can buy caller from desert town
-//you can use caller in any station (rooms should have station bool)
-//caller summons lobster whether tamed or not
-//toll items set station bool to true
-//toll items unlock locked exits and immediately block them again lol
-//tent station is unlocked always
+//caller items for calling the lobster
 class CallerItem : public Item {
 public:
 	CallerItem(const char _name[255], const char _description[255], Room* _room, NPC* npc);
-	virtual ~CallerItem();
 
-	NPC* getCalledNPC(); //call the npc to the caller's current room
+	NPC* getCalledNPC(); //get the npc it calls
 private:
-	NPC* npc_called; //the guy you're calling
+	NPC* npc_called; //the npc you're calling
 };
-//MARK: toll
+
+//toll items for paying monies
 class TollItem : public Item {
 public:
 	TollItem();
-	virtual ~TollItem();
 };
-//MARK: key
+
+//key items for unlocking locked exits
 class KeyItem : public Item {
 public:
 	KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable = true, Attack* _attack = NULL);
-	virtual ~KeyItem();
 
-	Room* getTarget();
-	Attack* getAttack();
-	char* getUnlockType();
-	char* getUseText();
+	Room* getTarget(); //gets this item's remote unlock room if it has one
+	Attack* getAttack(); //gets this item's attack in battle
+	char* getUnlockType(); //gets the type of blockage this item clears
+	char* getUseText(); //gets the text printed by using it
 
-	void setTarget(Room* target);
+	void setTarget(Room* target); //sets the remote location to unlocj
 
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	char* unlockType;
-	Attack* attack;
+	char* unlockType; //the type of blockage this item clears
+	Attack* attack; //this item's attack in battle
 
 	Room* targetRoom = NULL; //keys can be targeted keys, so no matter where you are, using them will remotely unblock the exit
-	char useText[255];
+	char useText[255]; //the text printed by using it
 };
-//MARK: movement
+
+//movement items for moving through locked exits
 class MovementItem : public Item {
 public:
 	MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable = true, Attack* _attack = NULL);
-	virtual ~MovementItem();
 
-	Room* getTarget();
-	Attack* getAttack();
-	char* getUnlockType();
-	char* getUseText();
+	Attack* getAttack(); //gets the attack it does in battle
+	char* getUnlockType(); //gets the block type the thing moves through
+	char* getUseText(); //gets the text printed by using it
 
-	void setTarget(Room* target);
-
-	virtual Item* Duplicate() override;
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	char* unlockType;
-	Attack* attack;
+	char* unlockType; //what block type the thing moves through
+	Attack* attack; //the attack by using it in battle
 
-	Room* targetRoom = NULL; //movement items sometimes just go to a specific location
-	char useText[255];
+	char useText[255]; //the text printed by using it
 };
 
-//paves a new path MARK: paver
+//paver items for paving new exits
 class PaverItem : public Item {
 public:
-	PaverItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, /*Room* _usableRoom, */ char* _direction, Room* _destination);
-	virtual ~PaverItem();
+	PaverItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, Room* _usableRoom, char* _direction, Room* _destination);
 
 	Room* getDestination(); //gets the room that it leads to
 	char* getDirection(); //gets the direction it leads to
-	char* getUseText();
+	bool getUsable(Room* _room); //gets if it's usable in the given room
+	char* getUseText(); //gets the text printed after using the item
 private:
-	//Room* usableRoom; //the room it's usable in
+	Room* usableRoom; //the room it's usable in
 	char* direction; //the direction that it creates the new exit in
 	Room* destination; //the room that the new exit leads to
-	char useText[255];
+	char useText[255]; //the text printed by using the item
 };
+
+//manhole items, for revealing exits and throwing at enemies
 class ManholeItem : public Item {
 public:
-	ManholeItem(const char _name[255], const char _description[255], Room* _room, Room* _destination, Attack* attack);
-	virtual ~ManholeItem();
+	ManholeItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack, Room* _destination = NULL, char* _dir = NULL);
 
-	Room* getRoom(); //gets the room that it's usable in
-	Attack* getAttack();
+	Room* getRoom(); //gets the room that it's leads to
+	char* getDirection(); //gets the direction it makes an exit in
+	Attack* getAttack(); //gets the throwing attack
 private:
 	Attack* attack; //you can throw a manhole cover at an enemy, pretty good attack
 	Room* destination; //the room that the new exit leads to
+	char* direction; //the direction it makes an exit in
 };
-//MARK: info
+
+//info items for printing text
 class InfoItem : public Item {
 public:
 	InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room);
-	virtual ~InfoItem();
 
-	char* getText();
+	char* getText(); //get the text to print
 private:
-	char text[255];
+	char text[255]; //the text to print
 };
-//MARK: treasure chest
+
+//treasure items, for giving monies and maybe fighting an enemy trap
 class TreasureItem : public Item {
 public:
 	TreasureItem(const char _name[255], const char _description[255], Room* _room, int _mony, NPC* _mimic);
-	virtual ~TreasureItem();
 
-	NPC* getMimic();
-	int getMony();
+	NPC* getMimic(); //get the trap enemy if there is one
+	int getMony(); //get how many monies to give
 private:
-	NPC* mimic;
-	int mony;
+	NPC* mimic; //the trap enemy it makes you fight
+	int mony; //how many monies it gives
 };
+
+//conveyor switches, for switching the direction of conveyor belts
 class ConveyorSwitch : public Item {
 public:
 	ConveyorSwitch(const char _name[255], const char _description[255], Room* _room);
-	virtual ~ConveyorSwitch();
 
-	void setConveyor(Room* room);
-	vector<Room*> getConveyors();
+	void setConveyor(Room* room); //adds the room to the list of affected rooms
+	vector<Room*> getConveyors(); //returns the list of affected rooms
 private:
-	vector<Room*> conveyors;
+	vector<Room*> conveyors; //the affected rooms
 };
 #endif

@@ -3,35 +3,12 @@
 *  This program is a text-based game where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. You can eat the BURGER to get the bad ending,
 *  or you can explore more to get the good ending. There's a bunch of other commands as well.
-*/
-
-/*
-FEATURES I NEED TO IMPLEMENT
-- BETTER DIALOGUE
-- TURN-BASED COMBAT
-- SAVE SYSTEM (OOOONNNNNNLLLLLYYY IF YOU HAVE TIME)
-- DYNAMIC HELP SYSTEM?
-- ITEMS
-- FINALIZE THE PLOT (almost done)
-- ACHIEVEMENTS (ehhhhhh idk anymore consider it if time permits)
-- QUEST SYSTEM (like, to make npcs recruitable)
-- FISHING MINIGAME
-- RECAP COMMAND?
-
-/////////////////SET TEAMMATE NPC SCALING REMEMBER TO ACTUALLY USE THIS FEATURE
-*/
-/*
-If you get the lame ending it gives a reference to the "Don't be lame clause"
-says:
-Wow, that was lame...
-Maybe you should explore more to get a less lame ending...
-
-	    <<< BURGER QUEST COMPLETE ? >>>    
-		<<< THANK YOU FOR PLAYING ! >>>
-
-ENDING ACHIEVED: LAME ENDING
-
-... and then you get booted to the main menu like in hollow knight
+*  
+*  WALKTHOUGH AS OF NOW:
+*  go right fight the grassman, then go northwest then west, talk to mr deer to get the key, then go north until you find the gate
+*  then use the deer key, then just keep going north until you get to the canyon, then go in the mines and keep going north as much
+*  as you can, then leave the mines, and then keep going north until you reach the burger restaurant and then buy a burger and use
+*  it and then you win yay. Although, in a few days it'll be much better so please play it then instead if possible.
 */
 #include <iostream>
 #include <vector>
@@ -49,7 +26,7 @@ using namespace std;
 using namespace Helper; //my Helper namespace has a bunch of helpful functions that I also use in other files
 
 //sets up the entire game world, including rooms, npcs, and items, and returns the player character
-NPC* SetupWorld(vector<Room*>* rooms) {
+NPC* SetupWorld() {
 	//set up directions
 	char* NORTH = new char[12];
 	char* SOUTH = new char[12];
@@ -72,6 +49,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	char* IN_FACTORY = new char[12];
 	char* IN_CASTLE = new char[12];
 	char* IN_ALLEY = new char[12];
+	char* IN_ELEVATOR = new char[12];
 	char* INSIDE = new char[12];
 	char* UPSTAIRS = new char[12];
 	char* DOWNSTAIRS = new char[12];
@@ -106,6 +84,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	strcpy(IN_FACTORY, "IN FACTORY");
 	strcpy(IN_CASTLE, "IN CASTLE");
 	strcpy(IN_ALLEY, "IN ALLEY");
+	strcpy(IN_ELEVATOR, "IN ELEVATOR");
 	strcpy(INSIDE, "INSIDE");
 	strcpy(UPSTAIRS, "UPSTAIRS");
 	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
@@ -156,7 +135,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
-	//create all WANING WOODLANDS rooms MARK: woodlands
+	//create all WANING WOODLANDS rooms
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
 	Room* villageleft = new Room("at the westernmost end of the village, where the tallest tent stands. It's only two stories, but it's comparatively a tent mansion.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
@@ -200,7 +179,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* fdintermission1 = new Room("on the path between the woodlands and the wastelands.");
 	Room* fdintermission2 = new Room("on the path between the woodlands and the wastelands. The foliage is sparse here. BURGERSBURG can be seen faintly in the distance.");
 	Room* fdintermission3 = new Room("on the path between the woodlands and the wastelands. Dead trees surround you. The BURGER RESTAURANT is just barely visible from here.");
-	//Create all DESOLATE DESERT rooms MARK: desert
+	//Create all DESOLATE DESERT rooms
 	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you!).");
 	desert->setWelcome("Welcome to DESOLATE DESERT!");
 	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
@@ -248,10 +227,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	deserttunnel->setStation();
 	Room* minespring = new Room("at an underground spring which channels water into the town oasis. There's many dead miners here.");
 
-	//Create all HELLISH HIGHLANDS rooms MARK: volcano
+	//Create all HELLISH HIGHLANDS rooms
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
 	volcano->setWelcome("WELCOME TO HELLISH HIGHLANDS!");
-	volcano->setWelcome("<<< THE END OF THE ROAD >>>"); //THE RING OF FIRE?
+	volcano->setWelcome("<<< THE END OF THE ROAD >>>");
 	volcano->setWelcome("The air burns your skin and ash fills your lungs.");
 	volcano->setWelcome("The BURGER RESTAURANT can be seen clearly, but its image is heavily distorted by the heat.");
 	volcano->setWelcome("You're almost there.");
@@ -328,7 +307,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* bridge2 = new Room("halfway through the bridge. An eternal night looms over the city.");
 	Room* bridge3 = new Room("on the far end of the bridge. The gate into BURGERSBURG stands right up ahead.");
 
-	//Create MOUNT MINBUS rooms. This place is basically just a small boss arena MARK: mountain
+	//Create MOUNT MINBUS rooms. This place is basically just a small boss arena
 	Room* mountain = new Room("on a mountain, far, far away from anywhere you know. Dark clouds block view of both the sky and land.");
 	mountain->setWelcome("WELCOME TO MOUNT MINBUS!");
 	mountain->setWelcome("<<< THE EDGE OF THE WORLD >>>");
@@ -340,11 +319,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* mountain3 = new Room("at a sheer cliff. Whoever's in charge of this place should really invest in guardrails.");
 	Room* mountainpeak = new Room("at the peak of the mountain, watching over a sea of clouds. You can't even see the BURGER RESTAURANT from here; it really is so far away.\nThere's a tent here in the style of your home village.");
 	Room* tenthome = new Room("in the developer's house.");
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
-	developer->setDialogue("Yo wassup.");
-	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 
-	//Create all BURGERSBURG rooms MARK: BURGERSBURG
+	//Create all BURGERSBURG rooms
 	Room* BURGERSBURG = new Room("at the gate of BURGERSBURG. The BURGER RESTAURANT is just down main street.");
 	BURGERSBURG->setWelcome("Welcome to BURGERSBURG!");
 	BURGERSBURG->setWelcome("<<< THE CAPITAL OF SIN >>>");
@@ -354,27 +330,27 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	BURGERSBURG->setWelcome("We are not responsible for theft or damage to vehicles or contents!");
 	Room* leftstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
 	Room* leftstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
-	Room* leftstreet3 = new Room(".");
+	Room* leftstreet3 = new Room("in the city.");
 	Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
-	Room* leftstreet5 = new Room(".");
-	Room* newstreet1 = new Room(".");
-	Room* newstreet2 = new Room(".");
-	Room* newstreet3 = new Room(".");
-	Room* newstreet4 = new Room(".");
-	Room* newstreet5 = new Room(".");
+	Room* leftstreet5 = new Room("in the city.");
+	Room* newstreet1 = new Room("in the city.");
+	Room* newstreet2 = new Room("in the city.");
+	Room* newstreet3 = new Room("in the city.");
+	Room* newstreet4 = new Room("in the city.");
+	Room* newstreet5 = new Room("in the city.");
 	Room* mainstreet1 = new Room("on main street. There's a few lopsided cars on fire here.");
 	Room* mainstreet2 = new Room("on main street. You hear an explosion somewhere in the distance.");
 	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting."); //behind broken building "It's so close, but the BURGER RESTAURANT is hard to see with all the smoke
 	Room* mainstreet4 = new Room("on main street. There's a stairway here leading down to the BURGERSBURG train station.");
 	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you. BURGER TENDRILS wrap around its base.");
-	Room* coolstreet1 = new Room(".");
+	Room* coolstreet1 = new Room("in the city.");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
-	Room* coolstreet3 = new Room(".");
+	Room* coolstreet3 = new Room("in the city.");
 	Room* coolstreet4 = new Room("at the entrance to a dark alley. Eh could be darker.");
-	Room* coolstreet5 = new Room(".");
+	Room* coolstreet5 = new Room("in the city.");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
-	Room* rightstreet2 = new Room(".");
-	Room* rightstreet3 = new Room(".");
+	Room* rightstreet2 = new Room("in the city.");
+	Room* rightstreet3 = new Room("in the city.");
 	Room* rightstreet4 = new Room("at an old glass factory. You see two guys carrying a large pane of glass."); //add group of people npc for joke
 	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
 	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
@@ -403,8 +379,8 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
 	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no going back.");
 	elevatortop->setWelcome("You ventured beyond your forest home,");
-	elevatortop->setWelcome("endured through the desolate sands,");
-	elevatortop->setWelcome("journeyed through the volcanic highlands,");
+	elevatortop->setWelcome("endured through desolate sands,");
+	elevatortop->setWelcome("journeyed through volcanic highlands,");
 	elevatortop->setWelcome("and braved the crime of the city.");
 	elevatortop->setWelcome("It was a long journey, but you're a mere minute away from your destination...");
 	elevatortop->setWelcome("The elevator shoots upwards.");
@@ -425,20 +401,20 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	elevatortop->setWelcome("What will you do?");
 	Room* BURGERRESTAURANT = new Room("at the tippity top the BURGER RESTAURANT. You can see the sun barely shining under the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
 	Room* elevatorbottom = new Room("deep down in the Earth, in the restricted level of the BURGER RESTAURANT.");
-	elevatortop->setWelcome("The elevator shoots downwards.");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("Hard rock speeds by.");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("It's so far down; the temperature starts rising.");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("Temperatures have risen above volcanic levels...");
-	elevatortop->setWelcome("The elevator dings. Where have you arrived?");
+	elevatorbottom->setWelcome("The elevator shoots downwards.");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("Hard rock speeds by.");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("It's so far down; the temperature starts rising.");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("...");
+	elevatorbottom->setWelcome("Temperatures have risen above volcanic levels...");
+	elevatorbottom->setWelcome("The elevator dings. Where have you arrived?");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
 	basestation->setStation();
@@ -450,7 +426,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	
 	//Create attacks
 	
-	//Create NPCs and items MARK: set up NPCs
+	//Create NPCs and items
 	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	////////////////////////
 	//DELETE THIS ATTACK, ONLY FOR TESTING
@@ -466,7 +442,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
 
 	//SET START ROOM TO VILLAGE
-	NPC* self = new NPC("\0", "SELF", "It's a me.", desertstation, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", mainstreet5, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
@@ -478,19 +454,25 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	floria->addConversation(floria, "Hey big brother! Aren't these flowers just so lovely?");
 	floria->addConversation(self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME.");
 	floria->setDialogue("I just love flowers!");
+	floria->setGymDialogue("I love running in circles around the gym! Exercise is so fun!");
 	floria->setRecruitmentDialogue("Yay! I hope we see some new flowers!");
 	floria->setRecruitedDialogue("I must see all the flowers!");
 	floria->setDismissalDialogue("I'm going to go back to my flower field!");
 
 	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 15, 2, 3, 10, 10, 2, 10, 10);
-	egadwick->setDialogue("Ah hello kiddo. How");
+	egadwick->setDialogue("Ah hello kiddo. How's it going?");
+	egadwick->setGymDialogue("Eh, exercise isn't really my thing, kiddo. I can gain experience by working out my mind!");
 	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you could destroy it I could probably go.");
 	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
-	egadwick->setRecruitedDialogue("I love science.");
+	egadwick->setRecruitedDialogue("I love science. The world has so many interesting specimens.");
 	egadwick->setDismissalDialogue("Great hanging out with you, kiddo! Well, I guess I'll go work on a better robot!");
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
-	archie->setDialogue("So you are going on a BURGER QUEST, I hear? Just keep heading NORTH, and you'll soon reach BURGERSBURG. Safe travels, child!");
+	archie->setDialogue("Safe travels, child!");
+	archie->addConversation(archie, "So you are going on a BURGER QUEST, I hear?");
+	archie->addConversation(archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG.");
+	archie->addConversation(archie, "Safe travels, child!");
+	archie->addConversation(archie, "Make sure to bring me back a BURGER! Heh heh heh.");
 	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
 
 	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating BURGERs");
@@ -541,7 +523,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 500, 25000);
 	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
-	wallelder->addConversation(self, "Indeed I am."); //what if the player has already started plot device quest? they probably haven't tho
+	wallelder->addConversation(self, "Indeed I am.");
 	wallelder->addConversation(wallelder, "Do not be fooled by the allure of BURGER. Do you not know why you crave it so?");
 	wallelder->addConversation(wallelder, "BURGER is formed from the essence of evil. Have you seen the desert above?");
 	wallelder->addConversation(self, "Uh huh.");
@@ -552,13 +534,36 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	wallelder->addConversation(self, "Dang that's crazy.");
 	wallelder->addConversation(wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below.");
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
-	wallelder->setRejectionDialogue("I embedded myself in this heavy rock ages ago so that temptation could not possibly drag me to the BURGER RESTAURANT. I cannot move nor join you.");
+	wallelder->setRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");
+
+	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 200, 80, 120, 10, 50, 10, 30, 100);
+	magmelder->addConversation(magmelder, "Oh it's horrible!");
+	magmelder->addConversation(magmelder, "I raised the lava level around the city so that no one could eat a BURGER!");
+	magmelder->addConversation(magmelder, "But its allure is too great! I've seen people try to sail across and get burnt up!");
+	magmelder->addConversation(magmelder, "Some are even so desperate they try to swim across!");
+	magmelder->addConversation(self, "Oh dang.");
+	magmelder->addConversation(magmelder, "Please! You must lower the lava again! These factories have drainage valves in their control rooms!");
+	magmelder->addConversation(self, "Why can't you just do it yourself?");
+	magmelder->addConversation(magmelder, "I would, but I seem to have gotten myself stuck in this pool of lava!");
+	magmelder->addConversation(self, "I see.");
+	magmelder->setDialogue("You must drain the lava before more lives are lost!");
+	magmelder->setRejectionDialogue("Nay! I must dwell in lava and you must dwell on land. These things conflict, do they not?");
+
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
+	developer->setDialogue("Yo wassup.");
+	developer->addConversation(self, "Yo developer man.");
+	developer->addConversation(developer, "Yeah?");
+	developer->addConversation(self, "Why is everything text?");
+	developer->addConversation(developer, "Because the camera man is on vacation.");
+	developer->addConversation(developer, "Only the narrator could cover his shift.");
+	developer->addConversation(self, "Oh I see.");
+	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success.", 0, 7, 5, 0, 2, 3);
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 10, 10, 10, 10, 10, 10, 0);
-	gymbro->setDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
+	gymbro->setGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
 	gymbro->setRejectionDialogue("Sorry dude, I gotta stay on DAT GRIND to get DEM GAINS.");
 
 	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
@@ -568,12 +573,12 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 
 	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope and saw an orbital office building.", tentlab);
 	
-	Item* fork = new ManholeItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork, NULL, forkthrow);
-	Item* pickaxe = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", mineshaft2, NULL, pickthrow);
-	Item* knife = new ManholeItem("KNIFE", "\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", volcano5, NULL, knifethrow);
+	Item* fork = new ManholeItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork, forkthrow);
+	Item* pickaxe = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", mineshaft2, pickthrow);
+	Item* knife = new ManholeItem("KNIFE", "\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", volcano5, knifethrow);
 
-	Item* mhcover1 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano2, sewerentrance1, coverthrow);
-	Item* mhcover2 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano6, sewer2, coverthrow);
+	Item* mhcover1 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano2, coverthrow, sewerentrance1, DOWN);
+	Item* mhcover2 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano6, coverthrow, sewer2, DOWN);
 
 	Item* switch1 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom);
 	Item* switch2 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom2);
@@ -590,7 +595,10 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	switchhelper2->setConveyor(conveyor4);
 	switchhelper2->setConveyor(conveyor5);
 
-	//Create exits between rooms MARK: set up room exits
+	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo);
+	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
+
+	//Create exits between rooms
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forestentrance);
 	village->setExit(WEST, villageleft);
@@ -610,7 +618,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	docks->setExit(NORTH, village);
 	forestentrance->setExit(WEST, village);
 	forestentrance->setExit(NORTH, forest);
-	forest->setExit(SOUTH, forestentrance);
+	forest->setExit(SOUTH, forestentrance); //forest exits
 	forest->setExit(NORTHWEST, forestleft);
 	forest->setExit(NORTHEAST, forestright);
 	forestleft->setExit(WEST, deerclearing);
@@ -659,7 +667,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	fdintermission2->setExit(SOUTH, fdintermission1);
 	fdintermission3->setExit(NORTH, desert);
 	fdintermission3->setExit(SOUTH, fdintermission2);
-	desert->setExit(SOUTH, fdintermission3);
+	desert->setExit(SOUTH, fdintermission3); //desert exits
 	desert->setExit(NORTHWEST, deserttempleentrance);
 	desert->setExit(NORTHEAST, desertdune);
 	desert->setExit(EAST, desertplain);
@@ -738,7 +746,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	thatcliff->setExit(DOWN, canyon);
 	volcanoentrance->setExit(SOUTH, minelight);
 	volcanoentrance->setExit(OUT, volcano);
-	volcano->setExit(UNDERGROUND, volcanoentrance);
+	volcano->setExit(UNDERGROUND, volcanoentrance); //volcano exits
 	volcano->setExit(NORTH, volcano1);
 	volcano1->setExit(SOUTH, volcano);
 	volcano1->setExit(IN_FACTORY, factory1);
@@ -876,9 +884,9 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	bridge2->setExit(SOUTH, bridge1);
 	bridge3->setExit(NORTH, BURGERSBURG);
 	bridge3->setExit(SOUTH, bridge2);
-	BURGERSBURG->setExit(NORTH, coolstreet1);
+	BURGERSBURG->setExit(NORTH, mainstreet1); //city exits
 	BURGERSBURG->setExit(NORTHWEST, newstreet1);
-	BURGERSBURG->setExit(NORTHEAST, mainstreet1);
+	BURGERSBURG->setExit(NORTHEAST, coolstreet1);
 	BURGERSBURG->setExit(SOUTH, bridge3);
 	leftstreet1->setExit(NORTH, leftstreet2);
 	leftstreet1->setExit(EAST, newstreet1);
@@ -920,19 +928,20 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	mainstreet1->setExit(WEST, newstreet1);
 	mainstreet2->setExit(NORTH, mainstreet3);
 	mainstreet2->setExit(SOUTH, mainstreet1);
-	mainstreet2->setExit(EAST, newstreet2);
-	mainstreet2->setExit(WEST, coolstreet2);
+	mainstreet2->setExit(WEST, newstreet2);
+	mainstreet2->setExit(EAST, coolstreet2);
 	mainstreet3->setExit(NORTH, mainstreet4);
 	mainstreet3->setExit(SOUTH, mainstreet2);
-	mainstreet3->setExit(EAST, newstreet3);
-	mainstreet3->setExit(WEST, coolstreet3);
+	mainstreet3->setExit(WEST, newstreet3);
+	mainstreet3->setExit(EAST, coolstreet3);
 	mainstreet4->setExit(NORTH, mainstreet5);
 	mainstreet4->setExit(SOUTH, mainstreet3);
-	mainstreet4->setExit(EAST, newstreet4);
-	mainstreet4->setExit(WEST, coolstreet4);
+	mainstreet4->setExit(WEST, newstreet4);
+	mainstreet4->setExit(EAST, coolstreet4);
 	mainstreet5->setExit(SOUTH, mainstreet4);
-	mainstreet5->setExit(EAST, newstreet5);
-	mainstreet5->setExit(WEST, coolstreet5);
+	mainstreet5->setExit(WEST, newstreet5);
+	mainstreet5->setExit(EAST, coolstreet5);
+	mainstreet5->setExit(INSIDE, elevator);
 	coolstreet1->setExit(NORTH, coolstreet2);
 	coolstreet1->setExit(SOUTHWEST, BURGERSBURG);
 	coolstreet1->setExit(EAST, rightstreet1);
@@ -977,12 +986,18 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	richneighborhood4->setExit(SOUTH, richneighborhood2);
 	richneighborhood4->setExit(SOUTHEAST, richneighborhood3);
 	richneighborhood4->setExit(SOUTHWEST, richneighborhood1);
+	elevator->setExit(UP, elevatortop);
+	elevator->setExit(OUT, mainstreet5);
+	elevatortop->setExit(OUT, BURGERRESTAURANT);
+	elevatortop->setExit(DOWN, elevator);
+	BURGERRESTAURANT->setExit(IN_ELEVATOR, elevatortop);
 
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
+	tunnels->setExit(TO_THE_DESERT, desertstation);
 
-	//MARK: set up enemies
+	//set up enemies
 
-	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnels, 200, 20, 10, 20, 10, /*5*/0, 10);
+	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnels, 200, 20, 10, 20, 10, 50, 10);
 	tunnellobster->setLobster(tunnels);
 	tunnellobster->setLeader(true, 10, desertstation, false);
 	tunnellobster->setTunnelDirection(tentstation, TO_THE_VILLAGE);
@@ -1079,6 +1094,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	viola->addConversation(viola, "OH YEAH? FIGHT ME!");
 	viola->addConversation(self, "Ok.");
 	viola->setDialogue("AHAHAHAHAHAHAHA!");
+	viola->setGymDialogue("It's leg day oh nooo :(");
 	viola->setRejectionDialogue("Sure you can join me and my friends if you want! AHAHAHA!");
 	viola->setRecruitmentDialogue("Yeah maybe I could do something good by following you. I think I'll go with. Thanks.");
 	viola->setRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
@@ -1087,7 +1103,7 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	viola->setLink(viola);
 	viola->addLinkedConvo(viola, "I'm sorry. I'll free everyone...");
 	viola->addLinkedConvo(viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them...");
-	viola->addLinkedConvo(self, "That reason is stupid.");
+	viola->addLinkedConvo(self, "That's not a very good reason.");
 	viola->addLinkedConvo(viola, "Yeah I know...");
 	viola->addLinkedConvo(viola, "I'm just going to go to that cliff over there...");
 	viola->addLinkedConvo(NULL, "VIOLA went to that cliff over there.");
@@ -1112,15 +1128,27 @@ NPC* SetupWorld(vector<Room*>* rooms) {
 	glutton->addLinkedConvo(glutton, "Ah you gots me...");
 	glutton->addLinkedConvo(glutton, "...");
 	glutton->addLinkedConvo(glutton, "I can'ts go back to da boss with a failya like dis...");
-	glutton->addLinkedConvo(glutton, "Hey what are you doing?!");
+	glutton->addLinkedConvo(glutton, "What else is theah to do?");
 	glutton->addLinkedConvo(glutton, "Great job lad.");
-	glutton->addLinkedConvo(NULL, "GREER walked off the cliff...");
+	glutton->addLinkedConvo(NULL, "GREER disappeared into the darkness...");
 	glutton->addLinkedConvo(NULL, "The spring's water can now freely flow into the oasis!");
+	glutton->setLinkedRoom(ceoroom, "in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.\nThere is a rotund corpse in the corner");
 	glutton->setTalkOnDefeat();
 	glutton->setForceBattle();
 	glutton->setEscapable(false);
 
-	//MARK: block exits
+	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 200, 50, 30, 20, 20, 10, 50);
+	//lavaguard->setLeader(true, 30, NULL, false);
+	lavaguard->setDialogue("(ethereal breathing)");
+	lavaguard->setRejectionDialogue("(ethereal breathing)");
+	lavaguard->setLink(magmelder, "Oh nooooo............");
+	lavaguard->addLinkedConvo(magmelder, "Amazing work! The lava has been drained!");
+	lavaguard->addLinkedConvo(magmelder, "But with the way to BURGERSBURG cleared...");
+	lavaguard->addLinkedConvo(magmelder, "People can get BURGERs again...");
+	lavaguard->addLinkedConvo(magmelder, "Oh nooooo...... We fix one problem and another one comes back......");
+	lavaguard->addLinkedConvo(self, "Hm.");  
+
+	//block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -1205,7 +1233,7 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool force
 	PrintRoomData(currentRoom); //prints the data of the current room
 }
 
-//initiates battle with an npc MARK: fight
+//initiates battle with an npc
 void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //try to find the given npc in the room
 	if (npc == NULL) { //print error message if they're not here
@@ -1222,6 +1250,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 	}
 	if (npc->getConvoSize()) { //I want the player to hear all the dialogue instead of blindly fighting everyone, so we make sure if the npc has dialogue that it is said
 		npc->printDialogue();
+		cout << "\n";
 	} //creates the Battle! 
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
 	//initiates the battle and returns an int that represents the outcome of the battle
@@ -1338,7 +1367,12 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	}
 	//you're not allowed to take items not marked as takable
 	if (!item->getTakable()) {
-		cout << "\n You can't take the " << itemname << "!" /*<< item->getDenial()*/;
+		cout << "\n";
+		if (strcmp(item->getDenial(), "")) { //if there is a custom denial we use it
+			cout <<  item->getDenial();
+			return;
+		} //otherwise say the generic denial
+		cout << "You can't take the " << itemname << "!";
 		return;
 	}
 	item->unRoom(); //removes the item from the room
@@ -1349,7 +1383,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 		//gets the item in its true form (the subclass)
 		ManholeItem* cover = (ManholeItem*)item;
 		if (cover->getRoom() != NULL) { //if there is a room to reveal, we set an exit downwards (there's no horizontal manholes in this game)
-			currentRoom->setExit(const_cast<char*>("DOWN"), cover->getRoom());
+			currentRoom->setExit(cover->getDirection(), cover->getRoom());
 			cout << "\nAn exit DOWNwards was revealed!";
 		}
 	}
@@ -1368,12 +1402,18 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 	cout << "\nYou dropped the " << itemname << ".";
 }
 
-//uses an item, with functionality based on type MARK: use item
+//uses an item, with functionality based on type
 void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
 	//in addition to items, you can also USE the tunnel lobster for fast travel
 	//it's probably bad practice to have this here, but it's functional practice! :)
-	NPC* lobster = getNPCInVector(currentRoom->getNpcs(), itemname);
-	if (lobster != NULL && lobster->getLobster()) { //checks the lobsteriness of the potential lobster
+	NPC* lobster = NULL; //we loop through the rooms npcs to find the lobster. We don't use the getNPCInVector function because then you can't use it if the lobster name matches an npc name
+	for (NPC* npc : currentRoom->getNpcs()) {
+		if (npc->getLobster() && !strcmp(npc->getName(), itemname)) { //if it's the lobster and the names match, set the lobster to that npc
+			lobster = npc;
+			break; //break because the lobster was found
+		}
+	} //if the lobster was found, we start the lobster USE-ing process
+	if (lobster != NULL) { //checks the lobsteriness of the potential lobster
 		if (lobster->getLeader()) { //we can't use the lobster if it's still angry and undefeated
 			cout << "\nYou can't use that untamed lobster!";
 			return;
@@ -1388,9 +1428,6 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		}
 		cout << " to the train station tunnels!";
 		CinPause();
-		//sets the tunnel exit back to the station. This way, you can only go to a station if you've already been there
-		//a side effect is that the desert fast travel is whichever one you fast travelled from first (since there's two), but they're right next to each other so it doesn't really matter
-		lobster->getHome()->setExit(lobster->getTunnelDirection(currentRoom), currentRoom);
 		//travels to the tunnels!
 		travel(currentRoom, NULL, party, true, lobster->getHome());
 		return;
@@ -1440,9 +1477,14 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		XpItem* xp = (XpItem*)item; //converts to the corresponding subclass
 		cout << npc->getName() << " gained " << xp->getXp() << " XP!";
 		npc->addXp(xp->getXp()); //adds the xp
-	//
+	//beats the game until I rework this
 	} else if (!strcmp(item->getType(), "BURGER")) {
-
+		cout << "You are the winner you win you got the BURGER woo!";
+		CinPause();
+		cout << "This is the win condition because I need to turn this in on time.";
+		CinPause();
+		cout << "Congratulations you are now in the post-game!";
+		CinPause();
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass
@@ -1475,6 +1517,9 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			CinPause(); //the caller initiates a battle if lobster is untamed
 			fight(currentRoom, party, inventory, npc->getName(), mony);
 		}
+		//sets the tunnel exit back to the station. This way, you can only go to a station if you've already been there
+		//a side effect is that the desert fast travel is whichever one you fast travelled from first (since there's two), but they're right next to each other so it doesn't really matter
+		npc->getHome()->setExit(npc->getTunnelDirection(currentRoom), currentRoom);
 	//donation?????
 	} else if (!strcmp(item->getType(), "toll")) {
 		TollItem* toll = (TollItem*)item;
@@ -1567,7 +1612,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	}
 }
 
-//recruit an npc into the player party MARK: recruit
+//recruit an npc into the player party
 void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxParty = 4) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc we're trying to recruit
 	if (npc == NULL) { //error message if nobody in the current room is named npcname
@@ -1597,7 +1642,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxPa
 	cout << "\n" << npcname << " was added to your party!" << "(party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 }
 
-//decruit npcs from your party MARK: dismiss
+//decruit npcs from your party
 void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc to dismiss
 	if (npc == NULL) { //error text if no npc named npcname was found
@@ -1642,6 +1687,7 @@ void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory
 	}
 	//some npcs fight you immediately after talking so if that's the case we initiate battle here
 	if (npc->getForceBattle()) {
+		cout << "\n";
 		fight(currentRoom, party, inventory, npcname, mony);
 	}
 }
@@ -1659,7 +1705,7 @@ void printInventory(vector<Item*>* inventory, int monies) {
 	}
 }
 
-//prints the player's party MARK: printparty
+//prints the player's party
 void printParty(vector<NPC*>* party) {
 	cout << "\nMembers of your party:";
 	for (NPC* npc : *party) { //prints everyone's title if they have one, and then their name and level
@@ -1671,7 +1717,7 @@ void printParty(vector<NPC*>* party) {
 	}
 }
 
-//analyzes either an item or npc of the given name MARK: analyze
+//analyzes either an item or npc of the given name
 void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //tries to find an npc in the room or party
 	/*if (npc == NULL) { //tries to find the npc in the party
@@ -1695,7 +1741,7 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 	cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
-//buys an item from the current room's catalogue MARK: buy
+//buys an item from the current room's catalogue
 void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getStock(), name); //finds the item in the current room's stock
 	if (item == NULL) { //gives error message based on other conditions
@@ -1715,7 +1761,7 @@ void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 	}
 }
 
-//prints all the available commands MARK: printhelp
+//prints all the available commands
 void printHelp(char validCommands[15][255], char flavorText[16][255]) {
 	cout << "\n"; //prints a random flavor text
 	cout << flavorText[rand() % 16];
@@ -1725,20 +1771,18 @@ void printHelp(char validCommands[15][255], char flavorText[16][255]) {
 	}
 }
 
-//the main function where everything is called MARK: int main
+//the main function where everything is called
 int main() {
 	srand(time(NULL)); //seeds random
-	
-	vector<Room*>* rooms = new vector<Room*>; //creates a list of all rooms so we can delete them later
-	
+		
 	//sets up the game world and places the player at the current room
-	NPC* self = SetupWorld(rooms);
+	NPC* self = SetupWorld();
 	Room* currentRoom = self->getHome(); //sets the current room to the player's starting position
 
 	vector<Item*>* inventory = new vector<Item*>; //the inventory of items
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
-	int mony = 0; //monies are the currency in the BURGER QUEST universe.
+	int mony = 0+10; //monies are the currency in the BURGER QUEST universe.
 
 	//flavor text printed by printHelp()
 	char flavorText[16][255] = {
@@ -1814,7 +1858,7 @@ int main() {
 	CinIgnoreAll(); //clears extra characters or invalid input
 
 	PrintRoomData(currentRoom); //prints the data of the starting room
-	//MARK: main process
+
 	bool continuing = true; //we continue until continuing is set to false (when the player quits)
 	while (continuing) { //the main loop!
 		char command[255] = ""; //the charray that the player inputs into
@@ -1868,17 +1912,20 @@ int main() {
 	//gives a friendly farewell to the player
 	cout << "\nEnjoy your next 24 hours.\n";
 
-	//deletes all the rooms, which when deleted also delete their npcs and their items
-	for (Room* room : *rooms) {
+	//deletes all the text
+	/*for (char* text : charsH) {
+		delete[] text;
+	} //deletes all the rooms
+	for (Room* room : roomsH) {
 		delete room;
-	} //deletes any remaining items in the inventory
-	for (Item* item : *inventory) {
+	} //deletes all the items
+	for (Item* item : itemsH) {
 		delete item;
 	} //deletes all the attacks
-	for (Attack* attack : *attacks) {
+	for (Attack* attack : attacksH) {
 		delete attack;
 	} //deletes all the effects
-	for (Effect* effect : *effects) {
+	for (Effect* effect : effectsH) {
 		delete effect;
-	}
+	}*/
 }

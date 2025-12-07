@@ -1,3 +1,5 @@
+//the header file for battles
+
 #ifndef BATTLE
 #define BATTLE
 
@@ -6,7 +8,6 @@
 #include "NPC.h"
 #include "Item.h"
 #include "Effect.h"
-//using namespace std;
 
 class NPC;
 class Item;
@@ -16,48 +17,45 @@ public:
 	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable = true);
 	~Battle();
 
-	int FIGHT();
+	int FIGHT(); //starts the battle process and returns an int based on the outcome
 
-	bool useItem(char* itemname);
-	void printTeam(vector<NPC*> team, bool printLevel = true, bool printSP = false, bool printFainted = true);
-	void printInventory();
-	void printParty();
-	void printEnemies();
-	void printAttacks(NPC* npc);
-	void analyze(char* name);
-	void printHelp();
-	bool runAway();
-	void tickEffect(Effect& effect, vector<Effect*>& choppingBlock);
-	void tickEffects();
-	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target);
-	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 1);
-	bool playerTurn(NPC* plr);
-	void npcTurn(NPC* npc);
+	bool useItem(char* itemname); //use an item in the player's inventory
+	void printTeam(vector<NPC*>& team, bool printLevel = true, bool printSP = false, bool printFainted = true); //print everyone in the given team
+	void printInventory(); //print the contents of the inventory
+	void printParty(); //print everyone in the player's party
+	void printEnemies(); //print all the opponents
+	void printAttacks(NPC* npc); //print all of the player's available attacks
+	void analyze(char* name); //print the data of the given item or npc
+	void printHelp(); //print the valid command words and extensions
+	bool runAway(); //try to escape the battle
+	void tickEffect(Effect& effect, vector<Effect*>& choppingBlock); //ticks the given effect
+	void tickEffects(); //ticks all effects on every npc
+	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target); //affects the given target based on the given attack
+	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 1); //interpret and carry out an attack command given by the player
+	bool playerTurn(NPC* plr); //the player chooses what to do here
+	void npcTurn(NPC* npc); //the npc chooses an attack to do
 	
-	void addNPC(NPC* npc);
+	void addNPC(NPC* npc); //creates a new npc mid-battle
 
-	int getXpReward();
-	int getMonyReward();
+	int getXpReward(); //gets how much xp was earned as a result of a victory
+	int getMonyReward(); //gets how many monies were earned as a result of a victory
 
-
-	queue<NPC*> reorder();
+	void reorder(queue<NPC*>& orderly_fashion); //puts all the npcs in the queue in order of speed
 private:
-	vector<NPC*> playerTeam;
-	vector<NPC*> enemyTeam;
-	vector<NPC*> everyone;
+	vector<NPC*> playerTeam; //the npcs in the player's team
+	vector<NPC*> enemyTeam; //all the opponents
+	vector<NPC*> everyone; //a list of everyone involved in the battle
 
-	//vector<Effect*> allEffects;
+	vector<Item*>* inventory; //pointer to the player's inventory
 
-	vector<Item*>* inventory;
+	NPC* player; //the original player object
 
-	NPC* player;
+	bool escapable; //if you can run from this battle
 
-	bool escapable;
+	int xpReward = 0; //how much xp is given to the player party for winning
+	int monyReward = 0; //how many monies are given to the player party for winning
 
-	int xpReward = 0;
-	int monyReward = 0;
-
-	char flavorText[8][255] = {
+	char flavorText[8][255] = { //flavor text which is randomly printed when asking for HELP
 		"You are locked the heck in.",
 		"You ask your opponent what the valid command words are. They look at you really confused.",
 		"You got this.",
@@ -68,9 +66,9 @@ private:
 		"You get distracted by a squirrel."
 	};
 
-	char validCommands[9][255] = {
+	char validCommands[9][255] = { //the valid commands that are printed when asking for HELP
 		"[attack] [npc]",
-		"USE [item]",
+		"USE [item] (ON [npc])",
 		"INVENTORY",
 		"PARTY",
 		"ENEMIES",

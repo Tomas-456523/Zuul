@@ -1,3 +1,5 @@
+//header file for attacks
+
 #ifndef ATTACK
 #define ATTACK
 
@@ -16,20 +18,18 @@ struct Attack {
 	int targets; //how many targets the attack hits (1 hits just the target, 3 hits their surrounding allies, and 4 hits their entire team, and I don't really use 2)
 	int minhits; //the attack can hit from minhits to maxhits amount of times
 	int maxhits;
-	bool targetAlly = false;
-	bool targetFainted = false;
+	bool targetAlly = false; //if the attack is supposed to hit your own team
+	bool targetFainted = false; //if the attack is supposed to hit 0 hp npcs
 
 	int minLevel; //must be at least this level to use the attack
 
 	float lifesteal; //what % of damage dealt is stolen and added to the npc's health
 
-	Effect* appliedeffect = NULL;
-
-	//how many targets it hits (1, 3, or all)
-	//min and max amount of times it hits
+	Effect* appliedeffect = NULL; //targets get affected by this effetc when hit
 
 	Attack() {} //default constructor so NPC doesn't throw error
 
+	//constructs the attack
 	Attack(const char _name[255], const char _description[255], int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, bool _targetAlly = false, int _minlevel = 0, float _lifesteal = 0) {
 		strcpy(name, _name);
 		strcpy(description, _description);
@@ -42,24 +42,20 @@ struct Attack {
 		targetAlly = _targetAlly;
 		minLevel = _minlevel;
 		lifesteal = _lifesteal;
+		//Helper::attacksH.push_back(this); //store a pointer to this attack in the attacks vector
 	}
 
-	/*void addEffect(Effect effect) {
-		applied_effects.push_back(effect);
-	}*/
+	//I don't need these functions since everything's public in a struct but I like having functions, especially since I don't have to define them in seperate header and cpp files
 
+	//sets an effect for the attack to apply on hit
+	void addEffect(Effect* effect) {
+		appliedeffect = effect;
+	}
+
+	//sets the true description of the attack, so that it can be seen in the attacks menu
 	void addDescription(const char desc[255]) {
 		strcpy(trueDesc, desc);
 	}
 };
 
 #endif // !ATTACK
-
-/* everyone should have a basic attack
-*  enemies should have 1-3 special attacks
-* special attacks use sp (skill points) which regen a % of damage dealt from regular attacks
-* ai always uses special attacks when it can, and chooses one randomly
-* some attacks inflict status effects, if they already have the effect, it resets the duration
-* 
-* when applying effects, add a clone of it to the npc's effects vector, unless they already have the same name effect, then just update the duration to the maximum available
-*/

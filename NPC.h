@@ -1,13 +1,6 @@
 //header file for NPCs
 //this name is misleading because the yes player character also uses this class
 
-//npcs can be recruited (bool for if they want to be recruited)
-//when recruited, they follow you around and are not listed in the description of a room
-//recruited npcs and their stats can be listed using the PARTY command
-//recruited npcs can be dismissed, and they will then go back home
-//you can have up to 3 npcs in your party, not including yourself
-//
-
 #ifndef NPC_H
 #define NPC_H
 
@@ -22,13 +15,13 @@ using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
 class Item;
-//struct Fighter;
 
 class NPC {
 public: //you need to set stats on creation
 	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level = 0, bool _isleader = false, bool _player = false);
 	~NPC();
 
+	//a bunch of functions to get npc variables
 	char* getTitle(); //gets the title of the character
 	char* getName(); //gets the name of the character
 	char* getDescription(); //gets the description of the character
@@ -47,42 +40,43 @@ public: //you need to set stats on creation
 	int getToughness(); //gets the toughness of the npc
 	int getPierce(); //gets the pierce of the npc
 	int getSpeed(); //gets the speed of the npc
-	int getSP();
-	int getSPMax();
+	int getSP(); //gets the current sp of the npc
+	int getSPMax(); //gets the maximum sp of the npc
 	Room* getHome(); //gets the home location of the npc
-	Room* getRoom();
+	Room* getRoom(); //get current room
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
-	int xpForLevel(int level);
+	int xpForLevel(int level); //for the level from 0
 	vector<NPC*>* getParty();
-	bool getLeader();
+	bool getLeader(); //if npc is a leader
 	bool getEscapable();
-	Attack* getCheapestAttack();
-	int getXpReward();
+	int getXpReward(); //reward for beating them
 	int getMonyReward();
-	bool getEnemy();
+	bool getEnemy(); //if npc is enemy
 	Attack* getBasicAttack();
 	vector<Attack*> getSpecialAttacks();
 	map<Attack*, int> getWeights();
-	bool getLevelUp();
-	bool getDefeated();
-	Item* takeGift();
+	bool getLevelUp(); //if we leveled up recently
+	bool getDefeated(); //if npc has been defeated since entering the room
+	Item* takeGift(); //return and nullify the gift item
 	vector<Effect>& getEffects();
-	int getHypnotized();
-	int getFrozen();
-	int getConvoSize();
-	bool getRespawn();
+	int getHypnotized(); //hypnosis amount
+	int getFrozen(); //freeze amount
+	int getConvoSize(); //how many conversations are left to say
+	bool getRespawn(); //if they respawn
 
+	//bunch of functions for affecting npc variables
 	void setDialogue(const char _dialogue[255]); //sets the dialogue for the npc
+	void setGymDialogue(const char _dialogue[255]); //sets what the npc says in the gym
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
 	void setRecruitmentDialogue(const char _dialogue[255]); //sets the recruitment dialogue for the npc
 	void setRecruitedDialogue(const char _dialogue[255]); //sets the recruited dialogue for the npc
 	void setDismissalDialogue(const char _dialogue[255]); //sets the dismissal dialogue for the npc
-	void addBattleCry(); //adds a random battle cry to the npc
-	void setRecruitable(bool _recruitable);
-	void Recruit();
-	void Dismiss(bool gohome = true);
-	void setRoom(Room* _room);
+	void setRecruitable(bool _recruitable); //set if you can recruit them
+	void Recruit(); //set recurited to true
+	void Dismiss(bool gohome = true); //dismiss them and go home if specified
+	void setRoom(Room* _room); //move the npc
+	void setHome(Room* room);
 	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL);
 	void setName(const char _name[255]);
 	void setTitle(const char _title[255]);
@@ -102,54 +96,52 @@ public: //you need to set stats on creation
 	void setEnemy(bool _enemy);
 	void alterSp(int amount, char* status = NULL);
 	void setLevelUp(bool _leveledUp);
-	void addSuffix(const char suffix[3]);
-	void setGuard(int _guard);
-	void setLink(NPC* npc);
-	void setGift(Item* item);
-	void setRedirect(Room* room1, Room* room2);
-	//void setHypnotized(bool _hypnotized);
-	//void setFrozen(bool _frozen);
-	void setEffect(Effect* effect, bool battle = true);
+	void addSuffix(const char suffix[3]); //add suffix to end of npc name
+	void setGuard(int _guard); //set guard to block attacks
+	void setLink(NPC* npc, const char dialogue[255] = ""); //linked npc to affect on defeat
+	void setLinkedRoom(Room* room, const char desc[255]); //room to affect on defeat
+	void setGift(Item* item); //item to give when talking
+	void setRedirect(Room* room1, Room* room2); //set room to redirect upon defeat
+	void setEffect(Effect* effect, bool battle = true); //add an effect to the npc
 	void removeEffect(Effect& effect);
 
-	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false);
+	void addConversation(NPC* speaker, const char dialogue[255], bool newConversation = false); //add a conversation line to the npc, and make a new conversation if specified
 	void addLinkedConvo(NPC* speaker, const char dialogue[255]);
 	void printDialogue();
 	void printDamage(int damage, char* status = NULL);
 	void printEffects();
 
-	bool getTalkOnDefeat();
-	void setTalkOnDefeat(bool talk = true);
+	bool getTalkOnDefeat(); //gets if the npc talks after being defeated
+	void setTalkOnDefeat(bool talk = true); //sets if the npc talks after being defeated
 
-	bool getForceBattle();
-	void setForceBattle(bool force = true);
+	bool getForceBattle(); //gets if the npc forces battle after talking
+	void setForceBattle(bool force = true); //set if the npc forces battle after talking
 
-	bool getLobster();
-	void setLobster(Room* tunnels, bool lobster = true);
+	bool getLobster(); //get if it's the lobster
+	void setLobster(Room* tunnels, bool lobster = true); //set if it's a lobster plus set its home to the tunnels since it actually starts somewhere else
 
-	char* getTunnelDirection(Room* room);
-	void setTunnelDirection(Room* room, char* direction);
+	char* getTunnelDirection(Room* room); //gets the direction back to the given room from the tunnels (for lobster only)
+	void setTunnelDirection(Room* room, char* direction); //sets tunnel directions (for lobster only)
 
-	void setDefeatNPC(const char newTitle[255], const char newDesc[255], const char newDialogue[255], Room* newRoom);
+	void setDefeatNPC(const char newTitle[255], const char newDesc[255], const char newDialogue[255], Room* newRoom); //sets what the npc changes to after being defeated
 
-	void defeat();
-	void undefeat();
+	void defeat(); //set the enemy to defeated and do a bunch of defeated processes if applicable
+	void undefeat(); //set the enemy to not defeated
 protected:
 	char title[255]; //the title of the character (eg. VILLAGE ELDER)
-	char name[255];
-	char description[255];
+	char name[255]; //the name
+	char description[255]; //npc's description when analyzed
 
-	Room* home;
+	Room* home; //where the npc goes after being dismissed
 	Room* currentRoom;
 
-	vector<NPC*> party;
+	vector<NPC*> party; //the npc's party if it is a leader
 
-	Attack* standard_attack;
-	vector<Attack*> special_attacks;
-	Attack* cheapest_attack;
+	Attack* standard_attack; //the npc's normal attack for generating sp
+	vector<Attack*> special_attacks; //the npc's special attacks that cost sp
 
-	vector<Effect> effects;
-	map<Attack*, int> attackWeight;
+	vector<Effect> effects; //the effects affecting this npc
+	map<Attack*, int> attackWeight; //the weight of the npc's attacks
 
 	queue<vector<pair<NPC*,const char*>>> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
 
@@ -158,34 +150,36 @@ protected:
 	char rejectionDialogue[255]; //dialogue that the npc says when rejecting recruitment offer
 	char recruitmentDialogue[255]; //dialogue that the npc says when recruited
 	char dismissalDialogue[255]; //dialogue that the npc says when dismissed
+	char gymDialogue[255]; //dialogue the character says when at the gym
 
 	Item* gift; //item that the npc holds and gifts to the player after talking
 
 	bool recruitable = false;
-	bool recruited = false;
+	bool recruited = false; //if the npc is in the player party
 	bool isPlayer;
 	bool isLeader;
 	bool isEnemy = false;
 
-	bool isLobster = false;
-	map<Room*, char*> tunnelLinks;
+	bool isLobster = false; //if it's the lobster
+	map<Room*, char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels  if it's the lobster
 
-	int health;
+	//npc stats
+	int health; //current health
 	int maxHealth;
 	int defense;
 	int attack;
-	int toughness;
-	int pierce;
-	int speed;
+	int toughness; //how much defense resists attack and pierce
+	int pierce; //how much defense is ignored
+	int speed; //speed determines the order of movement in battle
 	int sp; //sp stands for skill points
 	int maxSP;
 	
 	int level = 0;
-	int xp = 0;
+	int xp = 0; //how much xp the npc has stored up
 
-	bool leveledUp = false;
+	bool leveledUp = false; //if the npc leveled up
 
-	int healthScale = 0;
+	int healthScale = 0; //how much each stat increases (minimum) each level up
 	int defenseScale = 0;
 	int attackScale = 0;
 	int toughnessScale = 0;
@@ -193,18 +187,22 @@ protected:
 	int speedScale = 0;
 	int spScale = 0;
 
-	int hypnosis = 0;
-	int freeze = 0;
-	bool defeated = false;
-	bool respawns = true;
+	int hypnosis = 0; //how hypnotized the npc is
+	int freeze = 0; //how frozen the npc is
+	bool defeated = false; //if the npc is defeated (appears in the room)
+	bool respawns = true; //if the npc appears again after battle
 
-	bool forcebattle = false;
-	bool talkOnDefeat = false;
-	bool defeatChange = false;
+	bool forcebattle = false; //if we force the player to battle after talking
+	bool talkOnDefeat = false; //if the npc talks when defeated
+	bool defeatChange = false; //if the npc changes after defeating them
 
 	char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated
 	NPC* linkedNPC = NULL; //we set this npc to recruitable when robot is defeated
-	vector<pair<NPC*, const char*>> linkedDialogue; //we add this dialogue to the linked npc when defeated
+	vector<pair<NPC*, const char*>> linkedConversation; //we add this conversation to the linked npc when defeated
+	char linkedDialogue[255]; //we set the linked npc's dialogue to this when defeated (if it isn't "")
+
+	Room* linkedRoom = NULL; //we edit the description of this room after being defeated
+	char linkedDescription[255]; //the description gets set to this
 
 	//some npcs change when defeated so they set their variables to this stuff:
 	char defeatDialogue[255];
@@ -212,8 +210,8 @@ protected:
 	char defeatDescription[255];
 	Room* defeatRoom;
 
-	bool escapable = true;
-	int guard = 0;
+	bool escapable = true; //if you can escape from this enemy in a battle
+	int guard = 0; //how many hits the npc can block before guard is broken
 
 	pair<Room*, Room*> redirectRoom; //after defeat, the first room is redirected to the second room
 
