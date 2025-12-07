@@ -265,8 +265,8 @@ NPC* SetupWorld() {
 	conveyor1->setConveyor(factorycenter, FORWARD);
 	conveyor2->setConveyor(factorystorage, FORWARD);
 	conveyor3->setConveyor(factorycenter, FORWARD);
-	conveyor4->setConveyor(switchroom2, FORWARD);
-	conveyor5->setConveyor(factorybalcony2, FORWARD);
+	conveyor4->setConveyor(factorystorage, FORWARD);
+	conveyor5->setConveyor(factorystorage, FORWARD);
 	//third factory
 	Room* factory3 = new Room("in the charred factory. The first floor is a large storage room, though its contents are long burnt to a crispy crisp.");
 	Room* factorynw = new Room("in the factory storage room. There's what appears to be the remains of a chair here.");
@@ -558,6 +558,24 @@ NPC* SetupWorld() {
 	developer->addConversation(developer, "Only the narrator could cover his shift.");
 	developer->addConversation(self, "Oh I see.");
 	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
+	burgerman->setLink(developer);
+	burgerman->addLinkedConvo(self, "Yo developer man.");
+	burgerman->addLinkedConvo(developer, "Hey what's up?");
+	burgerman->addLinkedConvo(self, "So I was wondering,");
+	burgerman->addLinkedConvo(self, "what's up with all the parallel universes in the first game?");
+	burgerman->addLinkedConvo(self, "Also who was the other BURGER MAN?");
+	burgerman->addLinkedConvo(developer, "Oh uhhhhh... honestly idk maybe I'll just retcon that.");
+	burgerman->addLinkedConvo(developer, "Wait no I got this.");
+	burgerman->addLinkedConvo(developer, "So the parallel universes are just the same universe but going through them increments the number.");
+	burgerman->addLinkedConvo(developer, "Wait that makes no sense because of the news.");
+	burgerman->addLinkedConvo(developer, "Uhhhhhhhhhhhh...");
+	burgerman->addLinkedConvo(developer, "No clue but maybe I'll come up with something later and edit this conversation.");
+	burgerman->addLinkedConvo(developer, "Anyway about the other BURGER MAN,");
+	burgerman->addLinkedConvo(developer, "You know how HENRY JERRY's company invented time travel?");
+	burgerman->addLinkedConvo(self, "Uh huh.");
+	burgerman->addLinkedConvo(developer, "Yeah so the BURGER MAN used the time machine.");
+	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
+	burgerman->addLinkedConvo(self, "Dang that's crazy.");
 
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success.", 0, 7, 5, 0, 2, 3);
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
@@ -782,13 +800,13 @@ NPC* SetupWorld() {
 	factory2->setExit(NORTHWEST, switchroom);
 	factory2->setExit(NORTHEAST, conveyor1);
 	switchroom->setExit(SOUTHEAST, factory2);
-	conveyor1->setExit(FORWARD, factorycenter);
+	conveyor1->setExit(FORWARD, factory2);
 	factorycenter->setExit(SOUTHWEST, conveyor1);
 	factorycenter->setExit(NORTHWEST, conveyor2);
 	factorycenter->setExit(NORTHEAST, conveyor3);
 	conveyor3->setExit(FORWARD, controlroom2);
 	controlroom2->setExit(SOUTHWEST, conveyor3);
-	conveyor2->setExit(FORWARD, factorystorage);
+	conveyor2->setExit(FORWARD, factorycenter);
 	factorystorage->setExit(SOUTH, conveyor2);
 	factorystorage->setExit(NORTH, conveyor4);
 	factorystorage->setExit(EAST, conveyor5);
@@ -1762,11 +1780,11 @@ void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
 }
 
 //prints all the available commands
-void printHelp(char validCommands[15][255], char flavorText[16][255]) {
+void printHelp(char validCommands[16][255], char flavorText[16][255]) {
 	cout << "\n"; //prints a random flavor text
 	cout << flavorText[rand() % 16];
 	cout << "\nValid commands:"; //prints all the valid commands
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < 16; i++) {
 		cout << "\n" << validCommands[i];
 	}
 }
@@ -1805,7 +1823,7 @@ int main() {
 	};
 
 	//a list of the valid commands (and extensions) to be printed by printHelp()
-	char validCommands[15][255] = {
+	char validCommands[16][255] = {
 		"GO [direction]",
 		"TAKE [item]",
 		"DROP [item]",
@@ -1815,6 +1833,7 @@ int main() {
 		"ASK [npc]",
 		"INVENTORY",
 		"PARTY",
+		"ATTACKS",
 		"ROOM",
 		"ANALYZE [npc/item]",
 		"FIGHT [npc]",
@@ -1830,15 +1849,13 @@ int main() {
 	cout << "\n             (type your name here!)\nYour name is ";
 
 	//gets the player's input and puts it into the player name
-	char name[255]; //remove the = "" after done testing
-	//uncomment this, I just don't want to type the name every time I want to test something
+	char name[255];
 	cin.getline(name, 255);
 
-	AllCaps(&name[0]); //capitalizes the name because everything is capitalized
+	AllCaps(&name[0]); //capitalizes the name because everything is capitalized (no it isn't)
 
 	if (!strcmp(name, "")) { //the main character complains if you didn't name him
 		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"";
-		//uncomment this too <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< if you see this line apparently I didn't
 		CinPause();
 	} else { //otherwise we set the name to whatever the player inputted
 		self->setName(name);
@@ -1890,6 +1907,8 @@ int main() {
 			printInventory(inventory, mony);
 		} else if (!strcmp(commandWord, "PARTY")) { //for printing everyone in your party and their level
 			printParty(party);
+		} else if (!strcmp(commandWord, "ATTACKS")) { //for printing the player's attacks
+			printAttacks(self);
 		} else if (!strcmp(commandWord, "ROOM")) { //for reprinting the contents of the current room (it was annoying having to scroll back up after doing a bunch of stuff in order to check the room data)
 			PrintRoomData(currentRoom);
 		} else if (!strcmp(commandWord, "ANALYZE")) { //for getting the data of an item or npc

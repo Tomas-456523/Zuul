@@ -99,13 +99,12 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	delete[] name;
 }*/
 //ticks an effect (if it does anything every turn, it does that, and decrements its duration)
-void Battle::tickEffect(Effect& effect, vector<Effect*>& choppingBlock) {
+void Battle::tickEffect(Effect& effect) {
 	NPC* npc = effect.npc; //gets the affected npc
-	//we decrement effect durations, and add them to the chopping block if duration is at 0 (we don't delete immediately in order to not create dangling pointers in tickEffects)
+	//decrement even if the npc is unconscious because a fire will eventually go out if you're on fire even if you're asleep
 	if (--effect.duration <= 0) {
-		choppingBlock.push_back(&effect);
 		return;
-	} //decrement even if the npc is unconscious because a fire will eventually go out if you're on fire even if you're asleep
+	}
 	if (!npc->getHealth()) { //we don't affect the npc if they're unconscious
 		return;
 	} //applies damage (or healing)
@@ -121,17 +120,23 @@ void Battle::tickEffect(Effect& effect, vector<Effect*>& choppingBlock) {
 }
 //ticks all the effects that everyone has
 void Battle::tickEffects() {
-	//I have to build this here every turn or else modifying the npc's effect vectors would dangle the pointers
-	vector<Effect*> choppingBlock;
 	for (NPC* npc : everyone) { //ticks everyone's effects
 		for (Effect& effect : npc->getEffects()) {
-			tickEffect(effect, choppingBlock);
+			tickEffect(effect);
 		}
-	} //removes the effects that are at 0 duration
-	for (Effect* effect : choppingBlock) {
-		cout << effect->npc->getName() << "'s " << effect->name << " wore off!";
-		effect->npc->removeEffect(*effect);
-		CinPause();
+	}
+	//checks everyone's effects to see if they wore off
+	for (NPC* npc : everyone) { //we must delete them here in order to not create dangling pointers
+		vector<Effect>& effects = npc->getEffects(); //gets reference to the npc's effects
+		for (int i = 0; i < effects.size();) {
+			if (effects[i].duration <= 0) {
+				cout << npc->getName() << "'s " << effects[i].name << " wore off!";
+				npc->removeEffect(effects[i]); //removes the effect
+				CinPause();
+				continue; //skip the increment because the rest of the vector just shifted left from deleting the current effect
+			}
+			i++;
+		}
 	}
 }
 //carries out the attack (makes it hit the target)
@@ -319,21 +324,6 @@ void Battle::printParty() {
 void Battle::printEnemies() {
 	cout << "\nEnemy party:";
 	printTeam(enemyTeam, true, false, false); //we do not print their sp but yes their level, and not the fainted enemies
-}
-//prints a list of the player's available attacks and their descriptions
-void Battle::printAttacks(NPC* npc) {
-	cout << "\nBasic attack:\n"; //the player's basic attack (the punch!) and how much sp it generates (5!)
-	Attack* attack = npc->getBasicAttack();
-	cout << attack->name << " - " << attack->trueDesc << " - Generates " << -attack->cost << " SP";
-	if (npc->getSpecialAttacks().size() > 0) { //if we have any special attacks
-		cout << "\nSpecial attacks:";
-	} //prints all the special attacks and how much sp they cost
-	for (Attack* attack : npc->getSpecialAttacks()) {
-		//we only print attacks if the player is leveled up enough to use them
-		if (attack->minLevel <= npc->getLevel()) {
-			cout << "\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
-		}
-	}
 }
 //prints an analysis of the given item or npc
 void Battle::analyze(char* name) {

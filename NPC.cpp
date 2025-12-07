@@ -480,7 +480,7 @@ void NPC::removeEffect(Effect& effect) { //removes an effect from the npc
 			if (effect.freeze) { //decrements freeze if applicable
 				freeze--;
 				if (!freeze) { //prints if we're no longer frozen
-					cout << "\n" << name << "is no longer frozen!";
+					cout << "\n" << name << " is no longer frozen!";
 				}
 			}
 			if (effect.hypnotize) { //decrements hypnosis if applicable

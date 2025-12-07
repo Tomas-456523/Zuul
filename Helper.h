@@ -18,11 +18,13 @@ namespace Helper {
 	Item* getItemInVector(vector<Item*>& the_vector, char* itemname); //returns the item in the given vector that has the given name
 	void printNPCData(NPC* npc); //prints the data of the npc
 	void printItemData(Item* item); //prints the data of the item
+	void printAttacks(NPC* npc); //prints the attacks that the given npc has
 	void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item); //deletes the item and removes it from the inventory or current room based on where it was
 	int Clamp(int num, int min, int max); //returns num with a minimum return value of min and a maximum of max
 	float ClampF(float num, float min, float max); //same as Clamp but for floats instead of ints
 	void sortBySpeed(vector<NPC*>& team); //sorts the vector of npcs by speed
 	int aliveCount(vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
+	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object

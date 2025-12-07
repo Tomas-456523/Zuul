@@ -24,11 +24,10 @@ public:
 	void printInventory(); //print the contents of the inventory
 	void printParty(); //print everyone in the player's party
 	void printEnemies(); //print all the opponents
-	void printAttacks(NPC* npc); //print all of the player's available attacks
 	void analyze(char* name); //print the data of the given item or npc
 	void printHelp(); //print the valid command words and extensions
 	bool runAway(); //try to escape the battle
-	void tickEffect(Effect& effect, vector<Effect*>& choppingBlock); //ticks the given effect
+	void tickEffect(Effect& effect); //ticks the given effect
 	void tickEffects(); //ticks all effects on every npc
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target); //affects the given target based on the given attack
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 1); //interpret and carry out an attack command given by the player
