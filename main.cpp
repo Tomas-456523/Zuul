@@ -442,7 +442,7 @@ NPC* SetupWorld() {
 	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
 
 	//SET START ROOM TO VILLAGE
-	NPC* self = new NPC("\0", "SELF", "It's a me.", mainstreet5, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
@@ -1793,7 +1793,7 @@ int main() {
 		"You forgor.",
 		"You accidentally find spoilers for the ending of BURGER QUEST 2. It is very concerning...",
 		"You realize you don't have an oven.",
-		"You spot a billboard advertising the new BURGER RESTAURANT in BURGERSBURG.",
+		"You spot a billboard advertising the BURGER RESTAURANT in BURGERSBURG.",
 		"You ask a passerby what the valid commands are. The guy looks at you really confused.",
 		"You stop it and get some help.",
 		"We have been trying to reach you about your car's extended warranty.",
@@ -1830,16 +1830,16 @@ int main() {
 	cout << "\n             (type your name here!)\nYour name is ";
 
 	//gets the player's input and puts it into the player name
-	char name[255] = ""; //remove the = "" after done testing
+	char name[255]; //remove the = "" after done testing
 	//uncomment this, I just don't want to type the name every time I want to test something
-	//cin.getline(name, 255);
+	cin.getline(name, 255);
 
 	AllCaps(&name[0]); //capitalizes the name because everything is capitalized
 
 	if (!strcmp(name, "")) { //the main character complains if you didn't name him
 		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"";
 		//uncomment this too <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< if you see this line apparently I didn't
-		//CinPause();
+		CinPause();
 	} else { //otherwise we set the name to whatever the player inputted
 		self->setName(name);
 	} 
