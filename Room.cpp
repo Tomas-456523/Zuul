@@ -240,7 +240,7 @@ vector<char*> Room::unblockAll(char* type) { //unblock all the blocked exits of 
 	}
 	return matches; //returns exits that were unblocked
 }
-void Room::scaleNPCs(int level) {
+void Room::scaleNPCs(int level) { //levels up every npc in the room to the given level
 	for (NPC* npc : npcs) {
 		npc->setLevel(level);
 	}

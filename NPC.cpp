@@ -144,6 +144,12 @@ map<Attack*, int> NPC::getWeights() {
 bool NPC::getLevelUp() {
 	return leveledUp;
 }
+vector<int>& NPC::getStatChanges() {
+	return statChanges;
+}
+Attack* NPC::getNewAttack() {
+	return newAttack;
+}
 bool NPC::getEnemy() {
 	return isEnemy;
 }
@@ -201,6 +207,10 @@ void NPC::setRecruitedDialogue(const char _dialogue[255]) {
 void NPC::setDismissalDialogue(const char _dialogue[255]) {
 	strcpy(dismissalDialogue, _dialogue);
 }
+void NPC::setRecruitDialogueChange(const char _recruitment[255], const char _normal[255]) {
+	strcpy(newRecruitmentDialogue, _recruitment);
+	strcpy(newDialogue, _normal);
+}
 void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
@@ -209,6 +219,12 @@ void NPC::Recruit() { //recruits the npc
 		printDialogue(); //I want the player to hear the dialogue before being recriuted so we print it here if it hasn't been heard yet
 	}
 	cout << "\n" << name << " - \"" << recruitmentDialogue << "\""; //says a thing after being recruited
+	if (strlen(newRecruitmentDialogue)) {
+		strcpy(recruitmentDialogue, newRecruitmentDialogue);
+	}
+	if (strlen(newDialogue)) {
+		strcpy(dialogue, newDialogue);
+	}
 	recruited = true;
 }
 void NPC::Dismiss(bool gohome) { //removes the npc from the party
@@ -250,17 +266,31 @@ void NPC::addXp(int _xp) { //adds xp and checks for level up
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
 void NPC::levelUp(bool trackLevelUp) {
-	maxHealth += healthScale + rand() % 2;
-	health = maxHealth;
-	defense += defenseScale + rand() % 2;
-	attack += attackScale + rand() % 2;
-	toughness += toughnessScale + rand() % 2;
-	//pierce += pierceScale + rand() % 2; //maybe I shouldn't upgrade this one?
-	speed += speedScale + rand() % 2;
-	maxSP += spScale + rand() % 2;
+	statChanges[0] = healthScale + rand() % 2; //set the stat changes seperately so we can print them later
+	statChanges[1] = defenseScale + rand() % 2;
+	statChanges[2] = attackScale + rand() % 2;
+	statChanges[3] = toughnessScale + rand() % 2;
+	statChanges[4] = pierceScale; //pierce doesn't update unless I manually set pierce scale, keeping it like the other ones just felt weird to me; you don't get more spiky the more you level up
+	statChanges[5] = speedScale + rand() % 2;
+	statChanges[6] = spScale + rand() % 2;
+	maxHealth += statChanges[0]; //apply the stat changes
+	health = maxHealth; //we must start battle at max health so we update current health to match the max
+	defense += statChanges[1];
+	attack += statChanges[2];
+	toughness += statChanges[3];
+	pierce += statChanges[4];
+	speed += statChanges[5];
+	maxSP += statChanges[6];
 	level++; //increments the level
 	leveledUp = trackLevelUp; //registers that we've leveled up so that we can print it later
-	calculateWeights(); //recalculates the weights in case we got a new attack
+	for (Attack* attack : special_attacks) { //checks if we got a new attack
+		if (attack->minLevel == level) {
+			newAttack = attack; //save the new attack so we can print that we got it later (assumes we only learn one attack maximum per level, so make sure that's the case)
+			calculateWeights(); //recalculate weights to account for the new attack
+			return;
+		}
+	}
+	newAttack = NULL; //mark that we did not learn a new attack
 }
 //makes this npc a leader npc
 void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn) {

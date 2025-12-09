@@ -72,6 +72,9 @@ void Item::setRoom(Room* _room) {
 	room = _room; //sets the room
 	room->setItem(this); //tells the room the item is there now
 }
+void Item::setTakable(bool _takable) {
+	takable = _takable;
+}
 //removes the item from its room (like when TAKE-ing it) and nullifies the room pointer
 void Item::unRoom() {
 	if (room == NULL) {
@@ -227,8 +230,8 @@ KeyItem::KeyItem(const char _name[255], const char _description[255], const char
 	attack = _attack; //sets the attack if it has one
 }
 //returns the key's targeted room
-Room* KeyItem::getTarget() {
-	return targetRoom;
+vector<Room*>& KeyItem::getTargets() {
+	return targetRooms;
 }
 //returns the key's attack
 Attack* KeyItem::getAttack() {
@@ -244,7 +247,7 @@ char* KeyItem::getUseText() {
 }
 //sets a remote location for the key to unblock
 void KeyItem::setTarget(Room* target) {
-	targetRoom = target;
+	targetRooms.push_back(target);
 }
 Item* KeyItem::Duplicate() { //returns a new key item as an Item*
 	return new KeyItem(*this);

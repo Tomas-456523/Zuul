@@ -151,7 +151,8 @@ NPC* SetupWorld() {
 	forest->setWelcome("Welcome to WANING WOODLANDS!");
 	forest->setWelcome("<<< THE FINAL FOREST >>>");
 	forest->setWelcome("The slowly decaying corner of the world, where you have lived your whole life.");
-	forest->setWelcome("But now, your BURGER QUEST begins!");
+	forest->setWelcome("Birds are chirping and chirds are birping.");
+	forest->setWelcome("Now, your BURGER QUEST begins!");
 	Room* forestleft = new Room("walking down the left path of the woodlands. It feels like a deer is watching you.");
 	Room* forestright = new Room("walking down the right path of the woodlands. It feels like a ninja is watching you.");
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather."); //talk to the deer to get the key
@@ -330,27 +331,27 @@ NPC* SetupWorld() {
 	BURGERSBURG->setWelcome("We are not responsible for theft or damage to vehicles or contents!");
 	Room* leftstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
 	Room* leftstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
-	Room* leftstreet3 = new Room("in the city.");
+	Room* leftstreet3 = new Room(".");
 	Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
-	Room* leftstreet5 = new Room("in the city.");
-	Room* newstreet1 = new Room("in the city.");
-	Room* newstreet2 = new Room("in the city.");
-	Room* newstreet3 = new Room("in the city.");
-	Room* newstreet4 = new Room("in the city.");
-	Room* newstreet5 = new Room("in the city.");
+	Room* leftstreet5 = new Room(".");
+	Room* newstreet1 = new Room(".");
+	Room* newstreet2 = new Room(".");
+	Room* newstreet3 = new Room(".");
+	Room* newstreet4 = new Room(".");
+	Room* newstreet5 = new Room(".");
 	Room* mainstreet1 = new Room("on main street. There's a few lopsided cars on fire here.");
 	Room* mainstreet2 = new Room("on main street. You hear an explosion somewhere in the distance.");
 	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting."); //behind broken building "It's so close, but the BURGER RESTAURANT is hard to see with all the smoke
 	Room* mainstreet4 = new Room("on main street. There's a stairway here leading down to the BURGERSBURG train station.");
 	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you. BURGER TENDRILS wrap around its base.");
-	Room* coolstreet1 = new Room("in the city.");
+	Room* coolstreet1 = new Room(".");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
-	Room* coolstreet3 = new Room("in the city.");
+	Room* coolstreet3 = new Room(".");
 	Room* coolstreet4 = new Room("at the entrance to a dark alley. Eh could be darker.");
-	Room* coolstreet5 = new Room("in the city.");
+	Room* coolstreet5 = new Room(".");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
-	Room* rightstreet2 = new Room("in the city.");
-	Room* rightstreet3 = new Room("in the city.");
+	Room* rightstreet2 = new Room(".");
+	Room* rightstreet3 = new Room(".");
 	Room* rightstreet4 = new Room("at an old glass factory. You see two guys carrying a large pane of glass."); //add group of people npc for joke
 	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
 	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
@@ -577,6 +578,13 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
 	burgerman->addLinkedConvo(self, "Dang that's crazy.");
 
+	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 20, 20, 25, 30, 10, 0, 10);
+	forestknight->setScale(1, 1, 1, 1, 0, 0, 0);
+	forestknight->setLevel(30);
+	forestknight->setRejectionDialogue("You are on a BURGER QUEST. I will not assist you in obtaining an object of sin.");
+
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Crazed miner who likes exploding things. A frequent customer of the subterranean dynamite store.", mine);
+
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success.", 0, 7, 5, 0, 2, 3);
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
@@ -615,6 +623,9 @@ NPC* SetupWorld() {
 
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
+
+	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
+	skateboard->setTakable();
 
 	//Create exits between rooms
 	village->setExit(SOUTH, docks);
@@ -1113,8 +1124,8 @@ NPC* SetupWorld() {
 	viola->addConversation(self, "Ok.");
 	viola->setDialogue("AHAHAHAHAHAHAHA!");
 	viola->setGymDialogue("It's leg day oh nooo :(");
-	viola->setRejectionDialogue("Sure you can join me and my friends if you want! AHAHAHA!");
-	viola->setRecruitmentDialogue("Yeah maybe I could do something good by following you. I think I'll go with. Thanks.");
+	viola->setRejectionDialogue("Nah, but you can join me and my friends if you want! AHAHAHA!");
+	viola->setRecruitmentDialogue("Really? After what I did? Maybe I could do something good by following you. I think I'll go with. Thanks.");
 	viola->setRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
 	viola->setDismissalDialogue("Well I guess I can watch over the town from that cliff over there. That might be good.");
 	viola->setRedirect(deserttown, deserttownfixed);
@@ -1126,6 +1137,7 @@ NPC* SetupWorld() {
 	viola->addLinkedConvo(viola, "I'm just going to go to that cliff over there...");
 	viola->addLinkedConvo(NULL, "VIOLA went to that cliff over there.");
 	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
+	viola->setRecruitDialogueChange("Alright! Maybe I can do something good by following you.", "I think I'm doing a good job protecting the town so far.");
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
@@ -1308,6 +1320,41 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 			if (teammate->getLevelUp()) {
 				cout << teammate->getName() << " leveled up! " << teammate->getName() << " is now Level " << teammate->getLevel() << "!";
 				teammate->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
+				CinPause();
+				vector<int>& statChanges = teammate->getStatChanges();
+				cout << "\n  HEALTH - " << teammate->getHealthMax(); //prints all the new stats of the npc
+				if (statChanges[0]) {
+					cout << " (+" << statChanges[0] << ")";
+				}
+				cout << "\t  DEFENSE - " << teammate->getDefense();
+				if (statChanges[1]) {
+					cout << " (+" << statChanges[1] << ")";
+				}
+				cout << "\n  ATTACK - " << teammate->getAttack();
+				if (statChanges[2]) {
+					cout << " (+" << statChanges[2] << ")";
+				}
+				cout << "\t  TOUGHNESS - " << teammate->getToughness();
+				if (statChanges[3]) {
+					cout << " (+" << statChanges[3] << ")";
+				}
+				cout << "\n  PIERCE - " << teammate->getPierce();
+				if (statChanges[4]) {
+					cout << " (+" << statChanges[4] << ")";
+				}
+				cout << "\t  SPEED - " << teammate->getSpeed();
+				if (statChanges[5]) {
+					cout << " (+" << statChanges[5] << ")";
+				}
+				cout << "\n  SKILL - " << teammate->getSPMax();
+				if (statChanges[6]) {
+					cout << " (+" << statChanges[6] << ")";
+				}
+				CinPause();
+				Attack* newAtt = teammate->getNewAttack(); //checks if the teammate learned a new attack
+				if (newAtt != NULL) { //print the attack and what it does
+					cout << teammate->getName() << " learned " << newAtt->name << "!\n" << newAtt->name << " - " << newAtt->trueDesc;
+				}
 				CinPause();
 			}
 		}
@@ -1506,9 +1553,20 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass
+		bool learned = false; //if we learned something which we can use immediately given our current level
+		NPC* player = (*party)[0];
+		cout << "\n";
 		//adds all the item's attacks to the player's vector of attacks
 		for (Attack* attack : edu->getAttacks()) {
-			(*party)[0]->addSpecialAttack(attack);
+			player->addSpecialAttack(attack);
+			if (attack->minLevel <= player->getLevel()) { //print the description and name of any attacks we have just learned
+				cout << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
+				learned = true; //we have, in fact, learned an attack just now
+				CinPause();
+			}
+		}
+		if (!learned) { //prints motivational message if none of these attacks are usable yet
+			cout << "You're not LEVELED UP enough to use any of these new attacks. Keep training and you'll get there eventually!";
 		}
 	//summons the tunnel lobster to the current train station
 	} else if (!strcmp(item->getType(), "caller")) {
@@ -1543,33 +1601,33 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		TollItem* toll = (TollItem*)item;
 	//used for unblocking blocked exits
 	} else if (!strcmp(item->getType(), "key")) {
-		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass
+		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass		
 		vector<char*> exitsUnlocked; //the exits that were unlocked in the key using process, so we can unlock the other side also
-		Room* targetRoom = currentRoom; //the room the key is targetting, the current room by default
+		
 		bool used = false; //if we ended up actually using the key
-		if (key->getTarget() != NULL) { //some keys are remote keys, and unlock a specified target
-			targetRoom = key->getTarget();
-			//unblocks all the exits because it's easier than a for loop, and also gets the exits that were unlocked
-			exitsUnlocked = targetRoom->unblockAll(key->getUnlockType());
+		if (key->getTargets().size()) { //some keys are remote keys, and unlock specified targets
+			//unblocks all the exits in all the rooms. We don't check reverse direction because I can just manually put the other room in the target rooms vector
+			for (Room* target : key->getTargets()) {
+				target->unblockAll(key->getUnlockType());
+			}
 			used = true; //if I made a remote key its definitely unlocking something, so used = true 100% here of the time
 		} else { //unblocks exits in the current room
 			exitsUnlocked = currentRoom->unblockAll(key->getUnlockType());
 			used = exitsUnlocked.size() > 0; //we check the size of unblocked exits as a basis for if we used the item
+			//unblocks the other sides of the exits, because there's some double sided blocks
+			for (char* exit : exitsUnlocked) {
+				Room* thatroom = currentRoom->getExit(exit); //gets the room on the other side of the exit
+				//unblocks the reverse direction exit if it's blocked
+				if (thatroom->getBlocked(const_cast<char*>(ReverseDirection[exit]))) {
+					thatroom->unblockExit(ReverseDirection[exit]);
+				}
+			}
 		} //if we didn't use it, we print an error message
 		if (!used) {
 			cout << "\nThere is nothing to use the " << itemname << " on here.";
 			return;
 		} //prints a description of what the key item did (because it's not only literal keys)
 		cout << "\nYou " << key->getUseText();
-
-		//unblocks the other sides of the exits, because there's some double sided blocks
-		for (char* exit : exitsUnlocked) {
-			Room* thatroom = targetRoom->getExit(exit); //gets the room on the other side of the exit
-			//unblocks the reverse direction exit if it's blocked
-			if (thatroom->getBlocked(const_cast<char*>(ReverseDirection[exit]))) {
-				thatroom->unblockExit(ReverseDirection[exit]);
-			}
-		}
 	//movement items are used to go through a blocked exit despite the fact that it's blocked, for example a boat over a river
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass

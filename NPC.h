@@ -57,6 +57,8 @@ public: //you need to set stats on creation
 	vector<Attack*> getSpecialAttacks();
 	map<Attack*, int> getWeights();
 	bool getLevelUp(); //if we leveled up recently
+	vector<int>& getStatChanges(); //the stat changes from the last level up
+	Attack* getNewAttack();
 	bool getDefeated(); //if npc has been defeated since entering the room
 	Item* takeGift(); //return and nullify the gift item
 	vector<Effect>& getEffects();
@@ -71,6 +73,7 @@ public: //you need to set stats on creation
 	void setRejectionDialogue(const char _dialogue[255]); //sets the rejection dialogue for the npc
 	void setRecruitmentDialogue(const char _dialogue[255]); //sets the recruitment dialogue for the npc
 	void setRecruitedDialogue(const char _dialogue[255]); //sets the recruited dialogue for the npc
+	void setRecruitDialogueChange(const char _recruitment[255], const char _normal[255]); //sets new recruitment and normal dialogue after recruiting
 	void setDismissalDialogue(const char _dialogue[255]); //sets the dismissal dialogue for the npc
 	void setRecruitable(bool _recruitable); //set if you can recruit them
 	void Recruit(); //set recurited to true
@@ -84,7 +87,6 @@ public: //you need to set stats on creation
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true);
-	void setHypnotized(bool _hypnotized);
 	int damage(float power, float pierce, int hits = 1);
 	void directDamage(int damage, char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
@@ -152,6 +154,9 @@ protected:
 	char dismissalDialogue[255]; //dialogue that the npc says when dismissed
 	char gymDialogue[255]; //dialogue the character says when at the gym
 
+	char newRecruitmentDialogue[255]; //the recruitment and normal dialogues get changes to this after being recruited for the first time
+	char newDialogue[255];
+
 	Item* gift; //item that the npc holds and gifts to the player after talking
 
 	bool recruitable = false;
@@ -178,6 +183,8 @@ protected:
 	int xp = 0; //how much xp the npc has stored up
 
 	bool leveledUp = false; //if the npc leveled up
+	vector<int> statChanges = {0, 0, 0, 0, 0, 0, 0};
+	Attack* newAttack; //the newest attack we got
 
 	int healthScale = 0; //how much each stat increases (minimum) each level up
 	int defenseScale = 0;

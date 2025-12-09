@@ -33,6 +33,7 @@ public:
 	void unRoom(); //removes the item from the room
 
 	void setStock(int _stock, int _price, const char buydesc[255] = ""); //makes the item for sale
+	void setTakable(bool _takable = true); //manually sets the item to takable, for item types that default to something we don't want
 
 	virtual Item* Duplicate(); //duplicates the item, used by buy and overwritten by all buyable item subclasses in order to prevent splitting when duplicating them
 protected:
@@ -162,19 +163,19 @@ class KeyItem : public Item {
 public:
 	KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable = true, Attack* _attack = NULL);
 
-	Room* getTarget(); //gets this item's remote unlock room if it has one
+	vector<Room*>& getTargets(); //gets this item's remote unlock rooms if it has one
 	Attack* getAttack(); //gets this item's attack in battle
 	char* getUnlockType(); //gets the type of blockage this item clears
 	char* getUseText(); //gets the text printed by using it
 
-	void setTarget(Room* target); //sets the remote location to unlocj
+	void setTarget(Room* target); //sets a remote location to unlock
 
 	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	char* unlockType; //the type of blockage this item clears
 	Attack* attack; //this item's attack in battle
 
-	Room* targetRoom = NULL; //keys can be targeted keys, so no matter where you are, using them will remotely unblock the exit
+	vector<Room*> targetRooms; //keys can be targeted keys, so no matter where you are, using them will remotely unblock the exit. So this has those exits
 	char useText[255]; //the text printed by using it
 };
 
