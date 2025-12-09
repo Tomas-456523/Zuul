@@ -188,13 +188,10 @@ namespace Helper {
 	//loops until the player chooses either option A or B, and returns true if A was chosen and false if B was chosen
 	bool AOrB(const char* prompt, const char* A, const char* B) {
 		while (true) { //loops until valid response, after which the loop is returned out of
-			char _command[255] = ""; //the charray that the player inputs into
+			char command[255] = ""; //the charray that the player inputs into
 
-			char command[255]; //the command truncated to 254 characters (to not cause a buffer overflow)
 			cout << "\n" << prompt << "\n> "; //The amazing >
 			cin.getline(command, 255); //gets the player input
-
-			ParseCommand(_command, command, _command, 255); //gets the first 254 characters of _command. Clears _command as a side effect but we don't need it afterwards anyway so yeah
 
 			AllCaps(command); //capitalizes the command for easier parsing
 
@@ -220,4 +217,5 @@ namespace Helper {
 	vector<Item*> itemsH;
 	vector<Attack*> attacksH;
 	vector<Effect*> effectsH;*/
+
 }
