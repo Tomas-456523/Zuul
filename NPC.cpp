@@ -462,12 +462,12 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 			ef.duration = effect.duration;
 			return;
 		}
-	} //increase stats if in a battle
-	if (battle) {
-		attack += effect.attackbuff;
-		defense += effect.defensebuff;
-		toughness += effect.toughbuff;
-		pierce += effect.piercebuff;
+	}
+	attack += effect.attackbuff; //edit stats
+	defense += effect.defensebuff;
+	toughness += effect.toughbuff;
+	pierce += effect.piercebuff;
+	if (battle) { //print stat changes if in battle
 		if (effect.defensebuff) { //prints the stat changes
 			cout << "\n" << name << "'s DEFENSE went up to << " << defense << "!";
 		}
@@ -482,12 +482,12 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 		}
 	}
 	if (effect.freeze) { //adds freeze to the npc
-		if (!freeze) { //if we weren't already frozen
+		if (!freeze && battle) { //if we weren't already frozen
 			cout << "\n" << name << " was frozen in place!";
 		}
 		freeze++;
 	}
-	if (effect.hypnotize) { //adds hypnosis to the npc
+	if (effect.hypnotize && battle) { //adds hypnosis to the npc
 		if (!hypnosis) { //if the npc wasn't already hynotized
 			cout << "\n" << name << " is now fighting for the enemy!";
 		}
@@ -518,7 +518,7 @@ void NPC::removeEffect(Effect& effect) { //removes an effect from the npc
 			if (effect.freeze) { //decrements freeze if applicable
 				freeze--;
 				if (!freeze) { //prints if we're no longer frozen
-					cout << "\n" << name << " is no longer frozen!";
+					cout << "\n" << name << " broke free!";
 				}
 			}
 			if (effect.hypnotize) { //decrements hypnosis if applicable

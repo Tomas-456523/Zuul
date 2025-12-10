@@ -50,6 +50,7 @@ NPC* SetupWorld() {
 	char* IN_CASTLE = new char[12];
 	char* IN_ALLEY = new char[12];
 	char* IN_ELEVATOR = new char[12];
+	char* IN_TEMPLE = new char[12];
 	char* INSIDE = new char[12];
 	char* UPSTAIRS = new char[12];
 	char* DOWNSTAIRS = new char[12];
@@ -85,6 +86,7 @@ NPC* SetupWorld() {
 	strcpy(IN_CASTLE, "IN CASTLE");
 	strcpy(IN_ALLEY, "IN ALLEY");
 	strcpy(IN_ELEVATOR, "IN ELEVATOR");
+	strcpy(IN_TEMPLE, "IN TEMPLE");
 	strcpy(INSIDE, "INSIDE");
 	strcpy(UPSTAIRS, "UPSTAIRS");
 	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
@@ -160,7 +162,7 @@ NPC* SetupWorld() {
 	Room* ninjavillage = new Room("in the ninja village. There's no bridges connecting the houses, you must simply jump between them like a true ninja.");
 	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many weapons and scrolls up on the walls.");
 	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of NINJABERRIES and ninjasteak and ninjafish and the diet isn't actually that strict.");
-	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here, and a large shuriken mold is currently in use.");
+	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here.");
 	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
 	Room* foresttemple = new Room("in the temple of [SOMETHING]. [SOMETHING SOMETHING].");
@@ -439,9 +441,6 @@ NPC* SetupWorld() {
 	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1);
 	energyball->addDescription("Throw a ball of pure kinetic energy at the target.");
 
-	Attack* precisionstrike = new Attack("PRECISION STRIKE", "", 10, 35, 15, 1, 1, 1, false, 10);
-	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
-
 	//SET START ROOM TO VILLAGE
 	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
@@ -449,7 +448,6 @@ NPC* SetupWorld() {
 	self->Recruit();
 	self->setBasicAttack(punch);
 	self->addSpecialAttack(finishhim);
-	self->addSpecialAttack(precisionstrike);
 
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 16, 5, 4, 0, 1, 5, 2);
 	floria->addConversation(floria, "Hey big brother! Aren't these flowers just so lovely?");
@@ -502,6 +500,11 @@ NPC* SetupWorld() {
 	Item* ibuprofen = new HpItem("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
 	tentstore->setStock(ibuprofen, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage!");
 	Item* energybook = new EducationItem("ADVANCED GUIDE TO ENERGY MANIPULATION", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, energyball);
+	Attack* precisionstrike = new Attack("PRECISION STRIKE", "", 10, 35, 15, 1, 1, 1, false, 15);
+	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
+	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "", 20, 50, 25, 1, 1, 1, false, 25);
+	precisionstrike->addDescription("Unleash a dense missile of energy straight towards the target.");
+
 	//energybook->setAttack();
 	//energybook->setAttack();
 	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - Thank you for your patronage!");
@@ -597,7 +600,8 @@ NPC* SetupWorld() {
 	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Crazed miner who likes exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, 5, 20, 0, 20, 12, 15);
 	minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
-	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success.", 0, 7, 5, 0, 2, 3);
+	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 0, 7, 5, 0, 2, 3);
+	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them.");
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 10, 10, 10, 10, 10, 10, 0);
@@ -657,6 +661,8 @@ NPC* SetupWorld() {
 	tentstation->setExit(EAST, limbo);
 	tentchurch->setExit(OUT, village);
 	docks->setExit(NORTH, village);
+	docks->setExit(IN_TENT, tenthouse);
+	tenthouse->setExit(OUT, docks);
 	forestentrance->setExit(WEST, village);
 	forestentrance->setExit(NORTH, forest);
 	forest->setExit(SOUTH, forestentrance); //forest exits
@@ -678,7 +684,7 @@ NPC* SetupWorld() {
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
 	foresttempleentrance->setExit(NORTHWEST, flowerfield);
 	foresttempleentrance->setExit(NORTH, forestfork);
-	foresttempleentrance->setExit(SOUTH, foresttemplestairs);
+	foresttempleentrance->setExit(IN_TEMPLE, foresttemplestairs);
 	flowerfield->setExit(WEST, flowerfield2);
 	flowerfield->setExit(SOUTHEAST, foresttempleentrance);
 	flowerfield2->setExit(EAST, flowerfield);
@@ -712,7 +718,7 @@ NPC* SetupWorld() {
 	desert->setExit(NORTHWEST, deserttempleentrance);
 	desert->setExit(NORTHEAST, desertdune);
 	desert->setExit(EAST, desertplain);
-	deserttempleentrance->setExit(WEST, deserttemplestairs);
+	deserttempleentrance->setExit(IN_TEMPLE, deserttemplestairs);
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
 	desertdune->setExit(WEST, deserttempleentrance);
@@ -1055,19 +1061,35 @@ NPC* SetupWorld() {
 	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, tunnellobster);
 
 	//set up generic non-npc enemies
-	NPC* prickly_hog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 20, 15, 5);
+	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 10, 15, 5);
 	Attack* headbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
 	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
-	prickly_hog->setBasicAttack(headbutt);
-	prickly_hog->addSpecialAttack(homing_prickle);
+	pricklyhog->setBasicAttack(headbutt);
+	pricklyhog->addSpecialAttack(homing_prickle);
 
-	NPC* greater_hog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles.", limbo, 20, 0, 0, 0, 0, 0, 0);
-	greater_hog->setBasicAttack(headbutt);
-	greater_hog->addSpecialAttack(homing_prickle);
+	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 20, 10, 10, 2, 20, 20, 10);
+	greaterhog->setBasicAttack(headbutt);
+	greaterhog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 16, 0, 5, 0, 2, 5, 5);
-	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", 0, 3, 0, 1, 1, 1);
+	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -2, 3, 0, 1, 1, 1);
+	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
 	grassman->setBasicAttack(grassstrike);
+	grassman->addSpecialAttack(lawnmower);
+
+	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 32, 0, 8, 0, 2, 4, 6);
+	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 10, 10, 10);
+	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", 4, 0, 0, 1, 1, 5, true);
+	buffgrassman->setBasicAttack(grassstrike);
+	buffgrassman->addSpecialAttack(benchpress);
+
+	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 10, 4, 6, 1, 6, 12, 5);
+	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 3, 0, 3, 5, 1);
+	enemydeer->setBasicAttack(deercombo);
+
+	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 20, 5, 7, 0, 5, 20, 15);
+	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 7, 5, 0, 3, 3);
+	ninjascout->setBasicAttack(shurikenninja);
 
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
 	Attack* shirmplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 99999, 99999, 1, 1, 1);
@@ -1082,19 +1104,16 @@ NPC* SetupWorld() {
 	carnplant->setBasicAttack(bite);
 	carnplant->addSpecialAttack(nutrientabsorb);
 
-	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 50, 5, 7, 5, 5, 12, 24, 7, true);
-	flowerfiend->setParty(carnplant, carnplant);
+	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 30, 5, 7, 5, 5, 12, 24, 7, true);
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 5);
-	Attack* flowerempower = new Attack("FLOWER POWER", "used its planty power to buff", 16, 10, 5, 1, 1, 1, true);
-	flowerempower->appliedeffect = flowerpower;
+	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 16, 10, 5, 1, 1, 1, true);
+	flowerempower->addEffect(flowerpower);
 	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
 	flowerfiend->setBasicAttack(crunch);
 	flowerfiend->addSpecialAttack(nutrientabsorb);
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
-
-	//NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
 
 	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
@@ -1105,7 +1124,8 @@ NPC* SetupWorld() {
 	roguerobot->addLinkedConvo(egadwick, "Oh thank goodness! Thanks a bunch, kiddo!");
 	roguerobot->addLinkedConvo(egadwick, "Now I can safely be in the great outdoors!");
 
-	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
+	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
 	//NPC* npc = new NPC("TITLE", "NAME", "DESCRIPTION", limbo, hp, def, att, tou, pie, spe, ski);
 
 	//for npcs you can actually fight, make sure to set their level as 0 at construction, then set the level manually after setting the scale, otherwise stats will be off
@@ -1113,22 +1133,96 @@ NPC* SetupWorld() {
 	//set up npc enemies
 	NPC* forestguard = new NPC(*grassman);
 	forestguard->setLeader(true, 1, forestentrance);
+	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
 	forestguard->setDialogue("(angry bush noises)");
 	forestguard->setRejectionDialogue("(angry bush noises)");
-	//forestguard->setParty(grassman, grassman, grassman, prickly_hog);
+
+	NPC* deerguard = new NPC(*enemydeer);
+	deerguard->setLeader(true, 3, forestleft);
+	deerguard->blockExit(WEST, ENEMY, "guarded by the ENEMY DEER.");
+	deerguard->setDialogue("(angry deer noises)");
+	deerguard->setRejectionDialogue("(angry deer noises)");
+
+	NPC* ninjaguard = new NPC(*enemydeer);
+	ninjaguard->setLeader(true, 5, forestright);
+	ninjaguard->blockExit(NORTHEAST, ENEMY, "guarded by the NINJA SCOUT.");
+	ninjaguard->setDialogue("(angry deer noises)");
+	ninjaguard->setRejectionDialogue("(angry deer noises)");
+
+	NPC* forestrando = new NPC(*grassman);
+	forestrando->setLeader(true, 5, forestleft);
+	forestrando->setDialogue("(angry bush noises)");
+	forestrando->setRejectionDialogue("(angry bush noises)");
+
+	NPC* forestguard2 = new NPC(*buffgrassman);
+	forestguard2->setLeader(true, 3, foresttempleentrance);
+	forestguard2->setParty(pricklyhog, pricklyhog);
+	forestguard2->blockExit(NORTH, ENEMY, "guarded by the BUFF GRASSMAN.");
+	forestguard2->setDialogue("(burly bush noises)");
+	forestguard2->setRejectionDialogue("(angry bush noises)");
+
+	NPC* hogguard = new NPC(*greaterhog);
+	hogguard->setLeader(true, 3, forestfork);
+	hogguard->blockExit(NORTHEAST, ENEMY, "guarded by the GREATER HOG.");
+	hogguard->setDialogue("(angry squeal)");
+	hogguard->setRejectionDialogue("(angry squeal)");
+
+	NPC* hogguard2 = new NPC(*greaterhog);
+	hogguard2->setLeader(true, 6, forestfork);
+	hogguard2->setParty(pricklyhog, pricklyhog);
+	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
+	hogguard2->setDialogue("(angry squeal)");
+	hogguard2->setRejectionDialogue("(angry squeal)");
+
+	NPC* forestguard3 = new NPC(*buffgrassman);
+	forestguard2->setLeader(true, 7, forestnice);
+	forestguard2->setParty(grassman, grassman);
+	forestguard2->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
+	forestguard2->setDialogue("(burly bush noises)");
+	forestguard2->setRejectionDialogue("(angry bush noises)");
 
 	NPC* jimshady1 = new NPC(*jimshady);
 	jimshady1->setLeader(true, 5, forestwall);
+	jimshady1->blockExit(EAST, ENEMY, "blocked by JIM SHADY.");
 	jimshady1->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
 	jimshady1->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
 	jimshady1->addConversation(self, "No you aren't.");
 	jimshady1->addConversation(jimshady1, "Shut up.");
 	jimshady1->setRejectionDialogue("No go away.");
 
+	NPC* plantguard = new NPC(*carnplant);
+	plantguard->setLeader(true, 4, foresttempleentrance);
+	plantguard->blockExit(EAST, NORTHWEST, "blocked by the CARNIVOROUS PLANT.");
+	plantguard->setDialogue("(snapping biting noises)");
+	plantguard->setRejectionDialogue("(snapping biting noises)");
+
+	NPC* flowerguard = new NPC(*flowerfiend);
+	flowerguard->setLeader(true, 4, flowerfield);
+	flowerguard->setParty(carnplant, carnplant);
+	flowerguard->blockExit(EAST, NORTHWEST, "blocked by the FLOWER FIEND.");
+	flowerguard->setDialogue("(flowery shriek)");
+	flowerguard->setRejectionDialogue("(flowery shriek)");
+
+	NPC* savagehog = new NPC("", "SAVAGE HOG", "Dangerous, mammoth elder hog with very sharp prickles.", bossgrove, 80, 15, 20, 10, 30, 15, 15);
+	savagehog->setLeader(true, 10);
+	savagehog->setParty(pricklyhog, greaterhog);
+	savagehog->blockExit(NORTH, ENEMY, "blocked off by the SAVAGE HOG!");
+	savagehog->setDialogue("(SAVAGE ROAR)");
+	savagehog->setRejectionDialogue("Nah sorry mate. I'd rather stay home here in the grove with ma hog family.");
+	savagehog->setEscapable(false);
+	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, -10);
+	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
+	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", 5, 0, 0, 1, 1, 7);
+	savageroar->addEffect(intimidated);
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", 10, 1, 10, 1, 3, 7);
+	savagehog->setBasicAttack(charge);
+	savagehog->addSpecialAttack(savageroar);
+	savagehog->addSpecialAttack(pricklestorm);
+
 	//set up teammate viola
 	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20, 0, true);
 	viola->setScale(0, 0, 1, 0, 1, 0, 2);
-	viola->setLeader(true, 10);
+	viola->setLeader(true, 20);
 	viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
 	viola->addConversation(viola, "So what if I did?");
 	viola->addConversation(self, "Lady you can't just go kidnapping people.");
@@ -1180,7 +1274,7 @@ NPC* SetupWorld() {
 	glutton->setEscapable(false);
 
 	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 200, 50, 30, 20, 20, 10, 50);
-	//lavaguard->setLeader(true, 30, NULL, false);
+	lavaguard->setLeader(true, 40, NULL, false);
 	lavaguard->setDialogue("(ethereal breathing)");
 	lavaguard->setRejectionDialogue("(ethereal breathing)");
 	lavaguard->setLink(magmelder, "Oh nooooo............");
@@ -1188,7 +1282,8 @@ NPC* SetupWorld() {
 	lavaguard->addLinkedConvo(magmelder, "But with the way to BURGERSBURG cleared...");
 	lavaguard->addLinkedConvo(magmelder, "People can get BURGERs again...");
 	lavaguard->addLinkedConvo(magmelder, "Oh nooooo...... We fix one problem and another one comes back......");
-	lavaguard->addLinkedConvo(self, "Hm.");  
+	lavaguard->addLinkedConvo(self, "Hm.");
+	lavaguard->setEscapable(false);
 
 	//block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
@@ -1202,10 +1297,6 @@ NPC* SetupWorld() {
 	//desert is blocked by scorching sands, prevented with shoes
 
 	//volcano factory exit is blocked by the caved-in roof
-
-	//exits blocked by enemies
-	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
-	forestwall->blockExit(EAST, ENEMY, "blocked by JIM SHADY.");
 
 	return self; //returns the player character
 }
@@ -1408,8 +1499,8 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 			} //Florian is the cannonical name so Bernard remarks on that
 			if (!strcmp(name, "FLORIAN")) {
 				cout << "\n" << (*party)[0]->getName() << " - \"Yeah that's what I was thinking too!\"";
-				CinPause();
-			} else if (!strcmp(name, "HELP")) { //reference to the initial naming help joke
+				CinPause();	//      \/ \/ \/ reference to the initial naming help joke
+			} else if (!strcmp(name, "HELP") || !strcmp(name, "YOUR LOBSTER'S NAME") || !strcmp(name, "YOUR LOBSTER'S NAME HERE") || !strcmp(name, "YOUR LOBSTER'S NAME HERE!")) { //if the player followed the instructions too literally
 				cout << "\n" << (*party)[0]->getName() << " - \"...\"";
 				CinPause();
 			}

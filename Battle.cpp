@@ -160,8 +160,12 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	//hits all the targets, we must iterate in order to account for multi-target attacks
 	for (int i = 0; i < tarparty.size(); i++) {
 		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2) { //if they're within range
-			//damages the target                                                                              //some moves hit a random amount of times within a certain range
-			tarparty[i]->damage(attack->power + attacker->getAttack(), attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
+			int effectiveAttack = 0; //if the attack power is 0, it doesn't do damage and ignores the npc's attack stat
+			if (attack->power) { //we set the effective attack to this if the attack does damage
+				effectiveAttack = attacker->getAttack();
+			}
+			//damages the target                                                                                //some moves hit a random amount of times within a certain range
+			tarparty[i]->damage(attack->power + effectiveAttack, attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 				tarparty[i]->setEffect(attack->appliedeffect);
 			}
@@ -393,6 +397,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 		for (Attack* attack : plr->getSpecialAttacks()) {
 			//we only launch the attack if the player is leveled up enough to use it
 			if (attack->minLevel <= plr->getLevel() && !strcmp(commandWordP, attack->name)) {
+				if (plr->getSP() < attack->cost) { //we don't launch the attack if we don't have enough sp
+					cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << attack->cost << ")";
+					return false;
+				}
 				carryOutAttack(attack, plr, target);
 				return true;
 			}
