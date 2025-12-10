@@ -78,8 +78,11 @@ bool NPC::getPlayerness() { //returns if it is the player
 Room* NPC::getHome() { //returns the home room of the npc
 	return home;
 }
-Room* NPC::getRoom() {
-	return currentRoom;
+Room* NPC::getRoom(bool alt) {
+	if (!alt) {
+		return currentRoom;
+	}
+	return altRoom;
 }
 int NPC::getHealth() {
 	return health;
@@ -315,9 +318,14 @@ void NPC::setLobster(Room* tunnels, bool lobster) { //sets that it's the lobster
 void NPC::setTunnelDirection(Room* room, char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;
 }
-void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255]) { //sets that this enemy is blocking an exit
+void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255], bool bothsides) { //sets that this enemy is blocking an exit
 	exitBlocking = _exitBlocking;
 	currentRoom->blockExit(exitBlocking, type, reason); //tells the room the exit is blocked
+	if (bothsides) { //blocks the corresponding exit from the other side if this npc is blocking the exit from both rooms
+		altRoom = currentRoom->getExit(exitBlocking);
+		altRoom->blockExit(const_cast<char*>(ReverseDirection[exitBlocking]), type, reason);
+		altRoom->setNPC(this, true);
+	}
 }
 void NPC::printDamage(int damage, char* status) { //prints the damage the npc took and why if a reason is given
 	if (damage >= 0) {
@@ -560,6 +568,10 @@ void NPC::defeat() {
 	defeated = true; //was defeated
 	if (exitBlocking != NULL) { //unblock blocked exits
 		currentRoom->unblockExit(exitBlocking);
+		if (altRoom != NULL) {
+			altRoom->unblockExit(const_cast<char*>(ReverseDirection[exitBlocking]));
+			altRoom->removeNPC(this, true);
+		}
 		exitBlocking = NULL;
 	}
 	if (linkedNPC != NULL) { //do stuff for linked npc

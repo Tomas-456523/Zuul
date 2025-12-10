@@ -30,8 +30,12 @@ vector<Item*>& Room::getItems() {
 vector<Item*>& Room::getStock() {
 	return stock;
 }
-vector<NPC*>& Room::getNpcs() {
-	return npcs;
+vector<NPC*>& Room::getNpcs(bool alt) {
+	if (!alt) {
+		return npcs;
+	} else {
+		return altNpcs;
+	}
 }
 vector<char*>& Room::getBlocks() {
 	return blockedExits;
@@ -127,26 +131,29 @@ void Room::printStock() {
 	}
 }
 void Room::printNPCs() {
-	int i = 0; //how many npcs are listed
+	vector<NPC*> validNPCs;
 	for (NPC* npc : npcs) {
 		if (!npc->getRecruited() && !npc->getDefeated()) { //only count non-recruited and non-defeated npcs
-			i++;
+			validNPCs.push_back(npc);
 		}
 	}
-	if (i < 1) { //return if no npcs
+	for (NPC* npc : altNpcs) { //get the adjecent-roomed enemy npcs
+		if (!npc->getDefeated()) { //only count non-defeated npcs
+			validNPCs.push_back(npc);
+		}
+	}
+	if (!validNPCs.size()) { //return if no npcs
 		return;
 	}
 	cout << "\nNPCs:";
-	int j = 0; //count how many npcs we've printed
-	for (NPC* npc : npcs) {
-		if (!npc->getRecruited() && !npc->getDefeated()) {
-			if (strlen(npc->getTitle()) > 0) { //if npc has a title, add a space for formatting (if no title, space gets added immediately after anyway)
-				cout << " ";
-			}
-			cout << npc->getTitle() << " " << npc->getName();
-			if (++j != i) {
-				cout << ","; //seperate by comma if not the last one
-			}
+	int i = 0; //count how many npcs we've printed
+	for (NPC* npc : validNPCs) {
+		if (strlen(npc->getTitle()) > 0) { //if npc has a title, add a space for formatting (if no title, space gets added immediately after anyway)
+			cout << " ";
+		}
+		cout << npc->getTitle() << " " << npc->getName();
+		if (++i != validNPCs.size()) {
+			cout << ","; //seperate by comma if not the last one
 		}
 	}
 }
@@ -172,11 +179,19 @@ void Room::printWelcome() {
 void Room::setItem(Item* item) {
 	items.push_back(item);
 }
-void Room::setNPC(NPC* npc) {
-	npcs.push_back(npc);
+void Room::setNPC(NPC* npc, bool alt) {
+	if (!alt) {
+		npcs.push_back(npc);
+	} else {
+		altNpcs.push_back(npc);
+	}
 }
-void Room::removeNPC(NPC* npc) {
-	npcs.erase(remove(npcs.begin(), npcs.end(), npc), npcs.end());
+void Room::removeNPC(NPC* npc, bool alt) {
+	if (!alt) {
+		npcs.erase(remove(npcs.begin(), npcs.end(), npc), npcs.end());
+	} else {
+		altNpcs.erase(remove(npcs.begin(), npcs.end(), npc), npcs.end());
+	}
 }
 void Room::removeItem(Item* item) {
 	items.erase(remove(items.begin(), items.end(), item), items.end());

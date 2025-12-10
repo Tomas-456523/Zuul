@@ -29,7 +29,7 @@ public:
 	char* getDescription(); //get the description of the room
 	vector<Item*>& getItems(); //gets the room's items
 	vector<Item*>& getStock(); //gets the items for sale in this room
-	vector<NPC*>& getNpcs(); //gets the npcs in this room
+	vector<NPC*>& getNpcs(bool alt = false); //gets the npcs in this room
 	vector<char*>& getBlocks(); //gets the blocked exits in this room
 	Room* getExit(char* direction); //get the room in the given direction from this room
 	Room* getRedirect(); //get if the room redirects to another one
@@ -47,8 +47,8 @@ public:
 	void printBlock(char* direction);
 
 	void setItem(Item* item); //puts an item in the room
-	void setNPC(NPC* npc); //puts an npc in the room
-	void removeNPC(NPC* npc); //removes the thing from the room
+	void setNPC(NPC* npc, bool alt = false); //puts an npc in the room
+	void removeNPC(NPC* npc, bool alt = false); //removes the thing from the room
 	void removeItem(Item* item);
 	void setExit(char* direction, Room* room, char* blocktype = NULL, char* _reason = NULL); //sets an exit to another room
 	void setRedirect(Room* room); //sets a redirect to another room
@@ -79,6 +79,7 @@ private:
 	vector<Item*> items; //items in this room
 	vector<Item*> stock; //items for sale in this room
 	vector<NPC*> npcs; //npcs in this room
+	vector<NPC*> altNpcs; //npcs in an adjacent room that are blocking an exit in this room
 	//input direction pointer and returns the room that is in that direction
 	map<char*, Room*, charComparer> exits;
 	vector<char*> blockedExits; //the exits that are blocked

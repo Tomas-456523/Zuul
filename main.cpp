@@ -501,7 +501,7 @@ NPC* SetupWorld() {
 	//tent store stock
 	Item* ibuprofen = new HpItem("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
 	tentstore->setStock(ibuprofen, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage!");
-	Item* energybook = new EducationItem("ENERGY MANIPULATION BEGINNER'S GUIDE", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, energyball);
+	Item* energybook = new EducationItem("ADVANCED GUIDE TO ENERGY MANIPULATION", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, energyball);
 	//energybook->setAttack();
 	//energybook->setAttack();
 	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - Thank you for your patronage!");
@@ -578,12 +578,24 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
 	burgerman->addLinkedConvo(self, "Dang that's crazy.");
 
-	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 20, 20, 25, 30, 10, 0, 10);
-	forestknight->setScale(1, 1, 1, 1, 0, 0, 0);
+	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 20, 20, 25, 30, 10, 0, 10);
+	forestknight->setScale(1, 2, 1, 1, 0, 0, 0);
 	forestknight->setLevel(30);
-	forestknight->setRejectionDialogue("You are on a BURGER QUEST. I will not assist you in obtaining an object of sin.");
+	forestknight->setRejectionDialogue("I sense that you are on a BURGER QUEST. I will not assist you in obtaining this object of sin.\nI implore you to find a new, more noble goal for your quest.");
+	forestknight->addConversation(forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots.");
+	forestknight->addConversation(forestknight, "Does he not sleep? Does he not eat?");
+	forestknight->addConversation(forestknight, "From what I have seen, no. Nevertheless, I must thank you, child, for freeing me from that shrimp's hold.");
+	forestknight->addConversation(self, "Yeah no problem.");
 
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Crazed miner who likes exploding things. A frequent customer of the subterranean dynamite store.", mine);
+	/*(forestknight, "Child, I cannot join you on your quest. I shan't assist you in obtaining the evil BURGER.");
+	(self, "Nah bro I'm not doing that anymore.");
+	(self, "I'm actually trying to like completely annihilate BURGERs from this world now.");
+	(forestknight, "Ah, that's good to hear.");
+	(forestknight, "My apologies, child. My quest sensor is a bit slow.");
+	(forestknight, "I have not updated to the latest software version in a little while.");*/
+
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Crazed miner who likes exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, 5, 20, 0, 20, 12, 15);
+	minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "Throw a spread of shurikens at the target, with varying success.", 0, 7, 5, 0, 2, 3);
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
@@ -1114,7 +1126,7 @@ NPC* SetupWorld() {
 	jimshady1->setRejectionDialogue("No go away.");
 
 	//set up teammate viola
-	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 100, 20, 20, 0, true);
+	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20, 0, true);
 	viola->setScale(0, 0, 1, 0, 1, 0, 2);
 	viola->setLeader(true, 10);
 	viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
@@ -1266,7 +1278,10 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool force
 //initiates battle with an npc
 void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //try to find the given npc in the room
-	if (npc == NULL) { //print error message if they're not here
+	if (npc == NULL) { //try to find npc in adjacent exits
+		npc = getNPCInVector(currentRoom->getNpcs(true), name);
+	}
+	if (npc == NULL || npc->getDefeated()) { //print error message if they're not here (or defeated and not supposed to be there technically)
 		cout << "\nThere is nobody named \"" << name << "\" here.";
 		return;
 	}
@@ -1360,6 +1375,10 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 		}
 		//sets the npc as defeated
 		npc->defeat();
+		//moves the npc to the room it was defeated in, if we were fighting it from a different room
+		if (npc->getRoom(true) == currentRoom) {
+			npc->setRoom(currentRoom);
+		}
 		//some NPCs have special fight endings after defeating them, so we do those checks here
 		if (npc->getLobster()) { //if it was the lobster
 			cout << "\nThe TUNNEL LOBSTER, now defeated, appears docile.";
@@ -1691,6 +1710,9 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 //recruit an npc into the player party
 void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxParty = 4) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc we're trying to recruit
+	if (npc == NULL) { //try to find npc in adjacent exits
+		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
+	}
 	if (npc == NULL) { //error message if nobody in the current room is named npcname
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
@@ -1721,6 +1743,9 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxPa
 //decruit npcs from your party
 void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc to dismiss
+	if (npc == NULL) { //try to find npc in adjacent exits
+		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
+	}
 	if (npc == NULL) { //error text if no npc named npcname was found
 		cout << "\nThere is nobody named \"" << npcname << "\" in your party.";
 		return;
@@ -1749,6 +1774,9 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 //prints anything the targeted npc has to say
 void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory, vector<NPC*>* party, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //finds the npc named npcname
+	if (npc == NULL) { //try to find npc in adjacent exits
+		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
+	}
 	if (npc == NULL) { //error message if no such npc is in the current room
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
@@ -1796,9 +1824,9 @@ void printParty(vector<NPC*>* party) {
 //analyzes either an item or npc of the given name
 void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //tries to find an npc in the room or party
-	/*if (npc == NULL) { //tries to find the npc in the party
-		npc = getNPCInVector(*party, name);
-	}*/
+	if (npc == NULL) { //try to find npc in adjacent exits
+		npc = getNPCInVector(currentRoom->getNpcs(true), name);
+	}
 	if (npc != NULL) { //prints the data of the npc that was found
 		printNPCData(npc);
 		return;

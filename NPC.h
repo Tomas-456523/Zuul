@@ -43,7 +43,7 @@ public: //you need to set stats on creation
 	int getSP(); //gets the current sp of the npc
 	int getSPMax(); //gets the maximum sp of the npc
 	Room* getHome(); //gets the home location of the npc
-	Room* getRoom(); //get current room
+	Room* getRoom(bool alt = false); //get current room or the adjecent one it's blocking
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
 	int xpForLevel(int level); //for the level from 0
@@ -92,7 +92,7 @@ public: //you need to set stats on creation
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
-	void blockExit(char* _exitBlocking, char* type, const char reason[255]);
+	void blockExit(char* _exitBlocking, char* type, const char reason[255], bool bothsides = false);
 	void setEscapable(bool _escapable);
 	void calculateWeights();
 	void setEnemy(bool _enemy);
@@ -204,6 +204,7 @@ protected:
 	bool defeatChange = false; //if the npc changes after defeating them
 
 	char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated
+	Room* altRoom = NULL; //enemies block exits from both sides, so they have to be in two rooms at the same time, unfortunately
 	NPC* linkedNPC = NULL; //we set this npc to recruitable when robot is defeated
 	vector<pair<NPC*, const char*>> linkedConversation; //we add this conversation to the linked npc when defeated
 	char linkedDialogue[255]; //we set the linked npc's dialogue to this when defeated (if it isn't "")
