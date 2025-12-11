@@ -333,36 +333,36 @@ NPC* SetupWorld() {
 	BURGERSBURG->setWelcome("We are not responsible for theft or damage to vehicles or contents!");
 	Room* leftstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
 	Room* leftstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
-	Room* leftstreet3 = new Room(".");
+	Room* leftstreet3 = new Room("on the sidewalk, avoiding a burning crack in the road.");
 	Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
-	Room* leftstreet5 = new Room(".");
-	Room* newstreet1 = new Room(".");
-	Room* newstreet2 = new Room(".");
-	Room* newstreet3 = new Room(".");
-	Room* newstreet4 = new Room(".");
-	Room* newstreet5 = new Room(".");
+	Room* leftstreet5 = new Room("at the edge of the regular district. The streets past this point look well-maintained.");
+	Room* newstreet1 = new Room("at a construction site. This thing is never getting completed.");
+	Room* newstreet2 = new Room("in an alleyway. You see a THIEF rooting through the dumpster. Is there really nothing better to steal?");
+	Room* newstreet3 = new Room("at the entrance to a convenience store. The door is intact! And all the windows are broken.");
+	Room* newstreet4 = new Room("at the city orphanage. It's scheduled for demolition.");
+	Room* newstreet5 = new Room("at the edge of the regular district. The buildings beyond look really well-maintained.");
 	Room* mainstreet1 = new Room("on main street. There's a few lopsided cars on fire here.");
 	Room* mainstreet2 = new Room("on main street. You hear an explosion somewhere in the distance.");
-	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting."); //behind broken building "It's so close, but the BURGER RESTAURANT is hard to see with all the smoke
+	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting.");
 	Room* mainstreet4 = new Room("on main street. There's a stairway here leading down to the BURGERSBURG train station.");
 	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you. BURGER TENDRILS wrap around its base.");
-	Room* coolstreet1 = new Room(".");
+	Room* coolstreet1 = new Room("near the entrance of the city. The top of a building is sliced clean off.");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
-	Room* coolstreet3 = new Room(".");
+	Room* coolstreet3 = new Room("at a functional hot dog stand."); //set up hot dog vendor here
 	Room* coolstreet4 = new Room("at the entrance to a dark alley. Eh could be darker.");
-	Room* coolstreet5 = new Room(".");
+	Room* coolstreet5 = new Room("next to some copy-pasted looking townhouses. Surely homebuilders can be more creative?");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
-	Room* rightstreet2 = new Room(".");
-	Room* rightstreet3 = new Room(".");
-	Room* rightstreet4 = new Room("at an old glass factory. You see two guys carrying a large pane of glass."); //add group of people npc for joke
+	Room* rightstreet2 = new Room("in the city. You hear a random explosion, business as usual.");
+	Room* rightstreet3 = new Room("a really nice brick building. You see a guy in a black rat costume fighting an old lady."); //make sure this gets renamed after beating Ratman
+	Room* rightstreet4 = new Room("at a small glass store. You see two guys carrying a large pane of glass."); //add group of people npc for joke
 	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
 	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
-	Room* richneighborhood2 = new Room("in the rich neighborhood. You feel on guard with all the security systems looking at you. As soon as you step on a lawn, you'd probably be blown to smithereens.");
+	Room* richneighborhood2 = new Room("in the rich neighborhood. The security systems put you on guard; as soon as you step on a lawn, you'd probably be blown to smithereens.");
 	Room* richneighborhood3 = new Room("at a secluded corner of the rich neighborhood. Some guy's standing outside. What a daredevil.");
 	Room* richneighborhood4 = new Room("at the doorway of a huge layered bureaucratic-looking building. It's probably the second-tallest building in the city.");
 	//city interiors
 	Room* burgfish = new Room("in the fish building. A warm light shines down the stairs.");
-	Room* burgchurch = new Room("in a hidden church community. [descriptive text].");
+	Room* burgchurch = new Room("in a hidden church. Everyone seems joyful despite the state of the city.");
 	Room* burgstore = new Room("in an abandoned store. Nobody bothers to stock the shelves anymore.");
 	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses. You should really leave before you develop a gambling addiction.");
 	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
@@ -370,8 +370,8 @@ NPC* SetupWorld() {
 	Room* shrimpartment2 = new Room("on the second floor. The flowery wallpaper is peeling off.");
 	Room* shrimpartment3 = new Room("on the third floor. You see an open doorway leading to an unfurnished room; your instincts pull you away from it.");
 	Room* shrimproof = new Room("on the apartment rooftop. You have a nice view of the city lights.");
-	Room* firedepartment = new Room("in the fire department. The fire alarm is going off SOMEONE TURN IT OFF PLEASE MY EARS");
-	Room* burgstation = new Room("in the BURGERSBURG train station. [interesting flavor text]");
+	Room* firedepartment = new Room("in the fire department. The fire alarm is sadly whimpering.");
+	Room* burgstation = new Room("in the BURGERSBURG train station. Oddly enough, this one seems in the best condition out of all the ones you've seen.");
 	burgstation->setStation();
 	Room* ceolobby = new Room("in the ornate lobby of the building. The yearly RICH PEOPLE reunion is ongoing.");
 	Room* ceoelevator0 = new Room("in the elevator of the rich people building, at the lowest level.");
@@ -534,11 +534,7 @@ NPC* SetupWorld() {
 	tentstore->setStock(noodles, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage! Enjoy your noodles!");
 	tentstore->setStock(lasagna, 2147483647, 35, "JIMMY JOHN - Thank you for your patronage! Enjoy your lasagna!");
 	tentstore->setStock(pizza, 2147483647, 50, "JIMMY JOHN - Thank you for your patronage! Enjoy your pizza!");
-	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - I don't understand that book. But if it interests you then great! Oh, and thank you for your patronage!");
-
-	//energybook->setAttack();
-	//energybook->setAttack();
-	
+	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - I don't understand that book. But if it interests you then great! Oh, and thank you for your patronage!");	
 
 	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
@@ -1147,14 +1143,13 @@ NPC* SetupWorld() {
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
-	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
-	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
-	roguerobot->setBasicAttack(snip);
-	roguerobot->setLink(egadwick);
-	roguerobot->addLinkedConvo(egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?");
-	roguerobot->addLinkedConvo(self, "Yep I did.");
-	roguerobot->addLinkedConvo(egadwick, "Oh thank goodness! Thanks a bunch, kiddo!");
-	roguerobot->addLinkedConvo(egadwick, "Now I can safely be in the great outdoors!");
+	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 20, 5, 8, 0, 0, 6, 5);
+	Effect* sanded = new Effect("SAND IN THE EYES", duration, damage, spleak, attack, defense, tough, pierce);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at the eyes of", -2, 5, 0, 1, 1, 1);
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy fist at", 1, 3, 0, 1, 1, 1);
+	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
+	grassman->setBasicAttack(grassstrike);
+	grassman->addSpecialAttack(lawnmower);
 
 	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
@@ -1221,6 +1216,15 @@ NPC* SetupWorld() {
 	jimshady1->addConversation(self, "No you aren't.");
 	jimshady1->addConversation(jimshady1, "Shut up.");
 	jimshady1->setRejectionDialogue("No go away.");
+
+	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
+	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
+	roguerobot->setBasicAttack(snip);
+	roguerobot->setLink(egadwick);
+	roguerobot->addLinkedConvo(egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?");
+	roguerobot->addLinkedConvo(self, "Yep I did.");
+	roguerobot->addLinkedConvo(egadwick, "Oh thank goodness! Thanks a bunch, kiddo!");
+	roguerobot->addLinkedConvo(egadwick, "Now I can safely be in the great outdoors!");
 
 	NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);
@@ -2158,3 +2162,4 @@ int main() {
 		delete effect;
 	}*/
 }
+
