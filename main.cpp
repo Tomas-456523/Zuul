@@ -3,12 +3,6 @@
 *  This program is a text-based game where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. You can eat the BURGER to get the bad ending,
 *  or you can explore more to get the good ending. There's a bunch of other commands as well.
-*  
-*  WALKTHOUGH AS OF NOW:
-*  go right fight the grassman, then go northwest then west, talk to mr deer to get the key, then go north until you find the gate
-*  then use the deer key, then just keep going north until you get to the canyon, then go in the mines and keep going north as much
-*  as you can, then leave the mines, and then keep going north until you reach the burger restaurant and then buy a burger and use
-*  it and then you win yay. Although, in a few days it'll be much better so please play it then instead if possible.
 */
 #include <iostream>
 #include <vector>
@@ -121,7 +115,8 @@ NPC* SetupWorld() {
 	char* TUNNEL = new char[12];
 	char* TRACK = new char[12];
 	char* LOCK = new char[12];
-	char* MISC = new char[12];
+	char* NINJA = new char[12];
+	char* SAND = new char[12];
 	
 	//set up blockage reason text
 	strcpy(ENEMY, "ENEMY");
@@ -132,7 +127,8 @@ NPC* SetupWorld() {
 	strcpy(TUNNEL, "TUNNEL");
 	strcpy(TRACK, "TRACK");
 	strcpy(LOCK, "LOCK");
-	strcpy(MISC, "MISC");
+	strcpy(NINJA, "NINJA");
+	strcpy(SAND, "SAND");
 
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
@@ -430,26 +426,21 @@ NPC* SetupWorld() {
 	//Create attacks
 	
 	//Create NPCs and items
-	//Attack copy/paste: Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
-	////////////////////////
-	//DELETE THIS ATTACK, ONLY FOR TESTING
-	Attack* finishhim = new Attack("", "DESCRIPTION", 0, 99999999, 99999999, 1, 1, 1);
-	////////////////
 	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target.");
 
 	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1);
 	energyball->addDescription("Throw a ball of pure kinetic energy at the target.");
 
-	//SET START ROOM TO VILLAGE
 	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
 	self->setBasicAttack(punch);
-	self->addSpecialAttack(finishhim);
+	self->addSpecialAttack(energyball);
 
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 16, 5, 4, 0, 1, 5, 2);
+	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -2, -20, 20, 1, 1, 1, true);
 	floria->addConversation(floria, "Hey big brother! Aren't these flowers just so lovely?");
 	floria->addConversation(self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME.");
 	floria->setDialogue("I just love flowers!");
@@ -459,6 +450,7 @@ NPC* SetupWorld() {
 	floria->setDismissalDialogue("I'm going to go back to my flower field!");
 
 	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 15, 2, 3, 10, 10, 2, 10, 10);
+	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "used his science cannon to blast", -2);
 	egadwick->setDialogue("Ah hello kiddo. How's it going?");
 	egadwick->setGymDialogue("Eh, exercise isn't really my thing, kiddo. I can gain experience by working out my mind!");
 	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you could destroy it I could probably go.");
@@ -473,9 +465,6 @@ NPC* SetupWorld() {
 	archie->addConversation(archie, "Safe travels, child!");
 	archie->addConversation(archie, "Make sure to bring me back a BURGER! Heh heh heh.");
 	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
-
-	//NPC* treeelder = new NPC("TREE ELDER", "TREE", "An ancient tree outdating BURGERs");
-
 
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 0, 2);
@@ -670,6 +659,21 @@ NPC* SetupWorld() {
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
 	desertshopfixed->setStock(skateboard, 1, 100, "");
+
+	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", village, 200000, 200000, 20, 20000, 10, 15, 20);
+	techdemoman->setRecruitable(true);
+	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
+	techdemoman->setRecruitmentDialogue("I AM NOW RECRUITED!");
+	techdemoman->setRecruitedDialogue("HELLO THERE WE ARE ADVENTURING!");
+	techdemoman->setDismissalDialogue("BACK TO THE VILLAGE!");
+	Attack* demopunch = new Attack("DEMO PUNCH", "punched", -5);
+	Attack* demobeam = new Attack("DEMO BEAM", "shot a laser at", 4, 30, 30);
+	Attack* demoblast = new Attack("DEMO BLAST", "punched", 6, 40, 40, 1, 1, 3);
+	Attack* democrash = new Attack("DEMO CRASH", "crashed out at", 10, 50, 50, 1, 1, 99);
+	techdemoman->setBasicAttack(demopunch);
+	techdemoman->addSpecialAttack(demobeam);
+	techdemoman->addSpecialAttack(demoblast);
+	techdemoman->addSpecialAttack(democrash);
 
 	//Create exits between rooms
 	village->setExit(SOUTH, docks);
@@ -1126,6 +1130,12 @@ NPC* SetupWorld() {
 	engarde->guardset = 1;
 	jimshady->setEffect(engarde, false);
 
+	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 20, 0, 10, 0, 20, 30, 0);
+	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", 0, 0, 0, 1, 1, 1);
+	jimmyshimmy->setBasicAttack(shrimpleshimmy);
+	Effect* flinch = new Effect("FLINCH", 1);
+	shrimpleshimmy->addEffect(flinch);
+
 	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
 	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
 	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", 10, 10, 5, 1, 1, 1, 0.5f);
@@ -1144,12 +1154,153 @@ NPC* SetupWorld() {
 	flowerfiend->addSpecialAttack(solarbeam);
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 20, 5, 8, 0, 0, 6, 5);
-	Effect* sanded = new Effect("SAND IN THE EYES", duration, damage, spleak, attack, defense, tough, pierce);
+	Effect* sanded = new Effect("SAND IN THE EYES", 4, 0, 0, -10, -10);
 	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at the eyes of", -2, 5, 0, 1, 1, 1);
+	sandthrow->addEffect(sanded);
 	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy fist at", 1, 3, 0, 1, 1, 1);
-	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
-	grassman->setBasicAttack(grassstrike);
-	grassman->addSpecialAttack(lawnmower);
+	grassman->setBasicAttack(sandthrow);
+	grassman->addSpecialAttack(sandpunch);
+
+	//it makes me sad to make so many generic enemies, but oh well this game has to be done tommorrow... :(
+	Attack* genericattack = new Attack("GENERIC ATTACK", "generically attacked", -5);
+	Attack* genericspecial = new Attack("GENERIC SPECIAL ATTACK", "generically did a stronger attack at", 2, 30);
+	Attack* genericcc = new Attack("GENERIC CROWD CONTROL", "threw a generic multi-target attack at", 5, 20, 20, 1, 1, 3);
+	//template
+	/*NPC* npc = new NPC("", "NAME", "generic description :(", limbo);
+	npc->setBasicAttack(genericattack);
+	npc->addSpecialAttack(genericspecial);
+	npc->addSpecialAttack(genericcc);
+	*/
+
+	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "generic description :(", limbo);
+	rumbleweed->setBasicAttack(genericattack);
+	rumbleweed->addSpecialAttack(genericspecial);
+	rumbleweed->addSpecialAttack(genericcc);
+
+	NPC* rockbug = new NPC("", "ROCK BUG", "generic description :(", limbo);
+	rockbug->setBasicAttack(genericattack);
+	rockbug->addSpecialAttack(genericspecial);
+	rockbug->addSpecialAttack(genericcc);
+
+	NPC* rascal = new NPC("", "MINE RASCAL", "generic description :(", limbo);
+	rascal->setBasicAttack(genericattack);
+	rascal->addSpecialAttack(genericspecial);
+	rascal->addSpecialAttack(genericcc);
+
+	NPC* skeleminer = new NPC("", "SKELEMINER", "generic description :(", limbo);
+	skeleminer->setBasicAttack(genericattack);
+	skeleminer->addSpecialAttack(genericspecial);
+	skeleminer->addSpecialAttack(genericcc);
+
+	NPC* dreadnaut = new NPC("", "DREADNAUT", "generic description :(", limbo);
+	dreadnaut->setBasicAttack(genericattack);
+	dreadnaut->addSpecialAttack(genericspecial);
+	dreadnaut->addSpecialAttack(genericcc);
+
+	NPC* magman = new NPC("", "MAGMAN", "generic description :(", limbo);
+	magman->setBasicAttack(genericattack);
+	magman->addSpecialAttack(genericspecial);
+	magman->addSpecialAttack(genericcc);
+
+	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "generic description :(", limbo);
+	lavasoldier->setBasicAttack(genericattack);
+	lavasoldier->addSpecialAttack(genericspecial);
+	lavasoldier->addSpecialAttack(genericcc);
+
+	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "generic description :(", limbo);
+	largelavaman->setBasicAttack(genericattack);
+	largelavaman->addSpecialAttack(genericspecial);
+	largelavaman->addSpecialAttack(genericcc);
+
+	NPC* lavarcher = new NPC("", "LAVARCHER", "generic description :(", limbo);
+	lavarcher->setBasicAttack(genericattack);
+	lavarcher->addSpecialAttack(genericspecial);
+	lavarcher->addSpecialAttack(genericcc);
+
+	NPC* slagman = new NPC("", "SLAGMAN", "generic description :(", limbo);
+	slagman->setBasicAttack(genericattack);
+	slagman->addSpecialAttack(genericspecial);
+	slagman->addSpecialAttack(genericcc);
+
+	NPC* factgolem = new NPC("", "FACTORY GOLEM", "generic description :(", limbo);
+	factgolem->setBasicAttack(genericattack);
+	factgolem->addSpecialAttack(genericspecial);
+	factgolem->addSpecialAttack(genericcc);
+
+	NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "generic description :(", limbo);
+	slagwarrior->setBasicAttack(genericattack);
+	slagwarrior->addSpecialAttack(genericspecial);
+	slagwarrior->addSpecialAttack(genericcc);
+
+	NPC* lavagator = new NPC("", "LAVAGATOR", "generic description :(", limbo);
+	lavagator->setBasicAttack(genericattack);
+	lavagator->addSpecialAttack(genericspecial);
+	lavagator->addSpecialAttack(genericcc);
+
+	NPC* lavadile = new NPC("", "LAVADILE", "generic description :(", limbo);
+	lavadile->setBasicAttack(genericattack);
+	lavadile->addSpecialAttack(genericspecial);
+	lavadile->addSpecialAttack(genericcc);
+
+	NPC* thief = new NPC("", "THIEF", "generic description :(", limbo);
+	thief->setBasicAttack(genericattack);
+	thief->addSpecialAttack(genericspecial);
+	thief->addSpecialAttack(genericcc);
+
+	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "generic description :(", limbo);
+	crimmind->setBasicAttack(genericattack);
+	crimmind->addSpecialAttack(genericspecial);
+	crimmind->addSpecialAttack(genericcc);
+
+	NPC* minipanzer = new NPC("", "MINIPANZER", "generic description :(", limbo);
+	minipanzer->setBasicAttack(genericattack);
+	minipanzer->addSpecialAttack(genericspecial);
+	minipanzer->addSpecialAttack(genericcc);
+
+	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "generic description :(", limbo);
+	bagelfenagler->setBasicAttack(genericattack);
+	bagelfenagler->addSpecialAttack(genericspecial);
+	bagelfenagler->addSpecialAttack(genericcc);
+
+	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "generic description :(", limbo);
+	paveshark->setBasicAttack(genericattack);
+	paveshark->addSpecialAttack(genericspecial);
+	paveshark->addSpecialAttack(genericcc);
+
+	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "generic description :(", limbo);
+	naturaldisaster->setBasicAttack(genericattack);
+	naturaldisaster->addSpecialAttack(genericspecial);
+	naturaldisaster->addSpecialAttack(genericcc);
+
+	NPC* businessguy = new NPC("", "BUSINESSPERSON", "generic description :(", limbo);
+	businessguy->setBasicAttack(genericattack);
+	businessguy->addSpecialAttack(genericspecial);
+	businessguy->addSpecialAttack(genericcc);
+
+	NPC* richguy1 = new NPC("", "RICH PERSON", "generic description :(", limbo);
+	richguy1->setBasicAttack(genericattack);
+	richguy1->addSpecialAttack(genericspecial);
+	richguy1->addSpecialAttack(genericcc);
+
+	NPC* richguy2 = new NPC("", "RICH PERSON", "generic description :(", limbo);
+	richguy2->setBasicAttack(genericattack);
+	richguy2->addSpecialAttack(genericspecial);
+	richguy2->addSpecialAttack(genericcc);
+
+	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "generic description :(", limbo);
+	burgerbutler->setBasicAttack(genericattack);
+	burgerbutler->addSpecialAttack(genericspecial);
+	burgerbutler->addSpecialAttack(genericcc);
+
+	NPC* ninja = new NPC("", "NINJA", "generic description :(", limbo);
+	ninja->setBasicAttack(genericattack);
+	ninja->addSpecialAttack(genericspecial);
+	ninja->addSpecialAttack(genericcc);
+
+	NPC* ninjachief = new NPC("", "NINJA CHIEF", "generic description :(", limbo);
+	ninjachief->setBasicAttack(genericattack);
+	ninjachief->addSpecialAttack(genericspecial);
+	ninjachief->addSpecialAttack(genericcc);
 
 	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
@@ -1157,7 +1308,7 @@ NPC* SetupWorld() {
 
 	//for npcs you can actually fight, make sure to set their level as 0 at construction, then set the level manually after setting the scale, otherwise stats will be off
 
-	//set up npc enemies
+	//set up overworld enemies
 	NPC* forestguard = new NPC(*grassman);
 	forestguard->setLeader(true, 1, forestentrance);
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
@@ -1195,7 +1346,7 @@ NPC* SetupWorld() {
 	hogguard->setRejectionDialogue("(angry squeal)");
 
 	NPC* hogguard2 = new NPC(*greaterhog);
-	hogguard2->setLeader(true, 4, forestfork);
+	hogguard2->setLeader(true, 4, forestspork);
 	hogguard2->setParty(pricklyhog, pricklyhog);
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
 	hogguard2->setDialogue("(angry squeal)");
@@ -1256,8 +1407,32 @@ NPC* SetupWorld() {
 	savagehog->addSpecialAttack(pricklestorm);
 	savagehog->setForceBattle();
 
+	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", desertgrave);
+	skeleviking->setLeader(true, 10);
+	skeleviking->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEVIKING.");
+	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
+	shieldup->guardset = 2;
+	skeleviking->setEffect(shieldup, false);
+	skeleviking->setBasicAttack(genericattack);
+	savagehog->setDialogue("(generic dialogue)");
+	savagehog->setRejectionDialogue("(generic no you cannot recruit me)");
+
+	NPC* desertguard = new NPC(*sandman);
+	desertguard->setLeader(true, 5, desert);
+	desertguard->setParty(sandman, sandman);
+	desertguard->blockExit(NORTHWEST, ENEMY, "blocked by the SANDMAN.", true);
+
+	NPC* jimshady2 = new NPC(*jimshady);
+	jimshady2->setLeader(true, 5, desert);
+	jimshady2->blockExit(NORTHEAST, ENEMY, "blocked by JIM SHADY.", true);
+	jimshady2->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
+	jimshady2->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
+	jimshady2->addConversation(self, "No you still aren't.");
+	jimshady2->addConversation(jimshady1, "Nobody asked you.");
+	jimshady2->setRejectionDialogue("No go away.");
+
 	//set up teammate viola
-	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20, 0, true);
+	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20);
 	viola->setScale(0, 0, 1, 0, 1, 0, 2);
 	viola->setLeader(true, 20);
 	viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
@@ -1301,7 +1476,7 @@ NPC* SetupWorld() {
 	glutton->addLinkedConvo(glutton, "Ah you gots me...");
 	glutton->addLinkedConvo(glutton, "...");
 	glutton->addLinkedConvo(glutton, "I can'ts go back to da boss with a failya like dis...");
-	glutton->addLinkedConvo(glutton, "What else is theah to do?");
+	glutton->addLinkedConvo(glutton, "But what else's theah to do?");
 	glutton->addLinkedConvo(glutton, "Great job lad.");
 	glutton->addLinkedConvo(NULL, "GREER disappeared into the darkness...");
 	glutton->addLinkedConvo(NULL, "The spring's water can now freely flow into the oasis!");
@@ -1312,6 +1487,7 @@ NPC* SetupWorld() {
 
 	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 200, 50, 30, 20, 20, 10, 50);
 	lavaguard->setLeader(true, 40, NULL, false);
+	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("(ethereal breathing)");
 	lavaguard->setRejectionDialogue("(ethereal breathing)");
 	lavaguard->setLink(magmelder, "Oh nooooo............");
@@ -1325,13 +1501,22 @@ NPC* SetupWorld() {
 	//block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
+	desertstation->blockExit(NORTHEAST, TUNNEL, "blocked by endless rubble.");
+	desertstation->blockExit(NORTHWEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
 	foresttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a steep ravine.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a steep ravine.");
-	ninjaland->blockExit(UP, MISC, "too high. You need ninja abilities to scale the trees.");
+	ninjaland->blockExit(UP, NINJA, "too high. You need ninja abilities to scale the trees.");
+	desert->blockExit(EAST, SAND, "blocked by scorching sands.");
+	desertplain->blockExit(WEST, SAND, "blocked by scorching sands.");
+	deserttempleentrance->blockExit(EAST, SAND, "blocked by scorching sands.");
+	desertdune->blockExit(WEST, SAND, "blocked by scorching sands.");
 
-	//desert is blocked by scorching sands, prevented with shoes
+	//make coolant attack that slows down enemies
+	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
+	Item* powerpole = new KeyItem("POLE VAULT", "Very long stick useful for travelling over chasms.", "used the pole!", desertpole, CHASM, true);
+	
 
 	//volcano factory exit is blocked by the caved-in roof
 
@@ -1465,7 +1650,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 				teammate->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
 				CinPause();
 				vector<int>& statChanges = teammate->getStatChanges();
-				cout << "\n  HEALTH - " << teammate->getHealthMax(); //prints all the new stats of the npc
+				cout << "  HEALTH - " << teammate->getHealthMax(); //prints all the new stats of the npc
 				if (statChanges[0]) {
 					cout << " (+" << statChanges[0] << ")";
 				}
@@ -1496,9 +1681,10 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 				CinPause();
 				Attack* newAtt = teammate->getNewAttack(); //checks if the teammate learned a new attack
 				if (newAtt != NULL) { //print the attack and what it does
-					cout << teammate->getName() << " learned " << newAtt->name << "!\n" << newAtt->name << " - " << newAtt->trueDesc;
+					cout << "\n" << teammate->getName() << " learned " << newAtt->name << "!\n" << newAtt->name << " - " << newAtt->trueDesc;
 					CinPause();
 				}
+				cout << "\n";
 			}
 		}
 		//sets the npc as defeated
@@ -1676,7 +1862,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	if (item == NULL) { //print that no item called itemname was found
 		cout << "\nYou have no \"" << itemname << "\".";
 		return;
-	} else if (item->getTargetNeeded() && npc == NULL) { //if the item needed a target but no " ON " was given we give error text
+	} else if (item->getTargetNeeded() && npc == NULL && strcmp(item->getType(), "key") && strcmp(item->getType(), "movement")) { //if the item needed a target but no " ON " was given we give error text
 		if (party->size() > 1) { //if the party isn't only the player
 			cout << "\nThis item needs a target!";
 			return;
@@ -1865,7 +2051,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxPa
 	//adds the npc to your party
 	party->push_back(npc);
 	npc->Recruit(); //sets the npc to recruited
-	cout << "\n" << npcname << " was added to your party!" << "(party size: " << party->size() << "/" << maxParty << ")"; //prints success text
+	cout << "\n" << npcname << " was added to your party! (party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 }
 
 //decruit npcs from your party
@@ -2085,6 +2271,17 @@ int main() {
 		cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
 		CinPause();
 	}
+
+	cout << "\nNOTE: This game is unfortunately incomplete :(";
+	CinPause();
+	cout << "It's very unbalanced, and most of the enemies have generic properties because I ran out of time.";
+	CinPause();
+	cout << "It's still playable, though, so consider this a tech demo!";
+	CinPause();
+	cout << "Make sure to recruit TECH DEMO MAN because he's overpowered for testing purposes.";
+	CinPause();
+	cout << "Ok have fun!";
+	CinPause();
 	
 	CinIgnoreAll(); //clears extra characters or invalid input
 

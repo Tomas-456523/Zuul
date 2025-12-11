@@ -575,7 +575,7 @@ void NPC::defeat() {
 		exitBlocking = NULL;
 	}
 	if (linkedNPC != NULL) { //do stuff for linked npc
-		if (!linkedNPC->getLobster()) { //set npc to recuitable unless it's the lobster
+		if (!linkedNPC->getLobster() && strcmp(linkedNPC->getName(), "TOMAS")) { //set npc to recuitable unless it's the lobster (or my character util I make a better system)
 			linkedNPC->setRecruitable(true);
 		}
 		if (linkedNPC->getLeader()) { //unleader the linked npc

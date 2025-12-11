@@ -32,7 +32,8 @@ struct Attack {
 	Attack() {} //default constructor so NPC doesn't throw error
 
 	//constructs the attack
-	Attack(const char _name[255], const char _description[255], int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, bool _targetAlly = false, int _minlevel = 0, float _lifesteal = 0) {
+	//default stats are for testing purposes
+	Attack(const char _name[255], const char _description[255], int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, float _lifesteal = 0) {
 		strcpy(name, _name);
 		strcpy(description, _description);
 		cost = _cost;

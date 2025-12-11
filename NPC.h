@@ -16,9 +16,9 @@ using namespace std;
 class Room; //forward declares room because these two classes reference each other
 class Item;
 
-class NPC {
+class NPC { //for game testing purposes, all stats default to 20
 public: //you need to set stats on creation
-	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level = 0, bool _isleader = false, bool _player = false);
+	NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health = 20, int _defense = 20, int _attack = 20, int _toughness = 20, int _pierce = 20, int _speed = 20, int _sp = 20, int _level = 0, bool _isleader = false, bool _player = false);
 	~NPC();
 
 	//a bunch of functions to get npc variables
