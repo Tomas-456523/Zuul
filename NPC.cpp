@@ -364,7 +364,7 @@ void NPC::printEffects() { //prints the effects this npc has
 int NPC::damage(float power, float pierce, int hits) {
 	float damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
 	int totalhits = Clamp(hits - guard, 0, 999); //how many times the attack landed
-	guard -= hits; //hits lower guard
+	guard = Clamp(guard - hits, 0, 99999); //hits lower guard
 	float defenseF = defense; //converts stats to floats for easier damage calculation
 	float toughnessF = toughness;
 	//calculates the damage

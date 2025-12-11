@@ -81,23 +81,36 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 		delete[] name;
 	}
 }
-/*void Battle::addNPC(NPC* npc) {
-	vector<NPC*>* team = NULL;
-	if (npc->getEnemy()) {
-		enemyTeam.push_back(new NPC(*npc));
+//creates a new npc and adds it to the battle
+void Battle::addNPC(NPC* npc) {
+	vector<NPC*>* team = NULL; //gets which side the enemy is on
+	if (npc->getEnemy()) { //we must manually set enemy earlier or else EVERY new npc will go to the player team
 		team = &enemyTeam;
 	} else {
-		playerTeam.push_back(new NPC(*npc));
 		team = &playerTeam;
 	}
-	char* name = new char[255];
-	for (int i = 0; i < team->size(); i++) {
-		
-		char suffix[10];
-		snprintf(suffix, 10, " %d", i);
+	NPC* newguy = new NPC(*npc);
+	int count = 1; //we include newguy so the name count starts at 1
+	for (int i = 0; i < team->size(); i++) { //renames the enemy according to the amount of the same named enemy present. (eg. there is a BOB here already and we add a new BOB. BOB sees there's another BOB and renames himself BOB 2)
+		char* name = strstr((*team)[i]->getName(), newguy->getName());
+		if (name == NULL || name != &(*team)[i]->getName()[0]) { //if we didn't find the name or it the name was found after the beginning, the npc has a different name so we continue
+			continue;
+		}
+		char charafter = (*team)[i]->getName()[strlen(newguy->getName())]; //check the char in the npc name after the newguy's name
+		if (charafter != ' ' && charafter != '\0') { //skip this name if the next character isn't space or null terminator, because that means the name doesn't correspond and it's some other name that starts with the new guy's name
+			continue;
+		}
+		count++; //we found a matching name so increment the count
 	}
-	delete[] name;
-}*/
+	if (count > 1) { //we only add a suffix if there's >1 of that enemy. Otherwise it's pretty obvious it's BOB 1
+		char suffix[10]; //generate the suffix corresponding to the amount of similar names found
+		snprintf(suffix, 10, " %d", count);
+		newguy->addSuffix(suffix); //apply the suffix
+	}
+	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
+	team->push_back(newguy);
+	everyone.push_back(newguy);
+}
 //ticks an effect (if it does anything every turn, it does that, and decrements its duration)
 void Battle::tickEffect(Effect& effect) {
 	NPC* npc = effect.npc; //gets the affected npc
@@ -142,6 +155,13 @@ void Battle::tickEffects() {
 //carries out the attack (makes it hit the target)
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost); //removes sp from the attacker
+	if (attack->spbomb) { //if it's this one move, we have to check due to its unique functionality
+		attack->power = 0; //starts at 0 damage
+		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
+			attack->power += npc->getSP();
+			npc->alterSp(-npc->getSP());
+		}
+	}
 	//says what happened
 	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
 	vector<NPC*> tarparty; //gets which party is being targeted based on if the target is an enemy or not

@@ -153,7 +153,7 @@ NPC* SetupWorld() {
 	forest->setWelcome("Welcome to WANING WOODLANDS!");
 	forest->setWelcome("<<< THE FINAL FOREST >>>");
 	forest->setWelcome("The slowly decaying corner of the world, where you have lived your whole life.");
-	forest->setWelcome("Birds are chirping and chirds are birping.");
+	forest->setWelcome("The grass is green and the chirds are birping.");
 	forest->setWelcome("Now, your BURGER QUEST begins!");
 	Room* forestleft = new Room("walking down the left path of the woodlands. It feels like a deer is watching you.");
 	Room* forestright = new Room("walking down the right path of the woodlands. It feels like a ninja is watching you.");
@@ -495,19 +495,50 @@ NPC* SetupWorld() {
 
 	//NPC* fisho = new NPC("FISHERMAN", "FRED", "A middle-aged fisherman who frequently fishes at the village docks.", docks, 30, 10, );
 
-	Effect* minibuff = new Effect();
+	Effect* minibuff = new Effect("MINIBUFF", 4, 0, 0, 5, 5, 5, 5);
+	Effect* buff = new Effect("BUFF", 4, 0, 0, 15, 15, 15, 15);
+	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 30, 30, 30, 30);
+	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 50, 50, 50, 50);
+
+	Effect* smoothiebuff = new Effect("MULTIPOSITION", 999999, -30, 10, 70, 70, 70, 70);
+
+	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 50, 0, 0, 0);
+
 	//tent store stock
-	Item* ibuprofen = new HpItem("IBUPROFEN", "Relieves pain and inflammation and stuff. (heals 10 HP)", limbo, 10);
-	tentstore->setStock(ibuprofen, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage!");
-	Item* energybook = new EducationItem("ADVANCED GUIDE TO ENERGY MANIPULATION", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, energyball);
-	Attack* precisionstrike = new Attack("PRECISION STRIKE", "", 10, 35, 15, 1, 1, 1, false, 15);
-	precisionstrike->addDescription("Launch a heavy mass of energy speedily towards the target.");
-	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "", 20, 50, 25, 1, 1, 1, false, 25);
-	precisionstrike->addDescription("Unleash a dense missile of energy straight towards the target.");
+	Item* apple = new HpItem("HEALTHY APPLE", "A healthy red apple. (heals 10 HP)", limbo, 10);
+	Item* pineapple = new HpItem("HEALTHY PINE APPLE", "A crunchy and durable pine apple. Very annoying to eat, but apparently very healthy! (heals 20 HP)", limbo, 20);
+	Item* noodles = new EffectItem("MIGHTY NOODLES", "Some healthy and tasty homemade noodles sprinkled with mighty spices. (MINIBUFF effect)", limbo, minibuff);
+	Item* lasagna = new EffectItem("MIGHTY LASAGNA", "A healthy and tasty homemade lasagna made with mighty flour. (BUFF effect)", limbo, buff);
+	Item* pizza = new EffectItem("MIGHTY PIZZA", "A healthy and tasty homemade pizza topped with mighty pepperoni. (BIG BUFF EFFECT)", limbo, bigbuff);
+	//set up the advanced energy attacks
+	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", 12, 35, 15, 1, 1, 1, false, 12);
+	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK 15 PIERCE)");
+	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", 19, 50, 25, 1, 1, 1, false, 18);
+	precisionstrike->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK 25 PIERCE)");
+	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", 10, 20, 10, 1, 1, 1, false, 8);
+	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK 10 PIERCE)");
+	Attack* energize = new Attack("ENERGIZE", "energized", 14, 0, 0, 1, 1, 1, true, 21);
+	energize->addEffect(energized);
+	energize->addDescription("Imbue yourself or an teammate with energy, adding 50 additional power to their next attack.");
+	Attack* spbomb = new Attack("SP BOMB", "lobbed a ball of the team's collective SP energy at", 0, 0, 0, 1, 1, 9, false, 25);
+	spbomb->addDescription("Gather up the collective SP of the entire team into a ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
+	Item* energybook = new EducationItem("ADVANCED GUIDE TO ENERGY MANIPULATION", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, precisionstrike);
+	EducationItem* _energybook = (EducationItem*)energybook; //we have to convert the book to EducationItem in order to add the attacks because regular Item*s have no setAttack function
+	_energybook->setAttack(ballisticmissile);
+	_energybook->setAttack(bigenergyball);
+	_energybook->setAttack(energize);
+	_energybook->setAttack(spbomb);
+
+	tentstore->setStock(apple, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage! Enjoy your apple!");
+	tentstore->setStock(pineapple, 2147483647, 30, "JIMMY JOHN - Thank you for your patronage! Enjoy your pine apple!");
+	tentstore->setStock(noodles, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage! Enjoy your noodles!");
+	tentstore->setStock(lasagna, 2147483647, 35, "JIMMY JOHN - Thank you for your patronage! Enjoy your lasagna!");
+	tentstore->setStock(pizza, 2147483647, 50, "JIMMY JOHN - Thank you for your patronage! Enjoy your pizza!");
+	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - I don't understand that book. But if it interests you then great! Oh, and thank you for your patronage!");
 
 	//energybook->setAttack();
 	//energybook->setAttack();
-	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - Thank you for your patronage!");
+	
 
 	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
@@ -606,7 +637,7 @@ NPC* SetupWorld() {
 	
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 10, 10, 10, 10, 10, 10, 0);
 	gymbro->setGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
-	gymbro->setRejectionDialogue("Sorry dude, I gotta stay on DAT GRIND to get DEM GAINS.");
+	gymbro->setRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
 
 	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
 	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", 0, 1, 2, 1, 1, 1);
@@ -642,6 +673,7 @@ NPC* SetupWorld() {
 
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
+	desertshopfixed->setStock(skateboard, 1, 100, "");
 
 	//Create exits between rooms
 	village->setExit(SOUTH, docks);
@@ -1083,12 +1115,12 @@ NPC* SetupWorld() {
 	buffgrassman->setBasicAttack(grassstrike);
 	buffgrassman->addSpecialAttack(benchpress);
 
-	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 10, 4, 6, 1, 6, 12, 5);
-	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 3, 0, 3, 5, 1);
+	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 10, 6, 3, 1, 5, 5, 5);
+	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 1, 0, 4, 4, 1);
 	enemydeer->setBasicAttack(deercombo);
 
-	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 20, 5, 7, 0, 5, 20, 15);
-	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 7, 5, 0, 3, 3);
+	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 20, 2, 4, 0, 5, 20, 15);
+	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 4, 5, 0, 3, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
@@ -1104,7 +1136,7 @@ NPC* SetupWorld() {
 	carnplant->setBasicAttack(bite);
 	carnplant->addSpecialAttack(nutrientabsorb);
 
-	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", flowerfield, 30, 5, 7, 5, 5, 12, 24, 7, true);
+	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", limbo, 30, 5, 7, 5, 5, 12, 24);
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 5);
 	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 16, 10, 5, 1, 1, 1, true);
@@ -1143,11 +1175,11 @@ NPC* SetupWorld() {
 	deerguard->setDialogue("(angry deer noises)");
 	deerguard->setRejectionDialogue("(angry deer noises)");
 
-	NPC* ninjaguard = new NPC(*enemydeer);
+	NPC* ninjaguard = new NPC(*ninjascout);
 	ninjaguard->setLeader(true, 5, forestright);
 	ninjaguard->blockExit(NORTHEAST, ENEMY, "guarded by the NINJA SCOUT.");
-	ninjaguard->setDialogue("(angry deer noises)");
-	ninjaguard->setRejectionDialogue("(angry deer noises)");
+	ninjaguard->setDialogue("You will never get past me!!!!!!! >:D");
+	ninjaguard->setRejectionDialogue("No!!! I will always be a ninja!!!!!! >:D");
 
 	NPC* forestrando = new NPC(*grassman);
 	forestrando->setLeader(true, 5, forestleft);
@@ -1155,11 +1187,11 @@ NPC* SetupWorld() {
 	forestrando->setRejectionDialogue("(angry bush noises)");
 
 	NPC* forestguard2 = new NPC(*buffgrassman);
-	forestguard2->setLeader(true, 3, foresttempleentrance);
-	forestguard2->setParty(pricklyhog, pricklyhog);
+	forestguard2->setLeader(true, 2, foresttempleentrance);
+	forestguard2->setParty(pricklyhog);
 	forestguard2->blockExit(NORTH, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard2->setDialogue("(burly bush noises)");
-	forestguard2->setRejectionDialogue("(angry bush noises)");
+	forestguard2->setRejectionDialogue("(burly bush noises)");
 
 	NPC* hogguard = new NPC(*greaterhog);
 	hogguard->setLeader(true, 3, forestfork);
@@ -1168,18 +1200,18 @@ NPC* SetupWorld() {
 	hogguard->setRejectionDialogue("(angry squeal)");
 
 	NPC* hogguard2 = new NPC(*greaterhog);
-	hogguard2->setLeader(true, 6, forestfork);
+	hogguard2->setLeader(true, 4, forestfork);
 	hogguard2->setParty(pricklyhog, pricklyhog);
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
 	hogguard2->setDialogue("(angry squeal)");
 	hogguard2->setRejectionDialogue("(angry squeal)");
 
 	NPC* forestguard3 = new NPC(*buffgrassman);
-	forestguard2->setLeader(true, 7, forestnice);
-	forestguard2->setParty(grassman, grassman);
-	forestguard2->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
-	forestguard2->setDialogue("(burly bush noises)");
-	forestguard2->setRejectionDialogue("(angry bush noises)");
+	forestguard3->setLeader(true, 5, forestnice);
+	forestguard3->setParty(grassman, grassman);
+	forestguard3->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
+	forestguard3->setDialogue("(burly bush noises)");
+	forestguard3->setRejectionDialogue("(angry bush noises)");
 
 	NPC* jimshady1 = new NPC(*jimshady);
 	jimshady1->setLeader(true, 5, forestwall);
@@ -1192,19 +1224,19 @@ NPC* SetupWorld() {
 
 	NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);
-	plantguard->blockExit(EAST, NORTHWEST, "blocked by the CARNIVOROUS PLANT.");
+	plantguard->blockExit(NORTHWEST, ENEMY, "blocked by the CARNIVOROUS PLANT.");
 	plantguard->setDialogue("(snapping biting noises)");
 	plantguard->setRejectionDialogue("(snapping biting noises)");
 
 	NPC* flowerguard = new NPC(*flowerfiend);
 	flowerguard->setLeader(true, 4, flowerfield);
 	flowerguard->setParty(carnplant, carnplant);
-	flowerguard->blockExit(EAST, NORTHWEST, "blocked by the FLOWER FIEND.");
+	flowerguard->blockExit(WEST, ENEMY, "blocked by the FLOWER FIEND.");
 	flowerguard->setDialogue("(flowery shriek)");
 	flowerguard->setRejectionDialogue("(flowery shriek)");
 
 	NPC* savagehog = new NPC("", "SAVAGE HOG", "Dangerous, mammoth elder hog with very sharp prickles.", bossgrove, 80, 15, 20, 10, 30, 15, 15);
-	savagehog->setLeader(true, 10);
+	savagehog->setLeader(true, 5);
 	savagehog->setParty(pricklyhog, greaterhog);
 	savagehog->blockExit(NORTH, ENEMY, "blocked off by the SAVAGE HOG!");
 	savagehog->setDialogue("(SAVAGE ROAR)");
@@ -1218,6 +1250,7 @@ NPC* SetupWorld() {
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
+	savagehog->setForceBattle();
 
 	//set up teammate viola
 	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20, 0, true);
@@ -1289,7 +1322,7 @@ NPC* SetupWorld() {
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
-	foresttempleentrance->blockExit(SOUTH, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
+	foresttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a steep ravine.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a steep ravine.");
 	ninjaland->blockExit(UP, MISC, "too high. You need ninja abilities to scale the trees.");
@@ -1460,8 +1493,8 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 				Attack* newAtt = teammate->getNewAttack(); //checks if the teammate learned a new attack
 				if (newAtt != NULL) { //print the attack and what it does
 					cout << teammate->getName() << " learned " << newAtt->name << "!\n" << newAtt->name << " - " << newAtt->trueDesc;
+					CinPause();
 				}
-				CinPause();
 			}
 		}
 		//sets the npc as defeated
@@ -1977,7 +2010,7 @@ int main() {
 	vector<Item*>* inventory = new vector<Item*>; //the inventory of items
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
-	int mony = 0+10; //monies are the currency in the BURGER QUEST universe.
+	int mony = 0; //monies are the currency in the BURGER QUEST universe.
 
 	//flavor text printed by printHelp()
 	char flavorText[16][255] = {

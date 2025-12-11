@@ -21,6 +21,8 @@ struct Attack {
 	bool targetAlly = false; //if the attack is supposed to hit your own team
 	bool targetFainted = false; //if the attack is supposed to hit 0 hp npcs
 
+	bool spbomb = false;
+
 	int minLevel; //must be at least this level to use the attack
 
 	float lifesteal; //what % of damage dealt is stolen and added to the npc's health
@@ -42,6 +44,9 @@ struct Attack {
 		targetAlly = _targetAlly;
 		minLevel = _minlevel;
 		lifesteal = _lifesteal;
+		if (!strcmp(name, "SP BOMB")) { //we check if it's this one move because of its unique functionality
+			spbomb = true;
+		}
 		//Helper::attacksH.push_back(this); //store a pointer to this attack in the attacks vector
 	}
 
