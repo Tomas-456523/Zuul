@@ -46,6 +46,7 @@ NPC* SetupWorld() {
 	char* IN_CASTLE = new char[12];
 	char* IN_ALLEY = new char[12];
 	char* IN_ELEVATOR = new char[12];
+	char* IN_SAFE = new char[12];
 	char* IN_TEMPLE = new char[12];
 	char* INSIDE = new char[12];
 	char* UPSTAIRS = new char[12];
@@ -82,6 +83,7 @@ NPC* SetupWorld() {
 	strcpy(IN_CASTLE, "IN CASTLE");
 	strcpy(IN_ALLEY, "IN ALLEY");
 	strcpy(IN_ELEVATOR, "IN ELEVATOR");
+	strcpy(IN_SAFE, "IN SAFE");
 	strcpy(IN_TEMPLE, "IN TEMPLE");
 	strcpy(INSIDE, "INSIDE");
 	strcpy(UPSTAIRS, "UPSTAIRS");
@@ -195,6 +197,7 @@ NPC* SetupWorld() {
 	desert->setWelcome("Surely there must be someone friendly around here?");
 	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
 	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
+	Room* deserttemple = new Room("in the temple of COURAGE.");
 	//temple stuff
 	Room* desertdune = new Room("at a low point in the desert. A rare shadow is present where you can rest.");
 	Room* desertplain = new Room("at a really flat area of the desert.");
@@ -310,6 +313,8 @@ NPC* SetupWorld() {
 	Room* mineshortcut = new Room("in stable room, full of mining supplies and explosives.");
 	//the volcano temple
 	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple. The rock burns bright red.");
+	Room* volcanotemplestairs = new Room("on the steps that go into the ancient volcanic temple.");
+	Room* volcanotemple = new Room("in the temple of PATIENCE.");
 	//the bridge to BURGERSBURG
 	Room* bridge1 = new Room("on the final bridge to BURGERSBURG. The lava ocean crackles beneath your feet.");
 	Room* bridge2 = new Room("halfway through the bridge. An eternal night looms over the city.");
@@ -427,6 +432,7 @@ NPC* SetupWorld() {
 	elevatorbottom->setWelcome("...");
 	elevatorbottom->setWelcome("Temperatures have risen above volcanic levels...");
 	elevatorbottom->setWelcome("The elevator dings. Where have you arrived?");
+	Room* burgerbasement = new Room("in the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
 	basestation->setStation();
@@ -485,6 +491,30 @@ NPC* SetupWorld() {
 	graham->setRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
+	burgerman->setLeader(true, 0, NULL, false);
+	Attack* burgerspeech = new Attack("TEMPTATION", "spoke to", -1, 0, 0, 0, 0, 0);
+	burgerspeech->burgertalk = true;
+	burgerman->setBasicAttack(burgerspeech);
+	Attack* burgpunch = new Attack("BURGER PUNCH", "punched through", 1, 99999);
+	burgpunch->burgerpunch = true;
+	burgerman->addSpecialAttack(burgpunch);
+	burgerman->setLink(burgerman);
+	burgerman->setLinkedRoom(BURGERRESTAURANT, "in the BURGER RESTAURANT...");
+	burgerman->addLinkedConvo(NULL, "The BURGER MAN .");
+	/*burgerman->addLinkedConvo(developer, "Hey what's up?");
+	burgerman->addLinkedConvo(self, "So I was wondering,");
+	burgerman->addLinkedConvo(self, "what's up with all the parallel universes in the first game?");
+	burgerman->addLinkedConvo(self, "Also who was the other BURGER MAN?");
+	burgerman->addLinkedConvo(developer, "Oh uhhhhh... honestly idk maybe I'll just retcon that.");
+	burgerman->addLinkedConvo(developer, "Wait no I got this.");
+	burgerman->addLinkedConvo(developer, "So the parallel universes are just the same universe but going through them increments the number.");
+	burgerman->addLinkedConvo(developer, "Wait that makes no sense because of the news.");
+	burgerman->addLinkedConvo(developer, "Uhhhhhhhhhhhh...");
+	burgerman->addLinkedConvo(developer, "No clue but maybe I'll come up with something later and edit this conversation.");
+	burgerman->addLinkedConvo(developer, "Anyway about the other BURGER MAN,");
+	burgerman->addLinkedConvo(developer, "You know how HENRY JERRY's company invented time travel?");
+	burgerman->addLinkedConvo(self, "Uh huh.");*/
+	
 	NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5, 1);
 
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
@@ -591,7 +621,7 @@ NPC* SetupWorld() {
 	developer->addConversation(developer, "Only the narrator could cover his shift.");
 	developer->addConversation(self, "Oh I see.");
 	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
-	burgerman->setLink(developer);
+	/*burgerman->setLink(developer);
 	burgerman->addLinkedConvo(self, "Yo developer man.");
 	burgerman->addLinkedConvo(developer, "Hey what's up?");
 	burgerman->addLinkedConvo(self, "So I was wondering,");
@@ -608,7 +638,7 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(self, "Uh huh.");
 	burgerman->addLinkedConvo(developer, "Yeah so the BURGER MAN used the time machine.");
 	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
-	burgerman->addLinkedConvo(self, "Dang that's crazy.");
+	burgerman->addLinkedConvo(self, "Dang that's crazy.");*/
 
 	//Dialogue for after I finish the game:
 	//(self, "Can I recruit TECH DEMO MAN?", true);
@@ -778,6 +808,9 @@ NPC* SetupWorld() {
 	deserttempleentrance->setExit(IN_TEMPLE, deserttemplestairs);
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
+	deserttemplestairs->setExit(OUT, deserttempleentrance);
+	deserttemplestairs->setExit(WEST, deserttemple);
+	deserttemple->setExit(EAST, deserttemplestairs);
 	desertdune->setExit(WEST, deserttempleentrance);
 	desertdune->setExit(NORTHEAST, desertgrave);
 	desertdune->setExit(SOUTHWEST, desert);
@@ -964,6 +997,10 @@ NPC* SetupWorld() {
 	sewercenter3->setExit(SOUTHWEST, sewercenter1);
 	sewercenter3->setExit(DOWN, volcanotempleentrance);
 	volcanotempleentrance->setExit(UP, sewercenter3);
+	volcanotempleentrance->setExit(IN_TEMPLE, volcanotemplestairs);
+	volcanotemplestairs->setExit(OUT, volcanotempleentrance);
+	volcanotemplestairs->setExit(WEST, volcanotemple);
+	volcanotemple->setExit(EAST, volcanotemplestairs);
 	sewercenter4->setExit(NORTHEAST, sewercenter2);
 	sewercenter4->setExit(SOUTHEAST, sewercenter1);
 	sewercenter4->setExit(WEST, sewermineswest);
@@ -1092,11 +1129,34 @@ NPC* SetupWorld() {
 	richneighborhood4->setExit(SOUTH, richneighborhood2);
 	richneighborhood4->setExit(SOUTHEAST, richneighborhood3);
 	richneighborhood4->setExit(SOUTHWEST, richneighborhood1);
+	richneighborhood4->setExit(INSIDE, ceolobby);
+	ceolobby->setExit(OUT, richneighborhood4);
+	ceolobby->setExit(IN_ELEVATOR, ceoelevator0);
+	ceoelevator0->setExit(OUT, ceolobby);
+	ceoelevator0->setExit(UP, ceoelevator1);
+	ceoelevator1->setExit(UP, ceoelevator2);
+	ceoelevator1->setExit(DOWN, ceoelevator0);
+	ceoelevator2->setExit(UP, ceoelevator3);
+	ceoelevator2->setExit(DOWN, ceoelevator1);
+	ceoelevator3->setExit(UP, ceoelevator4);
+	ceoelevator3->setExit(DOWN, ceoelevator2);
+	ceoelevator4->setExit(OUT, ceoroom);
+	ceoelevator4->setExit(DOWN, ceoelevator3);
+	ceoroom->setExit(IN_ELEVATOR, ceoelevator4);
+	ceoroom->setExit(IN_SAFE, burgsafe);
+	burgsafe->setExit(OUT, ceoroom);
 	elevator->setExit(UP, elevatortop);
 	elevator->setExit(OUT, mainstreet5);
 	elevatortop->setExit(OUT, BURGERRESTAURANT);
 	elevatortop->setExit(DOWN, elevator);
 	BURGERRESTAURANT->setExit(IN_ELEVATOR, elevatortop);
+
+	elevatorbottom->setExit(UP, elevator);
+	elevatorbottom->setExit(OUT, burgerbasement);
+	burgerbasement->setExit(IN_ELEVATOR, elevatorbottom);
+	burgerbasement->setExit(SOUTH, BURGERPRISON);
+	BURGERPRISON->setExit(NORTH, burgerbasement);
+	basestation->setExit(NORTH, BURGERPRISON);
 
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
@@ -1485,6 +1545,25 @@ NPC* SetupWorld() {
 	NPC* minerando = new NPC(*rascal);
 	minerando->setLeader(true, 67, mineshaftside);
 
+	/*NPC* richguard0 = new NPC(*richguy1);
+	richguard->setLeader(true, 20, ceolobby);
+	richguard->setParty(richguy2, businessguy);
+	richguard->blockExit(IN_ELEVATOR, ENEMY, "blocked by the RICH PERSON.");*/
+
+	NPC* richguard1 = new NPC(*richguy1);
+	richguard1->setLeader(true, 20, ceoelevator1);
+	richguard1->setParty(richguy2, businessguy);
+	richguard1->blockExit(UP, ENEMY, "manually blocked by the RICH PERSON.");
+
+	NPC* richguard2 = new NPC(*burgerbutler);
+	richguard2->setLeader(true, 30, ceoelevator2);
+	richguard2->blockExit(UP, ENEMY, "manually blocked by the BURGER BUTLER.");
+
+	NPC* richguard3 = new NPC(*businessguy);
+	richguard3->setLeader(true, 25, ceoelevator3);
+	richguard3->setParty(businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, richguy1, richguy1, richguy1, richguy1, richguy1, richguy2, richguy2, richguy2, richguy2);
+	richguard3->blockExit(UP, ENEMY, "manually blocked by a bunch of BUSINESSPEOPLE.");
+
 	//set up enemy and teammate viola
 	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20);
 	viola->setScale(0, 0, 1, 0, 1, 0, 2);
@@ -1555,6 +1634,33 @@ NPC* SetupWorld() {
 	lavaguard->setEscapable(false);
 	lavaguard->setBasicAttack(genericattack);
 
+	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the BURGER CORPORATION.", ceoroom, 100, 40, 10, 0, 0, 0, 10);
+	ceo->setLeader(true, 45, NULL, false);
+	ceo->addConversation(self, "Hey why did you guys kidnap that child? >:(");
+	ceo->addConversation(ceo, "Woah! What a way to start a conversation! Hah hah hah!");
+	ceo->addConversation(self, "Answer my question! >:(");
+	ceo->addConversation(ceo, "Eh, I don't know. I sent one of my lackeys to do something like that some time ago.");
+	ceo->addConversation(self, "I just do whatever the BURGER MAN tells me to do, never ask questions.");
+	ceo->addConversation(ceo, "It's the least I could do, with all the fame and riches he's given us.");
+	ceo->addConversation(ceo, "All for the low low price of our souls!");
+	ceo->addConversation(self, "That's a stupid trade.");
+	ceo->addConversation(ceo, "Well, I beg to differ.");
+	ceo->addConversation(ceo, "Anyway, I can't have ya swinging accusations around like that...");
+	ceo->addConversation(ceo, "Guess I gotta take care of ya myself.");
+	ceo->addConversation(NULL, "Mechanical noises started to whirr from ENZO...");
+	ceo->addConversation(NULL, "Heavy weaponry erupted from ENZO!");
+	ceo->addConversation(NULL, "He's...");
+	ceo->addConversation(NULL, "MECHA-CEO ENZO!");
+	ceo->addConversation(ceo, "Let's see how much yer humanity'll help ya out now! HAH HAH HAH HAH!");
+	ceo->setDialogue("HAH HAH HAH HAH!");
+	ceo->setRejectionDialogue("You're asking me to join ya? Are ya crazy?");
+	ceo->setForceBattle();
+	ceo->setEscapable(false);
+	ceo->setBasicAttack(genericattack);
+	ceo->blockExit(IN_SAFE, ENEMY, "guarded by the BURGER CEO.");
+
+	NPC* kidnapper = new NPC("MAN CARRYING SUSPICIOUSLY CHILD-SHAPED BAG", "MANSLEY", burgerbasement, 1, 0, 1, 0, 0, 0, 0);
+
 	//block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
@@ -1569,7 +1675,7 @@ NPC* SetupWorld() {
 	desert->blockExit(EAST, SAND, "blocked by scorching sands.");
 	desertplain->blockExit(WEST, SAND, "blocked by scorching sands.");
 	deserttempleentrance->blockExit(EAST, SAND, "blocked by scorching sands.");
-	deserttempleentrance->blockExit(WEST, TEMPLE, "sealed shut by ancient technology. I'm sure nobody's ever been in this one, either.");
+	deserttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. I'm sure nobody's ever been in this one, either.");
 	desertdune->blockExit(WEST, SAND, "blocked by scorching sands.");
 	mineshaft->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	minespring->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
@@ -1609,6 +1715,10 @@ NPC* SetupWorld() {
 	factoryroofnw->blockExit(DOWN, NINJA, "too far down to jump.");
 	factoryroofne->blockExit(DOWN, NINJA, "too far down to jump.");
 	factoryroofse->blockExit(DOWN, NINJA, "too far down to jump.");
+	volcanotempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology.");
+	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
+	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
+	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
 
 	//make some final items for unblocking exits
 
@@ -2024,12 +2134,36 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		npc->addXp(xp->getXp()); //adds the xp
 	//beats the game until I rework this
 	} else if (!strcmp(item->getType(), "BURGER")) {
-		cout << "You are the winner you win you got the BURGER woo!";
+		if (!AOrB("Are you sure?", "YES", "NO")) {
+			return;
+		}
+		cout << "\nYou took a bite of the BURGER...";
 		CinPause();
-		cout << "This is the win condition because I need to turn this in on time.";
+		cout << "...";
 		CinPause();
-		cout << "Congratulations you are now in the post-game!";
+		cout << "...";
 		CinPause();
+		cout << "...";
+		CinPause();
+		cout << "It tasted alright.";
+		CinPause();
+		cout << "Was it really worth it?";
+		CinPause();
+		cout << "In eating the BURGER, you relinquished your freedom to the BUGRER MAN.";
+		CinPause();
+		cout << "\n\t<<<    BURGER QUEST COMPLETE ?    >>>";
+		cout << "\n\t<<< ENDING ACHIEVED: SLAVE TO SIN >>>";
+		CinPause();
+		cout << "\nWow, that was lame...";
+		CinPause();
+		cout << "Maybe you should've gone for the true ending...";
+		CinPause();
+		cout << "Thank you for playing the TECH DEMO for BURGER QUEST 2: ELECTRIC BOOGALOO!";
+		if (!AOrB("Would you like to keep playing?", "YES", "NO")) {
+			cout << "\nAlright then cya!\n";
+			exit();
+		}
+		travel(currentRoom, IN_ELEVATOR, party, true);
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass

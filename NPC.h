@@ -80,7 +80,7 @@ public: //you need to set stats on creation
 	void Dismiss(bool gohome = true); //dismiss them and go home if specified
 	void setRoom(Room* _room); //move the npc
 	void setHome(Room* room);
-	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL);
+	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL, NPC* npc5 = NULL, NPC* npc6 = NULL, NPC* npc7 = NULL, NPC* npc8 = NULL, NPC* npc9 = NULL, NPC* npc10 = NULL, NPC* npc11 = NULL, NPC* npc12 = NULL, NPC* npc13 = NULL, NPC* npc14 = NULL, NPC* npc15 = NULL, NPC* npc16 = NULL, NPC* npc17 = NULL, NPC* npc18 = NULL, NPC* npc19 = NULL);
 	void setName(const char _name[255]);
 	void setTitle(const char _title[255]);
 	void setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp);

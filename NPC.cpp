@@ -247,7 +247,7 @@ void NPC::setHome(Room* room) {
 	home = room;
 }
 //set a party for enemy leader npcs
-void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4) {
+void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4, NPC* npc5, NPC* npc6, NPC* npc7, NPC* npc8, NPC* npc9, NPC* npc10, NPC* npc11, NPC* npc12, NPC* npc13, NPC* npc14, NPC* npc15, NPC* npc16, NPC* npc17, NPC* npc18, NPC* npc19) {
 	NPC* npcs[] = { npc1, npc2, npc3, npc4 }; //makes an array of npcs so we can add them in a for loop
 	for (NPC* _npc : npcs) { //loops through the list and adds all the npcs to the party
 		if (_npc != NULL) {

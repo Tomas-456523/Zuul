@@ -22,6 +22,8 @@ struct Attack {
 	bool targetFainted = false; //if the attack is supposed to hit 0 hp npcs
 
 	bool spbomb = false;
+	bool burgertalk = false; //if it's the burger man talking
+	bool burgerpunch = false; //if it's the burger man's attack
 
 	int minLevel; //must be at least this level to use the attack
 
