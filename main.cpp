@@ -3,6 +3,8 @@
 *  This program is a text-based game where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. You can eat the BURGER to get the bad ending,
 *  or you can explore more to get the good ending. There's a bunch of other commands as well.
+*  
+*  In case you missed the first BURGER QUEST, you can play it at https://codehs.com/sandbox/id/zuul-kb8vTu
 */
 #include <iostream>
 #include <vector>
@@ -117,6 +119,9 @@ NPC* SetupWorld() {
 	char* LOCK = new char[12];
 	char* NINJA = new char[12];
 	char* SAND = new char[12];
+	char* HEAT = new char[12];
+	char* LAVA = new char[12];
+	char* STUFF = new char[12];
 	
 	//set up blockage reason text
 	strcpy(ENEMY, "ENEMY");
@@ -129,6 +134,9 @@ NPC* SetupWorld() {
 	strcpy(LOCK, "LOCK");
 	strcpy(NINJA, "NINJA");
 	strcpy(SAND, "SAND");
+	strcpy(HEAT, "HEAT");
+	strcpy(LAVA, "LAVA");
+	strcpy(STUFF, "STUFF");
 
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
@@ -161,7 +169,7 @@ NPC* SetupWorld() {
 	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here.");
 	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
-	Room* foresttemple = new Room("in the temple of [SOMETHING]. [SOMETHING SOMETHING].");
+	Room* foresttemple = new Room("in the temple of HUMILITY.");
 	//temple stuff
 	Room* flowerfield = new Room("in the aromatic flower fields. Your sister likes hanging out here.");
 	Room* flowerfield2 = new Room("deep in the flower fields. A really nice river flows over here.");
@@ -173,19 +181,19 @@ NPC* SetupWorld() {
 	Room* forestspork = new Room("at a spork in the road, but no sporks are to be seen anywhere.");
 	Room* forestnice = new Room("at a really nice looking area of the forest. The lighting is very cool.");
 	Room* treasuregrove = new Room("in the treasure grove, where the grass is golden and treasure chests sometimes appear.");
-	Room* treasurecliff = new Room("in the treasure cliff at the edge of the desert, where there is actualy treasure.");
+	Room* treasurecliff = new Room("in the treasure cliff at the edge of the desert, where there is actually treasure.");
 	Room* bossgrove = new Room("in the BOSS GROVE, where the boss of WANING WOODLANDS is known to appear.");
 	Room* fdintermission1 = new Room("on the path between the woodlands and the wastelands.");
 	Room* fdintermission2 = new Room("on the path between the woodlands and the wastelands. The foliage is sparse here. BURGERSBURG can be seen faintly in the distance.");
 	Room* fdintermission3 = new Room("on the path between the woodlands and the wastelands. Dead trees surround you. The BURGER RESTAURANT is just barely visible from here.");
 	//Create all DESOLATE DESERT rooms
-	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you!).");
+	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you! and those two guys I guess).");
 	desert->setWelcome("Welcome to DESOLATE DESERT!");
 	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
 	desert->setWelcome("The world beyond your forest, where the life has been sucked out of the dirt.");
 	desert->setWelcome("The sun beats down with no clouds in sight.");
 	desert->setWelcome("Surely there must be someone friendly around here?");
-	Room* deserttempleentrance = new Room("on a large dune where an ancient desert temple pokes out of the sand. I'm sure nobody's ever been in this one, either.");
+	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
 	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
 	//temple stuff
 	Room* desertdune = new Room("at a low point in the desert. A rare shadow is present where you can rest.");
@@ -217,8 +225,9 @@ NPC* SetupWorld() {
 	Room* mineshaft3 = new Room("deep in the mineshaft. A huge face spans the wall; he looks very interesting.");
 	Room* minelight = new Room("pretty high up, though still underground. You can see the light at the end of the tunnel just up above; how lovely.");
 	Room* mineexit = new Room("at the high-up exit of the mineshaft. SO MANY STAIRS...");
-	Room* mineshaftside = new Room("in a side tunnel of the mineshaft. All the ores are left untouched; what were the miners looking for?"); //water that's what
+	Room* mineshaftside = new Room("in a side tunnel of the mineshaft. There's a bunch of loose minecarts here.");
 	Room* kaboomroom = new Room("in a very unstable looking room. It's filled to the brim with dynamite, which is concerning considering that maniac that hangs out here.");
+	Room* berryroom = new Room("in a hidden room full of cactus. A CACTIBERRY is supposed to be growing here... oh well.");
 	Room* volcanoentrance = new Room("at the northernmost end of the mineshaft. Burning light and ash enter through the mineshaft entrance.");
 	Room* desertstation = new Room("in a train station, which seems to have been accidentally intercepted by the mineshaft.");
 	desertstation->setStation();
@@ -348,8 +357,8 @@ NPC* SetupWorld() {
 	Room* coolstreet4 = new Room("at the entrance to a dark alley. Eh could be darker.");
 	Room* coolstreet5 = new Room("next to some copy-pasted looking townhouses. Surely homebuilders can be more creative?");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
-	Room* rightstreet2 = new Room("in the city. You hear a random explosion, business as usual.");
-	Room* rightstreet3 = new Room("a really nice brick building. You see a guy in a black rat costume fighting an old lady."); //make sure this gets renamed after beating Ratman
+	Room* rightstreet2 = new Room("still in the city. You hear a random explosion, business as usual.");
+	Room* rightstreet3 = new Room("at a really nice brick building. You see a guy in a black rat costume fighting an old lady."); //make sure this gets renamed after beating Ratman
 	Room* rightstreet4 = new Room("at a small glass store. You see two guys carrying a large pane of glass."); //add group of people npc for joke
 	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
 	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
@@ -371,10 +380,12 @@ NPC* SetupWorld() {
 	burgstation->setStation();
 	Room* ceolobby = new Room("in the ornate lobby of the building. The yearly RICH PEOPLE reunion is ongoing.");
 	Room* ceoelevator0 = new Room("in the elevator of the rich people building, at the lowest level.");
-	Room* ceoelevator1 = new Room("in the elevator, on the first level. You see");
-	Room* ceoelevator2 = new Room("in the elevator, on the first level. You see");
-	Room* ceoelevator3 = new Room("in the elevator, at the top level. You see the CEO's office ahead.");
+	Room* ceoelevator1 = new Room("in the elevator, at ground level.");
+	Room* ceoelevator2 = new Room("in the elevator, on the first level. You see a grand hallway being cleaned by a robot butler.");
+	Room* ceoelevator3 = new Room("in the elevator, on the second level. You see a huge ballroom ahead.");
+	Room* ceoelevator4 = new Room("in the elevator, at the top level. You see the CEO's office ahead.");
 	Room* ceoroom = new Room("in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.");
+	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies, BURGERs, and company documents are piled up here.");
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
 	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no going back.");
 	elevatortop->setWelcome("You ventured beyond your forest home,");
@@ -398,7 +409,9 @@ NPC* SetupWorld() {
 	elevatortop->setWelcome("...");
 	elevatortop->setWelcome("The elevator dings. You have arrived at your destination...");
 	elevatortop->setWelcome("What will you do?");
-	Room* BURGERRESTAURANT = new Room("at the tippity top the BURGER RESTAURANT. You can see the sun barely shining under the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
+	Room* BURGERRESTAURANT = new Room("at the tippity top of the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
+	BURGERRESTAURANT->setWelcome("BURGER MAN - \"HELLO VALUED CUSTOMER.\"");
+	BURGERRESTAURANT->setWelcome("BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT.\"");
 	Room* elevatorbottom = new Room("deep down in the Earth, in the restricted level of the BURGER RESTAURANT.");
 	elevatorbottom->setWelcome("The elevator shoots downwards.");
 	elevatorbottom->setWelcome("...");
@@ -435,7 +448,7 @@ NPC* SetupWorld() {
 	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
-	self->Recruit();
+	self->Recruit(false);
 	self->setBasicAttack(punch);
 	self->addSpecialAttack(energyball);
 
@@ -503,7 +516,7 @@ NPC* SetupWorld() {
 	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", 12, 35, 15, 1, 1, 1, false, 12);
 	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK 15 PIERCE)");
 	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", 19, 50, 25, 1, 1, 1, false, 18);
-	precisionstrike->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK 25 PIERCE)");
+	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK 25 PIERCE)");
 	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", 10, 20, 10, 1, 1, 1, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK 10 PIERCE)");
 	Attack* energize = new Attack("ENERGIZE", "energized", 14, 0, 0, 1, 1, 1, true, 21);
@@ -597,6 +610,10 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
 	burgerman->addLinkedConvo(self, "Dang that's crazy.");
 
+	//Dialogue for after I finish the game:
+	//(self, "Can I recruit TECH DEMO MAN?", true);
+	//(developer, "No.")
+
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 20, 20, 25, 30, 10, 0, 10);
 	forestknight->setScale(1, 2, 1, 1, 0, 0, 0);
 	forestknight->setLevel(30);
@@ -620,6 +637,10 @@ NPC* SetupWorld() {
 	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them.");
 	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
+	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", 0, 8, 5, 0, 6, 7);
+	bonedrill->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them.");
+	Item* bonecone = new EducationItem("BONE CONE", "A cone-shaped bone. I bet you could think of an attack USE-ing this.", desertgrave, bonedrill);
+
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 10, 10, 10, 10, 10, 10, 0);
 	gymbro->setGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
 	gymbro->setRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
@@ -656,9 +677,13 @@ NPC* SetupWorld() {
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
 
+	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant person in the shop.", desertshopfixed);
+	merchant->setDialogue("Welcome, my friend, to my store.");
+	merchant->setRejectionDialogue("No I want to sell things.");
+
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
-	desertshopfixed->setStock(skateboard, 1, 100, "");
+	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
 
 	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", village, 200000, 200000, 20, 20000, 10, 15, 20);
 	techdemoman->setRecruitable(true);
@@ -668,8 +693,8 @@ NPC* SetupWorld() {
 	techdemoman->setDismissalDialogue("BACK TO THE VILLAGE!");
 	Attack* demopunch = new Attack("DEMO PUNCH", "punched", -5);
 	Attack* demobeam = new Attack("DEMO BEAM", "shot a laser at", 4, 30, 30);
-	Attack* demoblast = new Attack("DEMO BLAST", "punched", 6, 40, 40, 1, 1, 3);
-	Attack* democrash = new Attack("DEMO CRASH", "crashed out at", 10, 50, 50, 1, 1, 99);
+	Attack* demoblast = new Attack("DEMO BLAST", "blasted", 6, 40, 40, 1, 1, 3);
+	Attack* democrash = new Attack("DEMO CRASH", "exploded", 10, 50, 50, 1, 1, 99);
 	techdemoman->setBasicAttack(demopunch);
 	techdemoman->addSpecialAttack(demobeam);
 	techdemoman->addSpecialAttack(demoblast);
@@ -813,6 +838,8 @@ NPC* SetupWorld() {
 	mineshaftside->setExit(EAST, mineshaft3);
 	mineshaftside->setExit(SOUTHWEST, kaboomroom);
 	kaboomroom->setExit(NORTHEAST, mineshaftside);
+	kaboomroom->setExit(NORTHWEST, berryroom);
+	berryroom->setExit(SOUTHEAST, kaboomroom);
 	minelight->setExit(UP, mineexit);
 	minelight->setExit(SOUTH, mineshaft3);
 	minelight->setExit(NORTH, volcanoentrance);
@@ -1158,13 +1185,13 @@ NPC* SetupWorld() {
 	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at the eyes of", -2, 5, 0, 1, 1, 1);
 	sandthrow->addEffect(sanded);
 	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy fist at", 1, 3, 0, 1, 1, 1);
-	grassman->setBasicAttack(sandthrow);
-	grassman->addSpecialAttack(sandpunch);
+	sandman->setBasicAttack(sandthrow);
+	sandman->addSpecialAttack(sandpunch);
 
-	//it makes me sad to make so many generic enemies, but oh well this game has to be done tommorrow... :(
-	Attack* genericattack = new Attack("GENERIC ATTACK", "generically attacked", -5);
-	Attack* genericspecial = new Attack("GENERIC SPECIAL ATTACK", "generically did a stronger attack at", 2, 30);
-	Attack* genericcc = new Attack("GENERIC CROWD CONTROL", "threw a generic multi-target attack at", 5, 20, 20, 1, 1, 3);
+	//most of the enemies have these placeholder attacks and also placeholder stats due to time constraints, so I'll add those in the full version
+	Attack* genericattack = new Attack("ATTACK", "attacked", -5);
+	Attack* genericspecial = new Attack("STRONG ATTACK", "did a strong attack at", 2, 30);
+	Attack* genericcc = new Attack("CRASH OUT", "crashed out near", 5, 20, 20, 1, 1, 3);
 	//template
 	/*NPC* npc = new NPC("", "NAME", "generic description :(", limbo);
 	npc->setBasicAttack(genericattack);
@@ -1172,132 +1199,132 @@ NPC* SetupWorld() {
 	npc->addSpecialAttack(genericcc);
 	*/
 
-	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "generic description :(", limbo);
+	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Rolling weed of the desert that causes earthquakes.", limbo);
 	rumbleweed->setBasicAttack(genericattack);
 	rumbleweed->addSpecialAttack(genericspecial);
 	rumbleweed->addSpecialAttack(genericcc);
 
-	NPC* rockbug = new NPC("", "ROCK BUG", "generic description :(", limbo);
+	NPC* rockbug = new NPC("", "ROCK BUG", "Bug made of rock and does stuff and lives in the mines and is aggressive.", limbo);
 	rockbug->setBasicAttack(genericattack);
 	rockbug->addSpecialAttack(genericspecial);
 	rockbug->addSpecialAttack(genericcc);
 
-	NPC* rascal = new NPC("", "MINE RASCAL", "generic description :(", limbo);
+	NPC* rascal = new NPC("", "MINE RASCAL", "Little thingy who lives in the mines.", limbo);
 	rascal->setBasicAttack(genericattack);
 	rascal->addSpecialAttack(genericspecial);
 	rascal->addSpecialAttack(genericcc);
 
-	NPC* skeleminer = new NPC("", "SKELEMINER", "generic description :(", limbo);
+	NPC* skeleminer = new NPC("", "SKELEMINER", "Skeleton miner who is a skeleton and mines with a lamp helmet those things you know.", limbo);
 	skeleminer->setBasicAttack(genericattack);
 	skeleminer->addSpecialAttack(genericspecial);
 	skeleminer->addSpecialAttack(genericcc);
 
-	NPC* dreadnaut = new NPC("", "DREADNAUT", "generic description :(", limbo);
+	NPC* dreadnaut = new NPC("", "DREADNAUT", "Big armored military bug or crustacean with a tank cannon.", limbo);
 	dreadnaut->setBasicAttack(genericattack);
 	dreadnaut->addSpecialAttack(genericspecial);
 	dreadnaut->addSpecialAttack(genericcc);
 
-	NPC* magman = new NPC("", "MAGMAN", "generic description :(", limbo);
+	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo);
 	magman->setBasicAttack(genericattack);
 	magman->addSpecialAttack(genericspecial);
 	magman->addSpecialAttack(genericcc);
 
-	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "generic description :(", limbo);
+	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Armored lava man and also he has a sword.", limbo);
 	lavasoldier->setBasicAttack(genericattack);
 	lavasoldier->addSpecialAttack(genericspecial);
 	lavasoldier->addSpecialAttack(genericcc);
 
-	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "generic description :(", limbo);
+	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "Large man made of lava, name says it all.", limbo);
 	largelavaman->setBasicAttack(genericattack);
 	largelavaman->addSpecialAttack(genericspecial);
 	largelavaman->addSpecialAttack(genericcc);
 
-	NPC* lavarcher = new NPC("", "LAVARCHER", "generic description :(", limbo);
+	NPC* lavarcher = new NPC("", "LAVARCHER", "Lava man who has a bow and arrow.", limbo);
 	lavarcher->setBasicAttack(genericattack);
 	lavarcher->addSpecialAttack(genericspecial);
 	lavarcher->addSpecialAttack(genericcc);
 
-	NPC* slagman = new NPC("", "SLAGMAN", "generic description :(", limbo);
+	NPC* slagman = new NPC("", "SLAGMAN", "Man made of slag from the factory.", limbo);
 	slagman->setBasicAttack(genericattack);
 	slagman->addSpecialAttack(genericspecial);
 	slagman->addSpecialAttack(genericcc);
 
-	NPC* factgolem = new NPC("", "FACTORY GOLEM", "generic description :(", limbo);
+	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Golem who works in the factory.", limbo);
 	factgolem->setBasicAttack(genericattack);
 	factgolem->addSpecialAttack(genericspecial);
 	factgolem->addSpecialAttack(genericcc);
 
-	NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "generic description :(", limbo);
+	NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "Armored humanoid made of slag.", limbo);
 	slagwarrior->setBasicAttack(genericattack);
 	slagwarrior->addSpecialAttack(genericspecial);
 	slagwarrior->addSpecialAttack(genericcc);
 
-	NPC* lavagator = new NPC("", "LAVAGATOR", "generic description :(", limbo);
+	NPC* lavagator = new NPC("", "LAVAGATOR", "Big lava alligator.", limbo);
 	lavagator->setBasicAttack(genericattack);
 	lavagator->addSpecialAttack(genericspecial);
 	lavagator->addSpecialAttack(genericcc);
 
-	NPC* lavadile = new NPC("", "LAVADILE", "generic description :(", limbo);
+	NPC* lavadile = new NPC("", "LAVADILE", "Small crocodile who lives in the lava.", limbo);
 	lavadile->setBasicAttack(genericattack);
 	lavadile->addSpecialAttack(genericspecial);
 	lavadile->addSpecialAttack(genericcc);
 
-	NPC* thief = new NPC("", "THIEF", "generic description :(", limbo);
+	NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo);
 	thief->setBasicAttack(genericattack);
 	thief->addSpecialAttack(genericspecial);
 	thief->addSpecialAttack(genericcc);
 
-	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "generic description :(", limbo);
+	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Floating brain guy who is a criminal and very smart.", limbo);
 	crimmind->setBasicAttack(genericattack);
 	crimmind->addSpecialAttack(genericspecial);
 	crimmind->addSpecialAttack(genericcc);
 
-	NPC* minipanzer = new NPC("", "MINIPANZER", "generic description :(", limbo);
+	NPC* minipanzer = new NPC("", "MINIPANZER", "Tiny tank thing.", limbo);
 	minipanzer->setBasicAttack(genericattack);
 	minipanzer->addSpecialAttack(genericspecial);
 	minipanzer->addSpecialAttack(genericcc);
 
-	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "generic description :(", limbo);
+	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Big guy who will fenagle your bagels.", limbo);
 	bagelfenagler->setBasicAttack(genericattack);
 	bagelfenagler->addSpecialAttack(genericspecial);
 	bagelfenagler->addSpecialAttack(genericcc);
 
-	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "generic description :(", limbo);
+	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Shark that goes through the road so scary ahhh.", limbo);
 	paveshark->setBasicAttack(genericattack);
 	paveshark->addSpecialAttack(genericspecial);
 	paveshark->addSpecialAttack(genericcc);
 
-	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "generic description :(", limbo);
+	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Tornado thing with orbiting things.", limbo);
 	naturaldisaster->setBasicAttack(genericattack);
 	naturaldisaster->addSpecialAttack(genericspecial);
 	naturaldisaster->addSpecialAttack(genericcc);
 
-	NPC* businessguy = new NPC("", "BUSINESSPERSON", "generic description :(", limbo);
+	NPC* businessguy = new NPC("", "BUSINESSPERSON", "Evil businessperson who is evil.", limbo);
 	businessguy->setBasicAttack(genericattack);
 	businessguy->addSpecialAttack(genericspecial);
 	businessguy->addSpecialAttack(genericcc);
 
-	NPC* richguy1 = new NPC("", "RICH PERSON", "generic description :(", limbo);
+	NPC* richguy1 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo);
 	richguy1->setBasicAttack(genericattack);
 	richguy1->addSpecialAttack(genericspecial);
 	richguy1->addSpecialAttack(genericcc);
 
-	NPC* richguy2 = new NPC("", "RICH PERSON", "generic description :(", limbo);
+	NPC* richguy2 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo);
 	richguy2->setBasicAttack(genericattack);
 	richguy2->addSpecialAttack(genericspecial);
 	richguy2->addSpecialAttack(genericcc);
 
-	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "generic description :(", limbo);
+	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo);
 	burgerbutler->setBasicAttack(genericattack);
 	burgerbutler->addSpecialAttack(genericspecial);
 	burgerbutler->addSpecialAttack(genericcc);
 
-	NPC* ninja = new NPC("", "NINJA", "generic description :(", limbo);
+	NPC* ninja = new NPC("", "NINJA", "A member of the ninja village who is an expert.", limbo);
 	ninja->setBasicAttack(genericattack);
 	ninja->addSpecialAttack(genericspecial);
 	ninja->addSpecialAttack(genericcc);
 
-	NPC* ninjachief = new NPC("", "NINJA CHIEF", "generic description :(", limbo);
+	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief of the ninja village who is very expert.", limbo);
 	ninjachief->setBasicAttack(genericattack);
 	ninjachief->addSpecialAttack(genericspecial);
 	ninjachief->addSpecialAttack(genericcc);
@@ -1414,13 +1441,18 @@ NPC* SetupWorld() {
 	shieldup->guardset = 2;
 	skeleviking->setEffect(shieldup, false);
 	skeleviking->setBasicAttack(genericattack);
-	savagehog->setDialogue("(generic dialogue)");
-	savagehog->setRejectionDialogue("(generic no you cannot recruit me)");
+	savagehog->setDialogue("(angry noise)");
+	savagehog->setRejectionDialogue("(angry noise)");
 
 	NPC* desertguard = new NPC(*sandman);
 	desertguard->setLeader(true, 5, desert);
 	desertguard->setParty(sandman, sandman);
 	desertguard->blockExit(NORTHWEST, ENEMY, "blocked by the SANDMAN.", true);
+
+	NPC* desertguard2 = new NPC(*sandman);
+	desertguard2->setLeader(true, 10, desertdune);
+	desertguard2->setParty(rumbleweed, rumbleweed);
+	desertguard2->blockExit(SOUTHEAST, ENEMY, "blocked by the SANDMAN.", true);
 
 	NPC* jimshady2 = new NPC(*jimshady);
 	jimshady2->setLeader(true, 5, desert);
@@ -1431,7 +1463,29 @@ NPC* SetupWorld() {
 	jimshady2->addConversation(jimshady1, "Nobody asked you.");
 	jimshady2->setRejectionDialogue("No go away.");
 
-	//set up teammate viola
+	NPC* canyonguard = new NPC(*skeleminer);
+	canyonguard->setLeader(true, 8, canyon1);
+	canyonguard->blockExit(NORTHEAST, ENEMY, "blocked by the SANDMAN.");
+
+	NPC* mineguard = new NPC(*skeleminer);
+	mineguard->setLeader(true, 10, mineshaft2);
+	mineguard->setParty(rockbug, rockbug);
+	mineguard->blockExit(SOUTH, ENEMY, "blocked by the SKELEMINER.", true);
+	
+	NPC* mineguard2 = new NPC(*skeleminer);
+	mineguard->setLeader(true, 10, mineshaft2);
+	mineguard->setParty(skeleminer);
+	mineguard->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
+
+	NPC* boomguard = new NPC(*dreadnaut);
+	boomguard->setLeader(true, 15, mineshaftside);
+	boomguard->setParty(rockbug, rockbug);
+	boomguard->blockExit(SOUTHWEST, ENEMY, "blocked by the DREADNAUT.");
+
+	NPC* minerando = new NPC(*rascal);
+	minerando->setLeader(true, 67, mineshaftside);
+
+	//set up enemy and teammate viola
 	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20);
 	viola->setScale(0, 0, 1, 0, 1, 0, 2);
 	viola->setLeader(true, 20);
@@ -1459,6 +1513,7 @@ NPC* SetupWorld() {
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
+	viola->setBasicAttack(genericattack);
 
 	NPC* glutton = new NPC("BURGER GLUTTON", "GREER", "Greedy BURGER official sent to keep all the desert's remaining water for himself. He is bloated with water.", minespring, 100, 40, 10, 0, 0, 0, 10);
 	glutton->setLeader(true, 30, NULL, false);
@@ -1484,6 +1539,7 @@ NPC* SetupWorld() {
 	glutton->setTalkOnDefeat();
 	glutton->setForceBattle();
 	glutton->setEscapable(false);
+	glutton->setBasicAttack(genericattack);
 
 	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 200, 50, 30, 20, 20, 10, 50);
 	lavaguard->setLeader(true, 40, NULL, false);
@@ -1497,6 +1553,7 @@ NPC* SetupWorld() {
 	lavaguard->addLinkedConvo(magmelder, "Oh nooooo...... We fix one problem and another one comes back......");
 	lavaguard->addLinkedConvo(self, "Hm.");
 	lavaguard->setEscapable(false);
+	lavaguard->setBasicAttack(genericattack);
 
 	//block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
@@ -1508,17 +1565,107 @@ NPC* SetupWorld() {
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a steep ravine.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a steep ravine.");
 	ninjaland->blockExit(UP, NINJA, "too high. You need ninja abilities to scale the trees.");
+	ninjavillage->blockExit(DOWN, NINJA, "too far down. You need ninja abilities to safely land.");
 	desert->blockExit(EAST, SAND, "blocked by scorching sands.");
 	desertplain->blockExit(WEST, SAND, "blocked by scorching sands.");
 	deserttempleentrance->blockExit(EAST, SAND, "blocked by scorching sands.");
+	deserttempleentrance->blockExit(WEST, TEMPLE, "sealed shut by ancient technology. I'm sure nobody's ever been in this one, either.");
 	desertdune->blockExit(WEST, SAND, "blocked by scorching sands.");
+	mineshaft->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	minespring->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	desertstation->blockExit(OUT, RUBBLE, "blocked by rocky rubble.");
+	canyon->blockExit(UNDERGROUND, RUBBLE, "blocked by rocky rubble.");
+	mineshaft3->blockExit(WEST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	mineshaftside->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	canyon2->blockExit(UP, RUBBLE, "blocked by rocky rubble.");
+	cliff1->blockExit(DOWN, RUBBLE, "blocked by rocky rubble.");
+	minelight->blockExit(UP, RUBBLE, "blocked by rocky rubble.");
+	mineexit->blockExit(DOWN, RUBBLE, "blocked by rocky rubble.");
+	kaboomroom->blockExit(NORTHWEST, RUBBLE, "blocked by rocky rubble.");
+	minelight->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	volcanoentrance->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	volcanoentrance->blockExit(NORTH, HEAT, "too hot! You'd probably melt unless you got some SUNSCREEN!");
+	sewercenter3->blockExit(DOWN, RUBBLE, "blocked by the ground. It looks pretty fragile and rubbley, maybe don't stand on it.");
+	sewercenter4->blockExit(WEST, LOCK, "locked tight with a GREEN LOCK. You need a GREEN KEY to open it.");
+	volcano2->blockExit(NORTH, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	volcano4->blockExit(NORTHEAST, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	volcano6->blockExit(NORTHWEST, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	volcano7->blockExit(NORTH, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	sewerentrance1->blockExit(DOWN, LAVA, "submerged in lava.");
+	sewerentrance2->blockExit(DOWN, LAVA, "submerged in lava.");
+	sewer2->blockExit(SOUTHWEST, LAVA, "submerged in lava."); //this is problematic
+	castleentrance->blockExit(IN_CASTLE, TUNNEL, "blocked by the door.");
+	sewerminessouth->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	mineshortcut->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	factorybalcony2->blockExit(EAST, CHASM, "blocked by a lack of path over the central room.");
+	factorygarden->blockExit(WEST, CHASM, "blocked by a lack of path.");
+	factory3->blockExit(UP, NINJA, "too high up.");
+	factory3->blockExit(EAST, STUFF, "blocked by collapsed roof material.");
+	factorynw->blockExit(UP, NINJA, "too high up.");
+	factoryne->blockExit(UP, NINJA, "too high up.");
+	factoryse->blockExit(UP, NINJA, "too high up.");
+	factoryse->blockExit(WEST, STUFF, "blocked by collapsed roof material.");
+	factoryroofsw->blockExit(DOWN, NINJA, "too far down to jump.");
+	factoryroofnw->blockExit(DOWN, NINJA, "too far down to jump.");
+	factoryroofne->blockExit(DOWN, NINJA, "too far down to jump.");
+	factoryroofse->blockExit(DOWN, NINJA, "too far down to jump.");
+
+	//make some final items for unblocking exits
 
 	//make coolant attack that slows down enemies
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
-	Item* powerpole = new KeyItem("POLE VAULT", "Very long stick useful for travelling over chasms.", "used the pole!", desertpole, CHASM, true);
-	
+	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick useful for travelling over chasms.", "used the pole!", desertpole, CHASM, true);
+	Item* minecart = new MovementItem("MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
 
-	//volcano factory exit is blocked by the caved-in roof
+	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
+	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
+	minecart1->setTakable(false);
+	minecart2->setTakable(false);
+	minecart1->setDenial("This minecart is clamped onto the minecart tracks!");
+	minecart2->setDenial("This minecart is clamped onto the minecart tracks!");
+
+	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", "applied the sunscreen. No amount of heat should bother you now!", limbo, HEAT, true);
+	KeyItem* _sunscreen = (KeyItem*)sunscreen;
+	_sunscreen->setTarget(volcanoentrance);
+	desertshopfixed->setStock(sunscreen, 1, 20, "MERRO - \"Thank you for your monies.\"");
+
+	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom);
+	skeleseller->setDialogue("Well hello there, short individual! Could I interest you in some explosives?");
+	skeleseller->setRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
+	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true);
+	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
+
+	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
+
+	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", "used the FORKLIFT to move the collapsed ceiling material out of the way.", heavymachineryroom, STUFF, false);
+	//you can use the scissor lift to get to the ninja village I guess, I'll keep it because it technically makes sense and it's funny
+	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", heavymachineryroom, NINJA, false);
+
+	Item* controlpanel1 = new KeyItem("CONTROL PANEL", "A huge array of buttons for controlling the factory. Thankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
+	controlpanel1->setTakable(false);
+	KeyItem* controls1 = (KeyItem*)controlpanel1;
+	controls1->setTarget(volcano2);
+
+	Item* controlpanel2 = new KeyItem("CONTROL PANEL", "A huge array of buttons for controlling the factory. Thankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom2, LAVA, true);
+	controlpanel2->setTakable(false);
+	KeyItem* controls2 = (KeyItem*)controlpanel2;
+	controls2->setTarget(volcano4);
+	controls2->setTarget(sewerentrance1);
+	
+	Item* controlpanel3 = new KeyItem("CONTROL PANEL", "A huge array of buttons for controlling the factory. Thankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom3, LAVA, true);
+	controlpanel3->setTakable(false);
+	KeyItem* controls3 = (KeyItem*)controlpanel3;
+	controls3->setTarget(sewerentrance2);
+	controls3->setTarget(volcano6);
+	controls3->setTarget(sewer2);
+	
+	Item* masterswitch = new KeyItem("MASTER DRAINAGE BUTTON", "Huge red button, which will fully drain the lava from the highlands.", "jumped onto the MASTER DRAINAGE BUTTON. The sewers rumble. You see the lava below fully drain! (though it's still flowing in)", sewerplant, LAVA, true);
+	masterswitch->setTakable(false);
+	KeyItem* _masterswitch = (KeyItem*)masterswitch;
+	_masterswitch->setTarget(volcano7);
+
+	//important note
+	Item* note = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me. You need to USE it in order to read it.", "HELLO!\nBeyond this point in the TECH DEMO there are no enemies, except for select important encounters.\nThis is because by this point, you probably get the general gist of battles, and it's probably tedious having to fight all those enemies then just watching TECH DEMO MAN doing it all for you.\nWell have fun with the rest of the game!\nYou better go for true ending.\nSincerely, Tomas", volcano);
 
 	return self; //returns the player character
 }
@@ -2243,7 +2390,7 @@ int main() {
 	};
 
 	//welcome message
-	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
+	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO (TECH DEMO EDITION)\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
 
 	//you get to name yourself!
 	cout << "\n             (type your name here!)\nYour name is ";
@@ -2272,13 +2419,11 @@ int main() {
 		CinPause();
 	}
 
-	cout << "\nNOTE: This game is unfortunately incomplete :(";
+	cout << "\nNOTE: This game's scope is pretty big so this is a TECH DEMO and not the full release yet!";
 	CinPause();
-	cout << "It's very unbalanced, and most of the enemies have generic properties because I ran out of time.";
+	cout << "In the future it will have better balancing and more unique attacks!";
 	CinPause();
-	cout << "It's still playable, though, so consider this a tech demo!";
-	CinPause();
-	cout << "Make sure to recruit TECH DEMO MAN because he's overpowered for testing purposes.";
+	cout << "But for now, make sure to recruit TECH DEMO MAN if you can't get past a certain point!";
 	CinPause();
 	cout << "Ok have fun!";
 	CinPause();

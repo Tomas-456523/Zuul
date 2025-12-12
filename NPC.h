@@ -76,7 +76,7 @@ public: //you need to set stats on creation
 	void setRecruitDialogueChange(const char _recruitment[255], const char _normal[255]); //sets new recruitment and normal dialogue after recruiting
 	void setDismissalDialogue(const char _dialogue[255]); //sets the dismissal dialogue for the npc
 	void setRecruitable(bool _recruitable); //set if you can recruit them
-	void Recruit(); //set recurited to true
+	void Recruit(bool printdialogue = true); //set recurited to true, print recruitment dialogue if unspecified (printdialogue is only ever false for the player)
 	void Dismiss(bool gohome = true); //dismiss them and go home if specified
 	void setRoom(Room* _room); //move the npc
 	void setHome(Room* room);

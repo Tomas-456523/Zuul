@@ -217,11 +217,13 @@ void NPC::setRecruitDialogueChange(const char _recruitment[255], const char _nor
 void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
-void NPC::Recruit() { //recruits the npc
+void NPC::Recruit(bool printdialogue) { //recruits the npc
 	if (conversations.size() > 0) {
 		printDialogue(); //I want the player to hear the dialogue before being recriuted so we print it here if it hasn't been heard yet
 	}
-	cout << "\n" << name << " - \"" << recruitmentDialogue << "\""; //says a thing after being recruited
+	if (printdialogue) {
+		cout << "\n" << name << " - \"" << recruitmentDialogue << "\""; //says a thing after being recruited
+	}
 	if (strlen(newRecruitmentDialogue)) {
 		strcpy(recruitmentDialogue, newRecruitmentDialogue);
 	}
@@ -492,6 +494,9 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 			cout << "\n" << name << " is now fighting for the enemy!";
 		}
 		hypnosis++;
+	}
+	if (effect.guardset) {
+		setGuard(effect.guardset);
 	}
 	effect.npc = this; //tell the effect it's affecting this npc
 	effects.push_back(effect); //adds the effect to the effect tracker

@@ -103,8 +103,8 @@ void Battle::addNPC(NPC* npc) {
 		count++; //we found a matching name so increment the count
 	}
 	if (count > 1) { //we only add a suffix if there's >1 of that enemy. Otherwise it's pretty obvious it's BOB 1
-		char suffix[10]; //generate the suffix corresponding to the amount of similar names found
-		snprintf(suffix, 10, " %d", count);
+		char suffix[12]; //generate the suffix corresponding to the amount of similar names found
+		snprintf(suffix, 12, " %d", count); //it has to be 12 and not 10 this time because the compiler was complaining
 		newguy->addSuffix(suffix); //apply the suffix
 	}
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
