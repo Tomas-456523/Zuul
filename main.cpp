@@ -583,7 +583,8 @@ NPC* SetupWorld() {
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 500, 25000);
 	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
 	wallelder->addConversation(self, "Indeed I am.");
-	wallelder->addConversation(wallelder, "Do not be fooled by the allure of BURGER. Do you not know why you crave it so?");
+	wallelder->addConversation(wallelder, "Do not be fooled by the allure of BURGER. Why do you crave it so?");
+	wallelder->addConversation(wallelder, "Because you've been told you do?");
 	wallelder->addConversation(wallelder, "BURGER is formed from the essence of evil. Have you seen the desert above?");
 	wallelder->addConversation(self, "Uh huh.");
 	wallelder->addConversation(wallelder, "It used to be a beautiful forest, full of life like the one to the south.");
@@ -597,8 +598,8 @@ NPC* SetupWorld() {
 
 	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 200, 80, 120, 10, 50, 10, 30, 100);
 	magmelder->addConversation(magmelder, "Oh it's horrible!");
-	magmelder->addConversation(magmelder, "I raised the lava level around the city so that no one could eat a BURGER!");
-	magmelder->addConversation(magmelder, "But its allure is too great! I've seen people try to sail across and get burnt up!");
+	magmelder->addConversation(magmelder, "The lava level around the city has been raised!");
+	magmelder->addConversation(magmelder, "But the allure of BURGER is too great! I've seen people try to sail across and get burnt up!");
 	magmelder->addConversation(magmelder, "Some are even so desperate they try to swim across!");
 	magmelder->addConversation(self, "Oh dang.");
 	magmelder->addConversation(magmelder, "Please! You must lower the lava again! These factories have drainage valves in their control rooms!");
@@ -1630,33 +1631,6 @@ NPC* SetupWorld() {
 	lavaguard->setEscapable(false);
 	lavaguard->setBasicAttack(genericattack);
 
-	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the BURGER CORPORATION.", ceoroom, 100, 40, 10, 0, 0, 0, 10);
-	ceo->setLeader(true, 45, NULL, false);
-	ceo->addConversation(self, "Hey why did you guys kidnap that child? >:(");
-	ceo->addConversation(ceo, "Woah! What a way to start a conversation! Hah hah hah!");
-	ceo->addConversation(self, "Answer my question! >:(");
-	ceo->addConversation(ceo, "Eh, I don't know. I sent one of my lackeys to do something like that some time ago.");
-	ceo->addConversation(self, "I just do whatever the BURGER MAN tells me to do, never ask questions.");
-	ceo->addConversation(ceo, "It's the least I could do, with all the fame and riches he's given us.");
-	ceo->addConversation(ceo, "All for the low low price of our souls!");
-	ceo->addConversation(self, "That's a stupid trade.");
-	ceo->addConversation(ceo, "Well, I beg to differ.");
-	ceo->addConversation(ceo, "Anyway, I can't have ya swinging accusations around like that...");
-	ceo->addConversation(ceo, "Guess I gotta take care of ya myself.");
-	ceo->addConversation(NULL, "Mechanical noises started to whirr from ENZO...");
-	ceo->addConversation(NULL, "Heavy weaponry erupted from ENZO!");
-	ceo->addConversation(NULL, "He's...");
-	ceo->addConversation(NULL, "MECHA-CEO ENZO!");
-	ceo->addConversation(ceo, "Let's see how much yer humanity'll help ya out now! HAH HAH HAH HAH!");
-	ceo->setDialogue("HAH HAH HAH HAH!");
-	ceo->setRejectionDialogue("You're asking me to join ya? Are ya crazy?");
-	ceo->setForceBattle();
-	ceo->setEscapable(false);
-	ceo->setBasicAttack(genericattack);
-	ceo->blockExit(IN_SAFE, ENEMY, "guarded by the BURGER CEO.");
-
-	NPC* kidnapper = new NPC("MAN CARRYING SUSPICIOUSLY CHILD-SHAPED BAG", "MANSLEY", "This guy is kidnapping the child from the quest you should stop him.", burgerbasement, 1, 0, 1, 0, 0, 0, 0);
-
 	//block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
@@ -1785,8 +1759,8 @@ NPC* SetupWorld() {
 	_masterswitch->setTarget(volcano7);
 
 	//important note
-	Item* note = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nBeyond this point in the TECH DEMO there are no enemies, except for select important encounters.\nThis is because by this point, you probably get the general gist of battles, and it's probably tedious having to fight all those enemies then just watching TECH DEMO MAN doing it all for you.\nWell have fun with the rest of the game!\nYou better go for true ending.\nSincerely, Tomas", volcano);
-	Item* note2 = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nSo, there is actually no true ending as of now.\nJust go for the bad ending.\nSincerely, Tomas", BURGERSBURG);
+	Item* note = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nBeyond this point in the TECH DEMO there are no enemies, except for select important encounters.\nThis is because by this point, you probably get the general gist of battles, and it's probably tedious having to fight all those enemies then just watching TECH DEMO MAN doing it all for you.\nWell have fun with the rest of the game!\nSincerely, Tomas", volcano);
+	Item* note2 = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nThe BURGER RESTAURANT is just up ahead. I know the map says the bad ending, but that's the only ending in this tech demo, so just go for that.\nSincerely, Tomas", BURGERSBURG);
 
 	return self; //returns the player character
 }
@@ -2148,28 +2122,14 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		if (!AOrB("Are you sure?", "YES", "NO")) {
 			return;
 		}
-		cout << "\nYou took a bite of the BURGER...";
-		CinPause();
-		cout << "...";
-		CinPause();
-		cout << "...";
-		CinPause();
-		cout << "...";
+		cout << "\nYou ate the BURGER...";
 		CinPause();
 		cout << "It tasted alright.";
 		CinPause();
-		cout << "Was it really worth it?";
+		cout << "\n\t<<<      BURGER QUEST COMPLETE ?      >>>";
+		cout << "\n\t<<< ENDING ACHIEVED: TEST DEMO ENDING >>>";
 		CinPause();
-		cout << "In eating the BURGER, you relinquished your freedom to the BUGRER MAN.";
-		CinPause();
-		cout << "\n\t<<<    BURGER QUEST COMPLETE ?    >>>";
-		cout << "\n\t<<< ENDING ACHIEVED: SLAVE TO SIN >>>";
-		CinPause();
-		cout << "\nWow, that was lame...";
-		CinPause();
-		cout << "Maybe you should've gone for the true ending...";
-		CinPause();
-		cout << "Thank you for playing the TECH DEMO for BURGER QUEST 2: ELECTRIC BOOGALOO!";
+		cout << "\nThank you for playing the TECH DEMO for BURGER QUEST 2: ELECTRIC BOOGALOO!";
 		if (!AOrB("Would you like to keep playing?", "YES", "NO")) {
 			cout << "\nAlright then cya!\n";
 			exit(0);
@@ -2650,4 +2610,5 @@ int main() {
 		delete effect;
 	}*/
 }
+
 
