@@ -328,7 +328,7 @@ Attack* ManholeItem::getAttack() {
 }
 
 //info items, for printing information
-InfoItem::InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room) : Item(_name, _description, _room, false, false) {
+InfoItem::InfoItem(const char _name[255], const char _description[255], const char* _text, Room* _room) : Item(_name, _description, _room, false, false) {
 	strcpy(text, _text); //sets the text that it says
 	strcpy(type, "info"); //sets the type
 }

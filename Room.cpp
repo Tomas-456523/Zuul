@@ -190,7 +190,7 @@ void Room::removeNPC(NPC* npc, bool alt) {
 	if (!alt) {
 		npcs.erase(remove(npcs.begin(), npcs.end(), npc), npcs.end());
 	} else {
-		altNpcs.erase(remove(npcs.begin(), npcs.end(), npc), npcs.end());
+		altNpcs.erase(remove(altNpcs.begin(), altNpcs.end(), npc), altNpcs.end());
 	}
 }
 void Room::removeItem(Item* item) {

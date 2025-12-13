@@ -147,15 +147,15 @@ protected:
 
 	queue<vector<pair<NPC*,const char*>>> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
 
-	char dialogue[255]; //dialogue that the npc says when asked, and no conversations are left
-	char recruitedDialogue[255]; //dialogue that the npc says while currently recruited
-	char rejectionDialogue[255]; //dialogue that the npc says when rejecting recruitment offer
-	char recruitmentDialogue[255]; //dialogue that the npc says when recruited
-	char dismissalDialogue[255]; //dialogue that the npc says when dismissed
-	char gymDialogue[255]; //dialogue the character says when at the gym
+	char dialogue[255] = ""; //dialogue that the npc says when asked, and no conversations are left
+	char recruitedDialogue[255] = ""; //dialogue that the npc says while currently recruited
+	char rejectionDialogue[255] = ""; //dialogue that the npc says when rejecting recruitment offer
+	char recruitmentDialogue[255] = ""; //dialogue that the npc says when recruited
+	char dismissalDialogue[255] = ""; //dialogue that the npc says when dismissed
+	char gymDialogue[255] = ""; //dialogue the character says when at the gym
 
-	char newRecruitmentDialogue[255]; //the recruitment and normal dialogues get changes to this after being recruited for the first time
-	char newDialogue[255];
+	char newRecruitmentDialogue[255] = ""; //the recruitment and normal dialogues get changes to this after being recruited for the first time
+	char newDialogue[255] = "";
 
 	Item* gift; //item that the npc holds and gifts to the player after talking
 
@@ -207,15 +207,15 @@ protected:
 	Room* altRoom = NULL; //enemies block exits from both sides, so they have to be in two rooms at the same time, unfortunately
 	NPC* linkedNPC = NULL; //we set this npc to recruitable when robot is defeated
 	vector<pair<NPC*, const char*>> linkedConversation; //we add this conversation to the linked npc when defeated
-	char linkedDialogue[255]; //we set the linked npc's dialogue to this when defeated (if it isn't "")
+	char linkedDialogue[255] = ""; //we set the linked npc's dialogue to this when defeated (if it isn't "")
 
 	Room* linkedRoom = NULL; //we edit the description of this room after being defeated
-	char linkedDescription[255]; //the description gets set to this
+	char linkedDescription[255] = ""; //the description gets set to this
 
 	//some npcs change when defeated so they set their variables to this stuff:
-	char defeatDialogue[255];
-	char defeatTitle[255];
-	char defeatDescription[255];
+	char defeatDialogue[255] = "";
+	char defeatTitle[255] = "";
+	char defeatDescription[255] = "";
 	Room* defeatRoom;
 
 	bool escapable = true; //if you can escape from this enemy in a battle

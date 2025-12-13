@@ -233,11 +233,11 @@ private:
 //info items for printing text
 class InfoItem : public Item {
 public:
-	InfoItem(const char _name[255], const char _description[255], const char _text[255], Room* _room);
+	InfoItem(const char _name[255], const char _description[255], const char* _text, Room* _room);
 
 	char* getText(); //get the text to print
 private:
-	char text[255]; //the text to print
+	char text[999]; //the text to print
 };
 
 //treasure items, for giving monies and maybe fighting an enemy trap

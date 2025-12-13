@@ -151,7 +151,7 @@ NPC* SetupWorld() {
 	Room* tentlab = new Room("in the tent lab. There's a ton of machinery, and many generic science beakers with colored liquids.");
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently due to a lobster infestation.");
 	tentstation->setStation();
-	Room* tentchurch = new Room("in the village church. It's a really big tent, complete with stained glass and everything. Nobody really goes here anymore, especially since the priest mysteriously disappeared a long time ago.");
+	Room* tentchurch = new Room("in the village church. It's a really big tent, complete with stained glass and everything."); // Nobody really goes here anymore, especially since the priest mysteriously disappeared a long time ago. (for full version)
 	Room* docks = new Room("at the village docks. Your tent house is set up here because your dad likes fishing.");
 	Room* tenthouse = new Room("in your family's house, in what could be considered the multiuse bed/dining/living room.");
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
@@ -1733,7 +1733,7 @@ NPC* SetupWorld() {
 
 	//make coolant attack that slows down enemies
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
-	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick useful for travelling over chasms.", "used the pole!", desertpole, CHASM, true);
+	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick useful for travelling over chasms.", "used the pole to go over the chasm!", desertpole, CHASM, true);
 	Item* minecart = new MovementItem("MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
 
 	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
