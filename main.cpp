@@ -392,7 +392,7 @@ NPC* SetupWorld() {
 	Room* ceoroom = new Room("in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.");
 	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies, BURGERs, and company documents are piled up here.");
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
-	Room* elevatortop = new Room("in the elevator, elevated all the way to the top. Once you go through the door, there is no going back.");
+	Room* elevatortop = new Room("in the elevator, elevated all the way to the top."); //Once you go through the door, there is no going back. (for full version)
 	elevatortop->setWelcome("You ventured beyond your forest home,");
 	elevatortop->setWelcome("endured through desolate sands,");
 	elevatortop->setWelcome("journeyed through volcanic highlands,");
@@ -492,12 +492,8 @@ NPC* SetupWorld() {
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
 	burgerman->setLeader(true, 0, NULL, false);
-	Attack* burgerspeech = new Attack("TEMPTATION", "spoke to", -1, 0, 0, 0, 0, 0);
-	burgerspeech->burgertalk = true;
-	burgerman->setBasicAttack(burgerspeech);
-	Attack* burgpunch = new Attack("BURGER PUNCH", "punched through", 1, 99999);
-	burgpunch->burgerpunch = true;
-	burgerman->addSpecialAttack(burgpunch);
+	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", 1, 99999);
+	burgerman->setBasicAttack(burgpunch);
 	burgerman->setLink(burgerman);
 	burgerman->setLinkedRoom(BURGERRESTAURANT, "in the BURGER RESTAURANT...");
 	burgerman->addLinkedConvo(NULL, "The BURGER MAN .");
@@ -517,8 +513,8 @@ NPC* SetupWorld() {
 	
 	NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5, 1);
 
-	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A shriveled man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
-	burgerprisoner->setDialogue("I have not seen anybody in ages. [PLOT DEVICE QUEST INSTRUCTIONS]");
+	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
+	burgerprisoner->setDialogue("Hi how are you doing?");
 	burgerprisoner->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 50, 30);
@@ -704,7 +700,7 @@ NPC* SetupWorld() {
 	switchhelper2->setConveyor(conveyor4);
 	switchhelper2->setConveyor(conveyor5);
 
-	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo);
+	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo, IN_ELEVATOR);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
 
 	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant person in the shop.", desertshopfixed);
@@ -1659,7 +1655,7 @@ NPC* SetupWorld() {
 	ceo->setBasicAttack(genericattack);
 	ceo->blockExit(IN_SAFE, ENEMY, "guarded by the BURGER CEO.");
 
-	NPC* kidnapper = new NPC("MAN CARRYING SUSPICIOUSLY CHILD-SHAPED BAG", "MANSLEY", burgerbasement, 1, 0, 1, 0, 0, 0, 0);
+	NPC* kidnapper = new NPC("MAN CARRYING SUSPICIOUSLY CHILD-SHAPED BAG", "MANSLEY", "This guy is kidnapping the child from the quest you should stop him.", burgerbasement, 1, 0, 1, 0, 0, 0, 0);
 
 	//block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
@@ -1722,6 +1718,19 @@ NPC* SetupWorld() {
 
 	//make some final items for unblocking exits
 
+	Item* cloaking = new KeyItem("CLOAKING DEVICE", "Cloaking device for getting past advanced security systems.", "equipped the cloaking device. No security system can spot you now!", limbo, TEMPLE, true);
+	KeyItem* _cloaking = (KeyItem*)cloaking;
+	_cloaking->setTarget(richneighborhood1);
+	_cloaking->setTarget(richneighborhood2);
+	_cloaking->setTarget(richneighborhood3);
+
+	NPC* child = new NPC("CHILD", "JILLY", "A small child, daughter of MATILDA.", limbo);
+	NPC* worriedmother = new NPC("", "MATILDA", "A frequent churchgoer.", burgchurch);
+	worriedmother->addConversation(self, "You look distressed.");
+	self->addConversation(self, "My daughter,");
+	self->addConversation(self, "You look distressed.");
+	self->addConversation(self, "You look distressed.");
+
 	//make coolant attack that slows down enemies
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
 	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick useful for travelling over chasms.", "used the pole!", desertpole, CHASM, true);
@@ -1746,6 +1755,7 @@ NPC* SetupWorld() {
 	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
 
 	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
+	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", "There is nowhere to put the DOWN BUTTON! ... You shove the DOWN BUTTON into the wall. The elevator can go DOWN now!", burgsafe, elevator, DOWN, elevatorbottom);
 
 	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", "used the FORKLIFT to move the collapsed ceiling material out of the way.", heavymachineryroom, STUFF, false);
 	//you can use the scissor lift to get to the ninja village I guess, I'll keep it because it technically makes sense and it's funny
@@ -1775,7 +1785,8 @@ NPC* SetupWorld() {
 	_masterswitch->setTarget(volcano7);
 
 	//important note
-	Item* note = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me. You need to USE it in order to read it.", "HELLO!\nBeyond this point in the TECH DEMO there are no enemies, except for select important encounters.\nThis is because by this point, you probably get the general gist of battles, and it's probably tedious having to fight all those enemies then just watching TECH DEMO MAN doing it all for you.\nWell have fun with the rest of the game!\nYou better go for true ending.\nSincerely, Tomas", volcano);
+	Item* note = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nBeyond this point in the TECH DEMO there are no enemies, except for select important encounters.\nThis is because by this point, you probably get the general gist of battles, and it's probably tedious having to fight all those enemies then just watching TECH DEMO MAN doing it all for you.\nWell have fun with the rest of the game!\nYou better go for true ending.\nSincerely, Tomas", volcano);
+	Item* note2 = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nSo, there is actually no true ending as of now.\nJust go for the bad ending.\nSincerely, Tomas", BURGERSBURG);
 
 	return self; //returns the player character
 }
@@ -2161,9 +2172,10 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		cout << "Thank you for playing the TECH DEMO for BURGER QUEST 2: ELECTRIC BOOGALOO!";
 		if (!AOrB("Would you like to keep playing?", "YES", "NO")) {
 			cout << "\nAlright then cya!\n";
-			exit();
+			exit(0);
 		}
-		travel(currentRoom, IN_ELEVATOR, party, true);
+		BURGERItem* boiga = (BURGERItem*)item; //get burger as burgeritem to get the elevator direction
+		travel(currentRoom, boiga->getDirection(), party, true); //leave to the elevator so the player can keep playing
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass

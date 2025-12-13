@@ -124,9 +124,13 @@ public:
 //BURGER items which are used for endgame stuff and are only different than materials due to having a Duplicate() and having a different type
 class BURGERItem : public Item {
 public:
-	BURGERItem(const char _name[255], const char _description[255], Room* _room);
+	BURGERItem(const char _name[255], const char _description[255], Room* _room, char* direction);
+
+	char* getDirection(); //returns the elevator direction to go bakc there if the player wants to keep playing after getting the ending
 
 	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
+private:
+	char* elevatordir; //the elevator direction to go bakc there if the player wants to keep playing after getting the ending
 };
 
 //education items for learning new attacks

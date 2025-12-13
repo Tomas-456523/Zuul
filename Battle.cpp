@@ -152,53 +152,6 @@ void Battle::tickEffects() {
 		}
 	}
 }
-//burger man talks to the player
-void Battle::BURGERProcess(NPC* self, NPC* burger, int id) {
-	if (id == 0) {
-		cout << "BURGER MAN - I WOULD URGE YOU TO RECONSIDER."; CinPause();
-		cout << "BURGER MAN - IF YOU DON'T EAT THE BURGER,"; CinPause();
-		cout << "BURGER MAN - I AM GOING TO KILL YOU."; CinPause();
-		if (getItemInVector(*inventory, "BURGER") == NULL) {
-			cout << "BURGER MAN - IT LOOKS LIKE YOU FORGOT TO ORDER A BURGER."; CinPause();
-			cout << "BURGER MAN - HERE YOU GO IT'S ON THE HOUSE."; CinPause();
-			cout << "BURGER MAN gave you a BUGRER."; CinPause();
-		}
-		cout << "BURGER MAN - I WILL GIVE YOU THREE CHANCES."; CinPause();
-		cout << "BURGER MAN - THREE."; CinPause();
-		bool eattheburger = AOrB("Eat the BURGER?", "YES", "NO");
-		if (!eattheburger) {
-			cout << "BURGER MAN - TWO.";
-			eattheburger = AOrB("Eat the BURGER?", "YES", "NO");
-		}
-		if (!eattheburger) {
-			cout << "BURGER MAN - ONE.";
-			eattheburger = AOrB("Eat the BURGER?", "YES", "NO");
-		}
-		if (!eattheburger) {
-			cout << "BURGER MAN - ZERO.";
-			eattheburger = AOrB("Eat the BURGER?", "YES", "NO");
-		}
-		if (eattheburger) {
-
-		}
-		cout << "BURGER MAN punched through " << self->getName() << "."; CinPause();
-		cout << "You refused to eat the BURGER at the cost of your life."; CinPause();
-		cout << "YOU ARE DEAD." << self->getName() << "."; CinPause();
-		cout << "\n\t<<< BURGER QUEST COMPLETE. >>>";
-		cout << "\n\t<<< ENDING ACHIEVED: DEATH >>>";
-		CinPause();
-		cout << "\nWow, that was lame...";
-		CinPause();
-		cout << "Maybe you should've gone for the true ending...";
-		CinPause();
-		cout << "Thank you for playing the TECH DEMO for BURGER QUEST 2: ELECTRIC BOOGALOO!";
-		if (!AOrB("Would you like to keep playing?", "YES", "NO")) {
-			cout << "\nAlright then cya!\n";
-			exit();
-		}
-		travel(currentRoom, IN_ELEVATOR, party, true);
-	}
-}
 //carries out the attack (makes it hit the target)
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost); //removes sp from the attacker
@@ -322,7 +275,7 @@ bool Battle::useItem(char* itemname) {
 		} //sets the effect on the target
 		npc->setEffect(affecter->getEffect());
 	//
-	} else if (!strcmp(item->getType(), "BURGER")) {
+	//} else if (!strcmp(item->getType(), "BURGER")) {
 
 	//some key items have attacks, so you can use them here
 	} else if (!strcmp(item->getType(), "key")) {

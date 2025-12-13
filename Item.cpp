@@ -188,8 +188,12 @@ MaterialItem::MaterialItem(const char _name[255], const char _description[255], 
 }
 
 //BURGER items, for the bad/lame ending
-BURGERItem::BURGERItem(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, true, true) {
+BURGERItem::BURGERItem(const char _name[255], const char _description[255], Room* _room, char* direction) : Item(_name, _description, _room, true, true) {
 	strcpy(type, "BURGER"); //sets the type
+	elevatordir = direction;
+}
+char* BURGERItem::getDirection() { //returns the elevator direction to go bakc there if the player wants to keep playing after getting the ending
+	return elevatordir;
 }
 Item* BURGERItem::Duplicate() { //returns a new BURGER item as an Item*
 	return new BURGERItem(*this);
