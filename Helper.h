@@ -29,11 +29,10 @@ namespace Helper {
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
 	
-	/*extern std::vector<char*> charsH; //a bunch of vectors for every object created in the game, so they can all be deleted later
-	extern std::vector<Room*> roomsH;
+	extern std::vector<Room*> roomsH; //a bunch of vectors for every object created in the game, so they can all be deleted later
 	extern std::vector<NPC*> npcsH;
 	extern std::vector<Item*> itemsH;
 	extern std::vector<Attack*> attacksH;
-	extern std::vector<Effect*> effectsH;*/
+	extern std::vector<Effect*> effectsH;
 }
 #endif

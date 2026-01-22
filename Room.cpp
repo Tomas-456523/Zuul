@@ -14,7 +14,7 @@ using namespace Helper;
 //constructs the room and sets its description
 Room::Room(const char* _description) {
 	description = _description;
-	//roomsH.push_back(this); //store a pointer to this room in the rooms vector
+	roomsH.push_back(this); //store a pointer to this room in the rooms vector
 }
 //destructor for the room
 Room::~Room() {

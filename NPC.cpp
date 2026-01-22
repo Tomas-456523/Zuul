@@ -39,7 +39,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	if (_level > 100) { //instead we just manually set it
 		level = _level;
 	}
-	//npcsH.push_back(this); //store a pointer to this npc in the npcs vector
+	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 }
 //a bunch of functions for getting npc varaibles
 const char* NPC::getTitle() {

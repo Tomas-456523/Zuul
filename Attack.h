@@ -8,6 +8,11 @@
 #include "Effect.h"
 using namespace std;
 
+struct Attack; //forward declare itself so it can forward declare attacksH
+namespace Helper { //forward declare Helper to add attacks to attacksH
+	extern vector<Attack*> attacksH;
+}
+
 struct Attack {
 	const char* name; //the name of the attack and how you call it
 	const char* description; //describes how the attack was carried out, (e.g. "threw a shuriken")
@@ -48,7 +53,7 @@ struct Attack {
 		if (!strcmp(name, "SP BOMB")) { //we check if it's this one move because of its unique functionality
 			spbomb = true;
 		}
-		//Helper::attacksH.push_back(this); //store a pointer to this attack in the attacks vector
+		Helper::attacksH.push_back(this); //store a pointer to this attack in the attacks vector
 	}
 
 	//I don't need these functions since everything's public in a struct but I like having functions, especially since I don't have to define them in seperate header and cpp files

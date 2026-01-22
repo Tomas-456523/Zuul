@@ -210,12 +210,10 @@ namespace Helper {
 	//map to find the opposite of the given direction (eg. ReverseDirection[SOUTH] == NORTH)
 	map<const char*, const char*> ReverseDirection;
 
-	//vectors of everything in memory so we can deallocate them all later
-	/*vector<char*> charsH;
-	vector<Room*> roomsH;
+	vector<Room*> roomsH; //vectors of everything in memory so we can deallocate them all later
 	vector<NPC*> npcsH;
 	vector<Item*> itemsH;
 	vector<Attack*> attacksH;
-	vector<Effect*> effectsH;*/
+	vector<Effect*> effectsH;
 
 }

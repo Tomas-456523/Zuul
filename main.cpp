@@ -2518,11 +2518,8 @@ int main() {
 	
 	//gives a friendly farewell to the player
 	cout << "\nEnjoy your next 24 hours.\n";
-
-	//deletes all the text
-	/*for (char* text : charsH) {
-		delete[] text;
-	} //deletes all the rooms
+	
+	//deletes all the rooms
 	for (Room* room : roomsH) {
 		delete room;
 	} //deletes all the items
@@ -2534,7 +2531,5 @@ int main() {
 	} //deletes all the effects
 	for (Effect* effect : effectsH) {
 		delete effect;
-	}*/
+	}
 }
-
-

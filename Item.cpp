@@ -4,7 +4,9 @@
 #include <iostream>
 #include "Item.h"
 #include "Room.h"
+#include "Helper.h"
 using namespace std;
+using namespace Helper;
 
 //constructs the basic item stuff
 Item::Item(const char* _name, const char* _description, Room* _room, bool _takable, bool _consumable, bool _target, bool useonenemy) {
@@ -18,7 +20,7 @@ Item::Item(const char* _name, const char* _description, Room* _room, bool _takab
 	if (_room != NULL) { //set the room if we gave one
 		setRoom(_room);
 	}
-	//itemsH.push_back(this); //store a pointer to this item in the items vector
+	itemsH.push_back(this); //store a pointer to this item in the items vector
 }
 //returns the name of the item
 const char* Item::getName() {

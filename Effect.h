@@ -4,8 +4,14 @@
 #define EFFECT
 
 #include <cstring>
+#include <vector>
 
 class NPC;
+
+struct Effect; //forward declare itself so it can forward declare attacksH
+namespace Helper { //forward declare Helper to add effects to effectsH
+	extern std::vector<Effect*> effectsH;
+}
 
 struct Effect {
 	const char* name; //the name of the effect, (e.g. "POISON")
@@ -39,7 +45,7 @@ struct Effect {
 		defensebuff = _defensebuff;
 		toughbuff = _toughbuff;
 		piercebuff = _piercebuff;
-		//Helper::effectsH.push_back(this); //store a pointer to this effect in the effects vector
+		Helper::effectsH.push_back(this); //store a pointer to this effect in the effects vector
 	}
 };
 #endif // !EFFECT
