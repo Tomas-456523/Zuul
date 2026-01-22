@@ -9,9 +9,9 @@
 using namespace std;
 
 struct Attack {
-	char name[255]; //the name of the attack and how you call it
-	char description[255]; //describes how the attack was carried out, (e.g. "threw a shuriken")
-	char trueDesc[255]; //actual description of the attack; only for player attacks
+	const char* name; //the name of the attack and how you call it
+	const char* description; //describes how the attack was carried out, (e.g. "threw a shuriken")
+	const char* trueDesc; //actual description of the attack; only for player attacks
 	int cost; //how much sp the attack costs to use
 	int power; //how much damage the attack does, added onto npc's base attack
 	int pierce; //how much defense the attack pierces through
@@ -33,9 +33,9 @@ struct Attack {
 
 	//constructs the attack
 	//default stats are for testing purposes
-	Attack(const char _name[255], const char _description[255], int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, float _lifesteal = 0) {
-		strcpy(name, _name);
-		strcpy(description, _description);
+	Attack(const char* _name, const char* _description, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, float _lifesteal = 0) {
+		name = _name;
+		description = _description;
 		cost = _cost;
 		power = _power;
 		pierce = _pierce;
@@ -59,8 +59,8 @@ struct Attack {
 	}
 
 	//sets the true description of the attack, so that it can be seen in the attacks menu
-	void addDescription(const char desc[255]) {
-		strcpy(trueDesc, desc);
+	void addDescription(const char* desc) {
+		trueDesc = desc;
 	}
 };
 

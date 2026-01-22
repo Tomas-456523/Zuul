@@ -19,12 +19,12 @@ public:
 
 	int FIGHT(); //starts the battle process and returns an int based on the outcome
 
-	bool useItem(char* itemname); //use an item in the player's inventory
+	bool useItem(const char* itemname); //use an item in the player's inventory
 	void printTeam(vector<NPC*>& team, bool printLevel = true, bool printSP = false, bool printFainted = true); //print everyone in the given team
 	void printInventory(); //print the contents of the inventory
 	void printParty(); //print everyone in the player's party
 	void printEnemies(); //print all the opponents
-	void analyze(char* name); //print the data of the given item or npc
+	void analyze(const char* name); //print the data of the given item or npc
 	void printHelp(); //print the valid command words and extensions
 	bool runAway(); //try to escape the battle
 	void tickEffect(Effect& effect); //ticks the given effect

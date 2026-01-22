@@ -8,7 +8,7 @@
 class NPC;
 
 struct Effect {
-	char name[255]; //the name of the effect, (e.g. "POISON")
+	const char* name; //the name of the effect, (e.g. "POISON")
 	int duration; //how long the effect lasts
 
 	int damage; //how much damage the effect does per tick
@@ -30,8 +30,8 @@ struct Effect {
 	Effect() {} //default constructor to avoid random errors
 
 	//constructs the effect
-	Effect(const char _name[255], int _duration, int _damage = 0, int _spleak = 0, int _attackbuff = 0, int _defensebuff = 0, int _toughbuff = 0, int _piercebuff = 0) {
-		strcpy(name, _name);
+	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, int _attackbuff = 0, int _defensebuff = 0, int _toughbuff = 0, int _piercebuff = 0) {
+		name = _name;
 		duration = _duration;
 		damage = _damage;
 		spleak = _spleak;

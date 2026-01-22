@@ -7,10 +7,10 @@
 using namespace std;
 
 //constructs the basic item stuff
-Item::Item(const char _name[255], const char _description[255], Room* _room, bool _takable, bool _consumable, bool _target, bool useonenemy) {
-	strcpy(name, _name);
-	strcpy(description, _description);
-	strcpy(type, "default");
+Item::Item(const char* _name, const char* _description, Room* _room, bool _takable, bool _consumable, bool _target, bool useonenemy) {
+	name = _name;
+	description = _description;
+	type = "default";
 	takable = _takable;
 	consumable = _consumable;
 	targetRequired = _target;
@@ -21,15 +21,15 @@ Item::Item(const char _name[255], const char _description[255], Room* _room, boo
 	//itemsH.push_back(this); //store a pointer to this item in the items vector
 }
 //returns the name of the item
-char* Item::getName() {
+const char* Item::getName() {
 	return name;
 }
 //returns the description of the item
-char* Item::getDescription() {
+const char* Item::getDescription() {
 	return description;
 }
 //returns the type of the item (eg. "movement" or "key")
-char* Item::getType() {
+const char* Item::getType() {
 	return type;
 }
 //returns if the item is takable
@@ -37,7 +37,7 @@ bool Item::getTakable() {
 	return takable;
 }
 //returns description of why you can't take the item
-char* Item::getDenial() {
+const char* Item::getDenial() {
 	return denyDescription;
 }
 //returns the price of the item
@@ -61,8 +61,8 @@ bool Item::getForEnemy() {
 	return useOnEnemy;
 }
 //sets the description of why you can't take the item
-void Item::setDenial(const char denial[255]) {
-	strcpy(denyDescription, denial);
+void Item::setDenial(const char* denial) {
+	denyDescription = denial;
 }
 //changes the item's current room
 void Item::setRoom(Room* _room) {
@@ -103,10 +103,10 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 	}
 }
 //makes the item for sale
-void Item::setStock(int _stock, int _price, const char buydesc[255]) {
+void Item::setStock(int _stock, int _price, const char* buydesc) {
 	stock = _stock; //set how much of the item are for sale
 	price = _price; //set the price of the item
-	strcpy(buyDescription, buydesc); //set the buy description
+	buyDescription = buydesc; //set the buy description
 }
 //virtual function for duplicating the item
 Item* Item::Duplicate() {
@@ -118,9 +118,9 @@ Item::~Item() {
 }
 
 //xp items for adding xp to an npc
-XpItem::XpItem(const char _name[255], const char _description[255], Room* _room, int _xp) : Item(_name, _description, _room, true, true, true) {
+XpItem::XpItem(const char* _name, const char* _description, Room* _room, int _xp) : Item(_name, _description, _room, true, true, true) {
 	xp = _xp;
-	strcpy(type, "xp"); //sets the type
+	type = "xp"; //sets the type
 }
 Item* XpItem::Duplicate() { //returns a new xp item as an Item*
 	return new XpItem(*this);
@@ -131,9 +131,9 @@ int XpItem::getXp() {
 }
 
 //sp items for replenishing sp for an npc
-SpItem::SpItem(const char _name[255], const char _description[255], Room* _room, int _sp) : Item(_name, _description, _room, true, true, true) {
+SpItem::SpItem(const char* _name, const char* _description, Room* _room, int _sp) : Item(_name, _description, _room, true, true, true) {
 	sp = _sp;
-	strcpy(type, "sp"); //sets the type
+	type = "sp"; //sets the type
 }
 Item* SpItem::Duplicate() { //returns a new sp item as an Item*
 	return new SpItem(*this);
@@ -144,9 +144,9 @@ int SpItem::getSp() {
 }
 
 //hp items for healing npcs
-HpItem::HpItem(const char _name[255], const char _description[255], Room* _room, int _hp) : Item(_name, _description, _room, true, true, true) {
+HpItem::HpItem(const char* _name, const char* _description, Room* _room, int _hp) : Item(_name, _description, _room, true, true, true) {
 	hp = _hp;
-	strcpy(type, "hp"); //sets the type
+	type = "hp"; //sets the type
 }
 Item* HpItem::Duplicate() { //returns a new hp item as an Item*
 	return new HpItem(*this);
@@ -157,9 +157,9 @@ int HpItem::getHp() {
 }
 
 //revive items for healing and reviving teammates
-ReviveItem::ReviveItem(const char _name[255], const char _description[255], Room* _room, int _hp) : Item(_name, _description, _room, true, true, true) {
+ReviveItem::ReviveItem(const char* _name, const char* _description, Room* _room, int _hp) : Item(_name, _description, _room, true, true, true) {
 	hp = _hp;
-	strcpy(type, "hp"); //sets the type
+	type = "revive"; //sets the type
 }
 Item* ReviveItem::Duplicate() { //returns a new revive item as an Item*
 	return new ReviveItem(*this);
@@ -170,9 +170,9 @@ int ReviveItem::getHp() {
 }
 
 //effect items for adding effects to npcs
-EffectItem::EffectItem(const char _name[255], const char _description[255], Room* _room, Effect* _effect) : Item(_name, _description, _room, true, true) {
+EffectItem::EffectItem(const char* _name, const char* _description, Room* _room, Effect* _effect) : Item(_name, _description, _room, true, true) {
 	effect = _effect;
-	strcpy(type, "effect"); //sets the type
+	type = "effect"; //sets the type
 }
 //returns the effect it gives
 Effect* EffectItem::getEffect() {
@@ -183,16 +183,16 @@ Item* EffectItem::Duplicate() { //returns a new effect item as an Item*
 }
 
 //material items, which basically do nothing
-MaterialItem::MaterialItem(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, true, true) {
-	strcpy(type, "material"); //sets the type
+MaterialItem::MaterialItem(const char* _name, const char* _description, Room* _room) : Item(_name, _description, _room, true, true) {
+	type = "material"; //sets the type
 }
 
 //BURGER items, for the bad/lame ending
-BURGERItem::BURGERItem(const char _name[255], const char _description[255], Room* _room, char* direction) : Item(_name, _description, _room, true, true) {
-	strcpy(type, "BURGER"); //sets the type
+BURGERItem::BURGERItem(const char* _name, const char* _description, Room* _room, const char* direction) : Item(_name, _description, _room, true, true) {
+	type = "BURGER"; //sets the type
 	elevatordir = direction;
 }
-char* BURGERItem::getDirection() { //returns the elevator direction to go bakc there if the player wants to keep playing after getting the ending
+const char* BURGERItem::getDirection() { //returns the elevator direction to go bakc there if the player wants to keep playing after getting the ending
 	return elevatordir;
 }
 Item* BURGERItem::Duplicate() { //returns a new BURGER item as an Item*
@@ -200,9 +200,9 @@ Item* BURGERItem::Duplicate() { //returns a new BURGER item as an Item*
 }
 
 //education items, for learning new moves
-EducationItem::EducationItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack) : Item(_name, _description, _room, true, true) {
+EducationItem::EducationItem(const char* _name, const char* _description, Room* _room, Attack* _attack) : Item(_name, _description, _room, true, true) {
 	attacks.push_back(_attack);
-	strcpy(type, "education"); //sets the type
+	type = "education"; //sets the type
 }
 //adds an attack to the item for it to teach
 void EducationItem::setAttack(Attack* attack) {
@@ -217,9 +217,9 @@ Item* EducationItem::Duplicate() { //returns a new education item as an Item*
 }
 
 //caller items, for summoning npcs to the current room
-CallerItem::CallerItem(const char _name[255], const char _description[255], Room* _room, NPC* npc) : Item(_name, _description, _room, true) {
+CallerItem::CallerItem(const char* _name, const char* _description, Room* _room, NPC* npc) : Item(_name, _description, _room, true) {
 	npc_called = npc;
-	strcpy(type, "caller"); //sets the type
+	type = "caller"; //sets the type
 }
 //returns the npc this caller calls
 NPC* CallerItem::getCalledNPC() {
@@ -227,10 +227,10 @@ NPC* CallerItem::getCalledNPC() {
 }
 
 //key items, for unlocking and unblocking blocked exits
-KeyItem::KeyItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true, true) {
+KeyItem::KeyItem(const char* _name, const char* _description, const char* _useText, Room* _room, const char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true, true) {
 	unlockType = _unlockType;
-	strcpy(useText, _useText);
-	strcpy(type, "key"); //sets the type
+	useText = _useText;
+	type = "key"; //sets the type
 	attack = _attack; //sets the attack if it has one
 }
 //returns the key's targeted room
@@ -242,11 +242,11 @@ Attack* KeyItem::getAttack() {
 	return attack;
 }
 //returns what kind of exit this key unlocks
-char* KeyItem::getUnlockType() {
+const char* KeyItem::getUnlockType() {
 	return unlockType;
 }
 //returns the text for using the key
-char* KeyItem::getUseText() {
+const char* KeyItem::getUseText() {
 	return useText;
 }
 //sets a remote location for the key to unblock
@@ -258,10 +258,10 @@ Item* KeyItem::Duplicate() { //returns a new key item as an Item*
 }
 
 //movement items, for moving through blocked exits
-MovementItem::MovementItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true, true) {
+MovementItem::MovementItem(const char* _name, const char* _description, const char* _useText, Room* _room, const char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true, true) {
 	unlockType = _unlockType;
-	strcpy(useText, _useText);
-	strcpy(type, "movement"); //sets the type
+	useText = _useText;
+	type = "movement"; //sets the type
 	attack = _attack; //sets the attack if it has one
 }
 //returns the mover's attack
@@ -269,11 +269,11 @@ Attack* MovementItem::getAttack() {
 	return attack;
 }
 //returns what kind of exit this mover goes through
-char* MovementItem::getUnlockType() {
+const char* MovementItem::getUnlockType() {
 	return unlockType;
 }
 //gets the text printed after using this item
-char* MovementItem::getUseText() {
+const char* MovementItem::getUseText() {
 	return useText;
 }
 Item* MovementItem::Duplicate() { //returns a new movement item as an Item*
@@ -281,19 +281,19 @@ Item* MovementItem::Duplicate() { //returns a new movement item as an Item*
 }
 
 //paver exits, for paving new exits in a room
-PaverItem::PaverItem(const char _name[255], const char _description[255], const char _useText[255], Room* _room, Room* _usableRoom, char* _direction, Room* _destination) : Item(_name, _description, _room, false, true, true) {
+PaverItem::PaverItem(const char* _name, const char* _description, const char* _useText, Room* _room, Room* _usableRoom, const char* _direction, Room* _destination) : Item(_name, _description, _room, false, true, true) {
 	destination = _destination;
 	direction = _direction;
 	usableRoom = _usableRoom;
-	strcpy(type, "paver"); //sets the type
-	strcpy(useText, _useText);
+	type = "paver"; //sets the type
+	useText = _useText;
 }
 //gets where the new exit will go
 Room* PaverItem::getDestination() {
 	return destination;
 }
 //gets the direction the paver item paves in
-char* PaverItem::getDirection() {
+const char* PaverItem::getDirection() {
 	return direction;
 }
 //gets if it is usable in the given room
@@ -301,15 +301,15 @@ bool PaverItem::getUsable(Room* _room) {
 	return room == usableRoom;
 }
 //gets the text that is printed when using the paver
-char* PaverItem::getUseText() {
+const char* PaverItem::getUseText() {
 	return useText;
 }
 
 //manhole items, pretty much just material items but you can throw them at enemies, and then two manhole covers in the game reveal an exit below after TAKE-ing it
-ManholeItem::ManholeItem(const char _name[255], const char _description[255], Room* _room, Attack* _attack, Room* _destination, char* _dir) : Item(_name, _description, _room, true, true, true, true) {
+ManholeItem::ManholeItem(const char* _name, const char* _description, Room* _room, Attack* _attack, Room* _destination, const char* _dir) : Item(_name, _description, _room, true, true, true, true) {
 	destination = _destination; //sets the destination and direction if applicable
 	direction = _dir;
-	strcpy(type, "manhole"); //sets the type
+	type = "manhole"; //sets the type
 	attack = _attack; //sets the attack
 }
 //gets the room that the item will reveal an exit to after taking it
@@ -319,7 +319,7 @@ Room* ManholeItem::getRoom() {
 	return dest;
 }
 //gets the direction the item reveals an exit in (only DOWN is ever used, but I still need to reference it in the item object for the exit setting to work properly)
-char* ManholeItem::getDirection() {
+const char* ManholeItem::getDirection() {
 	return direction;
 }
 //gets the item's attack
@@ -328,18 +328,18 @@ Attack* ManholeItem::getAttack() {
 }
 
 //info items, for printing information
-InfoItem::InfoItem(const char _name[255], const char _description[255], const char* _text, Room* _room) : Item(_name, _description, _room, false, false) {
-	strcpy(text, _text); //sets the text that it says
-	strcpy(type, "info"); //sets the type
+InfoItem::InfoItem(const char* _name, const char* _description, const char* _text, Room* _room) : Item(_name, _description, _room, false, false) {
+	text = _text; //sets the text that it says
+	type = "info"; //sets the type
 }
 //gets the text that is printed by using the item
-char* InfoItem::getText() {
+const char* InfoItem::getText() {
 	return text;
 }
 
 //treasure items, for getting monies and also maybe fighting an enemy if it's trapped
-TreasureItem::TreasureItem(const char _name[255], const char _description[255], Room* _room, int _mony, NPC* _mimic) : Item(_name, _description, _room, false, true) {
-	strcpy(type, "treasure"); //sets the type
+TreasureItem::TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, NPC* _mimic) : Item(_name, _description, _room, false, true) {
+	type = "treasure"; //sets the type
 	mimic = _mimic; //sets the trap enemy if there is one
 	mony = _mony;
 }
@@ -353,8 +353,8 @@ int TreasureItem::getMony() {
 }
 
 //conveyor switches, for switching the direction of conveyor belt rooms in one factory
-ConveyorSwitch::ConveyorSwitch(const char _name[255], const char _description[255], Room* _room) : Item(_name, _description, _room, false) {
-	strcpy(type, "switch"); //sets the type
+ConveyorSwitch::ConveyorSwitch(const char* _name, const char* _description, Room* _room) : Item(_name, _description, _room, false) {
+	type = "switch"; //sets the type
 }
 //adds the conveyor to the switch's list of conveyors
 void ConveyorSwitch::setConveyor(Room* room) {

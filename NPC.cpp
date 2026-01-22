@@ -12,10 +12,10 @@ using namespace std;
 using namespace Helper;
 
 //constructs the npc!
-NPC::NPC(const char _title[255], const char _name[255], const char _description[255], Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level, bool _isleader, bool _player) {
-	strcpy(title, _title);
-	strcpy(name, _name);
-	strcpy(description, _description);
+NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level, bool _isleader, bool _player) {
+	title = _title;
+	name = _name;
+	description = _description;
 	home = room;
 	currentRoom = room;
 	room->setNPC(this); //make sure the room knows the npc is there
@@ -42,28 +42,28 @@ NPC::NPC(const char _title[255], const char _name[255], const char _description[
 	//npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 }
 //a bunch of functions for getting npc varaibles
-char* NPC::getTitle() {
-	return &title[0];
+const char* NPC::getTitle() {
+	return title;
 }
-char* NPC::getName() {
-	return &name[0];
+const char* NPC::getName() {
+	return name;
 }
-char* NPC::getDescription() {
-	return &description[0];
+const char* NPC::getDescription() {
+	return description;
 }
-char* NPC::getDialogue() {
+const char* NPC::getDialogue() {
 	return dialogue;
 }
-char* NPC::getRejectionDialogue() {
+const char* NPC::getRejectionDialogue() {
 	return rejectionDialogue;
 }
-char* NPC::getRecruitmentDialogue() {
+const char* NPC::getRecruitmentDialogue() {
 	return recruitmentDialogue;
 }
-char* NPC::getRecruitedDialogue() {
+const char* NPC::getRecruitedDialogue() {
 	return recruitedDialogue;
 }
-char* NPC::getDismissalDialogue() {
+const char* NPC::getDismissalDialogue() {
 	return dismissalDialogue;
 }
 bool NPC::getRecruited() { //returns if in the player team
@@ -183,7 +183,7 @@ bool NPC::getLobster() {
 bool NPC::getRespawn() {
 	return respawns;
 }
-char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
+const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
 }
 Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because there's only one gift
@@ -192,27 +192,27 @@ Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because t
 	return item;
 }
 //a bunch of functions to set npc variables
-void NPC::setDialogue(const char _dialogue[255]) {
-	strcpy(dialogue, _dialogue);
+void NPC::setDialogue(const char* _dialogue) {
+	dialogue = _dialogue;
 }
-void NPC::setGymDialogue(const char _dialogue[255]) {
-	strcpy(gymDialogue, _dialogue);
+void NPC::setGymDialogue(const char* _dialogue) {
+	gymDialogue = _dialogue;
 }
-void NPC::setRejectionDialogue(const char _dialogue[255]) {
-	strcpy(rejectionDialogue, _dialogue);
+void NPC::setRejectionDialogue(const char* _dialogue) {
+	rejectionDialogue = _dialogue;
 }
-void NPC::setRecruitmentDialogue(const char _dialogue[255]) {
-	strcpy(recruitmentDialogue, _dialogue);
+void NPC::setRecruitmentDialogue(const char* _dialogue) {
+	recruitmentDialogue = _dialogue;
 }
-void NPC::setRecruitedDialogue(const char _dialogue[255]) {
-	strcpy(recruitedDialogue, _dialogue);
+void NPC::setRecruitedDialogue(const char* _dialogue) {
+	recruitedDialogue = _dialogue;
 }
-void NPC::setDismissalDialogue(const char _dialogue[255]) {
-	strcpy(dismissalDialogue, _dialogue);
+void NPC::setDismissalDialogue(const char* _dialogue) {
+	dismissalDialogue = _dialogue;
 }
-void NPC::setRecruitDialogueChange(const char _recruitment[255], const char _normal[255]) {
-	strcpy(newRecruitmentDialogue, _recruitment);
-	strcpy(newDialogue, _normal);
+void NPC::setRecruitDialogueChange(const char* _recruitment, const char* _normal) {
+	newRecruitmentDialogue = _recruitment;
+	newDialogue = _normal;
 }
 void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
@@ -225,10 +225,10 @@ void NPC::Recruit(bool printdialogue) { //recruits the npc
 		cout << "\n" << name << " - \"" << recruitmentDialogue << "\""; //says a thing after being recruited
 	}
 	if (strlen(newRecruitmentDialogue)) {
-		strcpy(recruitmentDialogue, newRecruitmentDialogue);
+		recruitmentDialogue = newRecruitmentDialogue;
 	}
 	if (strlen(newDialogue)) {
-		strcpy(dialogue, newDialogue);
+		dialogue = newDialogue;
 	}
 	recruited = true;
 }
@@ -256,11 +256,11 @@ void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4, NPC* npc5, NPC* n
 		}
 	}
 }
-void NPC::setName(const char _name[255]) {
-	strcpy(name, _name);
+void NPC::setName(const char* _name) {
+	name = _name;
 }
-void NPC::setTitle(const char _title[255]) {
-	strcpy(title, _title);
+void NPC::setTitle(const char* _title) {
+	title = _title;
 }
 void NPC::addXp(int _xp) { //adds xp and checks for level up
 	xp += _xp;
@@ -317,19 +317,19 @@ void NPC::setLobster(Room* tunnels, bool lobster) { //sets that it's the lobster
 	isLobster = lobster;
 	home = tunnels; //lobster lives in the tunnels
 }
-void NPC::setTunnelDirection(Room* room, char* direction) { //sets the tunnel direction based on the room the lobster goes through
+void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;
 }
-void NPC::blockExit(char* _exitBlocking, char* type, const char reason[255], bool bothsides) { //sets that this enemy is blocking an exit
+void NPC::blockExit(const char* _exitBlocking, const char* type, const char* reason, bool bothsides) { //sets that this enemy is blocking an exit
 	exitBlocking = _exitBlocking;
 	currentRoom->blockExit(exitBlocking, type, reason); //tells the room the exit is blocked
 	if (bothsides) { //blocks the corresponding exit from the other side if this npc is blocking the exit from both rooms
 		altRoom = currentRoom->getExit(exitBlocking);
-		altRoom->blockExit(const_cast<char*>(ReverseDirection[exitBlocking]), type, reason);
+		altRoom->blockExit(ReverseDirection[exitBlocking], type, reason);
 		altRoom->setNPC(this, true);
 	}
 }
-void NPC::printDamage(int damage, char* status) { //prints the damage the npc took and why if a reason is given
+void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
 	if (damage >= 0) {
 		cout << "\n" << name << " took " << damage << " damage"; //no "!", it gets printed later
 	} else {
@@ -397,7 +397,7 @@ int NPC::damage(float power, float pierce, int hits) {
 	return totalDamage;
 }
 //directly applies damage while ignoring defense and all that
-void NPC::directDamage(int damage, char* status) {
+void NPC::directDamage(int damage, const char* status) {
 	int totalDamage = Clamp(damage,health-maxHealth,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	health -= totalDamage;
 	printDamage(totalDamage, status); //prints the damage taken and why it was taken
@@ -432,13 +432,13 @@ void NPC::setLevelUp(bool _leveledUp) { //set if we leveled up
 void NPC::setGuard(int _guard) {
 	guard = _guard;
 }
-void NPC::setLink(NPC* npc, const char dialogue[255]) { //links this npc to another one
+void NPC::setLink(NPC* npc, const char* dialogue) { //links this npc to another one
 	linkedNPC = npc;
-	strcpy(linkedDialogue, dialogue); //the npc gets their dialogue changed to this after this one is defeated
+	linkedDialogue = dialogue; //the npc gets their dialogue changed to this after this one is defeated
 }
-void NPC::setLinkedRoom(Room* room, const char desc[255]) { //links this npc to a room
+void NPC::setLinkedRoom(Room* room, const char* desc) { //links this npc to a room
 	linkedRoom = room;
-	strcpy(linkedDescription, desc); //the npc gets their description changed to this after this one is defeated
+	linkedDescription = desc; //the npc gets their description changed to this after this one is defeated
 }
 void NPC::setGift(Item* item) { //set a gift to give to the player after talking
 	gift = item;
@@ -553,7 +553,7 @@ void NPC::calculateWeights() {
 	}
 }
 //changes the sp amount
-void NPC::alterSp(int amount, char* status) {
+void NPC::alterSp(int amount, const char* status) {
 	if (amount > 0) { //if there is positive change
 		int alterAmount = Clamp(amount, 0, maxSP - sp);
 		sp += alterAmount; //alter the amount
@@ -574,7 +574,7 @@ void NPC::defeat() {
 	if (exitBlocking != NULL) { //unblock blocked exits
 		currentRoom->unblockExit(exitBlocking);
 		if (altRoom != NULL) {
-			altRoom->unblockExit(const_cast<char*>(ReverseDirection[exitBlocking]));
+			altRoom->unblockExit(ReverseDirection[exitBlocking]);
 			altRoom->removeNPC(this, true);
 		}
 		exitBlocking = NULL;
@@ -603,9 +603,9 @@ void NPC::defeat() {
 		redirectRoom = make_pair((Room*)NULL, (Room*)NULL); //nullify the redirect
 	}
 	if (defeatChange) { //do changes to the npc if applicable
-		strcpy(title, defeatTitle);
-		strcpy(description, defeatDescription);
-		strcpy(dialogue, defeatDialogue);
+		title = defeatTitle;
+		description = defeatDescription;
+		dialogue = defeatDialogue;
 		if (defeatRoom != NULL) { //move them to this room and now that's their home room
 			setRoom(defeatRoom);
 			setHome(defeatRoom);
@@ -617,23 +617,23 @@ void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;
 }
 //sets stuff that changes when we defeat this guy
-void NPC::setDefeatNPC(const char newTitle[255], const char newDesc[255], const char newDialogue[255], Room* newRoom) {
-	strcpy(defeatTitle, newTitle);
-	strcpy(defeatDescription, newDesc);
-	strcpy(defeatDialogue, newDialogue);
+void NPC::setDefeatNPC(const char* newTitle, const char* newDesc, const char* newDialogue, Room* newRoom) {
+	defeatTitle = newTitle;
+	defeatDescription = newDesc;
+	defeatDialogue = newDialogue;
 	defeatRoom = newRoom;
 	defeatChange = true;
 }
-void NPC::addSuffix(const char suffix[3]) { //adds a suffix to the end of the npc's name
-	strcat(name, suffix);
+void NPC::addSuffix(char suffix[3]) { //adds a suffix to the end of the npc's name
+	//strcat(name, suffix);
 }
-void NPC::addConversation(NPC* speaker, const char dialogue[255], bool newConversation) { //add a conversation to the npc's dialogue
+void NPC::addConversation(NPC* speaker, const char* dialogue, bool newConversation) { //add a conversation to the npc's dialogue
 	if (newConversation || !conversations.size()) { //if the queue is empty we reserve a space
 		conversations.emplace();
 	}
 	conversations.back().emplace_back(speaker, dialogue); //create a pair of speaker-dialogue in the conversations vector
 }
-void NPC::addLinkedConvo(NPC* speaker, const char dialogue[255]) { //add a conversation to add to the linked npc
+void NPC::addLinkedConvo(NPC* speaker, const char* dialogue) { //add a conversation to add to the linked npc
 	linkedConversation.emplace_back(speaker, dialogue);
 }
 //prints the npc's dialogue

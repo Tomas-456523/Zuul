@@ -50,8 +50,8 @@ namespace Helper {
 		commandExtensionP[i - j] = '\0'; //null terminates the command extension
 	}
 	//takes a command extension and splits it based on " ON ", then puts it into item name and npc name. For example "USE JUICE ON BOB" would take "JUICE ON BOB" and split it into "JUCIE" (item) and "BOB" (npc)
-	void ParseWithON(char* commandExtensionP, char* itemNameP, char* npcNameP) {
-		char* on = strstr(commandExtensionP, " ON "); //finds the first char of the substring " ON " in the given command extension
+	void ParseWithON(const char* commandExtensionP, char* itemNameP, char* npcNameP) {
+		const char* on = strstr(commandExtensionP, " ON "); //finds the first char of the substring " ON " in the given command extension
 		if (on == NULL) { //we just return blanks if the given text has no " ON "
 			strcpy(itemNameP, "");
 			strcpy(npcNameP, "");
@@ -72,7 +72,7 @@ namespace Helper {
 		npcNameP[i - j] = '\0'; //null terminates the npc name
 	}
 	//finds an npc in the given vector who has the given name
-	NPC* getNPCInVector(vector<NPC*>& the_vector, char* npcname) {
+	NPC* getNPCInVector(vector<NPC*>& the_vector, const char* npcname) {
 		for (NPC* npc : the_vector) { //if the npc isn't defeated and the name matches, we return that
 			if (!npc->getDefeated() && !strcmp(npc->getName(), npcname)) {
 				return npc;
@@ -81,7 +81,7 @@ namespace Helper {
 		return NULL; //no valid npc was found so return null
 	}
 	//finds an item in the given vector that has the given name
-	Item* getItemInVector(vector<Item*>& the_vector, char* itemname) {
+	Item* getItemInVector(vector<Item*>& the_vector, const char* itemname) {
 		for (Item* item : the_vector) { //if the item's name matches, we return that
 			if (!strcmp(item->getName(), itemname)) {
 				return item;

@@ -13,9 +13,9 @@ namespace Helper {
 	void CinPause(); //pauses until the player presses ENTER
 	void AllCaps(char* text); //capitalizes the given text
 	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP, int skipSpaces = 0); //takes commandP, puts the first word in commandWordP, and the rest in commandExtensionP
-	void ParseWithON(char* commandExtensionP, char* itemNameP, char* npcNameP); //takes commandExtensionP, puts everything before " ON " in itemNameP, and everything after in npcNameP
-	NPC* getNPCInVector(vector<NPC*>& the_vector, char* npcname); //returns the npc in the given vector that has the given name
-	Item* getItemInVector(vector<Item*>& the_vector, char* itemname); //returns the item in the given vector that has the given name
+	void ParseWithON(const char* commandExtensionP, char* itemNameP, char* npcNameP); //takes commandExtensionP, puts everything before " ON " in itemNameP, and everything after in npcNameP
+	NPC* getNPCInVector(vector<NPC*>& the_vector, const char* npcname); //returns the npc in the given vector that has the given name
+	Item* getItemInVector(vector<Item*>& the_vector, const char* itemname); //returns the item in the given vector that has the given name
 	void printNPCData(NPC* npc); //prints the data of the npc
 	void printItemData(Item* item); //prints the data of the item
 	void printAttacks(NPC* npc); //prints the attacks that the given npc has

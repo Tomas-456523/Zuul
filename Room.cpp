@@ -12,8 +12,8 @@ using namespace std;
 using namespace Helper;
 
 //constructs the room and sets its description
-Room::Room(const char _description[255]) {
-	strcpy(description, _description);
+Room::Room(const char* _description) {
+	description = _description;
 	//roomsH.push_back(this); //store a pointer to this room in the rooms vector
 }
 //destructor for the room
@@ -21,8 +21,8 @@ Room::~Room() {
 
 }
 //a bunch of functions for getting room variables
-char* Room::getDescription() {
-	return &description[0];
+const char* Room::getDescription() {
+	return description;
 }
 vector<Item*>& Room::getItems() {
 	return items;
@@ -37,11 +37,11 @@ vector<NPC*>& Room::getNpcs(bool alt) {
 		return altNpcs;
 	}
 }
-vector<char*>& Room::getBlocks() {
+vector<const char*>& Room::getBlocks() {
 	return blockedExits;
 }
-Room* Room::getExit(char* direction) { //returns the room that corresponds to the given exit
-	map<char*, Room*, charComparer>::iterator exiterator = exits.find(direction); //makes sure the exit actually exists. If we didn't check this, going in an invalid direction would create ghost exits
+Room* Room::getExit(const char* direction) { //returns the room that corresponds to the given exit
+	map<const char*, Room*, charComparer>::iterator exiterator = exits.find(direction); //makes sure the exit actually exists. If we didn't check this, going in an invalid direction would create ghost exits
 	if (exiterator == exits.end()) {
 		return NULL;
 	}
@@ -56,15 +56,15 @@ bool Room::getStation() {
 bool Room::getGym() {
 	return gym;
 }
-bool Room::getBlocked(char* direction) { //get if the exit is blocked
-	for (char* exit : blockedExits) {
+bool Room::getBlocked(const char* direction) { //get if the exit is blocked
+	for (const char* exit : blockedExits) {
 		if (!strcmp(exit, direction)) { //if the exit was in the vetcor then it's blocked
 			return true;
 		}
 	}
 	return false;
 }
-char* Room::getBlockReason(char* direction) { //get why it's blocked
+const char* Room::getBlockReason(const char* direction) { //get why it's blocked
 	if (getBlocked(direction)) {
 		return blockReason[direction];
 	}
@@ -76,7 +76,7 @@ void Room::printExits() {
 	cout << "\nExits: ";
 	int i = 0;
 	//iterates through the map using exiterator
-	for (map<char*, Room*, charComparer>::iterator exiterator = exits.begin(); exiterator != exits.end(); ++exiterator) {
+	for (map<const char*, Room*, charComparer>::iterator exiterator = exits.begin(); exiterator != exits.end(); ++exiterator) {
 		cout << exiterator->first;
 		if (i++ < exits.size()-1) {
 			cout << ", "; //seperate using commas except for the last one because there's nothing to seperate
@@ -158,11 +158,11 @@ void Room::printNPCs() {
 	}
 }
 void Room::printBlocks() {
-	for (char* direction : blockedExits) {
+	for (const char* direction : blockedExits) {
 		cout << "\nThe " << direction << " exit is " << blockReason[direction];
 	}
 }
-void Room::printBlock(char* direction) {
+void Room::printBlock(const char* direction) {
 	cout << "\nThe " << direction << " exit is " << blockReason[direction];
 }
 void Room::printWelcome() {
@@ -197,7 +197,7 @@ void Room::removeItem(Item* item) {
 	items.erase(remove(items.begin(), items.end(), item), items.end());
 }
 //sets an exit to another room, and blocks it if specified
-void Room::setExit(char* direction, Room* room, char* blocktype, char* _reason) {
+void Room::setExit(const char* direction, Room* room, const char* blocktype, const char* _reason) {
 	exits[direction] = room;
 	if (blocktype != NULL) { //blocks the exit
 		blockExit(direction, blocktype, _reason);
@@ -212,18 +212,18 @@ void Room::setStation(bool stat) {
 void Room::setGym(bool _gym) {
 	gym = _gym;
 }
-void Room::setConveyor(Room* altroom, char* conveyorexit) {
+void Room::setConveyor(Room* altroom, const char* conveyorexit) {
 	altRoom = altroom;
 	conveyorExit = conveyorexit;
 }
 void Room::setDescription(const char _description[255]) {
-	strcpy(description, _description);
+	description = _description;
 }
 void Room::setWelcome(const char text[255]) {
 	welcomeText.push_back(text);
 	welcome = true;
 }
-void Room::setStock(Item* item, int amount, int price, const char buydesc[255]) {
+void Room::setStock(Item* item, int amount, int price, const char* buydesc) {
 	item->setStock(amount, price, buydesc);
 	stock.push_back(item);
 }
@@ -235,19 +235,17 @@ void Room::switchConveyor() { //swaps the altRoom and the FORWARD exit, effectiv
 	swap(altRoom, exits[conveyorExit]);
 }
 //block the exit, and save why it's blocked and a description of the blockage
-void Room::blockExit(char* direction, char* blocktype, const char _reason[255]) {
+void Room::blockExit(const char* direction, const char* blocktype, const char* reason) {
 	blockedExits.push_back(direction);
 	blockType[direction] = blocktype;
-	char* reason = new char[255];
-	strcpy(reason, _reason);
 	blockReason[direction] = reason;
 }
 void Room::unblockExit(const char* direction) { //erase the block so it's not tracked and therefore not blocked anymore
 	blockedExits.erase(remove(blockedExits.begin(), blockedExits.end(), direction), blockedExits.end());
 }
-vector<char*> Room::unblockAll(char* type) { //unblock all the blocked exits of the given block type
-	vector<char*> matches; //found exits of that block type
-	for (char* exit : blockedExits) { //unblocks them
+vector<const char*> Room::unblockAll(const char* type) { //unblock all the blocked exits of the given block type
+	vector<const char*> matches; //found exits of that block type
+	for (const char* exit : blockedExits) { //unblocks them
 		if (blockType[exit] == type) {
 			unblockExit(exit);
 			matches.push_back(exit);

@@ -83,7 +83,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 }
 //creates a new npc and adds it to the battle
 void Battle::addNPC(NPC* npc) {
-	vector<NPC*>* team = NULL; //gets which side the enemy is on
+	/*vector<NPC*>* team = NULL; //gets which side the enemy is on
 	if (npc->getEnemy()) { //we must manually set enemy earlier or else EVERY new npc will go to the player team
 		team = &enemyTeam;
 	} else {
@@ -109,7 +109,7 @@ void Battle::addNPC(NPC* npc) {
 	}
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
 	team->push_back(newguy);
-	everyone.push_back(newguy);
+	everyone.push_back(newguy);*/
 }
 //ticks an effect (if it does anything every turn, it does that, and decrements its duration)
 void Battle::tickEffect(Effect& effect) {
@@ -194,7 +194,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	CinPause();
 }
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item 
-bool Battle::useItem(char* itemname) {
+bool Battle::useItem(const char* itemname) {
 	Item* item = getItemInVector(*inventory, itemname); //finds the item; no need to check currentRoom this time!
 	char itemName[255] = "";
 	char npcName[255] = "";
@@ -350,7 +350,7 @@ void Battle::printEnemies() {
 	printTeam(enemyTeam, true, false, false); //we do not print their sp but yes their level, and not the fainted enemies
 }
 //prints an analysis of the given item or npc
-void Battle::analyze(char* name) {
+void Battle::analyze(const char* name) {
 	NPC* npc = getNPCInVector(everyone, name); //finds the npc in the list of everyone
 	if (npc != NULL) { //prints the data!
 		printNPCData(npc);

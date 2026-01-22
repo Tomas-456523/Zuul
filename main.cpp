@@ -24,77 +24,41 @@ using namespace Helper; //my Helper namespace has a bunch of helpful functions t
 //sets up the entire game world, including rooms, npcs, and items, and returns the player character
 NPC* SetupWorld() {
 	//set up directions
-	char* NORTH = new char[12];
-	char* SOUTH = new char[12];
-	char* WEST = new char[12];
-	char* EAST = new char[12];
-	char* NORTHWEST = new char[12];
-	char* NORTHEAST = new char[12];
-	char* SOUTHWEST = new char[12];
-	char* SOUTHEAST = new char[12];
-	char* UP = new char[12];
-	char* DOWN = new char[12];
-	char* OUT = new char[12];
-	char* IN_TENT_1 = new char[12];
-	char* IN_TENT_2 = new char[12];
-	char* IN_TENT_3 = new char[12];
-	char* IN_TENT = new char[12];
-	char* IN_HOUSE_1 = new char[12];
-	char* IN_HOUSE_2 = new char[12];
-	char* IN_HOUSE_3 = new char[12];
-	char* IN_FACTORY = new char[12];
-	char* IN_CASTLE = new char[12];
-	char* IN_ALLEY = new char[12];
-	char* IN_ELEVATOR = new char[12];
-	char* IN_SAFE = new char[12];
-	char* IN_TEMPLE = new char[12];
-	char* INSIDE = new char[12];
-	char* UPSTAIRS = new char[12];
-	char* DOWNSTAIRS = new char[12];
-	char* UNDERGROUND = new char[12];
-	char* FORWARD = new char[12];
+	const char* NORTH = "NORTH";
+	const char* SOUTH = "SOUTH";
+	const char* WEST = "WEST";
+	const char* EAST = "EAST";
+	const char* NORTHWEST = "NORTHWEST";
+	const char* NORTHEAST = "NORTHEAST";
+	const char* SOUTHWEST = "SOUTHWEST";
+	const char* SOUTHEAST = "SOUTHEAST";
+	const char* UP = "UP";
+	const char* DOWN = "DOWN";
+	const char* OUT = "OUT";
+	const char* IN_TENT_1 = "IN TENT 1";
+	const char* IN_TENT_2 = "IN TENT 2";
+	const char* IN_TENT_3 = "IN TENT 3";
+	const char* IN_TENT = "IN TENT";
+	const char* IN_HOUSE_1 = "IN HOUSE 1";
+	const char* IN_HOUSE_2 = "IN HOUSE 2";
+	const char* IN_HOUSE_3 = "IN HOUSE 3";
+	const char* IN_FACTORY = "IN FACTORY";
+	const char* IN_CASTLE = "IN CASTLE";
+	const char* IN_ALLEY = "IN ALLEY";
+	const char* IN_ELEVATOR = "IN ELEVATOR";
+	const char* IN_SAFE = "IN SAFE";
+	const char* IN_TEMPLE = "IN_TEMPLE";
+	const char* INSIDE = "INSIDE";
+	const char* UPSTAIRS = "UPSTAIRS";
+	const char* DOWNSTAIRS = "DOWNSTAIRS";
+	const char* UNDERGROUND = "UNDERGROUND";
+	const char* FORWARD = "FORWARD";
 	//fast travel directions
-	char* TO_THE_VILLAGE = new char[20];
-	char* TO_THE_DESERT = new char[20];
-	char* TO_THE_HIGHLANDS = new char[20];
-	char* TO_BURGERSBURG = new char[20];
-	char* TO_THE_BASEMENT = new char[20];
-
-	//set the text for the directions
-	strcpy(NORTH, "NORTH");
-	strcpy(SOUTH, "SOUTH");
-	strcpy(WEST, "WEST");
-	strcpy(EAST, "EAST");
-	strcpy(NORTHWEST, "NORTHWEST");
-	strcpy(NORTHEAST, "NORTHEAST");
-	strcpy(SOUTHWEST, "SOUTHWEST");
-	strcpy(SOUTHEAST, "SOUTHEAST");
-	strcpy(UP, "UP");
-	strcpy(DOWN, "DOWN");
-	strcpy(OUT, "OUT");
-	strcpy(IN_TENT_1, "IN TENT 1");
-	strcpy(IN_TENT_2, "IN TENT 2");
-	strcpy(IN_TENT_3, "IN TENT 3");
-	strcpy(IN_TENT, "IN TENT");
-	strcpy(IN_HOUSE_1, "IN HOUSE 1");
-	strcpy(IN_HOUSE_2, "IN HOUSE 2");
-	strcpy(IN_HOUSE_3, "IN HOUSE 3");
-	strcpy(IN_FACTORY, "IN FACTORY");
-	strcpy(IN_CASTLE, "IN CASTLE");
-	strcpy(IN_ALLEY, "IN ALLEY");
-	strcpy(IN_ELEVATOR, "IN ELEVATOR");
-	strcpy(IN_SAFE, "IN SAFE");
-	strcpy(IN_TEMPLE, "IN TEMPLE");
-	strcpy(INSIDE, "INSIDE");
-	strcpy(UPSTAIRS, "UPSTAIRS");
-	strcpy(DOWNSTAIRS, "DOWNSTAIRS");
-	strcpy(UNDERGROUND, "UNDERGROUND");
-	strcpy(FORWARD, "FORWARD");
-	strcpy(TO_THE_VILLAGE, "TO THE VILLAGE");
-	strcpy(TO_THE_DESERT, "TO THE DESERT");
-	strcpy(TO_THE_HIGHLANDS, "TO THE HIGHLANDS");
-	strcpy(TO_BURGERSBURG, "TO BURGERSBURG");
-	strcpy(TO_THE_BASEMENT, "TO THE BASEMENT");
+	const char* TO_THE_VILLAGE = "TO THE VILLAGE";
+	const char* TO_THE_DESERT = "TO THE DESERT";
+	const char* TO_THE_HIGHLANDS = "TO THE HIGHLANDS";
+	const char* TO_BURGERSBURG = "TO BURGERSBURG";
+	const char* TO_THE_BASEMENT = "TO THE BASEMENT";
 
 	//set the direction reverser map in Helper
 	ReverseDirection[NORTH] = SOUTH;
@@ -111,34 +75,19 @@ NPC* SetupWorld() {
 	ReverseDirection[SOUTHWEST] = NORTHEAST;
 
 	//set up blockage reaons
-	char* ENEMY = new char[12];
-	char* CHASM = new char[12];
-	char* RIVER = new char[12];
-	char* TEMPLE = new char[12];
-	char* RUBBLE = new char[12];
-	char* TUNNEL = new char[12];
-	char* TRACK = new char[12];
-	char* LOCK = new char[12];
-	char* NINJA = new char[12];
-	char* SAND = new char[12];
-	char* HEAT = new char[12];
-	char* LAVA = new char[12];
-	char* STUFF = new char[12];
-	
-	//set up blockage reason text
-	strcpy(ENEMY, "ENEMY");
-	strcpy(CHASM, "CHASM");
-	strcpy(RIVER, "RIVER");
-	strcpy(TEMPLE, "TEMPLE");
-	strcpy(RUBBLE, "RUBBLE");
-	strcpy(TUNNEL, "TUNNEL");
-	strcpy(TRACK, "TRACK");
-	strcpy(LOCK, "LOCK");
-	strcpy(NINJA, "NINJA");
-	strcpy(SAND, "SAND");
-	strcpy(HEAT, "HEAT");
-	strcpy(LAVA, "LAVA");
-	strcpy(STUFF, "STUFF");
+	const char* ENEMY = "ENEMY";
+	const char* CHASM = "CHASM";
+	const char* RIVER = "RIVER";
+	const char* TEMPLE = "TEMPLE";
+	const char* RUBBLE = "RUBBLE";
+	const char* TUNNEL = "TUNNEL";
+	const char* TRACK = "TRACK";
+	const char* LOCK = "LOCK";
+	const char* NINJA = "NINJA";
+	const char* SAND = "SAND";
+	const char* HEAT = "HEAT";
+	const char* LAVA = "LAVA";
+	const char* STUFF = "STUFF";
 
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
@@ -637,7 +586,7 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
 	burgerman->addLinkedConvo(self, "Dang that's crazy.");*/
 
-	//Dialogue for after I finish the game:
+	//Dialogue for after I finish making the game:
 	//(self, "Can I recruit TECH DEMO MAN?", true);
 	//(developer, "No.")
 
@@ -657,7 +606,7 @@ NPC* SetupWorld() {
 	(forestknight, "My apologies, child. My quest sensor is a bit slow.");
 	(forestknight, "I have not updated to the latest software version in a little while.");*/
 
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Crazed miner who likes exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, 5, 20, 0, 20, 12, 15);
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, 5, 20, 0, 20, 12, 15);
 	minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 0, 7, 5, 0, 2, 3);
@@ -712,20 +661,10 @@ NPC* SetupWorld() {
 	skateboard->setTakable();
 	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
 
-	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", village, 200000, 200000, 20, 20000, 10, 15, 20);
-	techdemoman->setRecruitable(true);
+	//it's TECH DEMO MAN!
+	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 200000, 200000, 20, 20000, 10, 15, 20);
 	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
-	techdemoman->setRecruitmentDialogue("I AM NOW RECRUITED!");
-	techdemoman->setRecruitedDialogue("HELLO THERE WE ARE ADVENTURING!");
-	techdemoman->setDismissalDialogue("BACK TO THE VILLAGE!");
-	Attack* demopunch = new Attack("DEMO PUNCH", "punched", -5);
-	Attack* demobeam = new Attack("DEMO BEAM", "shot a laser at", 4, 30, 30);
-	Attack* demoblast = new Attack("DEMO BLAST", "blasted", 6, 40, 40, 1, 1, 3);
-	Attack* democrash = new Attack("DEMO CRASH", "exploded", 10, 50, 50, 1, 1, 99);
-	techdemoman->setBasicAttack(demopunch);
-	techdemoman->addSpecialAttack(demobeam);
-	techdemoman->addSpecialAttack(demoblast);
-	techdemoman->addSpecialAttack(democrash);
+	techdemoman->setRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
 
 	//Create exits between rooms
 	village->setExit(SOUTH, docks);
@@ -1758,10 +1697,6 @@ NPC* SetupWorld() {
 	KeyItem* _masterswitch = (KeyItem*)masterswitch;
 	_masterswitch->setTarget(volcano7);
 
-	//important note
-	Item* note = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nBeyond this point in the TECH DEMO there are no enemies, except for select important encounters.\nThis is because by this point, you probably get the general gist of battles, and it's probably tedious having to fight all those enemies then just watching TECH DEMO MAN doing it all for you.\nWell have fun with the rest of the game!\nSincerely, Tomas", volcano);
-	Item* note2 = new InfoItem("NOTE FROM THE DEVELOPER", "A note from me! You need to USE it in order to read it.", "HELLO!\nThe BURGER RESTAURANT is just up ahead. I know the map says the bad ending, but that's the only ending in this tech demo, so just go for that.\nSincerely, Tomas", BURGERSBURG);
-
 	return self; //returns the player character
 }
 
@@ -1777,7 +1712,7 @@ void PrintRoomData(Room* currentRoom) {
 }
 
 //move the player and co. to a new room based on direction, or also just teleopring to forceDest if given
-void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool forceTravel = false, Room* forceDest = NULL) {
+void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, bool forceTravel = false, Room* forceDest = NULL) {
 	Room* roomCanidate = NULL; //the room we're trying to go to
 	if (forceDest != NULL) { //we just teleoprt to this room if given
 		roomCanidate = forceDest;
@@ -1831,7 +1766,7 @@ void travel(Room*& currentRoom, char* direction, vector<NPC*>* party, bool force
 }
 
 //initiates battle with an npc
-void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, char* name, int& mony) {
+void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, const char* name, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //try to find the given npc in the room
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), name);
@@ -1987,7 +1922,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, cha
 }
 
 //takes an item from the current room and adds it to the inventory
-void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
+void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname) {
 	//finds the item in the room based on the name
 	Item* item = getItemInVector(currentRoom->getItems(), itemname);
 	//prints the reason you can't take the item based on the circumstances
@@ -2030,7 +1965,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 }
 
 //drops an item from the inventory into the current room
-void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
+void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname) {
 	Item* item = getItemInVector(*inventory, itemname); //finds the item in the inventory
 	if (item == NULL) { //gives error message if we have no itemname
 		cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
@@ -2043,7 +1978,7 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, char* itemname) {
 }
 
 //uses an item, with functionality based on type
-void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, char* itemname, int& mony) {
+void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, const char* itemname, int& mony) {
 	//in addition to items, you can also USE the tunnel lobster for fast travel
 	//it's probably bad practice to have this here, but it's functional practice! :)
 	NPC* lobster = NULL; //we loop through the rooms npcs to find the lobster. We don't use the getNPCInVector function because then you can't use it if the lobster name matches an npc name
@@ -2129,7 +2064,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		cout << "\n\t<<<      BURGER QUEST COMPLETE ?      >>>";
 		cout << "\n\t<<< ENDING ACHIEVED: TEST DEMO ENDING >>>";
 		CinPause();
-		cout << "\nThank you for playing the TECH DEMO for BURGER QUEST 2: ELECTRIC BOOGALOO!";
+		cout << "\nThank you for playing BURGER QUEST 2: ELECTRIC BOOGALOO!";
 		if (!AOrB("Would you like to keep playing?", "YES", "NO")) {
 			cout << "\nAlright then cya!\n";
 			exit(0);
@@ -2188,7 +2123,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	//used for unblocking blocked exits
 	} else if (!strcmp(item->getType(), "key")) {
 		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass		
-		vector<char*> exitsUnlocked; //the exits that were unlocked in the key using process, so we can unlock the other side also
+		vector<const char*> exitsUnlocked; //the exits that were unlocked in the key using process, so we can unlock the other side also
 		
 		bool used = false; //if we ended up actually using the key
 		if (key->getTargets().size()) { //some keys are remote keys, and unlock specified targets
@@ -2201,10 +2136,10 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			exitsUnlocked = currentRoom->unblockAll(key->getUnlockType());
 			used = exitsUnlocked.size() > 0; //we check the size of unblocked exits as a basis for if we used the item
 			//unblocks the other sides of the exits, because there's some double sided blocks
-			for (char* exit : exitsUnlocked) {
+			for (const char* exit : exitsUnlocked) {
 				Room* thatroom = currentRoom->getExit(exit); //gets the room on the other side of the exit
 				//unblocks the reverse direction exit if it's blocked
-				if (thatroom->getBlocked(const_cast<char*>(ReverseDirection[exit]))) {
+				if (thatroom->getBlocked(ReverseDirection[exit])) {
 					thatroom->unblockExit(ReverseDirection[exit]);
 				}
 			}
@@ -2217,7 +2152,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	//movement items are used to go through a blocked exit despite the fact that it's blocked, for example a boat over a river
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
-		for (char* exit : currentRoom->getBlocks()) { //tries to find a blocked exit that matches the movement item's block type
+		for (const char* exit : currentRoom->getBlocks()) { //tries to find a blocked exit that matches the movement item's block type
 			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
 				cout << "\nYou " << mover->getUseText(); //prints what exactly the movement item did
 				CinPause();
@@ -2275,7 +2210,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 }
 
 //recruit an npc into the player party
-void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxParty = 4) {
+void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int maxParty = 4) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc we're trying to recruit
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
@@ -2308,7 +2243,7 @@ void recruitNPC(Room* currentRoom, char* npcname, vector<NPC*>* party, int maxPa
 }
 
 //decruit npcs from your party
-void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
+void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc to dismiss
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
@@ -2339,7 +2274,7 @@ void dismissNPC(Room* currentRoom, char* npcname, vector<NPC*>* party) {
 }
 
 //prints anything the targeted npc has to say
-void printNPCDialogue(Room* currentRoom, char* npcname, vector<Item*>* inventory, vector<NPC*>* party, int& mony) {
+void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inventory, vector<NPC*>* party, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //finds the npc named npcname
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
@@ -2389,7 +2324,7 @@ void printParty(vector<NPC*>* party) {
 }
 
 //analyzes either an item or npc of the given name
-void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* inventory) {
+void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<Item*>* inventory) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //tries to find an npc in the room or party
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), name);
@@ -2413,7 +2348,7 @@ void analyze(Room* currentRoom, char* name, vector<NPC*>* party, vector<Item*>* 
 }
 
 //buys an item from the current room's catalogue
-void buy(Room* currentRoom, vector<Item*>* inventory, char* name, int& mony) {
+void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getStock(), name); //finds the item in the current room's stock
 	if (item == NULL) { //gives error message based on other conditions
 		if (getItemInVector(currentRoom->getItems(), name) != NULL) { //if the item isn't for sale and it's just on the ground or something
@@ -2496,7 +2431,7 @@ int main() {
 	};
 
 	//welcome message
-	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO (TECH DEMO EDITION)\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
+	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO!\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
 
 	//you get to name yourself!
 	cout << "\n             (type your name here!)\nYour name is ";
@@ -2525,15 +2460,6 @@ int main() {
 		CinPause();
 	}
 
-	cout << "\nNOTE: This game's scope is pretty big so this is a TECH DEMO and not the full release yet!";
-	CinPause();
-	cout << "In the future it will have better balancing and more unique attacks!";
-	CinPause();
-	cout << "But for now, make sure to recruit TECH DEMO MAN if you can't get past a certain point!";
-	CinPause();
-	cout << "Ok have fun!";
-	CinPause();
-	
 	CinIgnoreAll(); //clears extra characters or invalid input
 
 	PrintRoomData(currentRoom); //prints the data of the starting room
