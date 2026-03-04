@@ -11,6 +11,7 @@
 #include "Room.h"
 #include "Effect.h"
 #include "Attack.h"
+#include "Conversation.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
@@ -24,12 +25,6 @@ public: //you need to set stats on creation
 	//a bunch of functions to get npc variables
 	const char* getTitle(); //gets the title of the character
 	const char* getName(); //gets the name of the character
-	const char* getDescription(); //gets the description of the character
-	const char* getDialogue(); //gets the current dialogue
-	const char* getRejectionDialogue(); //gets the rejection dialogue for the npc
-	const char* getRecruitmentDialogue(); //gets the recruitment dialogue for the npc
-	const char* getRecruitedDialogue();
-	const char* getDismissalDialogue(); //gets the dismissal dialogue for the npc
 	bool getRecruitable(); //gets the recruitable status of the character
 	bool getRecruited(); //gets the recruited status of the npc (if they're already in the party)
 	bool getPlayerness(); //gets if the character is a player character (true) or if they're truly an npc (false)
@@ -68,15 +63,15 @@ public: //you need to set stats on creation
 	bool getRespawn(); //if they respawn
 
 	//bunch of functions for affecting npc variables
-	void setDialogue(const char* _dialogue); //sets the dialogue for the npc
-	void setGymDialogue(const char* _dialogue); //sets what the npc says in the gym
-	void setRejectionDialogue(const char* _dialogue); //sets the rejection dialogue for the npc
-	void setRecruitmentDialogue(const char* _dialogue); //sets the recruitment dialogue for the npc
-	void setRecruitedDialogue(const char* _dialogue); //sets the recruited dialogue for the npc
-	void setRecruitDialogueChange(const char* _recruitment, const char* _normal); //sets new recruitment and normal dialogue after recruiting
+	void setDialogue(Conversation _dialogue); //sets the dialogue for the npc
+	void setGymDialogue(Conversation _dialogue); //sets what the npc says in the gym
+	void setRejectionDialogue(Conversation _dialogue); //sets the rejection dialogue for the npc
+	void setRecruitmentDialogue(Conversation _dialogue); //sets the recruitment dialogue for the npc
+	void setRecruitedDialogue(Conversation _dialogue); //sets the recruited dialogue for the npc
+	void setRecruitDialogueChange(Conversation _dialogue); //sets new recruitment and normal dialogue after recruiting
 	void setDismissalDialogue(const char* _dialogue); //sets the dismissal dialogue for the npc
 	void setRecruitable(bool _recruitable); //set if you can recruit them
-	void Recruit(bool printdialogue = true); //set recurited to true, print recruitment dialogue if unspecified (printdialogue is only ever false for the player)
+	void Recruit(); //set recurited to true
 	void Dismiss(bool gohome = true); //dismiss them and go home if specified
 	void setRoom(Room* _room); //move the npc
 	void setHome(Room* room);
@@ -109,9 +104,16 @@ public: //you need to set stats on creation
 
 	void addConversation(NPC* speaker, const char* dialogue, bool newConversation = false); //add a conversation line to the npc, and make a new conversation if specified
 	void addLinkedConvo(NPC* speaker, const char* dialogue);
-	void printDialogue();
+	
+	void printDialogue(Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
+	void printRejectionDialogue(); //prints the rejection dialogue for the npc
+	void printRecruitmentDialogue(); //prints the recruitment dialogue for the npc
+	void printDismissalDialogue(); //prints the dismissal dialogue for the npc
+
 	void printDamage(int damage, const char* status = NULL);
 	void printEffects();
+	void getDescription(); //gets the description of the character
+	
 
 	bool getTalkOnDefeat(); //gets if the npc talks after being defeated
 	void setTalkOnDefeat(bool talk = true); //sets if the npc talks after being defeated
@@ -145,17 +147,16 @@ protected:
 	vector<Effect> effects; //the effects affecting this npc
 	map<Attack*, int> attackWeight; //the weight of the npc's attacks
 
-	queue<vector<pair<NPC*,const char*>>> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
+	queue<Conversation> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
 
-	const char* dialogue = ""; //dialogue that the npc says when asked, and no conversations are left
-	const char* recruitedDialogue = ""; //dialogue that the npc says while currently recruited
-	const char* rejectionDialogue = ""; //dialogue that the npc says when rejecting recruitment offer
-	const char* recruitmentDialogue = ""; //dialogue that the npc says when recruited
-	const char* dismissalDialogue = ""; //dialogue that the npc says when dismissed
-	const char* gymDialogue = ""; //dialogue the character says when at the gym
+	Conversation dialogue; //dialogue that the npc says when asked, and no conversations are left
+	queue<Conversation> recruitedDialogue; //dialogue that the npc says while currently recruited
+	queue<Conversation> rejectionDialogue; //dialogue that the npc says when rejecting recruitment offer
+	queue<Conversation> recruitmentDialogue; //dialogue that the npc says when recruited
+	queue<Conversation> dismissalDialogue; //dialogue that the npc says when dismissed
+	queue<Conversation> gymDialogue; //dialogue the character says when at the gym
 
-	const char* newRecruitmentDialogue = ""; //the recruitment and normal dialogues get changes to this after being recruited for the first time
-	const char* newDialogue = "";
+	Conversation newDialogue; //regular dialogue after having been recruited
 
 	Item* gift; //item that the npc holds and gifts to the player after talking
 
@@ -201,29 +202,25 @@ protected:
 
 	bool forcebattle = false; //if we force the player to battle after talking
 	bool talkOnDefeat = false; //if the npc talks when defeated
-	bool defeatChange = false; //if the npc changes after defeating them
 
 	const char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated
 	Room* altRoom = NULL; //enemies block exits from both sides, so they have to be in two rooms at the same time, unfortunately
-	NPC* linkedNPC = NULL; //we set this npc to recruitable when robot is defeated
-	vector<pair<NPC*, const char*>> linkedConversation; //we add this conversation to the linked npc when defeated
-	const char* linkedDialogue = ""; //we set the linked npc's dialogue to this when defeated (if it isn't "")
+	
+	queue<NPC*> recruitLinks; //these nps are set to recruitable when this npc is defeated
+	queue<pair<NPC*, Conversation>> linkedConversations; //we add these conversations to the npc when defeated
+	queue<pair<NPC*, Conversation>> linkedDialogue; //we set the linked npcs' dialogue to this when defeated
+	queue<pair<NPC*, const char*>> linkedTitles; //we reset these npc's titles when defeated
+	queue<pair<NPC*, const char*>> linkedDescriptions; //we reset these npc's descriptions when defeated
 
-	Room* linkedRoom = NULL; //we edit the description of this room after being defeated
-	const char* linkedDescription = ""; //the description gets set to this
+	queue<pair<NPC*, Room*>> defeatRooms; //move these npcs to these rooms when defeated
 
-	//some npcs change when defeated so they set their variables to this stuff:
-	const char* defeatDialogue = "";
-	const char* defeatTitle = "";
-	const char* defeatDescription = "";
-	Room* defeatRoom;
+	queue<pair<Room*, const char*>> roomChanges; //we edit the description of these rooms to these descriptions after being defeated
+	queue<pair<Room*, Room*>> redirectRooms; //after defeat, the first rooms are redirected to the second rooms
 
 	bool escapable = true; //if you can escape from this enemy in a battle
 	int guard = 0; //how many hits the npc can block before guard is broken
 
-	pair<Room*, Room*> redirectRoom; //after defeat, the first room is redirected to the second room
-
-	//int xpReward;
-	//int monyReward;
+	int xpReward; //extra battle rewards
+	int monyReward;
 };
 #endif

@@ -51,20 +51,20 @@ const char* NPC::getName() {
 const char* NPC::getDescription() {
 	return description;
 }
-const char* NPC::getDialogue() {
-	return dialogue;
+void NPC::printRejectionDialogue() {
+	if (rejectionDialogue.empty()) return;
+	printDialogue(&rejectionDialogue.front());
+	rejectionDialogue.pop();
 }
-const char* NPC::getRejectionDialogue() {
-	return rejectionDialogue;
+void NPC::printRecruitmentDialogue() {
+	if (recruitmentDialogue.empty()) return;
+	printDialogue(&recruitmentDialogue.front());
+	recruitmentDialogue.pop();
 }
-const char* NPC::getRecruitmentDialogue() {
-	return recruitmentDialogue;
-}
-const char* NPC::getRecruitedDialogue() {
-	return recruitedDialogue;
-}
-const char* NPC::getDismissalDialogue() {
-	return dismissalDialogue;
+void NPC::printDismissalDialogue() {
+	if (dismissalDialogue.empty()) return;
+	printDialogue(&dismissalDialogue.front());
+	dismissalDialogue.pop();
 }
 bool NPC::getRecruited() { //returns if in the player team
 	return recruited;
@@ -192,6 +192,7 @@ Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because t
 	return item;
 }
 //a bunch of functions to set npc variables
+#error "You still need to edit these"
 void NPC::setDialogue(const char* _dialogue) {
 	dialogue = _dialogue;
 }
@@ -217,19 +218,14 @@ void NPC::setRecruitDialogueChange(const char* _recruitment, const char* _normal
 void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
-void NPC::Recruit(bool printdialogue) { //recruits the npc
+void NPC::Recruit() { //recruits the npc
 	if (conversations.size() > 0) {
 		printDialogue(); //I want the player to hear the dialogue before being recriuted so we print it here if it hasn't been heard yet
 	}
-	if (printdialogue) {
-		cout << "\n" << name << " - \"" << recruitmentDialogue << "\""; //says a thing after being recruited
-	}
-	if (strlen(newRecruitmentDialogue)) {
-		recruitmentDialogue = newRecruitmentDialogue;
-	}
-	if (strlen(newDialogue)) {
+#error "consider this"
+	/*if (strlen(newDialogue)) {
 		dialogue = newDialogue;
-	}
+	}*/
 	recruited = true;
 }
 void NPC::Dismiss(bool gohome) { //removes the npc from the party
@@ -579,7 +575,53 @@ void NPC::defeat() {
 		}
 		exitBlocking = NULL;
 	}
-	if (linkedNPC != NULL) { //do stuff for linked npc
+	while (!recruitLinks.empty()) {
+		Npc* npc = recruitLinks.front();
+		npc->setRecruitable(true);
+		if (npc->getLeader()) {
+			linkedNPC->setLeader(false);
+			linkedNPC->undefeat();
+		}
+		recruitLinks.pop()
+	}
+	while (!linkedConversations.empty()) {
+		pair<NPC*, Conversation>& data = linkedConversations.front();
+		data.first->addConversation(data.second);
+		linkedConversations.pop()
+	}
+	while (!linkedDialogue.empty()) {
+		pair<NPC*, Conversation>& data = linkedDialogue.front();
+		data.first->setDialogue(data.second);
+		linkedDialogue.pop()
+	}
+	while (!linkedTitles.empty()) {
+		pair<NPC*, const char*>& data = linkedTitles.front();
+		data.first->setTitle(data.second);
+		linkedTitles.pop();
+	}
+	while (!linkedDescriptions.empty()) {
+		pair<NPC*, const char*>& data = linkedDescriptions.front();
+		data.first->setDescription(data.second);
+		linkedDescriptions.pop();
+	}
+	while (!roomChanges.empty()) {
+		pair<Room*, const char*>& data = roomChanges.front();
+		data.first->setDescription(data.second);
+		roomChanges.pop();
+	}
+	while (!defeatRooms.empty()) {
+		pair<NPC*, Room*>& data = defeatRooms.front();
+		data.first->setRoom(data.second);
+		data.first->setHome(data.second);
+		defeatRooms.pop();
+	}
+	while (!redirectRooms.empty()) {
+		pair<Room*, Room*>& data = redirectRooms.front();
+		data.first->setRedirect(data.second);
+		redirectRooms.pop();
+	}
+	//OLD CODE for reference
+	/*if (linkedNPC != NULL) { //do stuff for linked npc
 		if (!linkedNPC->getLobster() && strcmp(linkedNPC->getName(), "TOMAS")) { //set npc to recuitable unless it's the lobster (or my character util I make a better system)
 			linkedNPC->setRecruitable(true);
 		}
@@ -611,7 +653,7 @@ void NPC::defeat() {
 			setHome(defeatRoom);
 		}
 		defeatChange = false; //no need to change again
-	}
+	}*/
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;
@@ -638,27 +680,26 @@ void NPC::addLinkedConvo(NPC* speaker, const char* dialogue) { //add a conversat
 }
 //prints the npc's dialogue
 void NPC::printDialogue() {
+	Conversation conversation; //uninitialized, please initialize
 	if (recruited) { //prints recruited dialogue if recruited
-		cout << "\n" << name << " - \"" << recruitedDialogue << "\"";
-	} else if (conversations.size() > 0) { //if there's a conversation to be had
-		cout << "\n";
-		vector<pair<NPC*, const char*>>& convo = conversations.front(); //gets the current conversation
-		for (int i = 0; i < convo.size(); i++) { //prints all the dialogue in the conversation
-			if (convo[i].first != NULL) {
-				cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
-			} else {
-				cout << convo[i].second;
-			}
-			if (i+1 < convo.size()) { //if it's not the last one we do a pause, so the last one lets the player type
-				CinPause();
-			}
+		conversation = recruitedDialogue.front();
+		if (recruitedDialogue.size() > 1) {
+			recruitedDialogue.pop();
 		}
-		conversations.pop(); //removes the conversation because it's been said
+	} else if (conversations.size() > 0) { //if there's a limited conversation to be had
+		do { //do while because conversation starts uninitialized with garbage data
+			conversation = conversations.front(); //gets the current conversation
+			conversations.pop();
+		} while (conversation.getOutdated()); //try again if the conversation is outdated, atm only regular conversations can be outdated
 	} else if (currentRoom->getGym()) { //gym dialogue if they're in the gym
-		cout << "\n" << name << " - \"" << gymDialogue << "\"";
+		conversation = gymDialogue.front();
+		if (gymDialogue.size() > 1) {
+			gymDialogue.pop();
+		}
 	} else { //regular dialogue
-		cout << "\n" << name << " - \"" << dialogue << "\"";
+		conversation = dialogue; 
 	}
+	conversation.printDialogue();
 }
 NPC::~NPC() { //destructor
 

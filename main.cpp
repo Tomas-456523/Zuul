@@ -402,7 +402,7 @@ NPC* SetupWorld() {
 	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
 	self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
-	self->Recruit(false);
+	self->Recruit();
 	self->setBasicAttack(punch);
 	self->addSpecialAttack(energyball);
 
@@ -2223,7 +2223,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 		return;
 	} //if the npc isn't recruitable we give error message and the npc says something
 	if (!npc->getRecruitable()) {
-		cout << "\n" << npcname << " - \"" << npc->getRejectionDialogue() << "\"";
+		npc->printRejectionDialogue();
 		cout << "\n" << npcname << " was not added to your party.";
 		return;
 	} //you can't rerecruit npcs, we don't want them being extra recruited
@@ -2238,6 +2238,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	//adds the npc to your party
 	party->push_back(npc);
 	npc->Recruit(); //sets the npc to recruited
+	npc->printRecruitmentDialogue(); //print the recruitment dialogue
 	cout << "\n" << npcname << " was added to your party! (party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 }
 
@@ -2265,7 +2266,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 	if (gym) {
 		cout << "\n" << npcname << " is now on the GRIND at the gym, and will now train to stay at your level!";
 	} else { //in every other room, they just say something and go back home
-		cout << "\n" << npcname << " - \"" << npc->getDismissalDialogue() << "\"";
+		npc->printDismissalDialogue();
 		cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
 	}
 	//sets the npc to dismissed
