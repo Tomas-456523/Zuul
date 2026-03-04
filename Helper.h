@@ -34,5 +34,14 @@ namespace Helper {
 	extern std::vector<Item*> itemsH;
 	extern std::vector<Attack*> attacksH;
 	extern std::vector<Effect*> effectsH;
+
+	enum WorldCondition {
+		CEOQUEST,
+		TEMPLEQUEST,
+		BURGERMANDEF,
+		BURGERMENDEF
+	};
+
+	extern bool WorldState[BURGERMENDEF]; //the state of the world! (must be as big as the last condition in WorldCondition, works since enumerators are technically ints!)
 }
 #endif

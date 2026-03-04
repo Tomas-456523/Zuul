@@ -14,7 +14,7 @@ using namespace Helper;
 //constructs the npc!
 NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level, bool _isleader, bool _player) {
 	title = _title;
-	name = _name;
+	strcpy(name, _name);
 	description = _description;
 	home = room;
 	currentRoom = room;
@@ -257,7 +257,7 @@ void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4, NPC* npc5, NPC* n
 	}
 }
 void NPC::setName(const char* _name) {
-	name = _name;
+	strcpy(name, _name);
 }
 void NPC::setTitle(const char* _title) {
 	title = _title;
@@ -624,8 +624,8 @@ void NPC::setDefeatNPC(const char* newTitle, const char* newDesc, const char* ne
 	defeatRoom = newRoom;
 	defeatChange = true;
 }
-void NPC::addSuffix(char suffix[3]) { //adds a suffix to the end of the npc's name
-	//strcat(name, suffix);
+void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc's name
+	strcat(name, suffix);
 }
 void NPC::addConversation(NPC* speaker, const char* dialogue, bool newConversation) { //add a conversation to the npc's dialogue
 	if (newConversation || !conversations.size()) { //if the queue is empty we reserve a space

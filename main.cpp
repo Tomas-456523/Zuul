@@ -1,6 +1,6 @@
 /* Tomas Carranza Echaniz
 *  12/5/25
-*  This program is a text-based game where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
+*  This program is an epic text-based RPG where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. You can eat the BURGER to get the bad ending,
 *  or you can explore more to get the good ending. There's a bunch of other commands as well.
 *  
@@ -47,7 +47,7 @@ NPC* SetupWorld() {
 	const char* IN_ALLEY = "IN ALLEY";
 	const char* IN_ELEVATOR = "IN ELEVATOR";
 	const char* IN_SAFE = "IN SAFE";
-	const char* IN_TEMPLE = "IN_TEMPLE";
+	const char* IN_TEMPLE = "IN TEMPLE";
 	const char* INSIDE = "INSIDE";
 	const char* UPSTAIRS = "UPSTAIRS";
 	const char* DOWNSTAIRS = "DOWNSTAIRS";
@@ -1115,7 +1115,7 @@ NPC* SetupWorld() {
 
 	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, tunnellobster);
 
-	//set up generic non-npc enemies
+	//set up generic non-npc enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 10, 15, 5);
 	Attack* headbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
 	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
@@ -1331,7 +1331,7 @@ NPC* SetupWorld() {
 
 	//for npcs you can actually fight, make sure to set their level as 0 at construction, then set the level manually after setting the scale, otherwise stats will be off
 
-	//set up overworld enemies
+	//set up overworld enemies  MARK: enemies (world)
 	NPC* forestguard = new NPC(*grassman);
 	forestguard->setLeader(true, 1, forestentrance);
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
@@ -2517,7 +2517,7 @@ int main() {
 	}
 	
 	//gives a friendly farewell to the player
-	cout << "\nEnjoy your next 24 hours.\n";
+	cout << "\nCya!\n";
 	
 	//deletes all the rooms
 	for (Room* room : roomsH) {

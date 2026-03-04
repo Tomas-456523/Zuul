@@ -83,7 +83,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 }
 //creates a new npc and adds it to the battle
 void Battle::addNPC(NPC* npc) {
-	/*vector<NPC*>* team = NULL; //gets which side the enemy is on
+	vector<NPC*>* team = NULL; //gets which side the enemy is on
 	if (npc->getEnemy()) { //we must manually set enemy earlier or else EVERY new npc will go to the player team
 		team = &enemyTeam;
 	} else {
@@ -92,7 +92,7 @@ void Battle::addNPC(NPC* npc) {
 	NPC* newguy = new NPC(*npc);
 	int count = 1; //we include newguy so the name count starts at 1
 	for (int i = 0; i < team->size(); i++) { //renames the enemy according to the amount of the same named enemy present. (eg. there is a BOB here already and we add a new BOB. BOB sees there's another BOB and renames himself BOB 2)
-		char* name = strstr((*team)[i]->getName(), newguy->getName());
+		const char* name = strstr((*team)[i]->getName(), newguy->getName());
 		if (name == NULL || name != &(*team)[i]->getName()[0]) { //if we didn't find the name or it the name was found after the beginning, the npc has a different name so we continue
 			continue;
 		}
@@ -109,7 +109,7 @@ void Battle::addNPC(NPC* npc) {
 	}
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
 	team->push_back(newguy);
-	everyone.push_back(newguy);*/
+	everyone.push_back(newguy);
 }
 //ticks an effect (if it does anything every turn, it does that, and decrements its duration)
 void Battle::tickEffect(Effect& effect) {

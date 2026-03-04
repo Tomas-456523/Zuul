@@ -98,7 +98,7 @@ public: //you need to set stats on creation
 	void setEnemy(bool _enemy);
 	void alterSp(int amount, const char* status = NULL);
 	void setLevelUp(bool _leveledUp);
-	void addSuffix(char suffix[3]); //add suffix to end of npc name
+	void addSuffix(const char* suffix); //add suffix to end of npc name
 	void setGuard(int _guard); //set guard to block attacks
 	void setLink(NPC* npc, const char* dialogue = ""); //linked npc to affect on defeat
 	void setLinkedRoom(Room* room, const char* desc); //room to affect on defeat
@@ -131,7 +131,7 @@ public: //you need to set stats on creation
 	void undefeat(); //set the enemy to not defeated
 protected:
 	const char* title; //the title of the character (eg. VILLAGE ELDER)
-	const char* name; //the name
+	char name[255]; //the name, must not be const because we add suffixes sometimes
 	const char* description; //npc's description when analyzed
 
 	Room* home; //where the npc goes after being dismissed

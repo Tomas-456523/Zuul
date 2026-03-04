@@ -216,4 +216,6 @@ namespace Helper {
 	vector<Attack*> attacksH;
 	vector<Effect*> effectsH;
 
+	bool WorldState[BURGERMENDEF] = {false}; //every world state starts as false
+
 }
