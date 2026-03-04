@@ -39,9 +39,10 @@ namespace Helper {
 		CEOQUEST,
 		TEMPLEQUEST,
 		BURGERMANDEF,
-		BURGERMENDEF
+		BURGERMENDEF,
+		NEVER //never set never to true
 	};
 
-	extern bool WorldState[BURGERMENDEF]; //the state of the world! (must be as big as the last condition in WorldCondition, works since enumerators are technically ints!)
+	extern bool WorldState[NEVER]; //the state of the world! (must be as big as the last condition in WorldCondition, works since enumerators are technically ints!)
 }
 #endif

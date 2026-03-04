@@ -1,8 +1,7 @@
 /* Tomas Carranza Echaniz
 *  12/5/25
 *  This program is an epic text-based RPG where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
-*  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. You can eat the BURGER to get the bad ending,
-*  or you can explore more to get the good ending. There's a bunch of other commands as well.
+*  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. There's a bunch of other commands as well.
 *  
 *  In case you missed the first BURGER QUEST, you can play it at https://codehs.com/sandbox/id/zuul-kb8vTu
 */
