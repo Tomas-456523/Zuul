@@ -412,19 +412,19 @@ NPC* SetupWorld() {
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely?"},
 							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."}});
 	floria->setDialogue("I just love flowers!");
-	floria->setGymDialogue("I love running in circles around the gym! Exercise is so fun!");
-	floria->setRecruitmentDialogue("Yay! I hope we see some new flowers!");
-	floria->setRecruitedDialogue("I must see all the flowers!");
-	floria->setDismissalDialogue("I'm going to go back to my flower field!");
+	floria->addGymDialogue("I love running in circles around the gym! Exercise is so fun!");
+	floria->addRecruitmentDialogue("Yay! I hope we see some new flowers!");
+	floria->addRecruitedDialogue("I must see all the flowers!");
+	floria->addDismissalDialogue("I'm going to go back to my flower field!");
 
 	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 15, 2, 3, 10, 10, 2, 10, 10);
 	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "used his science cannon to blast", -2);
 	egadwick->setDialogue("Ah hello kiddo. How's it going?");
-	egadwick->setGymDialogue("Eh, exercise isn't really my thing, kiddo. I can gain experience by working out my mind!");
-	egadwick->setRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you could destroy it I could probably go.");
-	egadwick->setRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
-	egadwick->setRecruitedDialogue("I love science. The world has so many interesting specimens.");
-	egadwick->setDismissalDialogue("Great hanging out with you, kiddo! Well, I guess I'll go work on a better robot!");
+	egadwick->addGymDialogue("Eh, exercise isn't really my thing, kiddo. I can gain experience by working out my mind!");
+	egadwick->addRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you could destroy it I could probably go.");
+	egadwick->addRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
+	egadwick->addRecruitedDialogue("I love science. The world has so many interesting specimens.");
+	egadwick->addDismissalDialogue("Great hanging out with you, kiddo! Well, I guess I'll go work on a better robot!");
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
 	archie->setDialogue("Safe travels, child!");
@@ -432,19 +432,19 @@ NPC* SetupWorld() {
 							 {archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG."},
 							 {archie, "Safe travels, child!"},
 							 {archie, "Make sure to bring me back a BURGER! Heh heh heh."}});
-	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
+	archie->addRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
 
 	//REPLACE PLACEHOLDER STATS
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 0, 2);
 	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
-	graham->setRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
+	graham->addRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
 	burgerman->setLeader(true, 0, NULL, false);
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
-	burgerman->setLink(burgerman);
-	burgerman->setLinkedRoom(BURGERRESTAURANT, "in the BURGER RESTAURANT...");
+	//burgerman->setLink(burgerman);
+	//burgerman->setLinkedRoom(BURGERRESTAURANT, "in the BURGER RESTAURANT...");
 	//burgerman->addLinkedConvo(NULL, "The BURGER MAN .");
 	/*burgerman->addLinkedConvo(developer, "Hey what's up?");
 	burgerman->addLinkedConvo(self, "So I was wondering,");
@@ -464,11 +464,11 @@ NPC* SetupWorld() {
 
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
 	burgerprisoner->setDialogue("Hi how are you doing?");
-	burgerprisoner->setRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
+	burgerprisoner->addRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 50, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
-	jimmyjohn->setRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
+	jimmyjohn->addRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 
 	//NPC* fisho = new NPC("FISHERMAN", "FRED", "A middle-aged fisherman who frequently fishes at the village docks.", docks, 30, 10, );
 
@@ -527,7 +527,7 @@ NPC* SetupWorld() {
 							 {mrdeer, "(reluctantly affirmative deer noise)"},
 							 {self, "AYYY thank you so much MR. DEER!"}});
 	mrdeer->setDialogue("(deer noises)");
-	mrdeer->setRejectionDialogue("(no thank you deer noise)");
+	mrdeer->addRejectionDialogue("(no thank you deer noise)");
 
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 500, 25000);
 	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
@@ -543,7 +543,7 @@ NPC* SetupWorld() {
 								{self, "Dang that's crazy."},
 								{wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below."}});
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
-	wallelder->setRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");
+	wallelder->addRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");
 
 	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 200, 80, 120, 10, 50, 10, 30, 100);
 	/*magmelder->addConversation(magmelder, "Oh it's horrible!");
@@ -556,7 +556,7 @@ NPC* SetupWorld() {
 	magmelder->addConversation(magmelder, "I would, but I seem to have gotten myself stuck in this pool of lava!");
 	magmelder->addConversation(self, "I see.");*/
 	magmelder->setDialogue("You must drain the lava before more lives are lost!");
-	magmelder->setRejectionDialogue("Nay! I must dwell in lava and you must dwell on land. These things conflict, do they not?");
+	magmelder->addRejectionDialogue("Nay! I must dwell in lava and you must dwell on land. These things conflict, do they not?");
 
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
 	developer->setDialogue("Yo wassup.");
@@ -566,7 +566,7 @@ NPC* SetupWorld() {
 								{developer, "Because the camera man is on vacation."},
 								{developer, "Only the narrator could cover his shift."},
 								{self, "Oh I see."}});
-	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
+	developer->addRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 	/*burgerman->setLink(developer);
 	burgerman->addLinkedConvo(self, "Yo developer man.");
 	burgerman->addLinkedConvo(developer, "Hey what's up?");
@@ -593,7 +593,7 @@ NPC* SetupWorld() {
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 20, 20, 25, 30, 10, 0, 10);
 	forestknight->setScale(1, 2, 1, 1, 0, 0, 0);
 	forestknight->setLevel(30);
-	forestknight->setRejectionDialogue({{forestknight, "I sense that you are on a BURGER QUEST."},
+	forestknight->addRejectionDialogue({{forestknight, "I sense that you are on a BURGER QUEST."},
 										{forestknight, "I will not assist you in obtaining this object of sin."},
 										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
 	forestknight->addConversation({{forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots."},
@@ -621,8 +621,8 @@ NPC* SetupWorld() {
 	Item* bonecone = new EducationItem("BONE CONE", "A cone-shaped bone. I bet you could think of an attack USE-ing this.", desertgrave, bonedrill);
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 10, 10, 10, 10, 10, 10, 0);
-	gymbro->setGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
-	gymbro->setRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
+	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
+	gymbro->addRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
 
 	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
 	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", 0, 1, 2, 1, 1, 1);
@@ -658,7 +658,7 @@ NPC* SetupWorld() {
 
 	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant person in the shop.", desertshopfixed);
 	merchant->setDialogue("Welcome, my friend, to my store.");
-	merchant->setRejectionDialogue("No I want to sell things.");
+	merchant->addRejectionDialogue("No I want to sell things.");
 
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
@@ -667,7 +667,7 @@ NPC* SetupWorld() {
 	//it's TECH DEMO MAN!
 	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 200000, 200000, 20, 20000, 10, 15, 20);
 	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
-	techdemoman->setRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
+	techdemoman->addRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
 
 	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", "applied the sunscreen. No amount of heat should bother you now!", limbo, HEAT, true);
 	KeyItem* _sunscreen = (KeyItem*)sunscreen;
@@ -683,7 +683,7 @@ NPC* SetupWorld() {
 	
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom);
 	skeleseller->setDialogue("Well hello there, short individual! Could I interest you in some explosives?");
-	skeleseller->setRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
+	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true);
 	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
 
@@ -1129,10 +1129,10 @@ NPC* SetupWorld() {
 	tunnellobster->setTunnelDirection(volcanostation, TO_THE_HIGHLANDS);
 	tunnellobster->setTunnelDirection(burgstation, TO_BURGERSBURG);
 	tunnellobster->setTunnelDirection(basestation, TO_THE_BASEMENT);
-	tunnellobster->setLink(tunnellobster);
-	tunnellobster->setDefeatNPC("", "An immense, tamed crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises).", NULL);
+	//tunnellobster->setLink(tunnellobster);
+	//tunnellobster->setDefeatNPC("", "An immense, tamed crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises).", NULL);
 	tunnellobster->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
-	tunnellobster->setRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
+	tunnellobster->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
 
 	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, tunnellobster);
 
@@ -1357,89 +1357,89 @@ NPC* SetupWorld() {
 	forestguard->setLeader(true, 1, forestentrance);
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
 	forestguard->setDialogue("(angry bush noises)");
-	forestguard->setRejectionDialogue("(angry bush noises)");
+	forestguard->addRejectionDialogue("(angry bush noises)");
 
 	NPC* deerguard = new NPC(*enemydeer);
 	deerguard->setLeader(true, 3, forestleft);
 	deerguard->blockExit(WEST, ENEMY, "guarded by the ENEMY DEER.");
 	deerguard->setDialogue("(angry deer noises)");
-	deerguard->setRejectionDialogue("(angry deer noises)");
+	deerguard->addRejectionDialogue("(angry deer noises)");
 
 	NPC* ninjaguard = new NPC(*ninjascout);
 	ninjaguard->setLeader(true, 5, forestright);
 	ninjaguard->blockExit(NORTHEAST, ENEMY, "guarded by the NINJA SCOUT.");
 	ninjaguard->setDialogue("You will never get past me!!!!!!! >:D");
-	ninjaguard->setRejectionDialogue("No!!! I will always be a ninja!!!!!! >:D");
+	ninjaguard->addRejectionDialogue("No!!! I will always be a ninja!!!!!! >:D");
 
 	NPC* forestrando = new NPC(*grassman);
 	forestrando->setLeader(true, 5, forestleft);
 	forestrando->setDialogue("(angry bush noises)");
-	forestrando->setRejectionDialogue("(angry bush noises)");
+	forestrando->addRejectionDialogue("(angry bush noises)");
 
 	NPC* forestguard2 = new NPC(*buffgrassman);
 	forestguard2->setLeader(true, 2, foresttempleentrance);
 	forestguard2->setParty(pricklyhog);
 	forestguard2->blockExit(NORTH, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard2->setDialogue("(burly bush noises)");
-	forestguard2->setRejectionDialogue("(burly bush noises)");
+	forestguard2->addRejectionDialogue("(burly bush noises)");
 
 	NPC* hogguard = new NPC(*greaterhog);
 	hogguard->setLeader(true, 3, forestfork);
 	hogguard->blockExit(NORTHEAST, ENEMY, "guarded by the GREATER HOG.");
 	hogguard->setDialogue("(angry squeal)");
-	hogguard->setRejectionDialogue("(angry squeal)");
+	hogguard->addRejectionDialogue("(angry squeal)");
 
 	NPC* hogguard2 = new NPC(*greaterhog);
 	hogguard2->setLeader(true, 4, forestspork);
 	hogguard2->setParty(pricklyhog, pricklyhog);
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
 	hogguard2->setDialogue("(angry squeal)");
-	hogguard2->setRejectionDialogue("(angry squeal)");
+	hogguard2->addRejectionDialogue("(angry squeal)");
 
 	NPC* forestguard3 = new NPC(*buffgrassman);
 	forestguard3->setLeader(true, 5, forestnice);
 	forestguard3->setParty(grassman, grassman);
 	forestguard3->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard3->setDialogue("(burly bush noises)");
-	forestguard3->setRejectionDialogue("(angry bush noises)");
+	forestguard3->addRejectionDialogue("(angry bush noises)");
 
 	NPC* jimshady1 = new NPC(*jimshady);
 	jimshady1->setLeader(true, 5, forestwall);
 	jimshady1->blockExit(EAST, ENEMY, "blocked by JIM SHADY.");
 	jimshady1->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
-	jimshady1->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
+	/*jimshady1->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
 	jimshady1->addConversation(self, "No you aren't.");
-	jimshady1->addConversation(jimshady1, "Shut up.");
-	jimshady1->setRejectionDialogue("No go away.");
+	jimshady1->addConversation(jimshady1, "Shut up.");*/
+	jimshady1->addRejectionDialogue("No go away.");
 
 	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
 	roguerobot->setBasicAttack(snip);
-	roguerobot->setLink(egadwick);
-	roguerobot->addLinkedConvo(egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?");
+	//roguerobot->setLink(egadwick);
+	/*roguerobot->addLinkedConvo(egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?");
 	roguerobot->addLinkedConvo(self, "Yep I did.");
 	roguerobot->addLinkedConvo(egadwick, "Oh thank goodness! Thanks a bunch, kiddo!");
-	roguerobot->addLinkedConvo(egadwick, "Now I can safely be in the great outdoors!");
+	roguerobot->addLinkedConvo(egadwick, "Now I can safely be in the great outdoors!");*/
 
 	NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);
 	plantguard->blockExit(NORTHWEST, ENEMY, "blocked by the CARNIVOROUS PLANT.");
 	plantguard->setDialogue("(snapping biting noises)");
-	plantguard->setRejectionDialogue("(snapping biting noises)");
+	plantguard->addRejectionDialogue("(snapping biting noises)");
 
 	NPC* flowerguard = new NPC(*flowerfiend);
 	flowerguard->setLeader(true, 4, flowerfield);
 	flowerguard->setParty(carnplant, carnplant);
 	flowerguard->blockExit(WEST, ENEMY, "blocked by the FLOWER FIEND.");
 	flowerguard->setDialogue("(flowery shriek)");
-	flowerguard->setRejectionDialogue("(flowery shriek)");
+	flowerguard->addRejectionDialogue("(flowery shriek)");
 
 	NPC* savagehog = new NPC("", "SAVAGE HOG", "Dangerous, mammoth elder hog with very sharp prickles.", bossgrove, 80, 15, 20, 10, 30, 15, 15);
 	savagehog->setLeader(true, 5);
 	savagehog->setParty(pricklyhog, greaterhog);
 	savagehog->blockExit(NORTH, ENEMY, "blocked off by the SAVAGE HOG!");
 	savagehog->setDialogue("(SAVAGE ROAR)");
-	savagehog->setRejectionDialogue("Nah sorry mate. I'd rather stay home here in the grove with ma hog family.");
+	savagehog->addRejectionDialogue("Nah sorry mate. I'd rather stay home here in the grove with ma hog family.");
 	savagehog->setEscapable(false);
 	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, -10);
 	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
@@ -1459,7 +1459,7 @@ NPC* SetupWorld() {
 	skeleviking->setEffect(shieldup, false);
 	skeleviking->setBasicAttack(genericattack);
 	savagehog->setDialogue("(angry noise)");
-	savagehog->setRejectionDialogue("(angry noise)");
+	savagehog->addRejectionDialogue("(angry noise)");
 
 	NPC* desertguard = new NPC(*sandman);
 	desertguard->setLeader(true, 5, desert);
@@ -1475,10 +1475,10 @@ NPC* SetupWorld() {
 	jimshady2->setLeader(true, 5, desert);
 	jimshady2->blockExit(NORTHEAST, ENEMY, "blocked by JIM SHADY.", true);
 	jimshady2->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
-	jimshady2->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
+	/*jimshady2->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
 	jimshady2->addConversation(self, "No you still aren't.");
-	jimshady2->addConversation(jimshady1, "Nobody asked you.");
-	jimshady2->setRejectionDialogue("No go away.");
+	jimshady2->addConversation(jimshady1, "Nobody asked you.");*/
+	jimshady2->addRejectionDialogue("No go away.");
 
 	NPC* canyonguard = new NPC(*skeleminer);
 	canyonguard->setLeader(true, 8, canyon1);
@@ -1525,27 +1525,27 @@ NPC* SetupWorld() {
 	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20);
 	viola->setScale(0, 0, 1, 0, 1, 0, 2);
 	viola->setLeader(true, 20);
-	viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
+	/*viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
 	viola->addConversation(viola, "So what if I did?");
 	viola->addConversation(self, "Lady you can't just go kidnapping people.");
 	viola->addConversation(viola, "OH YEAH? FIGHT ME!");
-	viola->addConversation(self, "Ok.");
+	viola->addConversation(self, "Ok.");*/
 	viola->setDialogue("AHAHAHAHAHAHAHA!");
-	viola->setGymDialogue("It's leg day oh nooo :(");
-	viola->setRejectionDialogue("Nah, but you can join me and my friends if you want! AHAHAHA!");
-	viola->setRecruitmentDialogue("Really? After what I did? Maybe I could do something good by following you. I think I'll go with. Thanks.");
-	viola->setRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
-	viola->setDismissalDialogue("Well I guess I can watch over the town from that cliff over there. That might be good.");
-	viola->setRedirect(deserttown, deserttownfixed);
-	viola->setLink(viola);
-	viola->addLinkedConvo(viola, "I'm sorry. I'll free everyone...");
+	viola->addGymDialogue("It's leg day oh nooo :(");
+	viola->addRejectionDialogue("Nah, but you can join me and my friends if you want! AHAHAHA!");
+	viola->addRecruitmentDialogue("Really? After what I did? Maybe I could do something good by following you. I think I'll go with. Thanks.");
+	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
+	viola->addDismissalDialogue("Well I guess I can watch over the town from that cliff over there. That might be good.");
+	viola->addRedirect(deserttown, deserttownfixed);
+	viola->addRecruitLink(viola);
+	/*viola->addLinkedConvo(viola, "I'm sorry. I'll free everyone...");
 	viola->addLinkedConvo(viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them...");
 	viola->addLinkedConvo(self, "That's not a very good reason.");
 	viola->addLinkedConvo(viola, "Yeah I know...");
 	viola->addLinkedConvo(viola, "I'm just going to go to that cliff over there...");
 	viola->addLinkedConvo(NULL, "VIOLA went to that cliff over there.");
 	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
-	viola->setRecruitDialogueChange("Alright! Maybe I can do something good by following you.", "I think I'm doing a good job protecting the town so far.");
+	viola->setRecruitDialogueChange("Alright! Maybe I can do something good by following you.", "I think I'm doing a good job protecting the town so far.");*/
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
@@ -1553,7 +1553,7 @@ NPC* SetupWorld() {
 
 	NPC* glutton = new NPC("BURGER GLUTTON", "GREER", "Greedy BURGER official sent to keep all the desert's remaining water for himself. He is bloated with water.", minespring, 100, 40, 10, 0, 0, 0, 10);
 	glutton->setLeader(true, 30, NULL, false);
-	glutton->addConversation(self, "Hey why are you drinking all that water?");
+	/*glutton->addConversation(self, "Hey why are you drinking all that water?");
 	glutton->addConversation(self, "You don't need that much save it for everyone else!");
 	glutton->addConversation(glutton, "Ehehehehe... all da watah is all mine, pal.");
 	glutton->addConversation(glutton, "Official BOIGA MAN ordah.");
@@ -1571,7 +1571,7 @@ NPC* SetupWorld() {
 	glutton->addLinkedConvo(glutton, "Great job lad.");
 	glutton->addLinkedConvo(NULL, "GREER disappeared into the darkness...");
 	glutton->addLinkedConvo(NULL, "The spring's water can now freely flow into the oasis!");
-	glutton->setLinkedRoom(ceoroom, "in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.\nThere is a rotund corpse in the corner");
+	glutton->setLinkedRoom(ceoroom, "in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.\nThere is a rotund corpse in the corner");*/
 	glutton->setTalkOnDefeat();
 	glutton->setForceBattle();
 	glutton->setEscapable(false);
@@ -1581,13 +1581,13 @@ NPC* SetupWorld() {
 	lavaguard->setLeader(true, 40, NULL, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("(ethereal breathing)");
-	lavaguard->setRejectionDialogue("(ethereal breathing)");
-	lavaguard->setLink(magmelder, "Oh nooooo............");
+	lavaguard->addRejectionDialogue("(ethereal breathing)");
+	/*lavaguard->setLink(magmelder, "Oh nooooo............");
 	lavaguard->addLinkedConvo(magmelder, "Amazing work! The lava has been drained!");
 	lavaguard->addLinkedConvo(magmelder, "But with the way to BURGERSBURG cleared...");
 	lavaguard->addLinkedConvo(magmelder, "People can get BURGERs again...");
 	lavaguard->addLinkedConvo(magmelder, "Oh nooooo...... We fix one problem and another one comes back......");
-	lavaguard->addLinkedConvo(self, "Hm.");
+	lavaguard->addLinkedConvo(self, "Hm.");*/
 	lavaguard->setEscapable(false);
 	lavaguard->setBasicAttack(genericattack);
 
