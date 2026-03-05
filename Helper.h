@@ -5,8 +5,10 @@
 
 #include "NPC.h"
 #include "Item.h"
+#include "WorldState.h"
 #include <vector>
 #include <map>
+struct Conversation;
 
 namespace Helper {
 	void CinIgnoreAll(); //clears extra or faulty input
@@ -25,6 +27,7 @@ namespace Helper {
 	void sortBySpeed(vector<NPC*>& team); //sorts the vector of npcs by speed
 	int aliveCount(vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
+	void printConversation(const Conversation& _convo); //print a conversation in conversation order
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
@@ -34,15 +37,5 @@ namespace Helper {
 	extern std::vector<Item*> itemsH;
 	extern std::vector<Attack*> attacksH;
 	extern std::vector<Effect*> effectsH;
-
-	enum WorldCondition {
-		CEOQUEST,
-		TEMPLEQUEST,
-		BURGERMANDEF,
-		BURGERMENDEF,
-		NEVER //never set never to true
-	};
-
-	extern bool WorldState[NEVER]; //the state of the world! (must be as big as the last condition in WorldCondition, works since enumerators are technically ints!)
 }
 #endif

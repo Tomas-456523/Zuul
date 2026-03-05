@@ -63,13 +63,24 @@ public: //you need to set stats on creation
 	bool getRespawn(); //if they respawn
 
 	//bunch of functions for affecting npc variables
-	void setDialogue(Conversation _dialogue); //sets the dialogue for the npc
-	void setGymDialogue(Conversation _dialogue); //sets what the npc says in the gym
-	void setRejectionDialogue(Conversation _dialogue); //sets the rejection dialogue for the npc
-	void setRecruitmentDialogue(Conversation _dialogue); //sets the recruitment dialogue for the npc
-	void setRecruitedDialogue(Conversation _dialogue); //sets the recruited dialogue for the npc
-	void setRecruitDialogueChange(Conversation _dialogue); //sets new recruitment and normal dialogue after recruiting
-	void setDismissalDialogue(const char* _dialogue); //sets the dismissal dialogue for the npc
+	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
+	void addConversation(const Conversation& _dialogue); //add a conversation
+	void addGymDialogue(const Conversation& _dialogue); //sets what the npc says in the gym
+	void addRejectionDialogue(const Conversation& _dialogue); //sets the rejection dialogue for the npc
+	void addRecruitmentDialogue(const Conversation& _dialogue); //sets the recruitment dialogue for the npc
+	void addRecruitedDialogue(const Conversation& _dialogue); //sets the recruited dialogue for the npc
+	void setRecruitDialogueChange(const Conversation& _dialogue); //sets new recruitment and normal dialogue after recruiting
+	void addDismissalDialogue(const Conversation& _dialogue); //sets the dismissal dialogue for the npc
+	//same stuff but they accept just one line for simplicity
+	void setDialogue(const char* _dialogue);
+	void addConversation(const char* _dialogue);
+	void addGymDialogue(const char* _dialogue);
+	void addRejectionDialogue(const char* _dialogue);
+	void addRecruitmentDialogue(const char* _dialogue);
+	void addRecruitedDialogue(const char* _dialogue);
+	void setRecruitDialogueChange(const char* _dialogue);
+	void addDismissalDialogue(const char* _dialogue);
+
 	void setRecruitable(bool _recruitable); //set if you can recruit them
 	void Recruit(); //set recurited to true
 	void Dismiss(bool gohome = true); //dismiss them and go home if specified
@@ -78,6 +89,7 @@ public: //you need to set stats on creation
 	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL, NPC* npc5 = NULL, NPC* npc6 = NULL, NPC* npc7 = NULL, NPC* npc8 = NULL, NPC* npc9 = NULL, NPC* npc10 = NULL, NPC* npc11 = NULL, NPC* npc12 = NULL, NPC* npc13 = NULL, NPC* npc14 = NULL, NPC* npc15 = NULL, NPC* npc16 = NULL, NPC* npc17 = NULL, NPC* npc18 = NULL, NPC* npc19 = NULL);
 	void setName(const char* _name);
 	void setTitle(const char* _title);
+	void setDescription(const char* _description);
 	void setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp);
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false);
@@ -95,15 +107,18 @@ public: //you need to set stats on creation
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char* suffix); //add suffix to end of npc name
 	void setGuard(int _guard); //set guard to block attacks
-	void setLink(NPC* npc, const char* dialogue = ""); //linked npc to affect on defeat
-	void setLinkedRoom(Room* room, const char* desc); //room to affect on defeat
 	void setGift(Item* item); //item to give when talking
-	void setRedirect(Room* room1, Room* room2); //set room to redirect upon defeat
 	void setEffect(Effect* effect, bool battle = true); //add an effect to the npc
 	void removeEffect(Effect& effect);
 
-	void addConversation(NPC* speaker, const char* dialogue, bool newConversation = false); //add a conversation line to the npc, and make a new conversation if specified
-	void addLinkedConvo(NPC* speaker, const char* dialogue);
+	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
+	void addRecruitLink(NPC* npc);
+	void addDefeatRoom(NPC* npc, Room* room);
+	void addLinkedDialogue(NPC* speaker, const Conversation& dialogue);
+	void addLinkedTitle(NPC* npc, const char* title);
+	void addLinkedDesc(NPC* npc, const char* desc);
+	void addLinkedRoom(Room* room, const char* desc); //room to affect on defeat
+	void addRedirect(Room* room1, Room* room2); //set room to redirect upon defeat
 	
 	void printDialogue(Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
 	void printRejectionDialogue(); //prints the rejection dialogue for the npc
@@ -112,7 +127,7 @@ public: //you need to set stats on creation
 
 	void printDamage(int damage, const char* status = NULL);
 	void printEffects();
-	void getDescription(); //gets the description of the character
+	const char* getDescription(); //gets the description of the character
 	
 
 	bool getTalkOnDefeat(); //gets if the npc talks after being defeated
@@ -126,8 +141,6 @@ public: //you need to set stats on creation
 
 	const char* getTunnelDirection(Room* room); //gets the direction back to the given room from the tunnels (for lobster only)
 	void setTunnelDirection(Room* room, const char* direction); //sets tunnel directions (for lobster only)
-
-	void setDefeatNPC(const char* newTitle, const char* newDesc, const char* newDialogue, Room* newRoom); //sets what the npc changes to after being defeated
 
 	void defeat(); //set the enemy to defeated and do a bunch of defeated processes if applicable
 	void undefeat(); //set the enemy to not defeated

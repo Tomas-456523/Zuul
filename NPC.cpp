@@ -8,6 +8,7 @@
 #include <utility>
 #include "NPC.h"
 #include "Helper.h"
+#include "Conversation.h"
 using namespace std;
 using namespace Helper;
 
@@ -192,28 +193,54 @@ Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because t
 	return item;
 }
 //a bunch of functions to set npc variables
-#error "You still need to edit these"
-void NPC::setDialogue(const char* _dialogue) {
+void NPC::setDialogue(const Conversation& _dialogue) {
 	dialogue = _dialogue;
 }
-void NPC::setGymDialogue(const char* _dialogue) {
-	gymDialogue = _dialogue;
+void NPC::addGymDialogue(const Conversation& _dialogue) {
+	gymDialogue.push(_dialogue);
 }
-void NPC::setRejectionDialogue(const char* _dialogue) {
-	rejectionDialogue = _dialogue;
+void NPC::addRejectionDialogue(const Conversation& _dialogue) {
+	rejectionDialogue.push(_dialogue);
 }
-void NPC::setRecruitmentDialogue(const char* _dialogue) {
-	recruitmentDialogue = _dialogue;
+void NPC::addRecruitmentDialogue(const Conversation& _dialogue) {
+	recruitmentDialogue.push(_dialogue);
 }
-void NPC::setRecruitedDialogue(const char* _dialogue) {
-	recruitedDialogue = _dialogue;
+void NPC::addRecruitedDialogue(const Conversation& _dialogue) {
+	recruitedDialogue.push(_dialogue);
 }
-void NPC::setDismissalDialogue(const char* _dialogue) {
-	dismissalDialogue = _dialogue;
+void NPC::addDismissalDialogue(const Conversation& _dialogue) {
+	dismissalDialogue.push(_dialogue);
 }
-void NPC::setRecruitDialogueChange(const char* _recruitment, const char* _normal) {
-	newRecruitmentDialogue = _recruitment;
-	newDialogue = _normal;
+void NPC::addConversation(const Conversation& _dialogue) { //add a conversation to the npc's dialogue
+	conversations.push(_dialogue); //create a pair of speaker-dialogue in the conversations queue
+}
+void NPC::setRecruitDialogueChange(const Conversation& _dialogue) {
+	newDialogue = _dialogue;
+}
+//same thing but it accepts one line for simple dialogues
+void NPC::setDialogue(const char* _dialogue) {
+	dialogue = {{this, _dialogue}};
+}
+void NPC::addGymDialogue(const char* _dialogue) {
+	gymDialogue.push(Conversation({{this, _dialogue}}));
+}
+void NPC::addRejectionDialogue(const char* _dialogue) {
+	rejectionDialogue.push(Conversation({{this, _dialogue}}));
+}
+void NPC::addRecruitmentDialogue(const char* _dialogue) {
+	recruitmentDialogue.push(Conversation({{this, _dialogue}}));
+}
+void NPC::addRecruitedDialogue(const char* _dialogue) {
+	recruitedDialogue.push(Conversation({{this, _dialogue}}));
+}
+void NPC::addDismissalDialogue(const char* _dialogue) {
+	dismissalDialogue.push(Conversation({{this, _dialogue}}));
+}
+void NPC::addConversation(const char* _dialogue) { //add a conversation to the npc's dialogue
+	conversations.push(Conversation({{this, _dialogue}})); //create a pair of speaker-dialogue in the conversations queue
+}
+void NPC::setRecruitDialogueChange(const char* _dialogue) {
+	newDialogue = {{this, _dialogue}};
 }
 void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
@@ -222,10 +249,9 @@ void NPC::Recruit() { //recruits the npc
 	if (conversations.size() > 0) {
 		printDialogue(); //I want the player to hear the dialogue before being recriuted so we print it here if it hasn't been heard yet
 	}
-#error "consider this"
-	/*if (strlen(newDialogue)) {
+	if (!newDialogue.empty()) {
 		dialogue = newDialogue;
-	}*/
+	}
 	recruited = true;
 }
 void NPC::Dismiss(bool gohome) { //removes the npc from the party
@@ -257,6 +283,9 @@ void NPC::setName(const char* _name) {
 }
 void NPC::setTitle(const char* _title) {
 	title = _title;
+}
+void NPC::setDescription(const char* _description) {
+	description = _description;
 }
 void NPC::addXp(int _xp) { //adds xp and checks for level up
 	xp += _xp;
@@ -428,19 +457,17 @@ void NPC::setLevelUp(bool _leveledUp) { //set if we leveled up
 void NPC::setGuard(int _guard) {
 	guard = _guard;
 }
-void NPC::setLink(NPC* npc, const char* dialogue) { //links this npc to another one
-	linkedNPC = npc;
-	linkedDialogue = dialogue; //the npc gets their dialogue changed to this after this one is defeated
+void NPC::addRecruitLink(NPC* npc) { //links this npc to be set to recuritable later
+	recruitLinks.push(npc);
 }
-void NPC::setLinkedRoom(Room* room, const char* desc) { //links this npc to a room
-	linkedRoom = room;
-	linkedDescription = desc; //the npc gets their description changed to this after this one is defeated
+void NPC::addLinkedRoom(Room* room, const char* desc) { //room's description gets changed to this after this npc is defeated
+	roomChanges.push({room, desc});
 }
 void NPC::setGift(Item* item) { //set a gift to give to the player after talking
 	gift = item;
 }
-void NPC::setRedirect(Room* room1, Room* room2) { //makes room1 redirect to room2 after being defeated
-	redirectRoom = make_pair(room1, room2);
+void NPC::addRedirect(Room* room1, Room* room2) { //makes room1 redirect to room2 after being defeated
+	redirectRooms.push({room1, room2});
 }
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
@@ -576,23 +603,23 @@ void NPC::defeat() {
 		exitBlocking = NULL;
 	}
 	while (!recruitLinks.empty()) {
-		Npc* npc = recruitLinks.front();
+		NPC* npc = recruitLinks.front();
 		npc->setRecruitable(true);
 		if (npc->getLeader()) {
-			linkedNPC->setLeader(false);
-			linkedNPC->undefeat();
+			npc->setLeader(false);
+			npc->undefeat();
 		}
-		recruitLinks.pop()
+		recruitLinks.pop();
 	}
 	while (!linkedConversations.empty()) {
 		pair<NPC*, Conversation>& data = linkedConversations.front();
 		data.first->addConversation(data.second);
-		linkedConversations.pop()
+		linkedConversations.pop();
 	}
 	while (!linkedDialogue.empty()) {
 		pair<NPC*, Conversation>& data = linkedDialogue.front();
 		data.first->setDialogue(data.second);
-		linkedDialogue.pop()
+		linkedDialogue.pop();
 	}
 	while (!linkedTitles.empty()) {
 		pair<NPC*, const char*>& data = linkedTitles.front();
@@ -658,30 +685,18 @@ void NPC::defeat() {
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;
 }
-//sets stuff that changes when we defeat this guy
-void NPC::setDefeatNPC(const char* newTitle, const char* newDesc, const char* newDialogue, Room* newRoom) {
-	defeatTitle = newTitle;
-	defeatDescription = newDesc;
-	defeatDialogue = newDialogue;
-	defeatRoom = newRoom;
-	defeatChange = true;
-}
 void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc's name
 	strcat(name, suffix);
 }
-void NPC::addConversation(NPC* speaker, const char* dialogue, bool newConversation) { //add a conversation to the npc's dialogue
-	if (newConversation || !conversations.size()) { //if the queue is empty we reserve a space
-		conversations.emplace();
-	}
-	conversations.back().emplace_back(speaker, dialogue); //create a pair of speaker-dialogue in the conversations vector
+void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a conversation to add to the linked npc
+	linkedConversations.push({speaker, dialogue});
 }
-void NPC::addLinkedConvo(NPC* speaker, const char* dialogue) { //add a conversation to add to the linked npc
-	linkedConversation.emplace_back(speaker, dialogue);
-}
-//prints the npc's dialogue
-void NPC::printDialogue() {
+//prints the npc's dialogue, prioritizing thisone if it's passed
+void NPC::printDialogue(Conversation* thisone) {
 	Conversation conversation; //uninitialized, please initialize
-	if (recruited) { //prints recruited dialogue if recruited
+	if (thisone) { //if we passed thisone, print that one
+		conversation = *thisone;
+	} else if (recruited) { //prints recruited dialogue if recruited
 		conversation = recruitedDialogue.front();
 		if (recruitedDialogue.size() > 1) {
 			recruitedDialogue.pop();
@@ -697,9 +712,9 @@ void NPC::printDialogue() {
 			gymDialogue.pop();
 		}
 	} else { //regular dialogue
-		conversation = dialogue; 
+		conversation = dialogue;
 	}
-	conversation.printDialogue();
+	printConversation(conversation); //courtesy of Helper
 }
 NPC::~NPC() { //destructor
 

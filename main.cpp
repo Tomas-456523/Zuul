@@ -16,13 +16,14 @@
 #include "Helper.h"
 #include "Attack.h"
 #include "Effect.h"
+#include "Conversation.h"
 
 using namespace std;
 using namespace Helper; //my Helper namespace has a bunch of helpful functions that I also use in other files
 
 //sets up the entire game world, including rooms, npcs, and items, and returns the player character
 NPC* SetupWorld() {
-	//set up directions
+	//set up directions MARK: make directions
 	const char* NORTH = "NORTH";
 	const char* SOUTH = "SOUTH";
 	const char* WEST = "WEST";
@@ -88,7 +89,7 @@ NPC* SetupWorld() {
 	const char* LAVA = "LAVA";
 	const char* STUFF = "STUFF";
 
-	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them
+	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//create all WANING WOODLANDS rooms
@@ -392,7 +393,7 @@ NPC* SetupWorld() {
 	
 	//Create attacks
 	
-	//Create NPCs and items
+	//Create NPCs and items MARK: make npcs, items, etc.
 	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target.");
 
@@ -408,8 +409,8 @@ NPC* SetupWorld() {
 
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 16, 5, 4, 0, 1, 5, 2);
 	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -2, -20, 20, 1, 1, 1, true);
-	floria->addConversation(floria, "Hey big brother! Aren't these flowers just so lovely?");
-	floria->addConversation(self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME.");
+	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely?"},
+							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."}});
 	floria->setDialogue("I just love flowers!");
 	floria->setGymDialogue("I love running in circles around the gym! Exercise is so fun!");
 	floria->setRecruitmentDialogue("Yay! I hope we see some new flowers!");
@@ -427,10 +428,10 @@ NPC* SetupWorld() {
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
 	archie->setDialogue("Safe travels, child!");
-	archie->addConversation(archie, "So you are going on a BURGER QUEST, I hear?");
-	archie->addConversation(archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG.");
-	archie->addConversation(archie, "Safe travels, child!");
-	archie->addConversation(archie, "Make sure to bring me back a BURGER! Heh heh heh.");
+	archie->addConversation({{archie, "So you are going on a BURGER QUEST, I hear?"},
+							 {archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG."},
+							 {archie, "Safe travels, child!"},
+							 {archie, "Make sure to bring me back a BURGER! Heh heh heh."}});
 	archie->setRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
 
 	//REPLACE PLACEHOLDER STATS
@@ -444,7 +445,7 @@ NPC* SetupWorld() {
 	burgerman->setBasicAttack(burgpunch);
 	burgerman->setLink(burgerman);
 	burgerman->setLinkedRoom(BURGERRESTAURANT, "in the BURGER RESTAURANT...");
-	burgerman->addLinkedConvo(NULL, "The BURGER MAN .");
+	//burgerman->addLinkedConvo(NULL, "The BURGER MAN .");
 	/*burgerman->addLinkedConvo(developer, "Hey what's up?");
 	burgerman->addLinkedConvo(self, "So I was wondering,");
 	burgerman->addLinkedConvo(self, "what's up with all the parallel universes in the first game?");
@@ -515,37 +516,37 @@ NPC* SetupWorld() {
 	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
 	mrdeer->setGift(deerkey);
-	mrdeer->addConversation(self, "Hello MR. DEER!");
-	mrdeer->addConversation(mrdeer, "(salutatory deer noises)");
-	mrdeer->addConversation(self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key.");
-	mrdeer->addConversation(mrdeer, "(warning deer noises)");
-	mrdeer->addConversation(mrdeer, "(concerned deer noise)");
-	mrdeer->addConversation(mrdeer, "(thinking deer noises)");
-	mrdeer->addConversation(mrdeer, "...");
-	mrdeer->addConversation(self, "I hope he gives me the key...");
-	mrdeer->addConversation(mrdeer, "(reluctantly affirmative deer noise)");
-	mrdeer->addConversation(self, "AYYY thank you so much MR. DEER!");
+	mrdeer->addConversation({{self, "Hello MR. DEER!"},
+							 {mrdeer, "(salutatory deer noises)"},
+							 {self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key."},
+							 {mrdeer, "(warning deer noises)"},
+							 {mrdeer, "(concerned deer noise)"},
+							 {mrdeer, "(thinking deer noises)"},
+							 {mrdeer, "..."},
+							 {self, "I hope he gives me the key..."},
+							 {mrdeer, "(reluctantly affirmative deer noise)"},
+							 {self, "AYYY thank you so much MR. DEER!"}});
 	mrdeer->setDialogue("(deer noises)");
 	mrdeer->setRejectionDialogue("(no thank you deer noise)");
 
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 500, 25000);
-	wallelder->addConversation(wallelder, "Child, are you on a BURGER QUEST?");
-	wallelder->addConversation(self, "Indeed I am.");
-	wallelder->addConversation(wallelder, "Do not be fooled by the allure of BURGER. Why do you crave it so?");
-	wallelder->addConversation(wallelder, "Because you've been told you do?");
-	wallelder->addConversation(wallelder, "BURGER is formed from the essence of evil. Have you seen the desert above?");
-	wallelder->addConversation(self, "Uh huh.");
-	wallelder->addConversation(wallelder, "It used to be a beautiful forest, full of life like the one to the south.");
-	wallelder->addConversation(wallelder, "But the BURGER MAN ordered the woods parched, and reduced it to the wastes seen today.");
-	wallelder->addConversation(wallelder, "He will continue to do so until nature has been expunged from this world.");
-	wallelder->addConversation(wallelder, "By destroying the means to live, he guides the people by hunger and thirst to his city, where they will be more easily tempted by the BURGER RESTAURANT.");
-	wallelder->addConversation(self, "Dang that's crazy.");
-	wallelder->addConversation(wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below.");
+	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
+								{self, "Indeed I am."},
+								{wallelder, "Do not be fooled by the allure of BURGER. Why do you crave it so?"},
+								{wallelder, "Because you've been told you do?"},
+								{wallelder, "BURGER is formed from the essence of evil. Have you seen the desert above?"},
+								{self, "Uh huh."},
+								{wallelder, "It used to be a beautiful forest, full of life like the one to the south."},
+								{wallelder, "But the BURGER MAN ordered the woods parched, and reduced it to the wastes seen today."},
+								{wallelder, "He will continue to do so until nature has been expunged from this world."},
+								{wallelder, "By destroying the means to live, he guides the people by hunger and thirst to his city, where they will be more easily tempted by the BURGER RESTAURANT."},
+								{self, "Dang that's crazy."},
+								{wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below."}});
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
 	wallelder->setRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");
 
 	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 200, 80, 120, 10, 50, 10, 30, 100);
-	magmelder->addConversation(magmelder, "Oh it's horrible!");
+	/*magmelder->addConversation(magmelder, "Oh it's horrible!");
 	magmelder->addConversation(magmelder, "The lava level around the city has been raised!");
 	magmelder->addConversation(magmelder, "But the allure of BURGER is too great! I've seen people try to sail across and get burnt up!");
 	magmelder->addConversation(magmelder, "Some are even so desperate they try to swim across!");
@@ -553,18 +554,18 @@ NPC* SetupWorld() {
 	magmelder->addConversation(magmelder, "Please! You must lower the lava again! These factories have drainage valves in their control rooms!");
 	magmelder->addConversation(self, "Why can't you just do it yourself?");
 	magmelder->addConversation(magmelder, "I would, but I seem to have gotten myself stuck in this pool of lava!");
-	magmelder->addConversation(self, "I see.");
+	magmelder->addConversation(self, "I see.");*/
 	magmelder->setDialogue("You must drain the lava before more lives are lost!");
 	magmelder->setRejectionDialogue("Nay! I must dwell in lava and you must dwell on land. These things conflict, do they not?");
 
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
 	developer->setDialogue("Yo wassup.");
-	developer->addConversation(self, "Yo developer man.");
-	developer->addConversation(developer, "Yeah?");
-	developer->addConversation(self, "Why is everything text?");
-	developer->addConversation(developer, "Because the camera man is on vacation.");
-	developer->addConversation(developer, "Only the narrator could cover his shift.");
-	developer->addConversation(self, "Oh I see.");
+	developer->addConversation({{self, "Yo developer man."},
+								{developer, "Yeah?"},
+								{self, "Why is everything text?"},
+								{developer, "Because the camera man is on vacation."},
+								{developer, "Only the narrator could cover his shift."},
+								{self, "Oh I see."}});
 	developer->setRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
 	/*burgerman->setLink(developer);
 	burgerman->addLinkedConvo(self, "Yo developer man.");
@@ -592,11 +593,14 @@ NPC* SetupWorld() {
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 20, 20, 25, 30, 10, 0, 10);
 	forestknight->setScale(1, 2, 1, 1, 0, 0, 0);
 	forestknight->setLevel(30);
-	forestknight->setRejectionDialogue("I sense that you are on a BURGER QUEST. I will not assist you in obtaining this object of sin.\nI implore you to find a new, more noble goal for your quest.");
-	forestknight->addConversation(forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots.");
-	forestknight->addConversation(forestknight, "Does he not sleep? Does he not eat?");
-	forestknight->addConversation(forestknight, "From what I have seen, no. Nevertheless, I must thank you, child, for freeing me from that shrimp's hold.");
-	forestknight->addConversation(self, "Yeah no problem.");
+	forestknight->setRejectionDialogue({{forestknight, "I sense that you are on a BURGER QUEST."},
+										{forestknight, "I will not assist you in obtaining this object of sin."},
+										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
+	forestknight->addConversation({{forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots."},
+								   {forestknight, "Does he not sleep? Does he not eat?"},
+								   {forestknight, "From what I have seen, no."},
+								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's hold."},
+								   {self, "Yeah no problem."}});
 
 	/*(forestknight, "Child, I cannot join you on your quest. I shan't assist you in obtaining the evil BURGER.");
 	(self, "Nah bro I'm not doing that anymore.");
@@ -665,7 +669,25 @@ NPC* SetupWorld() {
 	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
 	techdemoman->setRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
 
-	//Create exits between rooms
+	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", "applied the sunscreen. No amount of heat should bother you now!", limbo, HEAT, true);
+	KeyItem* _sunscreen = (KeyItem*)sunscreen;
+	_sunscreen->setTarget(volcanoentrance);
+	desertshopfixed->setStock(sunscreen, 1, 20, "MERRO - \"Thank you for your monies.\"");
+	
+	/*NPC* child = new NPC("CHILD", "JILLY", "A small child, daughter of MATILDA.", limbo);
+	NPC* worriedmother = new NPC("", "MATILDA", "A frequent churchgoer.", burgchurch);
+	worriedmother->addConversation(self, "You look distressed.");
+	self->addConversation(self, "My daughter,");
+	self->addConversation(self, "You look distressed.");
+	self->addConversation(self, "You look distressed.");*/
+	
+	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom);
+	skeleseller->setDialogue("Well hello there, short individual! Could I interest you in some explosives?");
+	skeleseller->setRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
+	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true);
+	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
+
+	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forestentrance);
 	village->setExit(WEST, villageleft);
@@ -1569,7 +1591,7 @@ NPC* SetupWorld() {
 	lavaguard->setEscapable(false);
 	lavaguard->setBasicAttack(genericattack);
 
-	//block exits
+	//block exits MARK: block exits
 	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
 	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
 	desertstation->blockExit(NORTHEAST, TUNNEL, "blocked by endless rubble.");
@@ -1628,20 +1650,13 @@ NPC* SetupWorld() {
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
 
-	//make some final items for unblocking exits
+	//make some final items for unblocking exits MARK: more items
 
 	Item* cloaking = new KeyItem("CLOAKING DEVICE", "Cloaking device for getting past advanced security systems.", "equipped the cloaking device. No security system can spot you now!", limbo, TEMPLE, true);
 	KeyItem* _cloaking = (KeyItem*)cloaking;
 	_cloaking->setTarget(richneighborhood1);
 	_cloaking->setTarget(richneighborhood2);
 	_cloaking->setTarget(richneighborhood3);
-
-	NPC* child = new NPC("CHILD", "JILLY", "A small child, daughter of MATILDA.", limbo);
-	NPC* worriedmother = new NPC("", "MATILDA", "A frequent churchgoer.", burgchurch);
-	worriedmother->addConversation(self, "You look distressed.");
-	self->addConversation(self, "My daughter,");
-	self->addConversation(self, "You look distressed.");
-	self->addConversation(self, "You look distressed.");
 
 	//make coolant attack that slows down enemies
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
@@ -1654,17 +1669,6 @@ NPC* SetupWorld() {
 	minecart2->setTakable(false);
 	minecart1->setDenial("This minecart is clamped onto the minecart tracks!");
 	minecart2->setDenial("This minecart is clamped onto the minecart tracks!");
-
-	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", "applied the sunscreen. No amount of heat should bother you now!", limbo, HEAT, true);
-	KeyItem* _sunscreen = (KeyItem*)sunscreen;
-	_sunscreen->setTarget(volcanoentrance);
-	desertshopfixed->setStock(sunscreen, 1, 20, "MERRO - \"Thank you for your monies.\"");
-
-	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom);
-	skeleseller->setDialogue("Well hello there, short individual! Could I interest you in some explosives?");
-	skeleseller->setRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
-	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true);
-	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
 
 	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
 	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", "There is nowhere to put the DOWN BUTTON! ... You shove the DOWN BUTTON into the wall. The elevator can go DOWN now!", burgsafe, elevator, DOWN, elevatorbottom);
@@ -1699,7 +1703,7 @@ NPC* SetupWorld() {
 	return self; //returns the player character
 }
 
-//prints all the properties of the given room
+//prints all the properties of the given room MARK: print room data
 void PrintRoomData(Room* currentRoom) {
 	currentRoom->printWelcome(); //some rooms have messages they print on arrival
 	cout << "\nYou are " << currentRoom->getDescription();
@@ -1710,7 +1714,7 @@ void PrintRoomData(Room* currentRoom) {
 	currentRoom->printBlocks(); //prints which exits are blocked
 }
 
-//move the player and co. to a new room based on direction, or also just teleopring to forceDest if given
+//move the player and co. to a new room based on direction, or also just teleopring to forceDest if given MARK: travel
 void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, bool forceTravel = false, Room* forceDest = NULL) {
 	Room* roomCanidate = NULL; //the room we're trying to go to
 	if (forceDest != NULL) { //we just teleoprt to this room if given
@@ -1764,7 +1768,7 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, bool
 	PrintRoomData(currentRoom); //prints the data of the current room
 }
 
-//initiates battle with an npc
+//initiates battle with an npc MARK: fight
 void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, const char* name, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //try to find the given npc in the room
 	if (npc == NULL) { //try to find npc in adjacent exits
@@ -1920,7 +1924,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	PrintRoomData(currentRoom);
 }
 
-//takes an item from the current room and adds it to the inventory
+//takes an item from the current room and adds it to the inventory MARK: take item
 void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname) {
 	//finds the item in the room based on the name
 	Item* item = getItemInVector(currentRoom->getItems(), itemname);
@@ -1963,7 +1967,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname)
 	}
 }
 
-//drops an item from the inventory into the current room
+//drops an item from the inventory into the current room MARK: drop item
 void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname) {
 	Item* item = getItemInVector(*inventory, itemname); //finds the item in the inventory
 	if (item == NULL) { //gives error message if we have no itemname
@@ -1976,7 +1980,7 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname)
 	cout << "\nYou dropped the " << itemname << ".";
 }
 
-//uses an item, with functionality based on type
+//uses an item, with functionality based on type MARK: use item
 void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, const char* itemname, int& mony) {
 	//in addition to items, you can also USE the tunnel lobster for fast travel
 	//it's probably bad practice to have this here, but it's functional practice! :)
@@ -2208,7 +2212,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	}
 }
 
-//recruit an npc into the player party
+//recruit an npc into the player party MARK: recruit
 void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int maxParty = 4) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc we're trying to recruit
 	if (npc == NULL) { //try to find npc in adjacent exits
@@ -2242,7 +2246,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	cout << "\n" << npcname << " was added to your party! (party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 }
 
-//decruit npcs from your party
+//decruit npcs from your party MARK: dismiss
 void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //find the npc to dismiss
 	if (npc == NULL) { //try to find npc in adjacent exits
@@ -2273,7 +2277,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 	npc->Dismiss(!gym);
 }
 
-//prints anything the targeted npc has to say
+//prints anything the targeted npc has to say MARK: print dialogue
 void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inventory, vector<NPC*>* party, int& mony) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), npcname); //finds the npc named npcname
 	if (npc == NULL) { //try to find npc in adjacent exits
@@ -2298,7 +2302,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 	}
 }
 
-//prints the player's monies and inventory items
+//prints the player's monies and inventory items MARK: print inventory
 void printInventory(vector<Item*>* inventory, int monies) {
 	cout << "\nYou have " << monies << " monies, and you"; //prints mony amount
 	if (inventory->size() < 1) { //if we have no items, we say that
@@ -2311,7 +2315,7 @@ void printInventory(vector<Item*>* inventory, int monies) {
 	}
 }
 
-//prints the player's party
+//prints the player's party MARK: print party
 void printParty(vector<NPC*>* party) {
 	cout << "\nMembers of your party:";
 	for (NPC* npc : *party) { //prints everyone's title if they have one, and then their name and level
@@ -2323,7 +2327,7 @@ void printParty(vector<NPC*>* party) {
 	}
 }
 
-//analyzes either an item or npc of the given name
+//analyzes either an item or npc of the given name MARK: analyze
 void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<Item*>* inventory) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //tries to find an npc in the room or party
 	if (npc == NULL) { //try to find npc in adjacent exits
@@ -2347,7 +2351,7 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 	cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
-//buys an item from the current room's catalogue
+//buys an item from the current room's catalogue //MARK: buy
 void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getStock(), name); //finds the item in the current room's stock
 	if (item == NULL) { //gives error message based on other conditions
@@ -2367,7 +2371,7 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 	}
 }
 
-//prints all the available commands
+//prints all the available commands MARK: help
 void printHelp(char validCommands[16][255], char flavorText[16][255]) {
 	cout << "\n"; //prints a random flavor text
 	cout << flavorText[rand() % 16];
@@ -2377,7 +2381,7 @@ void printHelp(char validCommands[16][255], char flavorText[16][255]) {
 	}
 }
 
-//the main function where everything is called
+//the main function where everything is called MARK: main
 int main() {
 	srand(time(NULL)); //seeds random
 		
