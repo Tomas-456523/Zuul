@@ -17,6 +17,7 @@
 #include "Attack.h"
 #include "Effect.h"
 #include "Conversation.h"
+#include "Stats.h"
 
 using namespace std;
 using namespace Helper; //my Helper namespace has a bunch of helpful functions that I also use in other files
@@ -1852,47 +1853,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		CinPause();
 		//prints if any teammates leveled up and prints if so
 		for (NPC* teammate : *party) {
-			if (teammate->getLevelUp()) {
-				cout << teammate->getName() << " leveled up! " << teammate->getName() << " is now Level " << teammate->getLevel() << "!";
-				teammate->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
-				CinPause();
-				vector<int>& statChanges = teammate->getStatChanges();
-				cout << "  HEALTH - " << teammate->getHealthMax(); //prints all the new stats of the npc
-				if (statChanges[0]) {
-					cout << " (+" << statChanges[0] << ")";
-				}
-				cout << "\t  DEFENSE - " << teammate->getDefense();
-				if (statChanges[1]) {
-					cout << " (+" << statChanges[1] << ")";
-				}
-				cout << "\n  ATTACK - " << teammate->getAttack();
-				if (statChanges[2]) {
-					cout << " (+" << statChanges[2] << ")";
-				}
-				cout << "\t  TOUGHNESS - " << teammate->getToughness();
-				if (statChanges[3]) {
-					cout << " (+" << statChanges[3] << ")";
-				}
-				cout << "\n  PIERCE - " << teammate->getPierce();
-				if (statChanges[4]) {
-					cout << " (+" << statChanges[4] << ")";
-				}
-				cout << "\t  SPEED - " << teammate->getSpeed();
-				if (statChanges[5]) {
-					cout << " (+" << statChanges[5] << ")";
-				}
-				cout << "\n  MAX SP - " << teammate->getSPMax();
-				if (statChanges[6]) {
-					cout << " (+" << statChanges[6] << ")";
-				}
-				CinPause();
-				Attack* newAtt = teammate->getNewAttack(); //checks if the teammate learned a new attack
-				if (newAtt != NULL) { //print the attack and what it does
-					cout << "\n" << teammate->getName() << " learned " << newAtt->name << "!\n" << newAtt->name << " - " << newAtt->trueDesc;
-					CinPause();
-				}
-				cout << "\n";
-			}
+			printLvlUpData(teammate);
 		}
 		//sets the npc as defeated
 		npc->defeat();
@@ -2271,6 +2232,9 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	npc->Recruit(); //sets the npc to recruited
 	npc->printRecruitmentDialogue(); //print the recruitment dialogue
 	cout << "\n" << npcname << " was added to your party! (Party size: " << party->size() << "/" << maxParty << ")"; //prints success text
+	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
+		printLvlUpData(npc);
+	}
 }
 
 //decruit npcs from your party MARK: dismiss

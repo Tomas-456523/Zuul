@@ -13,24 +13,19 @@ using namespace std;
 using namespace Helper;
 
 //constructs the npc!
-NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp, int _level, bool _isleader, bool _player) {
+NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, Stats _basestats, int _level, bool _isleader, bool _player) {
 	title = _title;
 	strcpy(name, _name);
 	description = _description;
 	home = room;
 	currentRoom = room;
 	room->setNPC(this); //make sure the room knows the npc is there
-	health = _health; //set the stats
-	maxHealth = _health;
-	defense = _defense;
-	attack = _attack;
-	toughness = _toughness;
-	pierce = _pierce;
-	speed = _speed;
+	stats = basestats = _basestats; //effective stats start as base stats
+	scale = Stats.getStatScale(basestats);
+	health = stats.hpmax; //xp starts at max
+	sp = 0; //sp starts at 0 in each battle so it has to be built up
 	isLeader = _isleader;
 	isPlayer = _player;
-	sp = 0; //sp starts at 0 in each battle so it has to be built up
-	maxSP = _sp;
 	if (isLeader) { //adds itself to its own party if it's a leader npc (fightable or the player)
 		party.push_back(&*this);
 	}
@@ -41,10 +36,12 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 		level = _level;
 	}
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
+	id = npcID++; //get this npc's id and increment it for the next one
 }
-NPC::NPC(const NPC& other) { //copy constructor
+NPC::NPC(const NPC& other) { //copy constructor, we do not need to set the stats because we only copy during battle when stats should be the same and during setup world where all the templates are level 0 anyway
 	*this = other;
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
+	id = npcID++; //get this npc's id and increment it for the next one
 }
 //a bunch of functions for getting npc varaibles
 const char* NPC::getTitle() {
@@ -153,10 +150,14 @@ bool NPC::getLevelUp() {
 	return leveledUp;
 }
 vector<int>& NPC::getStatChanges() {
-	return statChanges;
+	Stats changes = statChangesSum;
+	statChangesSum = Stats(); //reset stat changes because we don't need to track them anymore
+	return changes; //return the stats we recovered
 }
-Attack* NPC::getNewAttack() {
-	return newAttack;
+vector<Attack*> NPC::getNewAttacks() {
+	vector<Attack*> attacks = newAttacks;
+	newAttacks.clear(); //reset new attacks because we don't need to track them anymore
+	return attacks; //return the attacks we recovered
 }
 bool NPC::getEnemy() {
 	return isEnemy;
@@ -303,31 +304,19 @@ void NPC::addXp(int _xp) { //adds xp and checks for level up
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
 void NPC::levelUp(bool trackLevelUp) {
-	statChanges[0] = healthScale + rand() % 2; //set the stat changes seperately so we can print them later
-	statChanges[1] = defenseScale + rand() % 2;
-	statChanges[2] = attackScale + rand() % 2;
-	statChanges[3] = toughnessScale + rand() % 2;
-	statChanges[4] = pierceScale; //pierce doesn't update unless I manually set pierce scale, keeping it like the other ones just felt weird to me; you don't get more spiky the more you level up
-	statChanges[5] = speedScale + rand() % 2;
-	statChanges[6] = spScale + rand() % 2;
-	maxHealth += statChanges[0]; //apply the stat changes
-	health = maxHealth; //we must start battle at max health so we update current health to match the max
-	defense += statChanges[1];
-	attack += statChanges[2];
-	toughness += statChanges[3];
-	pierce += statChanges[4];
-	speed += statChanges[5];
-	maxSP += statChanges[6];
+	statChanges += Stats.makeLvLStats(level, id); //(deterministically) set the stat changes seperately so we can print them later
+	stats += statChanges; //apply the stat changes
+	health = stats.maxHealth; //we must start battle at max health so we update current health to match the max
+	//sp = 0
 	level++; //increments the level
 	leveledUp = trackLevelUp; //registers that we've leveled up so that we can print it later
 	for (Attack* attack : special_attacks) { //checks if we got a new attack
 		if (attack->minLevel == level) {
-			newAttack = attack; //save the new attack so we can print that we got it later (assumes we only learn one attack maximum per level, so make sure that's the case)
+			if (trackLevelUp) newAttacks.push_back(attack); //save the new attack so we can print that we got it later
 			calculateWeights(); //recalculate weights to account for the new attack
 			return;
 		}
 	}
-	newAttack = NULL; //mark that we did not learn a new attack
 }
 //makes this npc a leader npc
 void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn) {

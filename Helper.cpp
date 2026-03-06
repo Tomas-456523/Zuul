@@ -221,6 +221,34 @@ namespace Helper {
 			}
 		}
 	}
+	void printLvlUpData(const NPC* npc) {
+		if (npc->getLevelUp()) {
+			cout << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
+			npc->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
+			CinPause();
+			Stats statChanges = npc->getStatChanges();
+			cout << "  HEALTH - " << npc->getHealthMax(); //prints all the new stats of the npc
+			if (statChanges[0]) cout << " (+" << statChanges[0] << ")";
+			cout << "\t  DEFENSE - " << npc->getDefense();
+			if (statChanges[1]) cout << " (+" << statChanges[1] << ")";
+			cout << "\n  ATTACK - " << npc->getAttack();
+			if (statChanges[2]) cout << " (+" << statChanges[2] << ")";
+			cout << "\t  TOUGHNESS - " << npc->getToughness();
+			if (statChanges[3]) cout << " (+" << statChanges[3] << ")";
+			cout << "\n  PIERCE - " << npc->getPierce();
+			if (statChanges[4]) cout << " (+" << statChanges[4] << ")";
+			cout << "\t  SPEED - " << npc->getSpeed();
+			if (statChanges[5]) cout << " (+" << statChanges[5] << ")";
+			cout << "\n  MAX SP - " << npc->getSPMax();
+			if (statChanges[6]) cout << " (+" << statChanges[6] << ")";
+			CinPause();
+			for (Attack* att : npc->getNewAttacks()) { //print any new attacks learned and what they do
+				cout << "\n" << npc->getName() << " learned " << att->name << "!\n" << att->name << " - " << att->trueDesc;
+				CinPause();
+			}
+			cout << "\n";
+		}
+	}
 
 	//map to find the opposite of the given direction (eg. ReverseDirection[SOUTH] == NORTH)
 	map<const char*, const char*> ReverseDirection;
@@ -232,5 +260,7 @@ namespace Helper {
 	vector<Effect*> effectsH;
 
 	bool WorldState[NEVER] = {false}; //every world state starts as false
+
+	int npcID = 0; //npcID starts at 0, since it's the npcsH index
 
 }

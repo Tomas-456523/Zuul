@@ -12,6 +12,7 @@
 #include "Effect.h"
 #include "Attack.h"
 #include "Conversation.h"
+#include "Stats.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
@@ -19,7 +20,7 @@ class Item;
 
 class NPC { //for game testing purposes, all stats default to 20
 public: //you need to set stats on creation
-	NPC(const char* _title, const char* _name, const char* _description, Room* room, int _health = 20, int _defense = 20, int _attack = 20, int _toughness = 20, int _pierce = 20, int _speed = 20, int _sp = 20, int _level = 0, bool _isleader = false, bool _player = false);
+	NPC(const char* _title, const char* _name, const char* _description, Room* room, Stats _basestats, int _level = 0, bool _isleader = false, bool _player = false);
 	~NPC();
 
 	NPC(const NPC& other);
@@ -55,7 +56,7 @@ public: //you need to set stats on creation
 	map<Attack*, int> getWeights();
 	bool getLevelUp(); //if we leveled up recently
 	vector<int>& getStatChanges(); //the stat changes from the last level up
-	Attack* getNewAttack();
+	vector<Attack*> getNewAttacks();
 	bool getDefeated(); //if npc has been defeated since entering the room
 	Item* takeGift(); //return and nullify the gift item
 	vector<Effect>& getEffects();
@@ -158,6 +159,8 @@ protected:
 	Room* home; //where the npc goes after being dismissed
 	Room* currentRoom;
 
+	int id; //npc's index in npcsH
+
 	vector<NPC*> party; //the npc's party if it is a leader
 
 	Attack* standard_attack; //the npc's normal attack for generating sp
@@ -190,30 +193,24 @@ protected:
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels  if it's the lobster
 
 	//npc stats
+	Stats basestats; //base stats
+	Stats stats; //the actual stats including level up increases
+	Stats scale; //how much each stat increases (minimum) each level up
 	int health; //current health
-	int maxHealth;
-	int defense;
-	int attack;
-	int toughness; //how much defense resists attack and pierce
-	int pierce; //how much defense is ignored
-	int speed; //speed determines the order of movement in battle
 	int sp; //sp stands for skill points
-	int maxSP;
+	float attackMult; //multipliers
+	float defenseMult;
+	float pierceMult;
+	float toughMult;
+	float spUseMult; //multiplies sp cost
+	float damageMult; //multiplies damage taken
 	
 	int level = 0;
 	int xp = 0; //how much xp the npc has stored up
 
 	bool leveledUp = false; //if the npc leveled up
-	vector<int> statChanges = {0, 0, 0, 0, 0, 0, 0};
-	Attack* newAttack; //the newest attack we got
-
-	int healthScale = 0; //how much each stat increases (minimum) each level up
-	int defenseScale = 0;
-	int attackScale = 0;
-	int toughnessScale = 0;
-	int pierceScale = 0;
-	int speedScale = 0;
-	int spScale = 0;
+	Stats statChangesSum; //sum of all the stat changes that have occured and haven't been printed yet
+	vector<Attack*> newAttacks; //the newest attacks we've gotten
 
 	int hypnosis = 0; //how hypnotized the npc is
 	int freeze = 0; //how frozen the npc is
