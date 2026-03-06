@@ -106,7 +106,7 @@ namespace Helper {
 		cout << "\t  TOUGHNESS - " << npc->getToughness();
 		cout << "\n  PIERCE - " << npc->getPierce();
 		cout << "\t  SPEED - " << npc->getSpeed();
-		cout << "\n  SKILL - " << npc->getSPMax();
+		cout << "\n  MAX SP - " << npc->getSPMax();
 	}
 	//prints the data of the given item, usually just the name and description
 	void printItemData(Item* item) {

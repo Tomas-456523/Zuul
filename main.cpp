@@ -34,6 +34,7 @@ NPC* SetupWorld() {
 	const char* SOUTHEAST = "SOUTHEAST";
 	const char* UP = "UP";
 	const char* DOWN = "DOWN";
+	const char* IN = "IN";
 	const char* OUT = "OUT";
 	const char* IN_TENT_1 = "IN TENT 1";
 	const char* IN_TENT_2 = "IN TENT 2";
@@ -49,9 +50,11 @@ NPC* SetupWorld() {
 	const char* IN_SAFE = "IN SAFE";
 	const char* IN_TEMPLE = "IN TEMPLE";
 	const char* INSIDE = "INSIDE";
+	const char* OUTSIDE = "OUTSIDE";
 	const char* UPSTAIRS = "UPSTAIRS";
 	const char* DOWNSTAIRS = "DOWNSTAIRS";
 	const char* UNDERGROUND = "UNDERGROUND";
+	const char* ABOVEGROUND = "ABOVEGROUND";
 	const char* FORWARD = "FORWARD";
 	//fast travel directions
 	const char* TO_THE_VILLAGE = "TO THE VILLAGE";
@@ -67,8 +70,8 @@ NPC* SetupWorld() {
 	ReverseDirection[WEST] = EAST;
 	ReverseDirection[UP] = DOWN;
 	ReverseDirection[DOWN] = UP;
-	ReverseDirection[OUT] = UNDERGROUND;
-	ReverseDirection[UNDERGROUND] = OUT;
+	ReverseDirection[ABOVEGROUND] = UNDERGROUND;
+	ReverseDirection[UNDERGROUND] = ABOVEGROUND;
 	ReverseDirection[NORTHEAST] = SOUTHWEST;
 	ReverseDirection[NORTHWEST] = SOUTHEAST;
 	ReverseDirection[SOUTHEAST] = NORTHWEST;
@@ -196,7 +199,7 @@ NPC* SetupWorld() {
 	volcano->setWelcome("You're almost there.");
 	Room* volcano1 = new Room("in the volcanic highlands. An old, abandoned factory stands to the EAST.");
 	Room* volcano2 = new Room("in a volcanic plain. The ashen remains of some plants can be seen here.");
-	Room* volcano3 = new Room("in the scorched remains of an old factory town. I don't think there's any hope of this one's citizens coming back.\nThere's stairs leading down to a train station.");
+	Room* volcano3 = new Room("in the scorched remains of an old factory town.\nThere's stairs leading down to a train station.");
 	Room* volcanostation = new Room("in the factory town train station. Some lava has settled here, but the tunnels are probably still usable?");
 	volcanostation->setStation();
 	Room* volcano4 = new Room("on a scorched path. It reminds you of pepperoni pizza.");
@@ -205,7 +208,7 @@ NPC* SetupWorld() {
 	Room* volcano7 = new Room("at the very edge of the volcanic valley. An huge old bridge forms a road to the city.");
 	//first factory, very small
 	Room* factory1 = new Room("in the factory, on a small grated bridge over a pool of lava.");
-	Room* factorykitchen = new Room("in a makeshift kitchen made from a factory observation room. Whatever was made here before, it now only churns out slag.");
+	Room* factorykitchen = new Room("in a makeshift kitchen made from a factory observation room.\nWhatever was made here before, it now only churns out slag.");
 	Room* controlroom1 = new Room("in the factory control room. The machinery is in rather good condtion.");
 	//second factory
 	Room* factory2 = new Room("in a factory. This one seems more suited for producing actual products.");
@@ -218,8 +221,8 @@ NPC* SetupWorld() {
 	Room* switchroom2 = new Room("in the observation area, for observing the second floor.");
 	Room* conveyor4 = new Room("on an assembly line! This one makes a path between the main second floor rooms.");
 	Room* conveyor5 = new Room("on an assembly line! This one makes a path to a central balcony area.");
-	Room* factorybalcony2 = new Room("on a balcony overlooking the central area. You can also see a garden room of sorts from here, though there is no path to it.");
-	Room* factorygarden = new Room("in a garden which is not wheelchair-accessible. The plants look very unhealthy; they seem to have been experimenting with nuclear technology here.");
+	Room* factorybalcony2 = new Room("on a balcony overlooking the central area.\nYou can also see a garden room of sorts from here, though there is no path to it.");
+	Room* factorygarden = new Room("in a garden which is not wheelchair-accessible.\nThe plants look very unhealthy; they seem to have been experimenting with nuclear technology here.");
 	Room* conveyor3 = new Room("on an assembly line! This one makes a path to the control room.");
 	Room* controlroom2 = new Room("in the factory control room. The machinery looks usable depsite the lava; props to whoever made it!");
 	conveyor1->setConveyor(factorycenter, FORWARD);
@@ -232,7 +235,7 @@ NPC* SetupWorld() {
 	Room* factorynw = new Room("in the factory storage room. There's what appears to be the remains of a chair here.");
 	Room* factoryne = new Room("in the factory storage room. You can see the assembly line through a corner window, still going strong after so much time submerged in lava.");
 	Room* factoryse = new Room("in the factory storage room. You see heavy machinery poking out of the EASTern room. I love heavy machinery!");
-	Room* heavymachineryroom = new Room("in a room full of heavy machinery. Some of them are, incredibly, still operational.");
+	Room* heavymachineryroom = new Room("in a room full of heavy machinery. Some of them are still operational.");
 	Room* factoryroofsw = new Room("poking out of the factory. The roof has caved in here.");
 	Room* factoryroofnw = new Room("high up in the factory. You can see the control room just up ahead.");
 	Room* controlroom3 = new Room("in the factory control room. This one's machinery is very rusty. Very icky.");
@@ -240,7 +243,7 @@ NPC* SetupWorld() {
 	Room* factoryhallway = new Room("at the end of the hallway. A ladder leads high upwards.");
 	Room* factorytower = new Room("at the top of the factory tower. It's full of computers and it smells like energy drink.");
 	Room* factoryroofse = new Room("high up in the factory. You see a corridor full of employee of the month awards.");
-	Room* factorytreasure = new Room("at the end of the corridor. JIM SHADY is the employee of the year. Good for him.");
+	Room* factorytreasure = new Room("at the end of the corridor. JIM SHADY is the employee of the year.");
 	//the castle
 	Room* castleentrance = new Room("at the entrance of a large, crystaline castle. It has a very angular design.");
 	Room* castlehall = new Room("in the main hall of the castle. Ornate pillars and paintings of internet browsers pave the way towards the throne room.");
@@ -601,7 +604,7 @@ NPC* SetupWorld() {
 								   {forestknight, "From what I have seen, no."},
 								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's hold."},
 								   {self, "Yeah no problem."}});
-	forestknight->addRecruitmentDialogue({{"Child, I shan't join you on your quest. I cannot assist you in obtaining the evil BURGER."},
+	forestknight->addRecruitmentDialogue({{forestknight, "Child, I shan't join you on your quest. I cannot assist you in obtaining the evil BURGER."},
 										  {self, "Nah bro I'm not doing that anymore."},
 										  {self, "I'm actually trying to like completely annihilate BURGERs from existence now."},
 										  {forestknight, "Ah, that's good to hear."},
@@ -671,7 +674,7 @@ NPC* SetupWorld() {
 								{self, "Got any grapes?"},
 								{hotdogguy, "No, I just sell hot dogs."},
 								{hotdogguy, "But they're hot and they're fresh and they're all homemade!"},
-								{hotdogguy, "You want a frank?"}
+								{hotdogguy, "You want a frank?"},
 								{self, "No thank."}});
 	hotdogguy->setDialogue("Ayyy what's up man you want a hot dog?");
 	hotdogguy->addRejectionDialogue("Sorry no, this hot dog stand is my life's calling.");
@@ -708,17 +711,17 @@ NPC* SetupWorld() {
 	village->setExit(IN_TENT_3, tentchurch);
 	villageleft->setExit(EAST, village);
 	villageleft->setExit(IN_TENT, tentmansion);
-	tentmansion->setExit(OUT, villageleft);
+	tentmansion->setExit(OUTSIDE, villageleft);
 	tentmansion->setExit(UPSTAIRS, tentlab);
 	tentlab->setExit(DOWNSTAIRS, tentmansion);
-	tentstore->setExit(OUT, village);
-	tentstation->setExit(OUT, village);
+	tentstore->setExit(OUTSIDE, village);
+	tentstation->setExit(OUTSIDE, village);
 	tentstation->setExit(WEST, limbo);
 	tentstation->setExit(EAST, limbo);
-	tentchurch->setExit(OUT, village);
+	tentchurch->setExit(OUTSIDE, village);
 	docks->setExit(NORTH, village);
 	docks->setExit(IN_TENT, tenthouse);
-	tenthouse->setExit(OUT, docks);
+	tenthouse->setExit(OUTSIDE, docks);
 	forestentrance->setExit(WEST, village);
 	forestentrance->setExit(NORTH, forest);
 	forest->setExit(SOUTH, forestentrance); //forest exits
@@ -777,7 +780,7 @@ NPC* SetupWorld() {
 	deserttempleentrance->setExit(IN_TEMPLE, deserttemplestairs);
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
-	deserttemplestairs->setExit(OUT, deserttempleentrance);
+	deserttemplestairs->setExit(OUTSIDE, deserttempleentrance);
 	deserttemplestairs->setExit(WEST, deserttemple);
 	deserttemple->setExit(EAST, deserttemplestairs);
 	desertdune->setExit(WEST, deserttempleentrance);
@@ -798,9 +801,9 @@ NPC* SetupWorld() {
 	deserttown->setExit(IN_HOUSE_1, desertshop);
 	deserttown->setExit(IN_HOUSE_2, desertgym);
 	deserttown->setExit(IN_HOUSE_3, deserthouse);
-	desertshop->setExit(OUT,deserttown);
-	desertgym->setExit(OUT,deserttown);
-	deserthouse->setExit(OUT,deserttown);
+	desertshop->setExit(OUTSIDE,deserttown);
+	desertgym->setExit(OUTSIDE,deserttown);
+	deserthouse->setExit(OUTSIDE,deserttown);
 	deserttownfixed->setExit(NORTH, canyon1);
 	deserttownfixed->setExit(SOUTH, deserthill);
 	deserttownfixed->setExit(EAST, oasis);
@@ -808,9 +811,9 @@ NPC* SetupWorld() {
 	deserttownfixed->setExit(IN_HOUSE_1, desertshopfixed);
 	deserttownfixed->setExit(IN_HOUSE_2, desertgymfixed);
 	deserttownfixed->setExit(IN_HOUSE_3, deserthousefixed);
-	desertshopfixed->setExit(OUT,deserttownfixed);
-	desertgymfixed->setExit(OUT,deserttownfixed);
-	deserthousefixed->setExit(OUT,deserttownfixed);
+	desertshopfixed->setExit(OUTSIDE,deserttownfixed);
+	desertgymfixed->setExit(OUTSIDE,deserttownfixed);
+	deserthousefixed->setExit(OUTSIDE,deserttownfixed);
 	oasis->setExit(WEST, deserttown);
 	oasisfixed->setExit(WEST, deserttown);
 	canyon->setExit(UP, thatcliff);
@@ -823,7 +826,7 @@ NPC* SetupWorld() {
 	canyon2->setExit(UP, cliff1);
 	canyon3->setExit(SOUTHWEST, canyon1);
 	canyon3->setExit(UNDERGROUND, mineshaft);
-	mineshaft->setExit(OUT, canyon3);
+	mineshaft->setExit(ABOVEGROUND, canyon3);
 	mineshaft->setExit(EAST, minespring);
 	mineshaft->setExit(WEST, mineshaft2);
 	minespring->setExit(NORTH, mineshaft);
@@ -833,7 +836,7 @@ NPC* SetupWorld() {
 	deserttunnel->setExit(SOUTHWEST, desertstation);
 	desertstation->setExit(NORTHEAST, deserttunnel);
 	desertstation->setExit(SOUTHWEST, limbo);
-	desertstation->setExit(OUT, canyon);
+	desertstation->setExit(ABOVEGROUND, canyon);
 	mineshaft3->setExit(WEST, mineshaftside);
 	mineshaft3->setExit(SOUTH, mineshaft2);
 	mineshaft3->setExit(NORTH, minelight);
@@ -845,7 +848,7 @@ NPC* SetupWorld() {
 	minelight->setExit(UP, mineexit);
 	minelight->setExit(SOUTH, mineshaft3);
 	minelight->setExit(NORTH, volcanoentrance);
-	mineexit->setExit(OUT, cliff1);
+	mineexit->setExit(ABOVEGROUND, cliff1);
 	mineexit->setExit(DOWN, minelight);
 	cliff1->setExit(UNDERGROUND, mineexit);
 	cliff1->setExit(DOWN, canyon2);
@@ -853,7 +856,7 @@ NPC* SetupWorld() {
 	cliff2->setExit(DOWN, cliff1);
 	thatcliff->setExit(DOWN, canyon);
 	volcanoentrance->setExit(SOUTH, minelight);
-	volcanoentrance->setExit(OUT, volcano);
+	volcanoentrance->setExit(ABOVEGROUND, volcano);
 	volcano->setExit(UNDERGROUND, volcanoentrance); //volcano exits
 	volcano->setExit(NORTH, volcano1);
 	volcano1->setExit(SOUTH, volcano);
@@ -877,16 +880,16 @@ NPC* SetupWorld() {
 	volcano7->setExit(SOUTHEAST, volcano6);
 	castleentrance->setExit(NORTHEAST, volcano7);
 	castleentrance->setExit(IN_CASTLE, castlehall);
-	castlehall->setExit(OUT, castleentrance);
+	castlehall->setExit(OUTSIDE, castleentrance);
 	castlehall->setExit(SOUTH, castlethrone);
 	castlethrone->setExit(NORTH, castlehall);
-	factory1->setExit(OUT, volcano1);
+	factory1->setExit(OUTSIDE, volcano1);
 	factory1->setExit(EAST, factorykitchen);
 	factory1->setExit(UP, controlroom1);
 	factorykitchen->setExit(WEST, factory1);
 	controlroom1->setExit(DOWN, factory1);
-	volcanostation->setExit(OUT, volcano3);
-	factory2->setExit(OUT, volcano3);
+	volcanostation->setExit(OUTSIDE, volcano3);
+	factory2->setExit(OUTSIDE, volcano3);
 	factory2->setExit(NORTHWEST, switchroom);
 	factory2->setExit(NORTHEAST, conveyor1);
 	switchroom->setExit(SOUTHEAST, factory2);
@@ -915,7 +918,7 @@ NPC* SetupWorld() {
 	factorybalcony2->setExit(EAST, factorygarden);
 	factorygarden->setExit(WEST, factorybalcony2);
 	factorygarden->setExit(DOWN, factorycenter);
-	factory3->setExit(OUT, volcano6);
+	factory3->setExit(OUTSIDE, volcano6);
 	factory3->setExit(NORTH, factorynw);
 	factory3->setExit(EAST, factoryse);
 	factory3->setExit(UP, factoryroofsw);
@@ -967,7 +970,7 @@ NPC* SetupWorld() {
 	sewercenter3->setExit(DOWN, volcanotempleentrance);
 	volcanotempleentrance->setExit(UP, sewercenter3);
 	volcanotempleentrance->setExit(IN_TEMPLE, volcanotemplestairs);
-	volcanotemplestairs->setExit(OUT, volcanotempleentrance);
+	volcanotemplestairs->setExit(OUTSIDE, volcanotempleentrance);
 	volcanotemplestairs->setExit(WEST, volcanotemple);
 	volcanotemple->setExit(EAST, volcanotemplestairs);
 	sewercenter4->setExit(NORTHEAST, sewercenter2);
@@ -978,7 +981,7 @@ NPC* SetupWorld() {
 	sewerplant->setExit(NORTH, sewercenter2);
 	sewerplant->setExit(SOUTH, sewercenter1);
 	mountainmine->setExit(EAST, sewermineswest);
-	mountainmine->setExit(OUT, mountain);
+	mountainmine->setExit(ABOVEGROUND, mountain);
 	mountain->setExit(UNDERGROUND, mountainmine);
 	mountain->setExit(UP, mountain2);
 	mountain2->setExit(WEST, mountainlake);
@@ -989,7 +992,7 @@ NPC* SetupWorld() {
 	mountain3->setExit(DOWN, mountain2);
 	mountainpeak->setExit(IN_TENT, tenthome);
 	mountainpeak->setExit(DOWN, mountain3);
-	tenthome->setExit(OUT, mountainpeak);
+	tenthome->setExit(OUTSIDE, mountainpeak);
 	bridge1->setExit(NORTH, bridge2);
 	bridge1->setExit(SOUTH, volcano7);
 	bridge2->setExit(NORTH, bridge3);
@@ -1099,9 +1102,9 @@ NPC* SetupWorld() {
 	richneighborhood4->setExit(SOUTHEAST, richneighborhood3);
 	richneighborhood4->setExit(SOUTHWEST, richneighborhood1);
 	richneighborhood4->setExit(INSIDE, ceolobby);
-	ceolobby->setExit(OUT, richneighborhood4);
+	ceolobby->setExit(OUTSIDE, richneighborhood4);
 	ceolobby->setExit(IN_ELEVATOR, ceoelevator0);
-	ceoelevator0->setExit(OUT, ceolobby);
+	ceoelevator0->setExit(OUTSIDE, ceolobby);
 	ceoelevator0->setExit(UP, ceoelevator1);
 	ceoelevator1->setExit(UP, ceoelevator2);
 	ceoelevator1->setExit(DOWN, ceoelevator0);
@@ -1109,13 +1112,13 @@ NPC* SetupWorld() {
 	ceoelevator2->setExit(DOWN, ceoelevator1);
 	ceoelevator3->setExit(UP, ceoelevator4);
 	ceoelevator3->setExit(DOWN, ceoelevator2);
-	ceoelevator4->setExit(OUT, ceoroom);
+	ceoelevator4->setExit(OUTSIDE, ceoroom);
 	ceoelevator4->setExit(DOWN, ceoelevator3);
 	ceoroom->setExit(IN_ELEVATOR, ceoelevator4);
 	ceoroom->setExit(IN_SAFE, burgsafe);
 	burgsafe->setExit(OUT, ceoroom);
 	elevator->setExit(UP, elevatortop);
-	elevator->setExit(OUT, mainstreet5);
+	elevator->setExit(OUTSIDE, mainstreet5);
 	elevatortop->setExit(OUT, BURGERRESTAURANT);
 	elevatortop->setExit(DOWN, elevator);
 	BURGERRESTAURANT->setExit(IN_ELEVATOR, elevatortop);
@@ -1187,9 +1190,9 @@ NPC* SetupWorld() {
 	ninjascout->setBasicAttack(shurikenninja);
 
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
-	Attack* shirmplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
+	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
-	jimshady->setBasicAttack(shirmplebeam);
+	jimshady->setBasicAttack(shrimplebeam);
 	Effect* engarde = new Effect("EN GARDE!", 2147483647);
 	engarde->guardset = 1;
 	jimshady->setEffect(engarde, false);
@@ -1629,7 +1632,7 @@ NPC* SetupWorld() {
 	desertdune->blockExit(WEST, SAND, "blocked by scorching sands.");
 	mineshaft->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	minespring->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
-	desertstation->blockExit(OUT, RUBBLE, "blocked by rocky rubble.");
+	desertstation->blockExit(ABOVEGROUND, RUBBLE, "blocked by rocky rubble.");
 	canyon->blockExit(UNDERGROUND, RUBBLE, "blocked by rocky rubble.");
 	mineshaft3->blockExit(WEST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mineshaftside->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
@@ -1783,8 +1786,8 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 			}
 		}
 	}
-	Item* roomgift = roomCanidate->getBackup(); //check if the item hasa gift
-	if (roomgift && !getItemInVector(roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
+	Item* roomgift = roomCanidate->popBackup(); //check if the item hasa gift
+	if (roomgift && !getItemInVector(*inventory, roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
 		roomCanidate->setItem(roomgift); //put the item in the room
 	}
 	//we move ourself to the next room
@@ -1878,7 +1881,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 				if (statChanges[5]) {
 					cout << " (+" << statChanges[5] << ")";
 				}
-				cout << "\n  SKILL - " << teammate->getSPMax();
+				cout << "\n  MAX SP - " << teammate->getSPMax();
 				if (statChanges[6]) {
 					cout << " (+" << statChanges[6] << ")";
 				}
@@ -2410,10 +2413,11 @@ int main() {
 	cout << "\nBURGER QUEST 2:"
 			"\nELECTRIC BOOGALOO"
 			"\n"
-			"\n(c) 2026 Tomas Carranza Echaniz"
 			"\nVersion 1.0"
+			"\n(c) 2026 Tomas Carranza Echaniz"
 			"\n"
-			"\nDo you have existing save data? Paste it here if so, otherwise just ENTER.\n> "; //? just ENTER to begin!
+			"\nPaste existing save data, or press ENTER to begin a new quest!"
+			"\n> ";
 	
 	srand(time(NULL)); //seeds random
 		
@@ -2558,9 +2562,12 @@ int main() {
 	//deletes all the rooms
 	for (Room* room : roomsH) {
 		delete room;
+	} //deletes all the npcs
+	while (!npcsH.empty()) { //these ones call erase remove in their destructor so we do this while loop instead
+		delete npcsH.back();
 	} //deletes all the items
-	for (Item* item : itemsH) {
-		delete item;
+	while (!itemsH.empty()) {
+		delete itemsH.back();
 	} //deletes all the attacks
 	for (Attack* attack : attacksH) {
 		delete attack;

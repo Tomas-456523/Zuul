@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 #include "Item.h"
 #include "Room.h"
 #include "Helper.h"
@@ -20,6 +21,10 @@ Item::Item(const char* _name, const char* _description, Room* _room, bool _takab
 	if (_room != NULL) { //set the room if we gave one
 		setRoom(_room);
 	}
+	itemsH.push_back(this); //store a pointer to this item in the items vector
+}
+Item::Item(const Item& other) { //copy constructor
+	*this = other;
 	itemsH.push_back(this); //store a pointer to this item in the items vector
 }
 //returns the name of the item
@@ -114,9 +119,9 @@ void Item::setStock(int _stock, int _price, const char* buydesc) {
 Item* Item::Duplicate() {
 	return new Item(*this);
 }
-//virtual destructor function, does literally nothing but I need it so I can call delete
+//virtual destructor function
 Item::~Item() {
-
+	itemsH.erase(remove(itemsH.begin(), itemsH.end(), this), itemsH.end());
 }
 
 //xp items for adding xp to an npc

@@ -14,7 +14,9 @@ struct Effect;
 class Item { //the default item
 public:
 	Item(const char* _name, const char* _description, Room* _room = NULL, bool _takable = true, bool _consumable = false, bool _target = false, bool useonenemy = false);
-	virtual ~Item(); //virtual destructor, necessary since there's many item subclasses
+	virtual ~Item(); //virtual destructor, virtual since there's many item subclasses
+
+	Item(const Item& other);
 
 	const char* getName(); //gets the name of the item
 	const char* getDescription(); //gets the description of the item

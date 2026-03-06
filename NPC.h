@@ -22,6 +22,8 @@ public: //you need to set stats on creation
 	NPC(const char* _title, const char* _name, const char* _description, Room* room, int _health = 20, int _defense = 20, int _attack = 20, int _toughness = 20, int _pierce = 20, int _speed = 20, int _sp = 20, int _level = 0, bool _isleader = false, bool _player = false);
 	~NPC();
 
+	NPC(const NPC& other);
+
 	//a bunch of functions to get npc variables
 	const char* getTitle(); //gets the title of the character
 	const char* getName(); //gets the name of the character

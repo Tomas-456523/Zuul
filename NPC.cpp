@@ -42,6 +42,10 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	}
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 }
+NPC::NPC(const NPC& other) { //copy constructor
+	*this = other;
+	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
+}
 //a bunch of functions for getting npc varaibles
 const char* NPC::getTitle() {
 	return title;
@@ -348,10 +352,10 @@ void NPC::setLobster(Room* tunnels, bool lobster) { //sets that it's the lobster
 void NPC::setBoss(bool boss) {
 	isBoss = boss;
 }
-void setExtraXP(int xp) {
+void NPC::setExtraXP(int xp) {
 	xpReward = xp;
 }
-void setExtraMonies(int monies) {
+void NPC::setExtraMonies(int monies) {
 	monyReward = xp;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
@@ -730,6 +734,6 @@ void NPC::printDialogue(Conversation* thisone) {
 	}
 	printConversation(conversation); //courtesy of Helper
 }
-NPC::~NPC() { //destructor
-
+NPC::~NPC() { //removes self from npcs vector when destroyed
+	npcsH.erase(remove(npcsH.begin(), npcsH.end(), this), npcsH.end());
 }
