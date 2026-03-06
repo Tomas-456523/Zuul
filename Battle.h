@@ -54,7 +54,7 @@ private:
 	int xpReward = 0; //how much xp is given to the player party for winning
 	int monyReward = 0; //how many monies are given to the player party for winning
 
-	char flavorText[8][255] = { //flavor text which is randomly printed when asking for HELP
+	const char* flavorText[8] = { //flavor text which is randomly printed when asking for HELP
 		"You are locked the heck in.",
 		"You ask your opponent what the valid command words are. They look at you really confused.",
 		"You got this.",
@@ -65,7 +65,7 @@ private:
 		"You get distracted by a squirrel."
 	};
 
-	char validCommands[9][255] = { //the valid commands that are printed when asking for HELP
+	const char* validCommands[9] = { //the valid commands that are printed when asking for HELP
 		"[attack] [npc]",
 		"USE [item] (ON [npc])",
 		"INVENTORY",

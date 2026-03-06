@@ -37,6 +37,7 @@ public:
 	bool getGym(); //gets if this room is a gym
 	bool getBlocked(const char* direction); //gets if the given exit is blocked
 	const char* getBlockReason(const char* direction); //gets why the exit is blocked
+	Item* popBackup(); //take the backup from the room to check if we should put it there
 
 	void printExits(); //functions for printing the stuff in the room
 	void printItems();
@@ -59,6 +60,7 @@ public:
 	void setWelcome(const char* text); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char* buydesc = ""); //adds an item for sale
 	void removeStock(Item* item); //removes an item from sale
+	void setBackup(Item* item); //sets a backup item for the room
 
 	void switchConveyor(); //switches the direction of the conveyor
 
@@ -93,5 +95,7 @@ private:
 
 	bool station; //if it's a train station
 	bool gym; //if it's the gym
+
+	Item* backup; //item that is placed here only if the player doesn't have one already
 };
 #endif

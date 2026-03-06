@@ -61,6 +61,7 @@ public: //you need to set stats on creation
 	int getFrozen(); //freeze amount
 	int getConvoSize(); //how many conversations are left to say
 	bool getRespawn(); //if they respawn
+	bool getBoss();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -110,6 +111,9 @@ public: //you need to set stats on creation
 	void setGift(Item* item); //item to give when talking
 	void setEffect(Effect* effect, bool battle = true); //add an effect to the npc
 	void removeEffect(Effect& effect);
+	void setBoss(bool boss);
+	void setExtraXP(int xp);
+	void setExtraMonies(int monies);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
@@ -178,6 +182,7 @@ protected:
 	bool isPlayer;
 	bool isLeader;
 	bool isEnemy = false;
+	bool isBoss = false; //bosses cannot be instakilled
 
 	bool isLobster = false; //if it's the lobster
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels  if it's the lobster
@@ -233,7 +238,7 @@ protected:
 	bool escapable = true; //if you can escape from this enemy in a battle
 	int guard = 0; //how many hits the npc can block before guard is broken
 
-	int xpReward; //extra battle rewards
-	int monyReward;
+	int xpReward = 0; //extra battle rewards
+	int monyReward = 0;
 };
 #endif

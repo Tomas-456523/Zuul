@@ -15,7 +15,8 @@ namespace Helper { //forward declare Helper to add attacks to attacksH
 
 struct Attack {
 	const char* name; //the name of the attack and how you call it
-	const char* description; //describes how the attack was carried out, (e.g. "threw a shuriken")
+	const char* description; //describes how the attack was carried out, (e.g. "threw a shuriken at")
+	const char* afterdesc = ""; //description after the attack (e.g. threw a shuriken at BOB" with expert precision")
 	const char* trueDesc; //actual description of the attack; only for player attacks
 	int cost; //how much sp the attack costs to use
 	int power; //how much damage the attack does, added onto npc's base attack
@@ -25,6 +26,8 @@ struct Attack {
 	int maxhits;
 	bool targetAlly = false; //if the attack is supposed to hit your own team
 	bool targetFainted = false; //if the attack is supposed to hit 0 hp npcs
+	bool instakill = false; //if it instantly defeats non-boss npcs
+	bool focushits = true; //if every hit of multihit moves should hit the same target, as opposed to random targets each time
 
 	bool spbomb = false;
 

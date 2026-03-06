@@ -161,16 +161,14 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 			attack->power += npc->getSP();
 			npc->alterSp(-npc->getSP());
 		}
-	}
-	//says what happened
-	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << "!";
+	} //says what happened
+	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << attack->afterdesc << "!";
 	vector<NPC*> tarparty; //gets which party is being targeted based on if the target is an enemy or not
 	if (target->getEnemy()) {
 		tarparty = enemyTeam;
 	} else {
 		tarparty = playerTeam;
-	}
-	//says if we hit multiple targets
+	} //says if we hit multiple targets
 	if (attack->targets > 1 && tarparty.size() > 1) {
 		cout << "\n" << attacker->getName() << "'s surrounding teammates were also affected!";
 	}
@@ -181,10 +179,11 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	for (int i = 0; i < tarparty.size(); i++) {
 		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2) { //if they're within range
 			int effectiveAttack = 0; //if the attack power is 0, it doesn't do damage and ignores the npc's attack stat
-			if (attack->power) { //we set the effective attack to this if the attack does damage
+			if (attack->instakill && !target->getBoss()) { //instakill attacks remove all health except for bosses
+				effectiveAttack = target->getHealth();
+			} else if (attack->power) { //we set the effective attack to this if the attack does damage
 				effectiveAttack = attacker->getAttack();
-			}
-			//damages the target                                                                                //some moves hit a random amount of times within a certain range
+			} //damages the target                                                                                //some moves hit a random amount of times within a certain range
 			tarparty[i]->damage(attack->power + effectiveAttack, attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 				tarparty[i]->setEffect(attack->appliedeffect);
@@ -556,7 +555,7 @@ int Battle::FIGHT() {
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk
 		} else if (current->getFrozen()) { //prints how the npc wanted to move but couldn't due to freezing
-			cout << "\n" << player->getName() << " tried to move but is frozen in place!";
+			cout << "\n" << player->getName() << " is frozen in place!";
 		} else if (current->getPlayerness()) { //starts the player turn!
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn(current);

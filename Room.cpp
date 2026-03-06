@@ -70,7 +70,11 @@ const char* Room::getBlockReason(const char* direction) { //get why it's blocked
 	}
 	return NULL; //null because it's not actually blocked
 }
-
+Item* Room::popBackup() {
+	Item* _backup = backup;
+	backup = NULL; //make gift NULL because we only give one gift
+	return _backup;
+}
 //prints all the exits from this room; I tried just returning the map, but it was annoying because of the custom comparator so I just do this
 void Room::printExits() {
 	cout << "\nExits: ";
@@ -205,6 +209,9 @@ void Room::setExit(const char* direction, Room* room, const char* blocktype, con
 }
 void Room::setRedirect(Room* room) {
 	redirect = room;
+	for (Item* item : items) { //moves all this room's items to the redirect room, in case the player dropped some items here
+		item->setRoom(redirect); //item's setRoom calls setItem and removeItem as well
+	}
 }
 void Room::setStation(bool stat) {
 	station = stat;
@@ -230,6 +237,9 @@ void Room::setStock(Item* item, int amount, int price, const char* buydesc) {
 void Room::removeStock(Item* item) { //we uncatalogue the item when it runs out
 	cout << "You bought the last " << item->getName() << "! It's sold out!"; //lets the player know it's sold out
 	stock.erase(remove(stock.begin(), stock.end(), item), stock.end()); //remove it from the list of stock
+}
+void Room::setBackup(Item* item) {
+	backup = item;
 }
 void Room::switchConveyor() { //swaps the altRoom and the FORWARD exit, effectively reversing the conveyor movement
 	swap(altRoom, exits[conveyorExit]);

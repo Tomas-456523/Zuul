@@ -131,10 +131,10 @@ bool NPC::getEscapable() { //if you can escape battle with this npc
 	return escapable;
 }
 int NPC::getXpReward() { //arbitrary formula to reward xp
-	return level*level+5;
+	return level*level+5 + xpReward;
 }
 int NPC::getMonyReward() { 
-	return level*2;
+	return level*2 + monyReward;
 }
 Attack* NPC::getBasicAttack() {
 	return standard_attack;
@@ -183,6 +183,9 @@ bool NPC::getLobster() {
 }
 bool NPC::getRespawn() {
 	return respawns;
+}
+bool NPC::getBoss() {
+	return isBoss;
 }
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
@@ -341,6 +344,15 @@ void NPC::setEnemy(bool _enemy) { //sets if it is an enemy
 void NPC::setLobster(Room* tunnels, bool lobster) { //sets that it's the lobster
 	isLobster = lobster;
 	home = tunnels; //lobster lives in the tunnels
+}
+void NPC::setBoss(bool boss) {
+	isBoss = boss;
+}
+void setExtraXP(int xp) {
+	xpReward = xp;
+}
+void setExtraMonies(int monies) {
+	monyReward = xp;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;
@@ -607,6 +619,7 @@ void NPC::defeat() {
 		npc->setRecruitable(true);
 		if (npc->getLeader()) {
 			npc->setLeader(false);
+			npc->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
 			npc->undefeat();
 		}
 		recruitLinks.pop();
@@ -706,6 +719,7 @@ void NPC::printDialogue(Conversation* thisone) {
 			conversation = conversations.front(); //gets the current conversation
 			conversations.pop();
 		} while (conversation.getOutdated()); //try again if the conversation is outdated, atm only regular conversations can be outdated
+		//NOTE: we MUST always have a queued dialogue after outdated dialogues
 	} else if (currentRoom->getGym()) { //gym dialogue if they're in the gym
 		conversation = gymDialogue.front();
 		if (gymDialogue.size() > 1) {

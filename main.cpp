@@ -298,16 +298,16 @@ NPC* SetupWorld() {
 	Room* newstreet1 = new Room("at a construction site. This thing is never getting completed.");
 	Room* newstreet2 = new Room("in an alleyway. You see a THIEF rooting through the dumpster. Is there really nothing better to steal?");
 	Room* newstreet3 = new Room("at the entrance to a convenience store. The door is intact! And all the windows are broken.");
-	Room* newstreet4 = new Room("at the city orphanage. It's scheduled for demolition.");
+	Room* newstreet4 = new Room("at the city orphanage, scheduled for demolition.");
 	Room* newstreet5 = new Room("at the edge of the regular district. The buildings beyond look really well-maintained.");
-	Room* mainstreet1 = new Room("on main street. There's a few lopsided cars on fire here.");
-	Room* mainstreet2 = new Room("on main street. You hear an explosion somewhere in the distance.");
+	Room* mainstreet1 = new Room("on main street. There's a few cars above lodged in the side of the buildings.");
+	Room* mainstreet2 = new Room("on main street. A lopsided helicopter struggles to spin its rotors.");
 	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting.");
 	Room* mainstreet4 = new Room("on main street. There's a stairway here leading down to the BURGERSBURG train station.");
 	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you. BURGER TENDRILS wrap around its base.");
 	Room* coolstreet1 = new Room("near the entrance of the city. The top of a building is sliced clean off.");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
-	Room* coolstreet3 = new Room("at a functional hot dog stand."); //set up hot dog vendor here
+	Room* coolstreet3 = new Room("at a functional hot dog stand.");
 	Room* coolstreet4 = new Room("at the entrance to a dark alley. Eh could be darker.");
 	Room* coolstreet5 = new Room("next to some copy-pasted looking townhouses. Surely homebuilders can be more creative?");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
@@ -323,11 +323,11 @@ NPC* SetupWorld() {
 	Room* burgfish = new Room("in the fish building. A warm light shines down the stairs.");
 	Room* burgchurch = new Room("in a hidden church. Everyone seems joyful despite the state of the city.");
 	Room* burgstore = new Room("in an abandoned store. Nobody bothers to stock the shelves anymore.");
-	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses. You should really leave before you develop a gambling addiction.");
+	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses.\nYou should really leave before you develop a gambling addiction.");
 	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
 	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
 	Room* shrimpartment2 = new Room("on the second floor. The flowery wallpaper is peeling off.");
-	Room* shrimpartment3 = new Room("on the third floor. You see an open doorway leading to an unfurnished room; your instincts pull you away from it.");
+	Room* shrimpartment3 = new Room("on the third floor. There is a cat poster here.");
 	Room* shrimproof = new Room("on the apartment rooftop. You have a nice view of the city lights.");
 	Room* firedepartment = new Room("in the fire department. The fire alarm is sadly whimpering.");
 	Room* burgstation = new Room("in the BURGERSBURG train station. Oddly enough, this one seems in the best condition out of all the ones you've seen.");
@@ -341,12 +341,12 @@ NPC* SetupWorld() {
 	Room* ceoroom = new Room("in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.");
 	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies, BURGERs, and company documents are piled up here.");
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
-	Room* elevatortop = new Room("in the elevator, elevated all the way to the top."); //Once you go through the door, there is no going back. (for full version)
+	Room* elevatortop = new Room("in the elevator, elevated all the way to the tippity top."); //Once you go through the door, there is no going back. (for full version)
 	elevatortop->setWelcome("You ventured beyond your forest home,");
 	elevatortop->setWelcome("endured through desolate sands,");
 	elevatortop->setWelcome("journeyed through volcanic highlands,");
 	elevatortop->setWelcome("and braved the crime of the city.");
-	elevatortop->setWelcome("It was a long journey, but you're a mere minute away from your destination...");
+	elevatortop->setWelcome("It was a long journey, but you're just barely away from your the end..."); //from your destination?
 	elevatortop->setWelcome("The elevator shoots upwards.");
 	elevatortop->setWelcome("...");
 	elevatortop->setWelcome("...");
@@ -361,12 +361,12 @@ NPC* SetupWorld() {
 	elevatortop->setWelcome("...");
 	elevatortop->setWelcome("...");
 	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("The elevator dings. You have arrived at your destination...");
-	elevatortop->setWelcome("What will you do?");
-	Room* BURGERRESTAURANT = new Room("at the tippity top of the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
+	elevatortop->setWelcome("The elevator dings.");
+	elevatortop->setWelcome("You have arrived at your destination.");
+	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
 	BURGERRESTAURANT->setWelcome("BURGER MAN - \"HELLO VALUED CUSTOMER.\"");
 	BURGERRESTAURANT->setWelcome("BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT.\"");
-	Room* elevatorbottom = new Room("deep down in the Earth, in the restricted level of the BURGER RESTAURANT.");
+	Room* elevatorbottom = new Room("in the elevator, deep down in the restricted level of the BURGER RESTAURANT.");
 	elevatorbottom->setWelcome("The elevator shoots downwards.");
 	elevatorbottom->setWelcome("...");
 	elevatorbottom->setWelcome("...");
@@ -380,7 +380,7 @@ NPC* SetupWorld() {
 	elevatorbottom->setWelcome("...");
 	elevatorbottom->setWelcome("...");
 	elevatorbottom->setWelcome("Temperatures have risen above volcanic levels...");
-	elevatorbottom->setWelcome("The elevator dings. Where have you arrived?");
+	elevatorbottom->setWelcome("The elevator dings.");
 	Room* burgerbasement = new Room("in the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
@@ -517,17 +517,17 @@ NPC* SetupWorld() {
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
 	mrdeer->setGift(deerkey);
 	mrdeer->addConversation({{self, "Hello MR. DEER!"},
-							 {mrdeer, "(salutatory deer noises)"},
+							 {mrdeer, "*salutatory deer noises*"},
 							 {self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key."},
-							 {mrdeer, "(warning deer noises)"},
-							 {mrdeer, "(concerned deer noise)"},
-							 {mrdeer, "(thinking deer noises)"},
+							 {mrdeer, "*warning deer noises*"},
+							 {mrdeer, "*concerned deer noise*"},
+							 {mrdeer, "*thinking deer noises*"},
 							 {mrdeer, "..."},
 							 {self, "I hope he gives me the key..."},
-							 {mrdeer, "(reluctantly affirmative deer noise)"},
+							 {mrdeer, "*reluctantly affirmative deer noise*"},
 							 {self, "AYYY thank you so much MR. DEER!"}});
-	mrdeer->setDialogue("(deer noises)");
-	mrdeer->addRejectionDialogue("(no thank you deer noise)");
+	mrdeer->setDialogue("*deer noises*");
+	mrdeer->addRejectionDialogue("*no thank you deer noise*");
 
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 500, 25000);
 	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
@@ -566,7 +566,7 @@ NPC* SetupWorld() {
 								{developer, "Because the camera man is on vacation."},
 								{developer, "Only the narrator could cover his shift."},
 								{self, "Oh I see."}});
-	developer->addRejectionDialogue("Nah, sorry. I don't think I would make a good teammate because I made my stats really low. I gotta stay humble, you know?");
+	developer->addRejectionDialogue("No I don't think that would make sense.");
 	/*burgerman->setLink(developer);
 	burgerman->addLinkedConvo(self, "Yo developer man.");
 	burgerman->addLinkedConvo(developer, "Hey what's up?");
@@ -601,13 +601,12 @@ NPC* SetupWorld() {
 								   {forestknight, "From what I have seen, no."},
 								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's hold."},
 								   {self, "Yeah no problem."}});
-
-	/*(forestknight, "Child, I cannot join you on your quest. I shan't assist you in obtaining the evil BURGER.");
-	(self, "Nah bro I'm not doing that anymore.");
-	(self, "I'm actually trying to like completely annihilate BURGERs from this world now.");
-	(forestknight, "Ah, that's good to hear.");
-	(forestknight, "My apologies, child. My quest sensor is a bit slow.");
-	(forestknight, "I have not updated to the latest software version in a little while.");*/
+	forestknight->addRecruitmentDialogue({{"Child, I shan't join you on your quest. I cannot assist you in obtaining the evil BURGER."},
+										  {self, "Nah bro I'm not doing that anymore."},
+										  {self, "I'm actually trying to like completely annihilate BURGERs from existence now."},
+										  {forestknight, "Ah, that's good to hear."},
+										  {forestknight, "My apologies, child. My quest sensor is a bit slow."},
+										  {forestknight, "I have not updated to the latest software version in a little while."}});
 
 	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, 5, 20, 0, 20, 12, 15);
 	minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
@@ -663,6 +662,19 @@ NPC* SetupWorld() {
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
 	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
+
+	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
+	coolstreet3->setStock(hotdog, 2147483647, 2, "HARRY - \"Ayy thanks for the purchase enjoy your hot dog!\"");
+
+	NPC* hotdogguy = new NPC("HOT DOG VENDOR", "HARRY", "Manager of the lucrative BURGERSBURG hot dog stand.\nEveryone likes him too much to rob him.", coolstreet3);
+	hotdogguy->addConversation({{self, "Hey!"},
+								{self, "Got any grapes?"},
+								{hotdogguy, "No, I just sell hot dogs."},
+								{hotdogguy, "But they're hot and they're fresh and they're all homemade!"},
+								{hotdogguy, "You want a frank?"}
+								{self, "No thank."}});
+	hotdogguy->setDialogue("Ayyy what's up man you want a hot dog?");
+	hotdogguy->addRejectionDialogue("Sorry no, this hot dog stand is my life's calling.");
 
 	//it's TECH DEMO MAN!
 	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 200000, 200000, 20, 20000, 10, 15, 20);
@@ -1135,6 +1147,13 @@ NPC* SetupWorld() {
 	tunnellobster->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
 
 	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, tunnellobster);
+	
+	Item* backupcaller1 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, tunnellobster);
+	volcanostation->setBackup(backupcaller1);
+	Item* backupcaller2 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, tunnellobster);
+	burgstation->setBackup(backupcaller2);
+	Item* backupcaller3 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, tunnellobster);
+	basestation->setBackup(backupcaller3);
 
 	//set up generic non-npc enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 10, 15, 5);
@@ -1168,7 +1187,8 @@ NPC* SetupWorld() {
 	ninjascout->setBasicAttack(shurikenninja);
 
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
-	Attack* shirmplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 99999, 99999, 1, 1, 1);
+	Attack* shirmplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
+	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shirmplebeam);
 	Effect* engarde = new Effect("EN GARDE!", 2147483647);
 	engarde->guardset = 1;
@@ -1356,14 +1376,14 @@ NPC* SetupWorld() {
 	NPC* forestguard = new NPC(*grassman);
 	forestguard->setLeader(true, 1, forestentrance);
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
-	forestguard->setDialogue("(angry bush noises)");
-	forestguard->addRejectionDialogue("(angry bush noises)");
+	forestguard->setDialogue("*angry bush noises*");
+	forestguard->addRejectionDialogue("*angry bush noises*");
 
 	NPC* deerguard = new NPC(*enemydeer);
 	deerguard->setLeader(true, 3, forestleft);
 	deerguard->blockExit(WEST, ENEMY, "guarded by the ENEMY DEER.");
-	deerguard->setDialogue("(angry deer noises)");
-	deerguard->addRejectionDialogue("(angry deer noises)");
+	deerguard->setDialogue("*angry deer noises*");
+	deerguard->addRejectionDialogue("*angry deer noises*");
 
 	NPC* ninjaguard = new NPC(*ninjascout);
 	ninjaguard->setLeader(true, 5, forestright);
@@ -1373,35 +1393,35 @@ NPC* SetupWorld() {
 
 	NPC* forestrando = new NPC(*grassman);
 	forestrando->setLeader(true, 5, forestleft);
-	forestrando->setDialogue("(angry bush noises)");
-	forestrando->addRejectionDialogue("(angry bush noises)");
+	forestrando->setDialogue("*angry bush noises*");
+	forestrando->addRejectionDialogue("*angry bush noises*");
 
 	NPC* forestguard2 = new NPC(*buffgrassman);
 	forestguard2->setLeader(true, 2, foresttempleentrance);
 	forestguard2->setParty(pricklyhog);
 	forestguard2->blockExit(NORTH, ENEMY, "guarded by the BUFF GRASSMAN.");
-	forestguard2->setDialogue("(burly bush noises)");
-	forestguard2->addRejectionDialogue("(burly bush noises)");
+	forestguard2->setDialogue("*burly bush noises*");
+	forestguard2->addRejectionDialogue("*burly bush noises*");
 
 	NPC* hogguard = new NPC(*greaterhog);
 	hogguard->setLeader(true, 3, forestfork);
 	hogguard->blockExit(NORTHEAST, ENEMY, "guarded by the GREATER HOG.");
-	hogguard->setDialogue("(angry squeal)");
-	hogguard->addRejectionDialogue("(angry squeal)");
+	hogguard->setDialogue("*angry squeal*");
+	hogguard->addRejectionDialogue("*angry squeal*");
 
 	NPC* hogguard2 = new NPC(*greaterhog);
 	hogguard2->setLeader(true, 4, forestspork);
 	hogguard2->setParty(pricklyhog, pricklyhog);
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
-	hogguard2->setDialogue("(angry squeal)");
-	hogguard2->addRejectionDialogue("(angry squeal)");
+	hogguard2->setDialogue("*angry squeal*");
+	hogguard2->addRejectionDialogue("*angry squeal*");
 
 	NPC* forestguard3 = new NPC(*buffgrassman);
 	forestguard3->setLeader(true, 5, forestnice);
 	forestguard3->setParty(grassman, grassman);
 	forestguard3->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
-	forestguard3->setDialogue("(burly bush noises)");
-	forestguard3->addRejectionDialogue("(angry bush noises)");
+	forestguard3->setDialogue("*burly bush noises*");
+	forestguard3->addRejectionDialogue("*angry bush noises*");
 
 	NPC* jimshady1 = new NPC(*jimshady);
 	jimshady1->setLeader(true, 5, forestwall);
@@ -1424,21 +1444,21 @@ NPC* SetupWorld() {
 	NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);
 	plantguard->blockExit(NORTHWEST, ENEMY, "blocked by the CARNIVOROUS PLANT.");
-	plantguard->setDialogue("(snapping biting noises)");
-	plantguard->addRejectionDialogue("(snapping biting noises)");
+	plantguard->setDialogue("*snapping biting noises*");
+	plantguard->addRejectionDialogue("*snapping biting noises*");
 
 	NPC* flowerguard = new NPC(*flowerfiend);
 	flowerguard->setLeader(true, 4, flowerfield);
 	flowerguard->setParty(carnplant, carnplant);
 	flowerguard->blockExit(WEST, ENEMY, "blocked by the FLOWER FIEND.");
-	flowerguard->setDialogue("(flowery shriek)");
-	flowerguard->addRejectionDialogue("(flowery shriek)");
+	flowerguard->setDialogue("*flowery shriek*");
+	flowerguard->addRejectionDialogue("*flowery shriek*");
 
 	NPC* savagehog = new NPC("", "SAVAGE HOG", "Dangerous, mammoth elder hog with very sharp prickles.", bossgrove, 80, 15, 20, 10, 30, 15, 15);
 	savagehog->setLeader(true, 5);
 	savagehog->setParty(pricklyhog, greaterhog);
 	savagehog->blockExit(NORTH, ENEMY, "blocked off by the SAVAGE HOG!");
-	savagehog->setDialogue("(SAVAGE ROAR)");
+	savagehog->setDialogue("*SAVAGE ROAR*");
 	savagehog->addRejectionDialogue("Nah sorry mate. I'd rather stay home here in the grove with ma hog family.");
 	savagehog->setEscapable(false);
 	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, -10);
@@ -1458,8 +1478,8 @@ NPC* SetupWorld() {
 	shieldup->guardset = 2;
 	skeleviking->setEffect(shieldup, false);
 	skeleviking->setBasicAttack(genericattack);
-	savagehog->setDialogue("(angry noise)");
-	savagehog->addRejectionDialogue("(angry noise)");
+	savagehog->setDialogue("*angry noise*");
+	savagehog->addRejectionDialogue("*angry noise*");
 
 	NPC* desertguard = new NPC(*sandman);
 	desertguard->setLeader(true, 5, desert);
@@ -1580,8 +1600,8 @@ NPC* SetupWorld() {
 	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 200, 50, 30, 20, 20, 10, 50);
 	lavaguard->setLeader(true, 40, NULL, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
-	lavaguard->setDialogue("(ethereal breathing)");
-	lavaguard->addRejectionDialogue("(ethereal breathing)");
+	lavaguard->setDialogue("*ethereal breathing*");
+	lavaguard->addRejectionDialogue("*ethereal breathing*");
 	/*lavaguard->setLink(magmelder, "Oh nooooo............");
 	lavaguard->addLinkedConvo(magmelder, "Amazing work! The lava has been drained!");
 	lavaguard->addLinkedConvo(magmelder, "But with the way to BURGERSBURG cleared...");
@@ -1715,7 +1735,7 @@ void PrintRoomData(Room* currentRoom) {
 }
 
 //move the player and co. to a new room based on direction, or also just teleopring to forceDest if given MARK: travel
-void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, bool forceTravel = false, Room* forceDest = NULL) {
+void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vector<Item*>* inventory, bool forceTravel = false, Room* forceDest = NULL) {
 	Room* roomCanidate = NULL; //the room we're trying to go to
 	if (forceDest != NULL) { //we just teleoprt to this room if given
 		roomCanidate = forceDest;
@@ -1762,6 +1782,10 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, bool
 				break; //break because there's only one lobster
 			}
 		}
+	}
+	Item* roomgift = roomCanidate->getBackup(); //check if the item hasa gift
+	if (roomgift && !getItemInVector(roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
+		roomCanidate->setItem(roomgift); //put the item in the room
 	}
 	//we move ourself to the next room
 	currentRoom = roomCanidate;
@@ -2007,7 +2031,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		cout << " to the train station tunnels!";
 		CinPause();
 		//travels to the tunnels!
-		travel(currentRoom, NULL, party, true, lobster->getHome());
+		travel(currentRoom, NULL, party, inventory, true, lobster->getHome());
 		return;
 	}
 	//this is actually using item code
@@ -2073,7 +2097,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			exit(0);
 		}
 		BURGERItem* boiga = (BURGERItem*)item; //get burger as burgeritem to get the elevator direction
-		travel(currentRoom, boiga->getDirection(), party, true); //leave to the elevator so the player can keep playing
+		travel(currentRoom, boiga->getDirection(), party, inventory, true); //leave to the elevator so the player can keep playing
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass
@@ -2159,7 +2183,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
 				cout << "\nYou " << mover->getUseText(); //prints what exactly the movement item did
 				CinPause();
-				travel(currentRoom, exit, party, true); //force travels to the found room
+				travel(currentRoom, exit, party, inventory, true); //force travels to the found room
 				return; //returns so we don't teleport to another room (and movement items don't get used up anyway, so no need for the deletion check)
 			}
 		} //prints error message if no matching blocked exit was found
@@ -2243,7 +2267,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	party->push_back(npc);
 	npc->Recruit(); //sets the npc to recruited
 	npc->printRecruitmentDialogue(); //print the recruitment dialogue
-	cout << "\n" << npcname << " was added to your party! (party size: " << party->size() << "/" << maxParty << ")"; //prints success text
+	cout << "\n" << npcname << " was added to your party! (Party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 }
 
 //decruit npcs from your party MARK: dismiss
@@ -2372,7 +2396,7 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 }
 
 //prints all the available commands MARK: help
-void printHelp(char validCommands[16][255], char flavorText[16][255]) {
+void printHelp(const char* validCommands[16], const char* flavorText[16]) {
 	cout << "\n"; //prints a random flavor text
 	cout << flavorText[rand() % 16];
 	cout << "\nValid commands:"; //prints all the valid commands
@@ -2383,6 +2407,14 @@ void printHelp(char validCommands[16][255], char flavorText[16][255]) {
 
 //the main function where everything is called MARK: main
 int main() {
+	cout << "\nBURGER QUEST 2:"
+			"\nELECTRIC BOOGALOO"
+			"\n"
+			"\n(c) 2026 Tomas Carranza Echaniz"
+			"\nVersion 1.0"
+			"\n"
+			"\nDo you have existing save data? Paste it here if so, otherwise just ENTER.\n> "; //? just ENTER to begin!
+	
 	srand(time(NULL)); //seeds random
 		
 	//sets up the game world and places the player at the current room
@@ -2395,7 +2427,7 @@ int main() {
 	int mony = 0; //monies are the currency in the BURGER QUEST universe.
 
 	//flavor text printed by printHelp()
-	char flavorText[16][255] = {
+	const char* flavorText[16] = {
 		"What even is a BURGER?",
 		"You consider the state of the economy.",
 		"You are blue dabadeedabadai.",
@@ -2415,7 +2447,7 @@ int main() {
 	};
 
 	//a list of the valid commands (and extensions) to be printed by printHelp()
-	char validCommands[16][255] = {
+	const char* validCommands[16] = {
 		"GO [direction]",
 		"TAKE [item]",
 		"DROP [item]",
@@ -2482,7 +2514,7 @@ int main() {
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
 
 		if (!strcmp(commandWord, "GO")) { //for going in a direction
-			travel(currentRoom, &commandExtension[0], party);
+			travel(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "TAKE")) { //for taking an item
 			takeItem(currentRoom, inventory, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "DROP")) { //for dropping an item
