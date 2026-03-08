@@ -18,7 +18,7 @@ using namespace std;
 class Room; //forward declares room because these two classes reference each other
 class Item;
 
-class NPC { //for game testing purposes, all stats default to 20
+class NPC {
 public: //you need to set stats on creation
 	NPC(const char* _title, const char* _name, const char* _description, Room* room, int _level = 0, Stats _basestats = Stats(), bool _isleader = false, bool _player = false);
 	~NPC();
@@ -96,7 +96,7 @@ public: //you need to set stats on creation
 	void setDescription(const char* _description);
 	void setScale(Stats _scale);
 	void addXp(int _xp);
-	void levelUp(bool trackLevelUp = false);
+	void levelUp(bool trackLevelUp = false, int instant = 0);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true);
 	int damage(float power, float pierce, int hits = 1);
 	void directDamage(int damage, const char* status = NULL);

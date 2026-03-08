@@ -22,6 +22,25 @@ struct Stats {
         return *this; //return this as value to allow += chains
     }
 
+    friend Stats operator+(Stats left, const Stats& right) { //for doing stats1 + stats2
+        return left += right;
+    }
+
+    Stats& operator*=(int other) { //when you multiply a stats by an integer it multlies all the stats by that amount
+        hpmax *= other;
+        defense *= other;
+        attack *= other;
+        toughness *= other;
+        pierce *= other;
+        speed *= other;
+        spmax *= other;
+        return *this; //return this as value to allow *= chains
+    }
+
+    friend Stats operator*(Stats left, int right) { //for doing stats*amount
+        return left *= right;
+    }
+
     int& operator[](int index) { //make stat getting easier using indexing!
         switch (index) {
         case 0: return hpmax;
@@ -34,9 +53,15 @@ struct Stats {
         }
     }
 
-    friend Stats operator+(Stats left, const Stats& right) { //for doing stats1 + stats2
-        return left += right;
+    static Stats avgLvLUp(int levels) { //makes a new stats object equal to the average amount of stats randomly going up for the given amount of levels
+        Stats stats = Stats();
+        stats.pierce = 0; //pierce doesn't change on level up usually
+        stats.spmax  = levels; //spmax always goes up by one per level
+        stats.hpmax = stats.defense = stats.attack = stats.toughness = stats.speed = levels / 2; //everything else goes up 1 or 0 times, averaging to 1/2 per level up
+        return stats; //return the stats we just made!
     }
+
+    
 
     static Stats getStatScale(const Stats& basestats) { //calculate default scaling stats based on base stats
         Stats scale = Stats(); //all stats start as 0

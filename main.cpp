@@ -2252,7 +2252,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	if (npc->getRecruited()) {
 		cout << "\n" << npcname << " is already in your party...";
 		return;
-	} //you're not allowed to have more than 4 party members (including yourself) otherwise that would be so unbalanced
+	} //you're not allowed to have more than 4 party members (including yourself) otherwise that would be very unbalanced
 	if (party->size() == maxParty) {
 		cout << "\nYour party is full!";
 		return;

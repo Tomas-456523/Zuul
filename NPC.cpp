@@ -307,13 +307,20 @@ void NPC::addXp(int _xp) { //adds xp and checks for level up
 	}
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
-void NPC::levelUp(bool trackLevelUp) {
-	Stats statsup = Stats::makeLvlStats(level, id); //deterministically determine the stats we just got from the level up
+void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantly set it to a certain level, for very high levels
+	Stats statsup; //how much each stat just went up
+	if (instant) { //instantly go to the given level if one was given that wasn't the default 0
+		statsup = Stats::avgLvLUp(instant-level) + scale*instant; //get the average random stat changes for how much we leveled up plus the guaranteed scale for each level up
+		level = instant; //set the level
+	} else { //normally go up one single level
+		statsup = Stats::makeLvlStats(level, id) + scale; //deterministically determine the stats we just got from the level up, plus the baseline stat scale
+		level++; //increments the level
+	}
 	statChangesSum += statsup; //track unprinted stat changes so we can print them later
 	stats += statsup; //apply the stat changes
 	health = stats.hpmax; //we must start battle at max health so we update current health to match the max
 	sp = stats.spmax / 3; //start battle at a third of max sp
-	level++; //increments the level
+	
 	leveledUp = trackLevelUp; //registers that we've leveled up so that we can print it later
 	for (Attack* attack : special_attacks) { //checks if we got a new attack
 		if (attack->minLevel == level) {
@@ -437,9 +444,14 @@ void NPC::directDamage(int damage, const char* status) {
 	health -= totalDamage;
 	printDamage(totalDamage, status); //prints the damage taken and why it was taken
 }
-void NPC::setLevel(int _level) { //manually sets the level of the npc
-	for (int i = level; i < _level; i++) {
-		levelUp(); //levels up that many times in order to get the stat increases
+void NPC::setLevel(int _level) { //manually sets the level of the npc (will not level down)
+	int lvlguard = 100; //guards the level up past a certain amount to avoid the program freezing on large level settings
+	if (_level - level > lvlguard) { //if we're leveling up too much, we just instantly go to that level
+		levelUp(false, _level);
+	} else { //if the level is a reasonable amount, just call the level up process normally for maximum pseudorandomness
+		for (int i = level; i < _level; i++) {
+			levelUp(); //levels up that many times in order to get the stat increases
+		}
 	}
 }
 //set the scaling of the npc (minimum stat increase per level up)
