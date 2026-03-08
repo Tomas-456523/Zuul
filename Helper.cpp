@@ -221,7 +221,7 @@ namespace Helper {
 			}
 		}
 	}
-	void printLvlUpData(const NPC* npc) {
+	void printLvlUpData(NPC* npc) {
 		if (npc->getLevelUp()) {
 			cout << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
 			npc->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
@@ -259,7 +259,7 @@ namespace Helper {
 	vector<Attack*> attacksH;
 	vector<Effect*> effectsH;
 
-	bool WorldState[NEVER] = {false}; //every world state starts as false
+	bool WorldState[NEVER+1] = {false}; //every world state starts as false (NEVER + 1 because the last enumerator is equal enum size minus 1, since it starts at 0)
 
 	int npcID = 0; //npcID starts at 0, since it's the npcsH index
 

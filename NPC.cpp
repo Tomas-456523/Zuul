@@ -13,30 +13,34 @@ using namespace std;
 using namespace Helper;
 
 //constructs the npc!
-NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, Stats _basestats, int _level, bool _isleader, bool _player) {
+NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, int _level, Stats _basestats, bool _isleader, bool _player) {
 	title = _title;
 	strcpy(name, _name);
 	description = _description;
 	home = room;
 	currentRoom = room;
 	room->setNPC(this); //make sure the room knows the npc is there
-	stats = basestats = _basestats; //effective stats start as base stats
-	scale = Stats.getStatScale(basestats);
 	health = stats.hpmax; //xp starts at max
-	sp = 0; //sp starts at 0 in each battle so it has to be built up
+	sp = stats.spmax / 3; //start battle at a third of max sp and has to be built up
 	isLeader = _isleader;
 	isPlayer = _player;
 	if (isLeader) { //adds itself to its own party if it's a leader npc (fightable or the player)
 		party.push_back(&*this);
 	}
+	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
+	id = npcID++; //get this npc's id and increment it for the next one
+
+	if (!_basestats.empty()) basestats = _basestats; //set base stats if specified ones were passed
+	else basestats = Stats::genBaseStats(id); //if none were passed, generate some new ones
+	stats = basestats; //effective stats start as base stats
+	scale = Stats::getStatScale(basestats); //make a default scaling based on the base stats that may or may not be manually reset later
+
 	if (_level != 0 && _level <= 100) { //sets its given level if it isn't too high, otherwise it freezes the program at the start
 		setLevel(_level);
 	}
 	if (_level > 100) { //instead we just manually set it
 		level = _level;
 	}
-	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
-	id = npcID++; //get this npc's id and increment it for the next one
 }
 NPC::NPC(const NPC& other) { //copy constructor, we do not need to set the stats because we only copy during battle when stats should be the same and during setup world where all the templates are level 0 anyway
 	*this = other;
@@ -90,28 +94,28 @@ int NPC::getHealth() {
 	return health;
 }
 int NPC::getHealthMax() {
-	return maxHealth;
+	return stats.hpmax;
 }
 int NPC::getDefense() {
-	return defense;
+	return stats.defense;
 }
 int NPC::getAttack() {
-	return attack;
+	return stats.attack;
 }
 int NPC::getToughness() {
-	return toughness;
+	return stats.toughness;
 }
 int NPC::getPierce() {
-	return pierce;
+	return stats.pierce;
 }
 int NPC::getSpeed() {
-	return speed;
+	return stats.speed;
 }
 int NPC::getSP() {
 	return sp;
 }
 int NPC::getSPMax() {
-	return maxSP;
+	return stats.spmax;
 }
 int NPC::getLevel() {
 	return level;
@@ -149,7 +153,7 @@ map<Attack*, int> NPC::getWeights() {
 bool NPC::getLevelUp() {
 	return leveledUp;
 }
-vector<int>& NPC::getStatChanges() {
+Stats NPC::getStatChanges() {
 	Stats changes = statChangesSum;
 	statChangesSum = Stats(); //reset stat changes because we don't need to track them anymore
 	return changes; //return the stats we recovered
@@ -304,10 +308,11 @@ void NPC::addXp(int _xp) { //adds xp and checks for level up
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
 void NPC::levelUp(bool trackLevelUp) {
-	statChanges += Stats.makeLvLStats(level, id); //(deterministically) set the stat changes seperately so we can print them later
-	stats += statChanges; //apply the stat changes
-	health = stats.maxHealth; //we must start battle at max health so we update current health to match the max
-	//sp = 0
+	Stats statsup = Stats::makeLvlStats(level, id); //deterministically determine the stats we just got from the level up
+	statChangesSum += statsup; //track unprinted stat changes so we can print them later
+	stats += statsup; //apply the stat changes
+	health = stats.hpmax; //we must start battle at max health so we update current health to match the max
+	sp = stats.spmax / 3; //start battle at a third of max sp
 	level++; //increments the level
 	leveledUp = trackLevelUp; //registers that we've leveled up so that we can print it later
 	for (Attack* attack : special_attacks) { //checks if we got a new attack
@@ -368,7 +373,7 @@ void NPC::printDamage(int damage, const char* status) { //prints the damage the 
 	if (status != NULL) { //prints the status that caused it
 		cout << " due to " << status;
 	}
-	cout << "!\n" << name << " now has " << health << "/" << maxHealth << " HP."; //prints how much health it now has
+	cout << "!\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
 	if (health <= 0) { //says that the npc is incapacitated if it now has 0 hp
 		CinPause();
 		cout << "\n" << name << " is incapacitated!";
@@ -397,11 +402,11 @@ int NPC::damage(float power, float pierce, int hits) {
 	float damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
 	int totalhits = Clamp(hits - guard, 0, 999); //how many times the attack landed
 	guard = Clamp(guard - hits, 0, 99999); //hits lower guard
-	float defenseF = defense; //converts stats to floats for easier damage calculation
-	float toughnessF = toughness;
+	float defenseF = stats.defense; //converts stats to floats for easier damage calculation
+	float toughnessF = stats.toughness;
 	//calculates the damage
 	int damage = (int)ceil(power * (10.0f/(10.0f + ClampF(defenseF - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessF)),0,defenseF)))) * totalhits;
-	int totalDamage = Clamp(damage,health-maxHealth,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
+	int totalDamage = Clamp(damage,health-stats.hpmax,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	if (hits > 1) { //prints how many times it was hit if it was hit a nonstandard amount of times
 		cout << "\n" << name << " was hit " << hits << " times!";
 	}
@@ -428,7 +433,7 @@ int NPC::damage(float power, float pierce, int hits) {
 }
 //directly applies damage while ignoring defense and all that
 void NPC::directDamage(int damage, const char* status) {
-	int totalDamage = Clamp(damage,health-maxHealth,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
+	int totalDamage = Clamp(damage,health-stats.hpmax,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	health -= totalDamage;
 	printDamage(totalDamage, status); //prints the damage taken and why it was taken
 }
@@ -438,14 +443,8 @@ void NPC::setLevel(int _level) { //manually sets the level of the npc
 	}
 }
 //set the scaling of the npc (minimum stat increase per level up)
-void NPC::setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp) {
-	healthScale = _health;
-	defenseScale = _defense;
-	attackScale = _attack;
-	toughnessScale = _toughness;
-	pierceScale = _pierce;
-	speedScale = _speed;
-	spScale = _sp;
+void NPC::setScale(Stats _scale) {
+	scale = _scale;
 }
 void NPC::setBasicAttack(Attack* attack) {
 	standard_attack = attack;
@@ -493,22 +492,31 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 			return;
 		}
 	}
-	attack += effect.attackbuff; //edit stats
-	defense += effect.defensebuff;
-	toughness += effect.toughbuff;
-	pierce += effect.piercebuff;
+	attackMultiplier *= effect.attackbuff; //edit stat multipliers
+	defenseMultiplier *= effect.defensebuff;
+	toughMultiplier *= effect.toughbuff;
+	pierceMultiplier *= effect.piercebuff;
+	damageMultiplier *= effect.damagebuff;
+	spUseMultiplier *= effect.spusage;
+
 	if (battle) { //print stat changes if in battle
-		if (effect.defensebuff) { //prints the stat changes
-			cout << "\n" << name << "'s DEFENSE went up to << " << defense << "!";
+		if (effect.defensebuff != 1) { //prints the stat changes
+			cout << "\n" << name << "'s DEFENSE went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.defensebuff << "!";
 		}
-		if (effect.attackbuff) {
-			cout << "\n" << name << "'s ATTACK went up to << " << attack << "!";
+		if (effect.attackbuff != 1) {
+			cout << "\n" << name << "'s ATTACK went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.attackbuff << "!";
 		}
-		if (effect.toughbuff) {
-			cout << "\n" << name << "'s TOUGHNESS went up to << " << toughness << "!";
+		if (effect.toughbuff != 1) {
+			cout << "\n" << name << "'s TOUGHNESS went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.toughbuff << "!";
 		}
-		if (effect.piercebuff) {
-			cout << "\n" << name << "'s PIERCE went up to << " << pierce << "!";
+		if (effect.piercebuff != 1) {
+			cout << "\n" << name << "'s PIERCE went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.piercebuff << "!";
+		}
+		if (effect.damagebuff != 1) {
+			cout << "\n" << name << " now takes " << damageMultiplier << " times as much damage!";
+		}
+		if (effect.spusage != 1) {
+			cout << "\n" << name << "'s moves now use " << spUseMultiplier << " times SP!";
 		}
 	}
 	if (effect.freeze) { //adds freeze to the npc
@@ -532,21 +540,84 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 void NPC::removeEffect(Effect& effect) { //removes an effect from the npc
 	for (int i = 0; i < effects.size(); i++) {
 		if (!strcmp(effect.name, effects[i].name)) { //if the names match, no conflicting effect names as far as I know
-			attack -= effects[i].attackbuff; //removes the stat changes
-			defense -= effects[i].defensebuff;
-			toughness -= effects[i].toughbuff;
-			pierce -= effects[i].piercebuff;
+			attackMultiplier /= effects[i].attackbuff; //remove the stat multipliers
+			defenseMultiplier /= effects[i].defensebuff;
+			toughMultiplier /= effects[i].toughbuff;
+			pierceMultiplier /= effects[i].piercebuff;
+			damageMultiplier /= effects[i].damagebuff;
+			spUseMultiplier /= effects[i].spusage;
+			if (effects[i].defensebuff != 1) { //prints the stat changes
+				cout << "\n" << name << "'s DEFENSE went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.defensebuff << "!";
+			}
+			if (effects[i].attackbuff != 1) {
+				cout << "\n" << name << "'s ATTACK went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.attackbuff << "!";
+			}
+			if (effects[i].toughbuff != 1) {
+				cout << "\n" << name << "'s TOUGHNESS went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.toughbuff << "!";
+			}
+			if (effects[i].piercebuff != 1) {
+				cout << "\n" << name << "'s PIERCE went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.piercebuff << "!";
+			}
+			if (effects[i].damagebuff != 1) {
+				//MARK: please edit this
+				
+
+
+
+
+				//MARK: please edit this
+				
+
+
+
+				
+				//MARK: please edit this
+				
+
+
+
+				
+				//MARK: please edit this
+				
+
+
+
+				
+				//MARK: please edit this
+				
+
+
+
+				
+				//MARK: please edit this
+				
+
+
+
+				
+				//MARK: please edit this
+				
+
+
+
+				
+				//MARK: please edit this
+				cout << "\n" << name << " now takes " << damageMultiplier << " times as much damage!";
+			}
+			if (effects[i].spusage != 1) {
+				cout << "\n" << name << "'s moves now use " << 1.0f/effect.spusage << " times SP!";
+			}//////////////////////////////////////
 			if (effects[i].defensebuff) { //says by how much stats dropped if applicable
-				cout << "\n" << name << "'s DEFENSE went down to " << defense << "!";
+				//cout << "\n" << name << "'s DEFENSE went down to " << defense << "!";
 			}
 			if (effects[i].attackbuff) {
-				cout << "\n" << name << "'s ATTACK went down to " << attack << "!";
+				//cout << "\n" << name << "'s ATTACK went down to " << attack << "!";
 			}
 			if (effects[i].toughbuff) {
-				cout << "\n" << name << "'s TOUGHNESS went down to " << toughness << "!";
+				//cout << "\n" << name << "'s TOUGHNESS went down to " << toughness << "!";
 			}
 			if (effects[i].piercebuff) {
-				cout << "\n" << name << "'s PIERCE went down to " << pierce << "!";
+				//cout << "\n" << name << "'s PIERCE went down to " << pierce << "!";
 			}
 			if (effect.freeze) { //decrements freeze if applicable
 				freeze--;
@@ -583,7 +654,7 @@ void NPC::calculateWeights() {
 //changes the sp amount
 void NPC::alterSp(int amount, const char* status) {
 	if (amount > 0) { //if there is positive change
-		int alterAmount = Clamp(amount, 0, maxSP - sp);
+		int alterAmount = Clamp(amount, 0, stats.spmax - sp);
 		sp += alterAmount; //alter the amount
 		if (status != NULL) { //say why it happened
 			cout << "\n" << name << " gained " << alterAmount << " SP due to " << status << "!";

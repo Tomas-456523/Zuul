@@ -19,7 +19,7 @@ struct Conversation {
 	bool altdialogue; //if skipcondition is true, if we should use alternate dialogue instead of just skipping the conversation
 
 	bool getOutdated() {
-		if (skipcondition && !altdialogue) return true;
+		if (Helper::WorldState[skipcondition] && !altdialogue) return true;
 		return false;
 	}
 

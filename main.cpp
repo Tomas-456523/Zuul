@@ -6,6 +6,7 @@
 *  In case you missed the first BURGER QUEST, you can play it at https://codehs.com/sandbox/id/zuul-kb8vTu
 */
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <cstring>
 #include <algorithm>
@@ -404,14 +405,14 @@ NPC* SetupWorld() {
 	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1);
 	energyball->addDescription("Throw a ball of pure kinetic energy at the target.");
 
-	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 20, 5, 6, 0, 0, 10, 5, 0, true, true);
-	self->setScale(1, 1, 1, 0, 0, 1, 1);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 5), true, true);
+	//self->setScale(1, 1, 1, 0, 0, 1, 1);
 	self->setDialogue("Huh?");
 	self->Recruit();
 	self->setBasicAttack(punch);
 	self->addSpecialAttack(energyball);
 
-	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 16, 5, 4, 0, 1, 5, 2);
+	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 0, Stats(16, 5, 4, 0, 1, 5, 2));
 	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -2, -20, 20, 1, 1, 1, true);
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely?"},
 							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."}});
@@ -421,7 +422,7 @@ NPC* SetupWorld() {
 	floria->addRecruitedDialogue("I must see all the flowers!");
 	floria->addDismissalDialogue("I'm going to go back to my flower field!");
 
-	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 15, 2, 3, 10, 10, 2, 10, 10);
+	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 10, Stats(15, 2, 3, 10, 10, 2, 10));
 	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "used his science cannon to blast", -2);
 	egadwick->setDialogue("Ah hello kiddo. How's it going?");
 	egadwick->addGymDialogue("Eh, exercise isn't really my thing, kiddo. I can gain experience by working out my mind!");
@@ -430,7 +431,7 @@ NPC* SetupWorld() {
 	egadwick->addRecruitedDialogue("I love science. The world has so many interesting specimens.");
 	egadwick->addDismissalDialogue("Great hanging out with you, kiddo! Well, I guess I'll go work on a better robot!");
 
-	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 1, 0, 1, 0, 0, 0, 0, 50);
+	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 50);
 	archie->setDialogue("Safe travels, child!");
 	archie->addConversation({{archie, "So you are going on a BURGER QUEST, I hear?"},
 							 {archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG."},
@@ -438,12 +439,11 @@ NPC* SetupWorld() {
 							 {archie, "Make sure to bring me back a BURGER! Heh heh heh."}});
 	archie->addRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
 
-	//REPLACE PLACEHOLDER STATS
-	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 30, 10, 5, 0, 2, 20, 0, 2);
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 2, Stats(30, 10, 5, 0, 2, 20, 0));
 	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 	graham->addRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
 
-	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647);
+	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, Stats(2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647));
 	burgerman->setLeader(true, 0, NULL, false);
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
@@ -464,26 +464,55 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(developer, "You know how HENRY JERRY's company invented time travel?");
 	burgerman->addLinkedConvo(self, "Uh huh.");*/
 	
-	NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 10, 2, 4, 1, 0, 4, 5, 1);
+	/*{{developer, "Ayy BERNARD how's it going?"},
+	{self, "Pretty good I think but they actually named me that."},
+	{NULL, "\n   (\\"
+		   "\n   /(\\                .,"
+		   "\n   \\_/               / |"
+		   "\n        \\-._  ^ ___ /  |"
+		   "\n    _____\\, `  _____   `-\"\"\"/"
+		   "\n    \"\"---___ /___ ___\\__--\"\""
+		   "\n            |  |   |  |"
+		   "\n             \\   -   /"
+		   "\n               \"\"\"\"\""
+		   "\n              |     |"},
+	{developer, "Well that's pretty unfortunate."},
+	{developer, "That do be how life be sometimes."},
+	{developer, "Well good job getting here."},
+	{developer, "Here have this cool amazing new move."},
+	{self, "Yoooo nice thanks.\n\n\n"}};*/
 
-	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 1000000, 5000000, 900000000, 100000, 0, 700000, 200000, 80000000);
+	// (\               				// (\               				// (\               			// (\               
+	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,
+	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |
+	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  ^ ___/  |
+	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//  _____\, `  _____  `-"""/
+	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//  ""---___ /___ ___\__--"
+	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//          |  |   |  |
+	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /
+	//             """""				//             """""				//             """""			//             """""
+	//            |     |				//            |     |				//            |     |			//            |     |
+	
+	NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
+
+	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
 	burgerprisoner->setDialogue("Hi how are you doing?");
 	burgerprisoner->addRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
 
-	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 500, 400, 99999, 800, 99999, 50, 50, 30);
+	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->addRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 
 	//NPC* fisho = new NPC("FISHERMAN", "FRED", "A middle-aged fisherman who frequently fishes at the village docks.", docks, 30, 10, );
 
-	Effect* minibuff = new Effect("MINIBUFF", 4, 0, 0, 5, 5, 5, 5);
-	Effect* buff = new Effect("BUFF", 4, 0, 0, 15, 15, 15, 15);
-	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 30, 30, 30, 30);
-	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 50, 50, 50, 50);
+	Effect* minibuff = new Effect("MINIBUFF", 4, 0, 0, 1.25f, 1.25f, 1.25f, 1.25f);
+	Effect* buff = new Effect("BUFF", 4, 0, 0, 1.5f, 1.5f, 1.5f, 1.5f);
+	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 2.0f, 2.0f, 2.0f, 2.0f);
+	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5f, 2.5f, 2.5f, 2.5f);
 
-	Effect* smoothiebuff = new Effect("MULTIPOSITION", 999999, -30, 10, 70, 70, 70, 70);
+	//Effect* smoothiebuff = new Effect("MULTIPOSITION", 999999, -30, 10, 70, 70, 70, 70);
 
-	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 50, 0, 0, 0);
+	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 2.0f, 0, 0, 0);
 
 	//tent store stock
 	Item* apple = new HpItem("HEALTHY APPLE", "A healthy red apple. (heals 10 HP)", limbo, 10);
@@ -517,7 +546,7 @@ NPC* SetupWorld() {
 	tentstore->setStock(pizza, 2147483647, 50, "JIMMY JOHN - Thank you for your patronage! Enjoy your pizza!");
 	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - I don't understand that book. But if it interests you then great! Oh, and thank you for your patronage!");	
 
-	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5, 2, 6, 0, 4, 20, 0, 5);
+	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5);
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
 	mrdeer->setGift(deerkey);
 	mrdeer->addConversation({{self, "Hello MR. DEER!"},
@@ -533,7 +562,7 @@ NPC* SetupWorld() {
 	mrdeer->setDialogue("*deer noises*");
 	mrdeer->addRejectionDialogue("*no thank you deer noise*");
 
-	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 15000, 15000, 15000, 15000, 0, 2000, 500, 25000);
+	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 25000, Stats(15000, 15000, 15000, 15000, 0, 2000, 500));
 	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
 								{self, "Indeed I am."},
 								{wallelder, "Do not be fooled by the allure of BURGER. Why do you crave it so?"},
@@ -549,7 +578,7 @@ NPC* SetupWorld() {
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
 	wallelder->addRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");
 
-	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 200, 80, 120, 10, 50, 10, 30, 100);
+	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 100, Stats(200, 80, 120, 10, 50, 10, 30));
 	/*magmelder->addConversation(magmelder, "Oh it's horrible!");
 	magmelder->addConversation(magmelder, "The lava level around the city has been raised!");
 	magmelder->addConversation(magmelder, "But the allure of BURGER is too great! I've seen people try to sail across and get burnt up!");
@@ -562,7 +591,7 @@ NPC* SetupWorld() {
 	magmelder->setDialogue("You must drain the lava before more lives are lost!");
 	magmelder->addRejectionDialogue("Nay! I must dwell in lava and you must dwell on land. These things conflict, do they not?");
 
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 1, 0, 1, 0, 0, 0, 0, 0);
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 0, Stats(67, 67, 67, 67, 67, 67, 67));
 	developer->setDialogue("Yo wassup.");
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
@@ -594,8 +623,8 @@ NPC* SetupWorld() {
 	//(self, "Can I recruit TECH DEMO MAN?", true);
 	//(developer, "No.")
 
-	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 20, 20, 25, 30, 10, 0, 10);
-	forestknight->setScale(1, 2, 1, 1, 0, 0, 0);
+	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(20, 20, 25, 30, 10, 0, 10));
+	//forestknight->setScale(1, 2, 1, 1, 0, 0, 0);
 	forestknight->setLevel(30);
 	forestknight->addRejectionDialogue({{forestknight, "I sense that you are on a BURGER QUEST."},
 										{forestknight, "I will not assist you in obtaining this object of sin."},
@@ -612,8 +641,8 @@ NPC* SetupWorld() {
 										  {forestknight, "My apologies, child. My quest sensor is a bit slow."},
 										  {forestknight, "I have not updated to the latest software version in a little while."}});
 
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, 5, 20, 0, 20, 12, 15);
-	minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
+	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 0, 7, 5, 0, 2, 3);
 	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them.");
@@ -623,7 +652,7 @@ NPC* SetupWorld() {
 	bonedrill->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them.");
 	Item* bonecone = new EducationItem("BONE CONE", "A cone-shaped bone. I bet you could think of an attack USE-ing this.", desertgrave, bonedrill);
 
-	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 10, 10, 10, 10, 10, 10, 0);
+	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
 	gymbro->addRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
 
@@ -659,7 +688,7 @@ NPC* SetupWorld() {
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo, IN_ELEVATOR);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
 
-	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant person in the shop.", desertshopfixed);
+	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant person in the shop.", desertshopfixed, 12);
 	merchant->setDialogue("Welcome, my friend, to my store.");
 	merchant->addRejectionDialogue("No I want to sell things.");
 
@@ -670,7 +699,7 @@ NPC* SetupWorld() {
 	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
 	coolstreet3->setStock(hotdog, 2147483647, 2, "HARRY - \"Ayy thanks for the purchase enjoy your hot dog!\"");
 
-	NPC* hotdogguy = new NPC("HOT DOG VENDOR", "HARRY", "Manager of the lucrative BURGERSBURG hot dog stand.\nEveryone likes him too much to rob him.", coolstreet3);
+	NPC* hotdogguy = new NPC("HOT DOG VENDOR", "HARRY", "Manager of the lucrative BURGERSBURG hot dog stand.\nEveryone likes him too much to rob him.", coolstreet3, 14);
 	hotdogguy->addConversation({{self, "Hey!"},
 								{self, "Got any grapes?"},
 								{hotdogguy, "No, I just sell hot dogs."},
@@ -681,7 +710,7 @@ NPC* SetupWorld() {
 	hotdogguy->addRejectionDialogue("Sorry no, this hot dog stand is my life's calling.");
 
 	//it's TECH DEMO MAN!
-	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 200000, 200000, 20, 20000, 10, 15, 20);
+	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 0, Stats(200000, 200000, 20, 20000, 10, 15, 20));
 	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
 	techdemoman->addRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
 
@@ -697,7 +726,7 @@ NPC* SetupWorld() {
 	self->addConversation(self, "You look distressed.");
 	self->addConversation(self, "You look distressed.");*/
 	
-	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom);
+	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there, short individual! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true);
@@ -1136,7 +1165,7 @@ NPC* SetupWorld() {
 
 	//set up enemies
 
-	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnels, 200, 20, 10, 20, 10, 50, 10);
+	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnels, 10, Stats(200, 20, 10, 20, 10, 50, 10));
 	tunnellobster->setLobster(tunnels);
 	tunnellobster->setLeader(true, 10, desertstation, false);
 	tunnellobster->setTunnelDirection(tentstation, TO_THE_VILLAGE);
@@ -1160,37 +1189,37 @@ NPC* SetupWorld() {
 	basestation->setBackup(backupcaller3);
 
 	//set up generic non-npc enemies MARK: enemies (internal)
-	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 10, 10, 5, 0, 10, 15, 5);
+	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 5));
 	Attack* headbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
 	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
 	pricklyhog->setBasicAttack(headbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
 
-	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 20, 10, 10, 2, 20, 20, 10);
+	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 10));
 	greaterhog->setBasicAttack(headbutt);
 	greaterhog->addSpecialAttack(homing_prickle);
 
-	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 16, 0, 5, 0, 2, 5, 5);
+	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 5));
 	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -2, 3, 0, 1, 1, 1);
 	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
 
-	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 32, 0, 8, 0, 2, 4, 6);
-	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 10, 10, 10);
+	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 6));
+	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 2.0f, 2.0f, 2.0f);
 	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", 4, 0, 0, 1, 1, 5, true);
 	buffgrassman->setBasicAttack(grassstrike);
 	buffgrassman->addSpecialAttack(benchpress);
 
-	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 10, 6, 3, 1, 5, 5, 5);
+	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 0, Stats(10, 6, 3, 1, 5, 5, 5));
 	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 1, 0, 4, 4, 1);
 	enemydeer->setBasicAttack(deercombo);
 
-	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 20, 2, 4, 0, 5, 20, 15);
+	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 4, 0, 5, 20, 15));
 	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 4, 5, 0, 3, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
-	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 50, 20, 10, 5, 15, 20, 10);
+	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 0, Stats(50, 20, 10, 5, 15, 20, 10));
 	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shrimplebeam);
@@ -1198,21 +1227,21 @@ NPC* SetupWorld() {
 	engarde->guardset = 1;
 	jimshady->setEffect(engarde, false);
 
-	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 20, 0, 10, 0, 20, 30, 0);
+	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 30, 0));
 	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", 0, 0, 0, 1, 1, 1);
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
 	Effect* flinch = new Effect("FLINCH", 1);
 	shrimpleshimmy->addEffect(flinch);
 
-	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 20, 5, 7, 5, 5, 12, 10);
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
 	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
 	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", 10, 10, 5, 1, 1, 1, 0.5f);
 	carnplant->setBasicAttack(bite);
 	carnplant->addSpecialAttack(nutrientabsorb);
 
-	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", limbo, 30, 5, 7, 5, 5, 12, 24);
+	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(30, 5, 7, 5, 5, 12, 24));
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
-	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 5);
+	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0f);
 	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 16, 10, 5, 1, 1, 1, true);
 	flowerempower->addEffect(flowerpower);
 	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
@@ -1221,11 +1250,12 @@ NPC* SetupWorld() {
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
-	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 20, 5, 8, 0, 0, 6, 5);
-	Effect* sanded = new Effect("SAND IN THE EYES", 4, 0, 0, -10, -10);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at the eyes of", -2, 5, 0, 1, 1, 1);
+	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 6, 5));
+	Effect* sanded = new Effect("SAND IN THE EYES", 4, 0, 0, .8f, -10);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at ", -2, 5, 0, 1, 1, 1);
+	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
-	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy fist at", 1, 3, 0, 1, 1, 1);
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", 1, 3, 0, 1, 1, 1);
 	sandman->setBasicAttack(sandthrow);
 	sandman->addSpecialAttack(sandpunch);
 
@@ -1240,132 +1270,132 @@ NPC* SetupWorld() {
 	npc->addSpecialAttack(genericcc);
 	*/
 
-	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Rolling weed of the desert that causes earthquakes.", limbo);
+	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Rolling weed of the desert that causes earthquakes.", limbo, 0, Stats());
 	rumbleweed->setBasicAttack(genericattack);
 	rumbleweed->addSpecialAttack(genericspecial);
 	rumbleweed->addSpecialAttack(genericcc);
 
-	NPC* rockbug = new NPC("", "ROCK BUG", "Bug made of rock and does stuff and lives in the mines and is aggressive.", limbo);
+	NPC* rockbug = new NPC("", "ROCK BUG", "Bug made of rock and does stuff and lives in the mines and is aggressive.", limbo, 0, Stats());
 	rockbug->setBasicAttack(genericattack);
 	rockbug->addSpecialAttack(genericspecial);
 	rockbug->addSpecialAttack(genericcc);
 
-	NPC* rascal = new NPC("", "MINE RASCAL", "Little thingy who lives in the mines.", limbo);
+	NPC* rascal = new NPC("", "MINE RASCAL", "Little thingy who lives in the mines.", limbo, 0, Stats());
 	rascal->setBasicAttack(genericattack);
 	rascal->addSpecialAttack(genericspecial);
 	rascal->addSpecialAttack(genericcc);
 
-	NPC* skeleminer = new NPC("", "SKELEMINER", "Skeleton miner who is a skeleton and mines with a lamp helmet those things you know.", limbo);
+	NPC* skeleminer = new NPC("", "SKELEMINER", "Skeleton miner who is a skeleton and mines with a lamp helmet those things you know.", limbo, 0, Stats());
 	skeleminer->setBasicAttack(genericattack);
 	skeleminer->addSpecialAttack(genericspecial);
 	skeleminer->addSpecialAttack(genericcc);
 
-	NPC* dreadnaut = new NPC("", "DREADNAUT", "Big armored military bug or crustacean with a tank cannon.", limbo);
+	NPC* dreadnaut = new NPC("", "DREADNAUT", "Big armored military bug or crustacean with a tank cannon.", limbo, 0, Stats());
 	dreadnaut->setBasicAttack(genericattack);
 	dreadnaut->addSpecialAttack(genericspecial);
 	dreadnaut->addSpecialAttack(genericcc);
 
-	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo);
+	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo, 0, Stats());
 	magman->setBasicAttack(genericattack);
 	magman->addSpecialAttack(genericspecial);
 	magman->addSpecialAttack(genericcc);
 
-	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Armored lava man and also he has a sword.", limbo);
+	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Armored lava man and also he has a sword.", limbo, 0, Stats());
 	lavasoldier->setBasicAttack(genericattack);
 	lavasoldier->addSpecialAttack(genericspecial);
 	lavasoldier->addSpecialAttack(genericcc);
 
-	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "Large man made of lava, name says it all.", limbo);
+	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "Large man made of lava, name says it all.", limbo, 0, Stats());
 	largelavaman->setBasicAttack(genericattack);
 	largelavaman->addSpecialAttack(genericspecial);
 	largelavaman->addSpecialAttack(genericcc);
 
-	NPC* lavarcher = new NPC("", "LAVARCHER", "Lava man who has a bow and arrow.", limbo);
+	NPC* lavarcher = new NPC("", "LAVARCHER", "Lava man who has a bow and arrow.", limbo, 0, Stats());
 	lavarcher->setBasicAttack(genericattack);
 	lavarcher->addSpecialAttack(genericspecial);
 	lavarcher->addSpecialAttack(genericcc);
 
-	NPC* slagman = new NPC("", "SLAGMAN", "Man made of slag from the factory.", limbo);
+	NPC* slagman = new NPC("", "SLAGMAN", "Man made of slag from the factory.", limbo, 0, Stats());
 	slagman->setBasicAttack(genericattack);
 	slagman->addSpecialAttack(genericspecial);
 	slagman->addSpecialAttack(genericcc);
 
-	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Golem who works in the factory.", limbo);
+	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Golem who works in the factory.", limbo, 0, Stats());
 	factgolem->setBasicAttack(genericattack);
 	factgolem->addSpecialAttack(genericspecial);
 	factgolem->addSpecialAttack(genericcc);
 
-	NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "Armored humanoid made of slag.", limbo);
+	NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "Armored humanoid made of slag.", limbo, 0, Stats());
 	slagwarrior->setBasicAttack(genericattack);
 	slagwarrior->addSpecialAttack(genericspecial);
 	slagwarrior->addSpecialAttack(genericcc);
 
-	NPC* lavagator = new NPC("", "LAVAGATOR", "Big lava alligator.", limbo);
+	NPC* lavagator = new NPC("", "LAVAGATOR", "Big lava alligator.", limbo, 0, Stats());
 	lavagator->setBasicAttack(genericattack);
 	lavagator->addSpecialAttack(genericspecial);
 	lavagator->addSpecialAttack(genericcc);
 
-	NPC* lavadile = new NPC("", "LAVADILE", "Small crocodile who lives in the lava.", limbo);
+	NPC* lavadile = new NPC("", "LAVADILE", "Small crocodile who lives in the lava.", limbo, 0, Stats());
 	lavadile->setBasicAttack(genericattack);
 	lavadile->addSpecialAttack(genericspecial);
 	lavadile->addSpecialAttack(genericcc);
 
-	NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo);
+	NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo, 0, Stats());
 	thief->setBasicAttack(genericattack);
 	thief->addSpecialAttack(genericspecial);
 	thief->addSpecialAttack(genericcc);
 
-	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Floating brain guy who is a criminal and very smart.", limbo);
+	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Floating brain guy who is a criminal and very smart.", limbo, 0, Stats());
 	crimmind->setBasicAttack(genericattack);
 	crimmind->addSpecialAttack(genericspecial);
 	crimmind->addSpecialAttack(genericcc);
 
-	NPC* minipanzer = new NPC("", "MINIPANZER", "Tiny tank thing.", limbo);
+	NPC* minipanzer = new NPC("", "MINIPANZER", "Tiny tank thing.", limbo, 0, Stats());
 	minipanzer->setBasicAttack(genericattack);
 	minipanzer->addSpecialAttack(genericspecial);
 	minipanzer->addSpecialAttack(genericcc);
 
-	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Big guy who will fenagle your bagels.", limbo);
+	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Big guy who will fenagle your bagels.", limbo, 0, Stats());
 	bagelfenagler->setBasicAttack(genericattack);
 	bagelfenagler->addSpecialAttack(genericspecial);
 	bagelfenagler->addSpecialAttack(genericcc);
 
-	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Shark that goes through the road so scary ahhh.", limbo);
+	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Shark that goes through the road so scary ahhh.", limbo, 0, Stats());
 	paveshark->setBasicAttack(genericattack);
 	paveshark->addSpecialAttack(genericspecial);
 	paveshark->addSpecialAttack(genericcc);
 
-	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Tornado thing with orbiting things.", limbo);
+	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Tornado thing with orbiting things.", limbo, 0, Stats());
 	naturaldisaster->setBasicAttack(genericattack);
 	naturaldisaster->addSpecialAttack(genericspecial);
 	naturaldisaster->addSpecialAttack(genericcc);
 
-	NPC* businessguy = new NPC("", "BUSINESSPERSON", "Evil businessperson who is evil.", limbo);
+	NPC* businessguy = new NPC("", "BUSINESSPERSON", "Evil businessperson who is evil.", limbo, 0, Stats());
 	businessguy->setBasicAttack(genericattack);
 	businessguy->addSpecialAttack(genericspecial);
 	businessguy->addSpecialAttack(genericcc);
 
-	NPC* richguy1 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo);
+	NPC* richguy1 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
 	richguy1->setBasicAttack(genericattack);
 	richguy1->addSpecialAttack(genericspecial);
 	richguy1->addSpecialAttack(genericcc);
 
-	NPC* richguy2 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo);
+	NPC* richguy2 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
 	richguy2->setBasicAttack(genericattack);
 	richguy2->addSpecialAttack(genericspecial);
 	richguy2->addSpecialAttack(genericcc);
 
-	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo);
+	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo, 0, Stats());
 	burgerbutler->setBasicAttack(genericattack);
 	burgerbutler->addSpecialAttack(genericspecial);
 	burgerbutler->addSpecialAttack(genericcc);
 
-	NPC* ninja = new NPC("", "NINJA", "A member of the ninja village who is an expert.", limbo);
+	NPC* ninja = new NPC("", "NINJA", "A member of the ninja village who is an expert.", limbo, 0, Stats());
 	ninja->setBasicAttack(genericattack);
 	ninja->addSpecialAttack(genericspecial);
 	ninja->addSpecialAttack(genericcc);
 
-	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief of the ninja village who is very expert.", limbo);
+	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief of the ninja village who is very expert.", limbo, 0, Stats());
 	ninjachief->setBasicAttack(genericattack);
 	ninjachief->addSpecialAttack(genericspecial);
 	ninjachief->addSpecialAttack(genericcc);
@@ -1431,12 +1461,12 @@ NPC* SetupWorld() {
 	jimshady1->setLeader(true, 5, forestwall);
 	jimshady1->blockExit(EAST, ENEMY, "blocked by JIM SHADY.");
 	jimshady1->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
-	/*jimshady1->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
-	jimshady1->addConversation(self, "No you aren't.");
-	jimshady1->addConversation(jimshady1, "Shut up.");*/
+	jimshady1->addConversation({{jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!"},
+								{self, "No you aren't."},
+								{jimshady1, "Shut up."}});
 	jimshady1->addRejectionDialogue("No go away.");
 
-	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming EVERYTHING.", forestgarden, 20, 15, 5, 5, 10, 20, 15, 5, true);
+	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else.", forestgarden, 5, Stats(20, 15, 5, 5, 10, 20, 15), true);
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
 	roguerobot->setBasicAttack(snip);
 	//roguerobot->setLink(egadwick);
@@ -1457,15 +1487,15 @@ NPC* SetupWorld() {
 	flowerguard->blockExit(WEST, ENEMY, "blocked by the FLOWER FIEND.");
 	flowerguard->setDialogue("*flowery shriek*");
 	flowerguard->addRejectionDialogue("*flowery shriek*");
-
-	NPC* savagehog = new NPC("", "SAVAGE HOG", "Dangerous, mammoth elder hog with very sharp prickles.", bossgrove, 80, 15, 20, 10, 30, 15, 15);
+		
+	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", bossgrove, 0, Stats(80, 15, 20, 10, 30, 15, 15));
 	savagehog->setLeader(true, 5);
 	savagehog->setParty(pricklyhog, greaterhog);
-	savagehog->blockExit(NORTH, ENEMY, "blocked off by the SAVAGE HOG!");
+	savagehog->blockExit(NORTH, ENEMY, "blocked off by the MAMMOTH HOG!");
 	savagehog->setDialogue("*SAVAGE ROAR*");
 	savagehog->addRejectionDialogue("Nah sorry mate. I'd rather stay home here in the grove with ma hog family.");
 	savagehog->setEscapable(false);
-	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, -10);
+	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
 	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", 5, 0, 0, 1, 1, 7);
 	savageroar->addEffect(intimidated);
@@ -1475,7 +1505,7 @@ NPC* SetupWorld() {
 	savagehog->addSpecialAttack(pricklestorm);
 	savagehog->setForceBattle();
 
-	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", desertgrave);
+	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", desertgrave, 0, Stats());
 	skeleviking->setLeader(true, 10);
 	skeleviking->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEVIKING.");
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
@@ -1546,8 +1576,8 @@ NPC* SetupWorld() {
 	richguard3->blockExit(UP, ENEMY, "manually blocked by a bunch of BUSINESSPEOPLE.");
 
 	//set up enemy and teammate viola
-	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 30, 0, 10, 0, 10, 20, 20);
-	viola->setScale(0, 0, 1, 0, 1, 0, 2);
+	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 10, Stats(30, 0, 10, 0, 10, 20, 20));
+	//viola->setScale(0, 0, 1, 0, 1, 0, 2);
 	viola->setLeader(true, 20);
 	/*viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
 	viola->addConversation(viola, "So what if I did?");
@@ -1575,8 +1605,8 @@ NPC* SetupWorld() {
 	viola->setEscapable(false);
 	viola->setBasicAttack(genericattack);
 
-	NPC* glutton = new NPC("BURGER GLUTTON", "GREER", "Greedy BURGER official sent to keep all the desert's remaining water for himself. He is bloated with water.", minespring, 100, 40, 10, 0, 0, 0, 10);
-	glutton->setLeader(true, 30, NULL, false);
+	NPC* greer = new NPC("BURGER OFFICIAL", "GREER", "Greedy BURGER official sent to manage all the desert's remaining water.", minespring, 1, Stats(100, 40, 10, 0, 0, 0, 10));
+	greer->setLeader(true, 30, NULL, false);
 	/*glutton->addConversation(self, "Hey why are you drinking all that water?");
 	glutton->addConversation(self, "You don't need that much save it for everyone else!");
 	glutton->addConversation(glutton, "Ehehehehe... all da watah is all mine, pal.");
@@ -1596,12 +1626,12 @@ NPC* SetupWorld() {
 	glutton->addLinkedConvo(NULL, "GREER disappeared into the darkness...");
 	glutton->addLinkedConvo(NULL, "The spring's water can now freely flow into the oasis!");
 	glutton->setLinkedRoom(ceoroom, "in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.\nThere is a rotund corpse in the corner");*/
-	glutton->setTalkOnDefeat();
-	glutton->setForceBattle();
-	glutton->setEscapable(false);
-	glutton->setBasicAttack(genericattack);
+	greer->setTalkOnDefeat();
+	greer->setForceBattle();
+	greer->setEscapable(false);
+	greer->setBasicAttack(genericattack);
 
-	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 200, 50, 30, 20, 20, 10, 50);
+	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
 	lavaguard->setLeader(true, 40, NULL, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("*ethereal breathing*");
@@ -2381,7 +2411,7 @@ int main() {
 			"\n(c) 2026 Tomas Carranza Echaniz"
 			"\n"
 			"\nPaste existing save data, or press ENTER to begin a new quest!"
-			"\n> ";
+			"\n> " << fixed << setprecision(2);
 	
 	srand(time(NULL)); //seeds random
 		

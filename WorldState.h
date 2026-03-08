@@ -12,7 +12,7 @@ namespace Helper {
 		NEVER //never set never to true
 	};
 
-	extern bool WorldState[NEVER]; //the state of the world! (must be as big as the last condition in WorldCondition, works since enumerators are technically ints!)
+	extern bool WorldState[NEVER+1]; //the state of the world! (must be as sized according to the last condition in WorldCondition, works since enumerators are technically ints!)
 }
 
 #endif

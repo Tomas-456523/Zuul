@@ -20,7 +20,7 @@ class Item;
 
 class NPC { //for game testing purposes, all stats default to 20
 public: //you need to set stats on creation
-	NPC(const char* _title, const char* _name, const char* _description, Room* room, Stats _basestats, int _level = 0, bool _isleader = false, bool _player = false);
+	NPC(const char* _title, const char* _name, const char* _description, Room* room, int _level = 0, Stats _basestats = Stats(), bool _isleader = false, bool _player = false);
 	~NPC();
 
 	NPC(const NPC& other);
@@ -55,7 +55,7 @@ public: //you need to set stats on creation
 	vector<Attack*> getSpecialAttacks();
 	map<Attack*, int> getWeights();
 	bool getLevelUp(); //if we leveled up recently
-	vector<int>& getStatChanges(); //the stat changes from the last level up
+	Stats getStatChanges(); //the stat changes from the last level up
 	vector<Attack*> getNewAttacks();
 	bool getDefeated(); //if npc has been defeated since entering the room
 	Item* takeGift(); //return and nullify the gift item
@@ -94,7 +94,7 @@ public: //you need to set stats on creation
 	void setName(const char* _name);
 	void setTitle(const char* _title);
 	void setDescription(const char* _description);
-	void setScale(int _health, int _defense, int _attack, int _toughness, int _pierce, int _speed, int _sp);
+	void setScale(Stats _scale);
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true);
@@ -198,12 +198,12 @@ protected:
 	Stats scale; //how much each stat increases (minimum) each level up
 	int health; //current health
 	int sp; //sp stands for skill points
-	float attackMult; //multipliers
-	float defenseMult;
-	float pierceMult;
-	float toughMult;
-	float spUseMult; //multiplies sp cost
-	float damageMult; //multiplies damage taken
+	float attackMultiplier; //multipliers
+	float defenseMultiplier;
+	float pierceMultiplier;
+	float toughMultiplier;
+	float spUseMultiplier; //multiplies sp cost
+	float damageMultiplier; //multiplies damage taken
 	
 	int level = 0;
 	int xp = 0; //how much xp the npc has stored up

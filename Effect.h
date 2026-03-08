@@ -20,23 +20,25 @@ struct Effect {
 	int damage; //how much damage the effect does per tick
 	int spleak; //how much sp this effect leaks per tick
 
-	//buffs (additive)
-	int attackbuff;
-	int defensebuff;
-	int toughbuff;
-	int piercebuff;
+	//buffs (multiplicative)
+	float attackbuff;
+	float defensebuff;
+	float toughbuff;
+	float piercebuff;
+	float spusage = 1; //multiplies sp needed to use moves
+	float damagebuff = 1; //buffs overall damage TAKEN, so we take that much more
 
-	bool freeze; //if the effect causes the target to get frozen
-	bool hypnotize; //if the effect causes the target to get hypnotized (attack own party)
+	bool freeze = false; //if the effect causes the target to get frozen
+	bool hypnotize = false; //if the effect causes the target to get hypnotized (attack own party)
 
-	int guardset; //if this effect sets guard on the target
+	int guardset = 0; //if this effect sets guard on the target
 
-	NPC* npc; //the affected npc, used by instances
+	NPC* npc = NULL; //the affected npc, used by instances
 
 	Effect() {} //default constructor to avoid random errors
 
 	//constructs the effect
-	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, int _attackbuff = 0, int _defensebuff = 0, int _toughbuff = 0, int _piercebuff = 0) {
+	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, float _attackbuff = 0, float _defensebuff = 0, float _toughbuff = 0, float _piercebuff = 0) {
 		name = _name;
 		duration = _duration;
 		damage = _damage;

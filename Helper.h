@@ -28,7 +28,7 @@ namespace Helper {
 	int aliveCount(vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
 	void printConversation(const Conversation& _convo); //print a conversation in conversation order
-	void printLvlUpData(const NPC* npc); //print the level up data of the given npc
+	void printLvlUpData(NPC* npc); //print the level up data of the given npc
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
