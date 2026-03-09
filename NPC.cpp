@@ -13,7 +13,7 @@ using namespace std;
 using namespace Helper;
 
 //constructs the npc!
-NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, int _level, Stats _basestats, bool _isleader, bool _player) {
+NPC::NPC(const char* _title, const char* _name, const char* _description, Room* room, int _level, Stats _basestats, Stats _scale, bool _isleader, bool _player) {
 	title = _title;
 	strcpy(name, _name);
 	description = _description;
@@ -33,7 +33,8 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	if (!_basestats.empty()) basestats = _basestats; //set base stats if specified ones were passed
 	else basestats = Stats::genBaseStats(id); //if none were passed, generate some new ones
 	stats = basestats; //effective stats start as base stats
-	scale = Stats::getStatScale(basestats); //make a default scaling based on the base stats that may or may not be manually reset later
+	if (!_scale.empty()) scale = _scale;
+	else Stats::getStatScale(basestats); //make a default scaling based on the base stats
 
 	if (_level != 0 && _level <= 100) { //sets its given level if it isn't too high, otherwise it freezes the program at the start
 		setLevel(_level);
@@ -58,11 +59,14 @@ const char* NPC::getDescription() {
 	return description;
 }
 void NPC::printRejectionDialogue() {
-	if (rejectionDialogue.empty()) return;
 	printDialogue(&rejectionDialogue.front());
-	rejectionDialogue.pop();
+	if (rejectionDialogue.size() != 1) rejectionDialogue.pop();
 }
 void NPC::printRecruitmentDialogue() {
+	if (speakOnRecruit) { //if we have to print normal dialogue before regular dialogue
+		printDialogue();
+		speakOnRecruit = false; //only do this once
+	}
 	if (recruitmentDialogue.empty()) return;
 	printDialogue(&recruitmentDialogue.front());
 	recruitmentDialogue.pop();
@@ -195,6 +199,24 @@ bool NPC::getRespawn() {
 }
 bool NPC::getBoss() {
 	return isBoss;
+}
+float NPC::getAttMultiplier() {
+	return attackMultiplier;
+}
+float NPC::getDefMultiplier() {
+	return defenseMultiplier;
+}
+float NPC::getToughMultiplier() {
+	return toughMultiplier;
+}
+float NPC::getPierceMultiplier() {
+	return pierceMultiplier;
+}
+float NPC::getSPUseMultiplier() {
+	return spUseMultiplier;
+}
+float NPC::getDamageMultiplier() {
+	return damageMultiplier;
 }
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
@@ -358,6 +380,9 @@ void NPC::setExtraXP(int xp) {
 }
 void NPC::setExtraMonies(int monies) {
 	monyReward = xp;
+}
+void NPC::setTalkOnRecruit(bool talk) {
+	speakOnRecruit = talk;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;

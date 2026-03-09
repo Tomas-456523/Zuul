@@ -399,45 +399,232 @@ NPC* SetupWorld() {
 	//Create attacks
 	
 	//Create NPCs and items MARK: make npcs, items, etc.
-	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
-	punch->addDescription("Throw a simple punch at the target.");
-
-	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1);
-	energyball->addDescription("Throw a ball of pure kinetic energy at the target.");
-
-	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 5), true, true);
-	//self->setScale(1, 1, 1, 0, 0, 1, 1);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), true, true);
+	self->setScale(Stats(1, 0, 1, 0, 0, 1, 1));
 	self->setDialogue("Huh?");
 	self->Recruit();
+
+	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
+	punch->addDescription("Throw a simple punch at the target.");
 	self->setBasicAttack(punch);
+
+	Attack* kick = new Attack("PUNCH", "jumped at", 3, 6, 0, 1, 1, 1, false, 1);
+	kick->afterdesc = " with a kick";
+	kick->addDescription("Launch a flying side kick at the target.");
+	self->addSpecialAttack(kick);
+
+	Attack* headbutt = new Attack("HEADBUTT", "flew at", 5, 25, 0, 1, 1, 1, false, 5);
+	headbutt->afterdesc = " like a missile";
+	headbutt->recoil = 5;
+	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts.");
+	self->addSpecialAttack(headbutt);
+
+	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1, false, 3);
+	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target.");
 	self->addSpecialAttack(energyball);
 
-	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers. She has a flower-shaped hat.", flowerfield2, 0, Stats(16, 5, 4, 0, 1, 5, 2));
-	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -2, -20, 20, 1, 1, 1, true);
-	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely?"},
-							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."}});
+	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", 7, 2, 0, 6, 7, 1, false, 10);
+	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches.");
+	self->addSpecialAttack(punchflurry);
+
+	//MARK: Floria
+	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 1));
+	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely? :>"},
+							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."},
+							 {NULL, "FLORIA - :>"},
+							 {NULL, "\b\rFLORIA - ¦>"},
+							 {NULL, "\b\rFLORIA - :>"}});
 	floria->setDialogue("I just love flowers!");
-	floria->addGymDialogue("I love running in circles around the gym! Exercise is so fun!");
-	floria->addRecruitmentDialogue("Yay! I hope we see some new flowers!");
+	floria->addGymDialogue({{floria, "I love running in circles around the gym!"}, {floria, "Exercise is so fun!"}});
+	Conversation floriarecruit1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}};
+	floriarecruit1.skipcondition = TEMPLEQUEST;
+	Conversation floriarecruit2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}}
+	floriarecruit1.alt = floriarecruit1;
+	floriarecruit2.skipcondition = BURGERMENDEF;
+	Conversation floriarecruit3 = {{self, "Hey wanna join my team?"}, {floria, "Yes! I hope we see some new flowers!"}}
+	floriarecruit2.alt = floriarecruit3;
+	floria->addRecruitmentDialogue(floriarecruit1);
 	floria->addRecruitedDialogue("I must see all the flowers!");
 	floria->addDismissalDialogue("I'm going to go back to my flower field!");
+	floria->setTalkOnRecruit(true);
 
-	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village. He's always advancing science to the dismay of high school chemistry students.", tentlab, 10, Stats(15, 2, 3, 10, 10, 2, 10));
-	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "used his science cannon to blast", -2);
-	egadwick->setDialogue("Ah hello kiddo. How's it going?");
-	egadwick->addGymDialogue("Eh, exercise isn't really my thing, kiddo. I can gain experience by working out my mind!");
-	egadwick->addRejectionDialogue("No, sorry kiddo. I made a robot for gardening but now it's trying to cut my gorgeous hair and it's on the loose in the forest. If you could destroy it I could probably go.");
-	egadwick->addRecruitmentDialogue("Ah, I haven't been adventuring in decades. Thanks for the invitation, kiddo!");
-	egadwick->addRecruitedDialogue("I love science. The world has so many interesting specimens.");
-	egadwick->addDismissalDialogue("Great hanging out with you, kiddo! Well, I guess I'll go work on a better robot!");
+	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -5, -5, 20, 1, 1, 1, true);
+	floria->setBasicAttack(heal);
 
-	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village. He stands there all day and night like a statue.", village, 50);
-	archie->setDialogue("Safe travels, child!");
-	archie->addConversation({{archie, "So you are going on a BURGER QUEST, I hear?"},
-							 {archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG."},
-							 {archie, "Safe travels, child!"},
-							 {archie, "Make sure to bring me back a BURGER! Heh heh heh."}});
-	archie->addRejectionDialogue("I am sorry. Though I would love to join you on your BURGER QUEST, I must stay here and watch over the village. Make sure to bring back a BURGER for me!");
+	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", 2, 20, 30, 1, 1, 1, false);
+	rosethorn->addDescription("Call a rose friend to poke the target with a thorn.");
+	rosethorn->addSpecialAttack(rosethorn);
+
+	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", 4, -20, 20, 1, 1, 1, true, 5);
+	turboheal->addDescription("Use flower power to greatly heal a teammate.");
+	floria->addSpecialAttack(turboheal);
+
+	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", 5, 0, 0, 0, 0, 0, true, 8);
+	enroot->addDescription("Draw power from the soil, building SP for 5 turns.");
+	Effect* rooted = new Effect("ROOTED", 6, 0, -5);
+	enroot->setEffect(rooted);
+	floria->addSpecialAttack(enroot);
+
+	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", 20, -20, 20, 1, 1, 1, true, 10);
+	recapacitate->targetFainted = true;
+	recapacitate->addDescription("Use flower power to recapacitate a teammate.");
+	floria->addSpecialAttack(recapacitate);
+
+	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", 25, 0, 0, 0, 0, 7, true, 8);
+	aprilshower->addDescription("Call upon the clouds to rain SP upon the team.");
+	Effect* spshower = new Effect("APRIL SHOWER", 6, 0, -6);
+	aprilshower->setEffect(spshower);
+	floria->addSpecialAttack(aprilshower);
+
+	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", 8, -99999, 20, 1, 1, 1, true, 15);
+	nitroheal->afterdesc = " to peak health";
+	turboheal->addDescription("Use flower power to heal a teammate to peak health.");
+	floria->addSpecialAttack(turboheal);
+
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", 30, -99999, 20, 1, 1, 1, true, 20);
+	recapacitate->targetFainted = true;
+	recapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
+	floria->addSpecialAttack(recapacitate);
+
+	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", 40, 100, 10000, 1, 1, 1, false, 23);
+	superpower->instakill = true;
+	superpower->addDescription("Unleash the power of the earth's core.");
+	floria->addSpecialAttack(superpower);
+
+	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", 30, 0, 0, 0, 0, 7, true, 25);
+	mayflower->addDescription("Bring about an HP bloom to heal the entire team.");
+	Effect* hpbloom = new Effect("HP BLOOM", 6, -10);
+	mayflower->setEffect(hpbloom);
+	floria->addSpecialAttack(mayflower);
+
+	//MARK: Egadwick
+	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village.\nHe's always advancing science to the dismay of high school chemistry students.", tentlab, 5, Stats(15, 2, 3, 10, 10, 2, 9), Stats(0, 0, 1, 1, 1, 0, 1));
+	egadwick->setDialogue({{egadwick, "Ah hello kiddo. How's it going?"}, {self, "Pretty good."}, {egadwick, "Ah, that's good to hear."}});
+	egadwick->addGymDialogue({{egadwick, "Eh, exercise isn't really my thing."}, {egadwick, "I gain experience by working out my mind!"}});
+	Conversation egadwreject1 = {{self, "Yo Gramps wanna join my BURGER QUEST?"},
+								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
+								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
+								{egadwick, "So now it's trying to cut my hair."},
+								{self, "I can go destroy it if you want."},
+								{egadwick, "Yes! That would be great, thanks!"}};
+	egadwreject1->skipcondition = TEMPLEQUEST;
+	Conversation egadwreject2 = {{self, "Yo Gramps wanna help me destroy BURGERs?"},
+								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
+								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
+								{egadwick, "So now it's trying to cut my hair."},
+								{self, "I can go destroy it if you want."},
+								{egadwick, "Yes! That would be great, thanks!"}};
+	egadwreject1->alt = egadwreject1;
+	egadwreject2->skipcondition = BURGERMENDEF;
+	Conversation egadwreject3 = {{self, "Yo Gramps wanna join my team?"},
+								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
+								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
+								{egadwick, "So now it's trying to cut my hair."},
+								{self, "I can go destroy it if you want."},
+								{egadwick, "Yes! That would be great, thanks!"}};
+	egadwreject2->alt = egadwreject3;
+	egadwick->addRejectionDialogue(egadwreject1);
+	egadwick->addRejectionDialogue("Sorry, kiddo, there's the whole gardening robot situation, remember?");
+	egadwick->addRecruitmentDialogue({{egadwick, "Ah, I haven't been adventuring in decades."}, {egadwick, "Thanks for the invitation, kiddo!"}});
+	egadwick->addRecruitedDialogue({{egadwick, "So, what science class are you in right now?"}, {self, "I don't go to school."}, {egadwick, "Ah."}});
+	egadwick->addRecruitedDialogue("I love science!");
+	egadwick->addDismissalDialogue({{egadwick, "Great hanging out with you, kiddo!"},  {egadwick, "I'll be in my tent if you need me!"}});
+
+	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "blasted", -5, 10, 15, 1, 1, 1);
+	scienceblaster->afterdesc = " with his science blaster";
+	egadwick->setBasicAttack(scienceblaster);
+
+	Attack* overclock = new Attack("OVERCLOCK", "overclocked", 8, 0, 0, 0, 0, 0, true, 3);
+	overclock->addDescription("Overclock a teammate, boosting their attack and speed.");
+	Effect* overclocked = new Effect("OVERCLOCKED", 4, 0, 0, 1.5f, 1, 1, 1, 1.5f);
+	overclock->setEffect(overclocked);
+	floria->addSpecialAttack(overclock);
+
+	//prescription medicine
+
+	//emp
+
+	//clock
+
+	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", 8, 0, 0, 0, 0, 0, true, 3);
+	hyperclock->addDescription("Over-overclock a teammate, greatly boosting their attack and speed.");
+	Effect* hyperclocked = new Effect("OVERCLOCKED", 4, 0, 0, 2f, 1, 1, 1, 2f);
+	hyperclock->setEffect(hyperclocked);
+	floria->addSpecialAttack(hyperclock);
+
+	//shield acid
+
+	//weather forecast
+
+	//uberclock
+
+	//orbital strike
+	
+	//MARK: Absolom
+	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(20, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 1));
+	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
+										{forestknight, "A BURGER, you say?"},
+										{forestknight, "I shan't assist you; this is an object of sin."},
+										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
+	forestknight->addConversation({{forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots."},
+								   {forestknight, "Does he not sleep? Does he not eat?"},
+								   {forestknight, "From what I have seen, no."},
+								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's hold."},
+								   {self, "Yeah no problem."}});
+	Conversation absrecruit1 = {{self, "Hey knight man wanna help me annihilate BURGERs from existence?"},
+							    {forestknight, "Ah, what a splendid goal for a quest!"},
+							    {forestknight, "But how do you propose to accomplish this?"},
+							    {self, "With this thing I learned about called THE PLOT DEVICE."},
+							    {forestknight, "THE PLOT DEVICE? I cannot say I've heard of it,"},
+							    {forestknight, "but I believe you when you say it's a solution to the BURGER problem."},
+							    {forestknight, "I shall join you on this quest!"}};
+	absrecruit1->skipcondition = BURGERMENDEF;
+	Conversation absrecruit2 = {{self, "Hey knight man wanna join me?"},
+							    {forestknight, "I do not see why not."}};
+	absrecruit1->alt = absrecruit2;
+	forestknight->addRecruitmentDialogue(absrecruit1);
+	forestknight->addDismissalDialogue({{forestknight, "I shall return to defending the forest."},
+										{forestknight, "Farewell, friend!"}});
+	
+	//forest slash
+	
+	//defend
+
+	//redwood rend
+
+	//war cry
+
+	//enroot
+
+	//sequoia smash
+
+	//splinter
+
+	//blitz
+
+	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
+	archie->setDialogue("Safe travels!");
+	Conversation archcondefault = {{archie, "So you are going on a BURGER QUEST, I hear?"},
+							 	   {archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG."},
+								   {archie, "Safe travels!"},
+								   {archie, "Make sure to bring me back a BURGER!"}};
+	archcondefault->skipcondition = TEMPLEQUEST;
+	archie->addConversation(archcondefault);
+
+	Conversation archrej1 = {{self, "Hey wanna join me on my BURGER QUEST?"}
+							 {archie, "I am sorry. Though I would love to join you on your BURGER QUEST,"},
+							 {archie, "I must stay here and watch over the village."},
+							 {archie, "Make sure to bring back a BURGER for me!"}};
+	archrej1.skipcondition = TEMPLEQUEST;
+	Conversation archrej2 = {{self, "Hey wanna help me destroy BURGERs?"},
+							{archie, "Destroy BURGERs?"},
+							{archie, "Well, I must watch over the village, sorry."}};
+	archrej1->alt = archrej2;
+	archrej2.skipcondition = BURGERMENDEF;
+	Conversation archrej3 = {{self, "Hey wanna join my team?"},
+							{archie, "I appreciate the offer, but I must watch over the village."}};
+	archrej2->alt = archrej3;
+	archie->addRejectionDialogue(archrej1);
 
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 2, Stats(30, 10, 5, 0, 2, 20, 0));
 	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
@@ -562,7 +749,7 @@ NPC* SetupWorld() {
 	mrdeer->setDialogue("*deer noises*");
 	mrdeer->addRejectionDialogue("*no thank you deer noise*");
 
-	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall. There may be more to him, but all you can see is his face.", mineshaft3, 25000, Stats(15000, 15000, 15000, 15000, 0, 2000, 500));
+	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall.\nThere may be more to him, but all you can see is his face.", mineshaft3, 25000, Stats(15000, 15000, 15000, 15000, 0, 2000, 500));
 	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
 								{self, "Indeed I am."},
 								{wallelder, "Do not be fooled by the allure of BURGER. Why do you crave it so?"},
@@ -622,24 +809,6 @@ NPC* SetupWorld() {
 	//Dialogue for after I finish making the game:
 	//(self, "Can I recruit TECH DEMO MAN?", true);
 	//(developer, "No.")
-
-	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(20, 20, 25, 30, 10, 0, 10));
-	//forestknight->setScale(1, 2, 1, 1, 0, 0, 0);
-	forestknight->setLevel(30);
-	forestknight->addRejectionDialogue({{forestknight, "I sense that you are on a BURGER QUEST."},
-										{forestknight, "I will not assist you in obtaining this object of sin."},
-										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
-	forestknight->addConversation({{forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots."},
-								   {forestknight, "Does he not sleep? Does he not eat?"},
-								   {forestknight, "From what I have seen, no."},
-								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's hold."},
-								   {self, "Yeah no problem."}});
-	forestknight->addRecruitmentDialogue({{forestknight, "Child, I shan't join you on your quest. I cannot assist you in obtaining the evil BURGER."},
-										  {self, "Nah bro I'm not doing that anymore."},
-										  {self, "I'm actually trying to like completely annihilate BURGERs from existence now."},
-										  {forestknight, "Ah, that's good to hear."},
-										  {forestknight, "My apologies, child. My quest sensor is a bit slow."},
-										  {forestknight, "I have not updated to the latest software version in a little while."}});
 
 	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
 	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);

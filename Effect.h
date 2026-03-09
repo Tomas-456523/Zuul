@@ -27,6 +27,7 @@ struct Effect {
 	float piercebuff;
 	float spusage = 1; //multiplies sp needed to use moves
 	float damagebuff = 1; //buffs overall damage TAKEN, so we take that much more
+	float speedbuff = 1;
 
 	bool freeze = false; //if the effect causes the target to get frozen
 	bool hypnotize = false; //if the effect causes the target to get hypnotized (attack own party)
@@ -38,7 +39,7 @@ struct Effect {
 	Effect() {} //default constructor to avoid random errors
 
 	//constructs the effect
-	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, float _attackbuff = 0, float _defensebuff = 0, float _toughbuff = 0, float _piercebuff = 0) {
+	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, float _attackbuff = 1, float _defensebuff = 1, float _toughbuff = 1, float _piercebuff = 1, float _speedbuff = 1) {
 		name = _name;
 		duration = _duration;
 		damage = _damage;
@@ -47,6 +48,7 @@ struct Effect {
 		defensebuff = _defensebuff;
 		toughbuff = _toughbuff;
 		piercebuff = _piercebuff;
+		speedbuff = _speedbuff;
 		Helper::effectsH.push_back(this); //store a pointer to this effect in the effects vector
 	}
 };

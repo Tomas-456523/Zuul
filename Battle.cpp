@@ -182,7 +182,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 			if (attack->instakill && !target->getBoss()) { //instakill attacks remove all health except for bosses
 				effectiveAttack = target->getHealth();
 			} else if (attack->power) { //we set the effective attack to this if the attack does damage
-				effectiveAttack = attacker->getAttack();
+				effectiveAttack = attacker->getAttack(); //MARK: add multipliers and readjust
 			} //damages the target                                                                                //some moves hit a random amount of times within a certain range
 			tarparty[i]->damage(attack->power + effectiveAttack, attack->pierce + attacker->getPierce(), rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits);
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one

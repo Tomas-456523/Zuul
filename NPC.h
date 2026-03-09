@@ -20,7 +20,7 @@ class Item;
 
 class NPC {
 public: //you need to set stats on creation
-	NPC(const char* _title, const char* _name, const char* _description, Room* room, int _level = 0, Stats _basestats = Stats(), bool _isleader = false, bool _player = false);
+	NPC(const char* _title, const char* _name, const char* _description, Room* room, int _level = 0, Stats _basestats = Stats(), Stats _scale = Stats(), bool _isleader = false, bool _player = false);
 	~NPC();
 
 	NPC(const NPC& other);
@@ -65,6 +65,13 @@ public: //you need to set stats on creation
 	int getConvoSize(); //how many conversations are left to say
 	bool getRespawn(); //if they respawn
 	bool getBoss();
+
+	float getAttMultiplier();
+	float getDefMultiplier();
+	float getToughMultiplier();
+	float getPierceMultiplier();
+	float getSPUseMultiplier();
+	float getDamageMultiplier();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -117,6 +124,7 @@ public: //you need to set stats on creation
 	void setBoss(bool boss);
 	void setExtraXP(int xp);
 	void setExtraMonies(int monies);
+	void setTalkOnRecruit(bool talk);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
@@ -179,6 +187,8 @@ protected:
 	queue<Conversation> gymDialogue; //dialogue the character says when at the gym
 
 	Conversation newDialogue; //regular dialogue after having been recruited
+
+	bool speakOnRecruit = false;
 
 	Item* gift; //item that the npc holds and gifts to the player after talking
 

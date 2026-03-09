@@ -28,6 +28,7 @@ struct Attack {
 	bool targetFainted = false; //if the attack is supposed to hit 0 hp npcs
 	bool instakill = false; //if it instantly defeats non-boss npcs
 	bool focushits = true; //if every hit of multihit moves should hit the same target, as opposed to random targets each time
+	int recoil = 0; //how much damage the user takes (calculated later using their own attack stat)
 
 	bool spbomb = false;
 

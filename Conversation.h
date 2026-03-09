@@ -13,7 +13,7 @@ class NPC;
 
 struct Conversation {
 	std::vector<std::pair<NPC*, const char*>> lines;
-	std::vector<std::pair<NPC*, const char*>> altlines;
+	Conversation alt; //alternate dialogue if the skipcondition is true
 
 	int skipcondition; //if we should skip this, based on WorldConditions in Helper
 	bool altdialogue; //if skipcondition is true, if we should use alternate dialogue instead of just skipping the conversation
@@ -24,7 +24,7 @@ struct Conversation {
 	}
 
 	bool empty() {
-		return (Helper::WorldState[skipcondition] ? altlines.empty() : lines.empty());
+		return (Helper::WorldState[skipcondition] ? alt.empty() : lines.empty());
 	}
 
 	Conversation() : skipcondition(Helper::NEVER), altdialogue(false) {}

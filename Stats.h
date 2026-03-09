@@ -96,7 +96,7 @@ struct Stats {
         stats.toughness = hashStat(345, id, 3) % 20;
         stats.pierce    = 0; //most people aren't physically sharp
         stats.speed     = hashStat(345353, id, 5) % 10 + 2;
-        stats.spmax     = 1;
+        stats.spmax     = 9;
         return stats;
     }
 
