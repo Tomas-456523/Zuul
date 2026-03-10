@@ -125,7 +125,7 @@ namespace Helper {
 		cout << "\nBasic attack:\n"; //the npc's basic attack (the punch!) and how much sp it generates (5!)
 		Attack* attack = npc->getBasicAttack();
 		cout << attack->name << " - " << attack->trueDesc << " - Generates " << -attack->cost << " SP";
-		if (npc->getSpecialAttacks().size() > 0) { //if we have any special attacks
+		if (npc->getSpecialAttacks()[0]->minLevel <= npc->getLevel()) { //if we have any usable special attacks, assumes attacks are added in level order
 			cout << "\nSpecial attacks:";
 		} //prints all the special attacks and how much sp they cost
 		for (Attack* attack : npc->getSpecialAttacks()) {
@@ -250,7 +250,6 @@ namespace Helper {
 				cout << "\n" << npc->getName() << " learned " << att->name << "!\n" << att->name << " - " << att->trueDesc;
 				CinPause();
 			}
-			cout << "\n";
 		}
 	}
 

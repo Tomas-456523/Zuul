@@ -20,8 +20,6 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	home = room;
 	currentRoom = room;
 	room->setNPC(this); //make sure the room knows the npc is there
-	health = stats.hpmax; //xp starts at max
-	sp = stats.spmax / 3; //start battle at a third of max sp and has to be built up
 	isLeader = _isleader;
 	isPlayer = _player;
 	if (isLeader) { //adds itself to its own party if it's a leader npc (fightable or the player)
@@ -35,6 +33,8 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	stats = basestats; //effective stats start as base stats
 	if (!_scale.empty()) scale = _scale;
 	else Stats::getStatScale(basestats); //make a default scaling based on the base stats
+	health = stats.hpmax; //xp starts at max
+	sp = stats.spmax / 3; //start battle at a third of max sp and has to be built up
 
 	if (_level != 0 && _level <= 100) { //sets its given level if it isn't too high, otherwise it freezes the program at the start
 		setLevel(_level);
@@ -353,10 +353,11 @@ void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantl
 	}
 }
 //makes this npc a leader npc
-void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn) {
+void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn, bool boss) {
 	isLeader = _leader;
 	isEnemy = true; //if we manually set it as leader, it's an enemy
 	respawns = respawn; //some enemies don't respawn
+	isBoss = boss;
 	if (isLeader) {
 		setLevel(_level); //set the level
 		party.push_back(&*this); //adds itself to its own party
@@ -475,7 +476,7 @@ void NPC::setLevel(int _level) { //manually sets the level of the npc (will not 
 		levelUp(false, _level);
 	} else { //if the level is a reasonable amount, just call the level up process normally for maximum pseudorandomness
 		for (int i = level; i < _level; i++) {
-			levelUp(); //levels up that many times in order to get the stat increases
+			levelUp(false); //levels up that many times in order to get the stat increases
 		}
 	}
 }

@@ -104,7 +104,7 @@ public: //you need to set stats on creation
 	void setScale(Stats _scale);
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false, int instant = 0);
-	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true);
+	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
 	int damage(float power, float pierce, int hits = 1);
 	void directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
@@ -208,12 +208,12 @@ protected:
 	Stats scale; //how much each stat increases (minimum) each level up
 	int health; //current health
 	int sp; //sp stands for skill points
-	float attackMultiplier; //multipliers
-	float defenseMultiplier;
-	float pierceMultiplier;
-	float toughMultiplier;
-	float spUseMultiplier; //multiplies sp cost
-	float damageMultiplier; //multiplies damage taken
+	float attackMultiplier = 1; //multipliers
+	float defenseMultiplier = 1;
+	float pierceMultiplier = 1;
+	float toughMultiplier = 1;
+	float spUseMultiplier = 1; //multiplies sp cost
+	float damageMultiplier = 1; //multiplies damage taken
 	
 	int level = 0;
 	int xp = 0; //how much xp the npc has stored up

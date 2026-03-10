@@ -99,7 +99,7 @@ NPC* SetupWorld() {
 
 	//create all WANING WOODLANDS rooms
 	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
-	Room* villageleft = new Room("at the westernmost end of the village, where the tallest tent stands. It's only two stories, but it's comparatively a tent mansion.");
+	Room* villageleft = new Room("at the westernmost end of the village, where the second-tallest tent stands.\nIt's only two stories, but it's comparatively a tent mansion.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
 	Room* tentmansion = new Room("in the tent mansion's living room. There are way too many clocks here.");
 	Room* tentlab = new Room("in the tent lab. There's a ton of machinery, and many generic science beakers with colored liquids.");
@@ -123,7 +123,7 @@ NPC* SetupWorld() {
 	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many weapons and scrolls up on the walls.");
 	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of NINJABERRIES and ninjasteak and ninjafish and the diet isn't actually that strict.");
 	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here.");
-	Room* foresttempleentrance = new Room("in the glade where the ancient forest temple stands.");
+	Room* foresttempleentrance = new Room("in the sunny glade, at the sealed entrance of the ancient forest temple.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
 	Room* foresttemple = new Room("in the temple of HUMILITY.");
 	//temple stuff
@@ -400,14 +400,19 @@ NPC* SetupWorld() {
 	
 	//Create NPCs and items MARK: make npcs, items, etc.
 	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
-	self->setDialogue("Huh?");
+	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
+	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
 
-	Attack* punch = new Attack("PUNCH", "punched", -5, 2, 0, 1, 1, 1);
+	Attack* punch = new Attack("PUNCH", "punched", -5, 10, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target.");
 	self->setBasicAttack(punch);
 
-	Attack* kick = new Attack("PUNCH", "jumped at", 3, 6, 0, 1, 1, 1, false, 1);
+	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
+	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target.");
+	self->addSpecialAttack(energyball);
+
+	Attack* kick = new Attack("KICK", "jumped at", 3, 15, 0, 1, 1, 1, false, 3);
 	kick->afterdesc = " with a kick";
 	kick->addDescription("Launch a flying side kick at the target.");
 	self->addSpecialAttack(kick);
@@ -417,10 +422,6 @@ NPC* SetupWorld() {
 	headbutt->recoil = 5;
 	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts.");
 	self->addSpecialAttack(headbutt);
-
-	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 5, 10, 2, 1, 1, 1, false, 3);
-	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target.");
-	self->addSpecialAttack(energyball);
 
 	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", 7, 2, 0, 6, 7, 1, false, 10);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches.");
@@ -446,6 +447,7 @@ NPC* SetupWorld() {
 	floria->addRecruitedDialogue("I must see all the flowers!");
 	floria->addDismissalDialogue("I'm going to go back to my flower field!");
 	floria->setTalkOnRecruit(true);
+	floria->setRecruitable();
 
 	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -5, -5, 20, 1, 1, 1, true);
 	floria->setBasicAttack(heal);
@@ -475,12 +477,12 @@ NPC* SetupWorld() {
 	aprilshower->addEffect(spshower);
 	floria->addSpecialAttack(aprilshower);
 
-	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", 8, -99999, 20, 1, 1, 1, true, 15);
+	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", 8, -2147483647, 20, 1, 1, 1, true, 15);
 	nitroheal->afterdesc = " to peak health";
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
 
-	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", 30, -99999, 20, 1, 1, 1, true, 20);
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", 30, -2147483647, 20, 1, 1, 1, true, 20);
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
@@ -653,7 +655,7 @@ NPC* SetupWorld() {
 	archie->addConversation(archcondefault);
 
 	Conversation archrej1 = {{self, "Hey wanna join me on my BURGER QUEST?"},
-							 {archie, "I am sorry. Though I would love to join you on your BURGER QUEST,"},
+							 {archie, "I am sorry. Though I would love to join you,"},
 							 {archie, "I must stay here and watch over the village."},
 							 {archie, "Make sure to bring back a BURGER for me!"}};
 	archrej1.skipcondition = TEMPLEQUEST;
@@ -694,6 +696,10 @@ NPC* SetupWorld() {
 	
 	/*{{developer, "Ayy BERNARD how's it going?"},
 	{self, "Pretty good I think but they actually named me that."},
+	{NULL, "\n^"
+		   "\n|"
+		   "\n|"
+		   "\n|"},
 	{NULL, "\n   (\\"
 		   "\n   /(\\                .,"
 		   "\n   \\_/               / |"
@@ -983,7 +989,7 @@ NPC* SetupWorld() {
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
 	foresttempleentrance->setExit(NORTHWEST, flowerfield);
 	foresttempleentrance->setExit(NORTH, forestfork);
-	foresttempleentrance->setExit(IN_TEMPLE, foresttemplestairs);
+	//foresttempleentrance->setExit(IN_TEMPLE, foresttemplestairs);
 	flowerfield->setExit(WEST, flowerfield2);
 	flowerfield->setExit(SOUTHEAST, foresttempleentrance);
 	flowerfield2->setExit(EAST, flowerfield);
@@ -1017,7 +1023,7 @@ NPC* SetupWorld() {
 	desert->setExit(NORTHWEST, deserttempleentrance);
 	desert->setExit(NORTHEAST, desertdune);
 	desert->setExit(EAST, desertplain);
-	deserttempleentrance->setExit(IN_TEMPLE, deserttemplestairs);
+	//deserttempleentrance->setExit(IN_TEMPLE, deserttemplestairs);
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
 	deserttemplestairs->setExit(OUTSIDE, deserttempleentrance);
@@ -1209,7 +1215,7 @@ NPC* SetupWorld() {
 	sewercenter3->setExit(SOUTHWEST, sewercenter1);
 	sewercenter3->setExit(DOWN, volcanotempleentrance);
 	volcanotempleentrance->setExit(UP, sewercenter3);
-	volcanotempleentrance->setExit(IN_TEMPLE, volcanotemplestairs);
+	//volcanotempleentrance->setExit(IN_TEMPLE, volcanotemplestairs);
 	volcanotemplestairs->setExit(OUTSIDE, volcanotempleentrance);
 	volcanotemplestairs->setExit(WEST, volcanotemple);
 	volcanotemple->setExit(EAST, volcanotemplestairs);
@@ -1411,7 +1417,7 @@ NPC* SetupWorld() {
 	greaterhog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 5));
-	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -2, 3, 0, 1, 1, 1);
+	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -2, 15, 0, 1, 1, 1);
 	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
@@ -1444,22 +1450,34 @@ NPC* SetupWorld() {
 	Effect* flinch = new Effect("FLINCH", 1);
 	shrimpleshimmy->addEffect(flinch);
 
-	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
+	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
 	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
 	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", 10, 10, 5, 1, 1, 1, 0.5f);
 	carnplant->setBasicAttack(bite);
-	carnplant->addSpecialAttack(nutrientabsorb);
+	carnplant->addSpecialAttack(nutrientabsorb);*/
 
-	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Enormous carnivorous flower with lashing vines. Probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(30, 5, 7, 5, 5, 12, 24));
-	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", -7, 15, 7, 1, 1, 1);
+	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
+	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", -6, 18, 7, 1, 1, 1);
+	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", 2, 10, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0f);
-	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 16, 10, 5, 1, 1, 1, true);
+	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 15, 10, 5, 1, 1, 1, true, 2);
 	flowerempower->addEffect(flowerpower);
-	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 24, 30, 10, 1, 1, 1);
-	flowerfiend->setBasicAttack(crunch);
-	flowerfiend->addSpecialAttack(nutrientabsorb);
+	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 18, 30, 10, 1, 1, 10);
+	flowerfiend->setBasicAttack(vinewhip);
+	flowerfiend->addSpecialAttack(crunch);
+	//flowerfiend->addSpecialAttack(nutrientabsorb);
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
+
+	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(20, 20, 6, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
+	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
+	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
+	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", 5, 0, 0, 1, 1, 7);
+	savageroar->addEffect(intimidated);
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", 10, 1, 10, 1, 3, 7);
+	savagehog->setBasicAttack(charge);
+	savagehog->addSpecialAttack(savageroar);
+	savagehog->addSpecialAttack(pricklestorm);
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 6, 5));
 	Effect* sanded = new Effect("SAND IN THE EYES", 4, 0, 0, .8f, -10);
@@ -1687,35 +1705,26 @@ NPC* SetupWorld() {
 										  {egadwick, "Oh thank goodness! Thanks a bunch, kiddo!"},
 										  {egadwick, "Now I can safely be in the great outdoors!"}});
 
-	NPC* plantguard = new NPC(*carnplant);
+	/*NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);
 	plantguard->blockExit(NORTHWEST, ENEMY, "blocked by the CARNIVOROUS PLANT.");
 	plantguard->setDialogue("*snapping biting noises*");
-	plantguard->addRejectionDialogue("*snapping biting noises*");
+	plantguard->addRejectionDialogue("*snapping biting noises*");*/
 
 	NPC* flowerguard = new NPC(*flowerfiend);
-	flowerguard->setLeader(true, 4, flowerfield);
-	flowerguard->setParty(carnplant, carnplant);
+	flowerguard->setLeader(true, 3, flowerfield);
 	flowerguard->blockExit(WEST, ENEMY, "blocked by the FLOWER FIEND.");
 	flowerguard->setDialogue("*flowery shriek*");
 	flowerguard->addRejectionDialogue("*flowery shriek*");
 		
-	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", bossgrove, 0, Stats(80, 15, 20, 10, 30, 15, 15));
-	savagehog->setLeader(true, 5);
+	NPC* forestboss = new NPC(*savagehog);
+	savagehog->setLeader(true, 5, bossgrove, true, true);
 	savagehog->setParty(pricklyhog, greaterhog);
 	savagehog->blockExit(NORTH, ENEMY, "blocked off by the MAMMOTH HOG!");
-	savagehog->setDialogue("*SAVAGE ROAR*");
-	savagehog->addRejectionDialogue("Nah sorry mate. I'd rather stay home here in the grove with ma hog family.");
 	savagehog->setEscapable(false);
-	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
-	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
-	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", 5, 0, 0, 1, 1, 7);
-	savageroar->addEffect(intimidated);
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", 10, 1, 10, 1, 3, 7);
-	savagehog->setBasicAttack(charge);
-	savagehog->addSpecialAttack(savageroar);
-	savagehog->addSpecialAttack(pricklestorm);
-	savagehog->setForceBattle();
+	forestboss->setDialogue("*SAVAGE ROAR*");
+	forestboss->addRejectionDialogue("*ROAR MEANING NO*");
+	forestboss->setForceBattle();
 
 	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", desertgrave, 0, Stats());
 	skeleviking->setLeader(true, 10);
@@ -1724,8 +1733,8 @@ NPC* SetupWorld() {
 	shieldup->guardset = 2;
 	skeleviking->setEffect(shieldup, false);
 	skeleviking->setBasicAttack(genericattack);
-	savagehog->setDialogue("*angry noise*");
-	savagehog->addRejectionDialogue("*angry noise*");
+	skeleviking->setDialogue("*angry noise*");
+	skeleviking->addRejectionDialogue("*angry noise*");
 
 	NPC* desertguard = new NPC(*sandman);
 	desertguard->setLeader(true, 5, desert);
@@ -1863,7 +1872,7 @@ NPC* SetupWorld() {
 	desertstation->blockExit(NORTHEAST, TUNNEL, "blocked by endless rubble.");
 	desertstation->blockExit(NORTHWEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
-	foresttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
+	//foresttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a steep ravine.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a steep ravine.");
 	ninjaland->blockExit(UP, NINJA, "too high. You need ninja abilities to scale the trees.");
@@ -1871,7 +1880,7 @@ NPC* SetupWorld() {
 	desert->blockExit(EAST, SAND, "blocked by scorching sands.");
 	desertplain->blockExit(WEST, SAND, "blocked by scorching sands.");
 	deserttempleentrance->blockExit(EAST, SAND, "blocked by scorching sands.");
-	deserttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. I'm sure nobody's ever been in this one, either.");
+	//deserttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. I'm sure nobody's ever been in this one, either.");
 	desertdune->blockExit(WEST, SAND, "blocked by scorching sands.");
 	mineshaft->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	minespring->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
@@ -1911,7 +1920,7 @@ NPC* SetupWorld() {
 	factoryroofnw->blockExit(DOWN, NINJA, "too far down to jump.");
 	factoryroofne->blockExit(DOWN, NINJA, "too far down to jump.");
 	factoryroofse->blockExit(DOWN, NINJA, "too far down to jump.");
-	volcanotempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology.");
+	//volcanotempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology.");
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
