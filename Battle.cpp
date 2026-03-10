@@ -14,7 +14,7 @@
 using namespace std;
 using namespace Helper;
 
-//creates the battle instance
+//creates the battle instance MARK: initialize
 Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable) {
 	//clone npcs from both teams so I don't have to reset them later
 	for (NPC* npc : *_playerTeam) {
@@ -81,7 +81,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 		delete[] name;
 	}
 }
-//creates a new npc and adds it to the battle
+//creates a new npc and adds it to the battle MARK: add npc
 void Battle::addNPC(NPC* npc) {
 	vector<NPC*>* team = NULL; //gets which side the enemy is on
 	if (npc->getEnemy()) { //we must manually set enemy earlier or else EVERY new npc will go to the player team
@@ -111,7 +111,7 @@ void Battle::addNPC(NPC* npc) {
 	team->push_back(newguy);
 	everyone.push_back(newguy);
 }
-//ticks an effect (if it does anything every turn, it does that, and decrements its duration)
+//ticks an effect (if it does anything every turn, it does that, and decrements its duration) MARK: tick effect
 void Battle::tickEffect(Effect& effect) {
 	NPC* npc = effect.npc; //gets the affected npc
 	//decrement even if the npc is unconscious because a fire will eventually go out if you're on fire even if you're asleep
@@ -131,7 +131,7 @@ void Battle::tickEffect(Effect& effect) {
 		npc->setGuard(effect.guardset);
 	}
 }
-//ticks all the effects that everyone has
+//ticks all the effects that everyone has MARK: tick all effects
 void Battle::tickEffects() {
 	for (NPC* npc : everyone) { //ticks everyone's effects
 		for (Effect& effect : npc->getEffects()) {
@@ -152,7 +152,7 @@ void Battle::tickEffects() {
 		}
 	}
 }
-//carries out the attack (makes it hit the target)
+//carries out the attack (makes it hit the target) MARK: carry out attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost); //removes sp from the attacker
 	if (attack->spbomb) { //if it's this one move, we have to check due to its unique functionality
@@ -192,7 +192,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	}
 	CinPause();
 }
-//uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item 
+//uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item
 bool Battle::useItem(const char* itemname) {
 	Item* item = getItemInVector(*inventory, itemname); //finds the item; no need to check currentRoom this time!
 	char itemName[255] = "";
@@ -311,7 +311,7 @@ bool Battle::useItem(const char* itemname) {
 	}
 	return true; //if we got here everything went well so we return true to move on from the player's turn
 }
-//prints the given team's data
+//prints the given team's data MARK: print team
 void Battle::printTeam(vector<NPC*>& team, bool printLevel, bool printSP, bool printFainted) {
 	for (NPC* npc : team) { //we skip incapacitated npcs if we're ignoring fainted npcs
 		if (!printFainted && !npc->getHealth()) {
@@ -326,7 +326,7 @@ void Battle::printTeam(vector<NPC*>& team, bool printLevel, bool printSP, bool p
 		}
 	}
 }
-//prints all the items in the inventory
+//prints all the items in the inventory MARK: print inventory
 void Battle::printInventory() {
 	cout << "\nYou";
 	if (inventory->size() < 1) { //if we have no items
@@ -338,7 +338,7 @@ void Battle::printInventory() {
 		cout << "\n" << item->getName();
 	}
 }
-//prints all the members of the player party
+//prints all the members of the player party MARK: print party
 void Battle::printParty() {
 	cout << "\nMembers of your party:";
 	printTeam(playerTeam, true, true); //we print their sp and level, and we do print fainted teammates
@@ -348,7 +348,7 @@ void Battle::printEnemies() {
 	cout << "\nEnemy party:";
 	printTeam(enemyTeam, true, false, false); //we do not print their sp but yes their level, and not the fainted enemies
 }
-//prints an analysis of the given item or npc
+//prints an analysis of the given item or npc MARK: analyze
 void Battle::analyze(const char* name) {
 	NPC* npc = getNPCInVector(everyone, name); //finds the npc in the list of everyone
 	if (npc != NULL) { //prints the data!
@@ -371,7 +371,7 @@ void Battle::printHelp() {
 		cout << "\n" << validCommands[i];
 	}
 }
-//tries to escape the battle
+//tries to escape the battle MARK: run away
 bool Battle::runAway() {
 	if (escapable) {
 		cout << "\nYou successfully ran away!";
@@ -381,13 +381,13 @@ bool Battle::runAway() {
 	}
 	return escapable;
 }
-//puts everyone in a queue based on their speed
+//puts everyone in a queue based on their speed MARK: reorder
 void Battle::reorder(queue<NPC*>& orderly_fashion) {
 	for (NPC* npc : everyone) { //everyone vector is already sorted by speed so we just use that
 		orderly_fashion.emplace(npc); //place the npc at the back of the line!
 	}
 }
-//interpret and carry out player attacks, and return whether we successfully launched an attack
+//interpret and carry out player attacks, and return whether we successfully launched an attack MARK: parse attack
 bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax) {
 	//we have to check multiple times, since attacks may have 0 or more spaces in them
 	for (int i = 0; i <= checkMax; i++) {
@@ -430,7 +430,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 	cout << "\nInvalid command or attack \"" << commandWordP << "\" (type HELP for help, or ATTACKS for list of attacks).";
 	return false;
 }
-//the player's controls. Returns whether the player did a valid action or not
+//the player's controls. Returns whether the player did a valid action or not MARK: player turn
 bool Battle::playerTurn(NPC* plr) {
 	bool continuing = true; //keep going until this is set to false
 	bool keepFighting = true; //if the player wants to keep fighting (not run away)
@@ -473,7 +473,7 @@ bool Battle::playerTurn(NPC* plr) {
 	return keepFighting; //returns if the player wants to keep fighting (true) or run away (false)
 
 }
-//npcs decide what to do on their turn here
+//npcs decide what to do on their turn here MARK: npc turn
 void Battle::npcTurn(NPC* npc) {
 	cout << "\n" << npc->getName() << "'s turn!"; //prints whose turn it is
 	CinPause();
@@ -533,7 +533,7 @@ void Battle::npcTurn(NPC* npc) {
 	} //launches the attack!
 	carryOutAttack(attack, npc, target);
 }
-//begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away
+//begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away MARK: FIGHT
 int Battle::FIGHT() {
 	cout << "\nBATTLE BEGIN!"; //shows everyone involved in the battle plus flavor text
 	printTeam(playerTeam);
@@ -573,7 +573,7 @@ int Battle::FIGHT() {
 	}
 	return 2; //return 2 because the player ran away
 }
-//gets how much xp to reward the player team for winning
+//gets how much xp to reward the player team for winning MARK: get rewards
 int Battle::getXpReward() {
 	return xpReward;
 }
@@ -581,7 +581,7 @@ int Battle::getXpReward() {
 int Battle::getMonyReward() {
 	return monyReward;
 }
-//deletes the npc copies because they were only for this instance of battle
+//deletes the npc copies because they were only for this instance of battle MARK: destructor
 Battle::~Battle() {
 	for (NPC* npc : everyone) {
 		delete npc;

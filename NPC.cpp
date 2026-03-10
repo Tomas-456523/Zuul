@@ -829,7 +829,7 @@ void NPC::printDialogue(Conversation* thisone) {
 	} else { //regular dialogue
 		conversation = dialogue;
 	}
-	printConversation(conversation); //courtesy of Helper
+	printConversation(&conversation); //courtesy of Helper
 }
 NPC::~NPC() { //removes self from npcs vector when destroyed
 	npcsH.erase(remove(npcsH.begin(), npcsH.end(), this), npcsH.end());

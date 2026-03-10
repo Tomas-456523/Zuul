@@ -399,8 +399,7 @@ NPC* SetupWorld() {
 	//Create attacks
 	
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), true, true);
-	self->setScale(Stats(1, 0, 1, 0, 0, 1, 1));
+	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
 	self->setDialogue("Huh?");
 	self->Recruit();
 
@@ -438,11 +437,11 @@ NPC* SetupWorld() {
 	floria->addGymDialogue({{floria, "I love running in circles around the gym!"}, {floria, "Exercise is so fun!"}});
 	Conversation floriarecruit1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}};
 	floriarecruit1.skipcondition = TEMPLEQUEST;
-	Conversation floriarecruit2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}}
-	floriarecruit1.alt = floriarecruit1;
+	Conversation floriarecruit2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}};
+	floriarecruit1.alt = &floriarecruit1;
 	floriarecruit2.skipcondition = BURGERMENDEF;
-	Conversation floriarecruit3 = {{self, "Hey wanna join my team?"}, {floria, "Yes! I hope we see some new flowers!"}}
-	floriarecruit2.alt = floriarecruit3;
+	Conversation floriarecruit3 = {{self, "Hey wanna join my team?"}, {floria, "Yes! I hope we see some new flowers!"}};
+	floriarecruit2.alt = &floriarecruit3;
 	floria->addRecruitmentDialogue(floriarecruit1);
 	floria->addRecruitedDialogue("I must see all the flowers!");
 	floria->addDismissalDialogue("I'm going to go back to my flower field!");
@@ -452,17 +451,17 @@ NPC* SetupWorld() {
 	floria->setBasicAttack(heal);
 
 	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", 2, 20, 30, 1, 1, 1, false);
-	rosethorn->addDescription("Call a rose friend to poke the target with a thorn.");
-	rosethorn->addSpecialAttack(rosethorn);
+	rosethorn->addDescription("Call a rose friend to poke the target with its thorns.");
+	floria->addSpecialAttack(rosethorn);
 
 	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", 4, -20, 20, 1, 1, 1, true, 5);
 	turboheal->addDescription("Use flower power to greatly heal a teammate.");
 	floria->addSpecialAttack(turboheal);
 
 	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", 5, 0, 0, 0, 0, 0, true, 8);
-	enroot->addDescription("Draw power from the soil, building SP for 5 turns.");
-	Effect* rooted = new Effect("ROOTED", 6, 0, -5);
-	enroot->setEffect(rooted);
+	enroot->addDescription("Draw power from the soil, building SP.");
+	Effect* rooted = new Effect("ROOTED", 5, 0, -5);
+	enroot->addEffect(rooted);
 	floria->addSpecialAttack(enroot);
 
 	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", 20, -20, 20, 1, 1, 1, true, 10);
@@ -472,19 +471,19 @@ NPC* SetupWorld() {
 
 	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", 25, 0, 0, 0, 0, 7, true, 8);
 	aprilshower->addDescription("Call upon the clouds to rain SP upon the team.");
-	Effect* spshower = new Effect("APRIL SHOWER", 6, 0, -6);
-	aprilshower->setEffect(spshower);
+	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
+	aprilshower->addEffect(spshower);
 	floria->addSpecialAttack(aprilshower);
 
 	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", 8, -99999, 20, 1, 1, 1, true, 15);
 	nitroheal->afterdesc = " to peak health";
-	turboheal->addDescription("Use flower power to heal a teammate to peak health.");
-	floria->addSpecialAttack(turboheal);
+	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
+	floria->addSpecialAttack(nitroheal);
 
 	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", 30, -99999, 20, 1, 1, 1, true, 20);
-	recapacitate->targetFainted = true;
-	recapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
-	floria->addSpecialAttack(recapacitate);
+	hypercapacitate->targetFainted = true;
+	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
+	floria->addSpecialAttack(hypercapacitate);
 
 	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", 40, 100, 10000, 1, 1, 1, false, 23);
 	superpower->instakill = true;
@@ -494,7 +493,7 @@ NPC* SetupWorld() {
 	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", 30, 0, 0, 0, 0, 7, true, 25);
 	mayflower->addDescription("Bring about an HP bloom to heal the entire team.");
 	Effect* hpbloom = new Effect("HP BLOOM", 6, -10);
-	mayflower->setEffect(hpbloom);
+	mayflower->addEffect(hpbloom);
 	floria->addSpecialAttack(mayflower);
 
 	//MARK: Egadwick
@@ -507,58 +506,82 @@ NPC* SetupWorld() {
 								{egadwick, "So now it's trying to cut my hair."},
 								{self, "I can go destroy it if you want."},
 								{egadwick, "Yes! That would be great, thanks!"}};
-	egadwreject1->skipcondition = TEMPLEQUEST;
+	egadwreject1.skipcondition = TEMPLEQUEST;
 	Conversation egadwreject2 = {{self, "Yo Gramps wanna help me destroy BURGERs?"},
 								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
 								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
 								{egadwick, "So now it's trying to cut my hair."},
 								{self, "I can go destroy it if you want."},
 								{egadwick, "Yes! That would be great, thanks!"}};
-	egadwreject1->alt = egadwreject1;
-	egadwreject2->skipcondition = BURGERMENDEF;
+	egadwreject1.alt = &egadwreject1;
+	egadwreject2.skipcondition = BURGERMENDEF;
 	Conversation egadwreject3 = {{self, "Yo Gramps wanna join my team?"},
 								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
 								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
 								{egadwick, "So now it's trying to cut my hair."},
 								{self, "I can go destroy it if you want."},
 								{egadwick, "Yes! That would be great, thanks!"}};
-	egadwreject2->alt = egadwreject3;
+	egadwreject2.alt = &egadwreject3;
 	egadwick->addRejectionDialogue(egadwreject1);
 	egadwick->addRejectionDialogue("Sorry, kiddo, there's the whole gardening robot situation, remember?");
 	egadwick->addRecruitmentDialogue({{egadwick, "Ah, I haven't been adventuring in decades."}, {egadwick, "Thanks for the invitation, kiddo!"}});
 	egadwick->addRecruitedDialogue({{egadwick, "So, what science class are you in right now?"}, {self, "I don't go to school."}, {egadwick, "Ah."}});
 	egadwick->addRecruitedDialogue("I love science!");
 	egadwick->addDismissalDialogue({{egadwick, "Great hanging out with you, kiddo!"},  {egadwick, "I'll be in my tent if you need me!"}});
-
+	
+	//egadwick attacks
 	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "blasted", -5, 10, 15, 1, 1, 1);
 	scienceblaster->afterdesc = " with his science blaster";
 	egadwick->setBasicAttack(scienceblaster);
 
-	Attack* overclock = new Attack("OVERCLOCK", "overclocked", 8, 0, 0, 0, 0, 0, true, 3);
+	Attack* vitamins = new Attack("VITAMIN SUPPLEMENT", "prescribed", 4, 0, 0, 0, 0, 0, true, 3);
+	vitamins->afterdesc = " a vitamin supplement";
+	vitamins->addDescription("Prescribe a teammate vitamins, boosting their HP and SP.");
+	Effect* supplemented = new Effect("SUPPLEMENTED", 3, -10, -10);
+	vitamins->addEffect(supplemented);
+	egadwick->addSpecialAttack(vitamins);
+
+	Attack* overclock = new Attack("OVERCLOCK", "overclocked", 8, 0, 0, 0, 0, 0, true, 5);
 	overclock->addDescription("Overclock a teammate, boosting their attack and speed.");
-	Effect* overclocked = new Effect("OVERCLOCKED", 4, 0, 0, 1.5f, 1, 1, 1, 1.5f);
-	overclock->setEffect(overclocked);
-	floria->addSpecialAttack(overclock);
+	Effect* overclocked = new Effect("OVERCLOCKED", 3, 0, 0, 1.5f, 1, 1, 1, 1.5f);
+	overclock->addEffect(overclocked);
+	egadwick->addSpecialAttack(overclock);
 
-	//prescription medicine
+	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", 4, 0, 0, 0, 0, 0, false, 8);
+	shieldacid->addDescription("Throw a beaker of shield-melting acid at the target.");
+	Effect* acidified = new Effect("ACIDIFIED", 3, 10, 0, 1, 0.5f, 0.5f);
+	shieldacid->addEffect(acidified);
+	egadwick->addSpecialAttack(shieldacid);
 
-	//emp
+	Attack* emp = new Attack("EMP", "threw an EMP at", 16, 20, 20, 1, 1, 3, false, 10, 20);
+	emp->addDescription("Throw an EMP, frying some of the target's and surrounding enemies' SP.");
+	egadwick->addSpecialAttack(emp);
 
-	//clock
-
-	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", 8, 0, 0, 0, 0, 0, true, 3);
+	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", 13, 0, 0, 0, 0, 0, true, 12);
 	hyperclock->addDescription("Over-overclock a teammate, greatly boosting their attack and speed.");
-	Effect* hyperclocked = new Effect("OVERCLOCKED", 4, 0, 0, 2f, 1, 1, 1, 2f);
-	hyperclock->setEffect(hyperclocked);
-	floria->addSpecialAttack(hyperclock);
+	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0f, 1, 1, 1, 2.0f);
+	hyperclock->addEffect(hyperclocked);
+	egadwick->addSpecialAttack(hyperclock);
 
-	//shield acid
+	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", 20, 10, 20, 4, 8, 3, false, 15);
+	rocketscience->addDescription("Launch a volley of rockets at the enemy team.");
+	rocketscience->focushits = false;
+	egadwick->addSpecialAttack(rocketscience);
 
-	//weather forecast
+	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", 25, 0, 0, 0, 0, 7, true, 17);
+	weatherforecast->addDescription("Predict a shower of SP that will rain upon the team.");
+	weatherforecast->addEffect(spshower);
+	egadwick->addSpecialAttack(weatherforecast);
 
-	//uberclock
+	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", 16, 0, 0, 0, 0, 0, true, 20);
+	uberclock->addDescription("Over-over-overclock a teammate, very greatly boosting their attack and speed.");
+	Effect* uberclocked = new Effect("UBERCLOCKED", 3, 0, 0, 4.0f, 1, 1, 1, 4.0f);
+	uberclock->addEffect(uberclocked);
+	egadwick->addSpecialAttack(uberclock);
 
-	//orbital strike
+	Attack* orbitalstrike = new Attack("ORBITAL STRIKE", "called down an orbital beam towards", 30, 70, 100, 1, 1, 7, false, 25);
+	orbitalstrike->addDescription("Call down an orbital laser from Edgadwick's brand new satellite.");
+	egadwick->addSpecialAttack(orbitalstrike);
 	
 	//MARK: Absolom
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(20, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 1));
@@ -567,40 +590,58 @@ NPC* SetupWorld() {
 										{forestknight, "I shan't assist you; this is an object of sin."},
 										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
 	forestknight->addConversation({{forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots."},
-								   {forestknight, "Does he not sleep? Does he not eat?"},
-								   {forestknight, "From what I have seen, no."},
-								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's hold."},
+								   {forestknight, "No matter what I tried, he specifically countered my every technique."},
+								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's grasp."},
 								   {self, "Yeah no problem."}});
 	Conversation absrecruit1 = {{self, "Hey knight man wanna help me annihilate BURGERs from existence?"},
 							    {forestknight, "Ah, what a splendid goal for a quest!"},
 							    {forestknight, "But how do you propose to accomplish this?"},
 							    {self, "With this thing I learned about called THE PLOT DEVICE."},
-							    {forestknight, "THE PLOT DEVICE? I cannot say I've heard of it,"},
-							    {forestknight, "but I believe you when you say it's a solution to the BURGER problem."},
+							    {forestknight, "THE PLOT DEVICE? I cannot say I have heard of it,"},
+							    {forestknight, "but I believe you when you say it can solve the BURGER problem."},
 							    {forestknight, "I shall join you on this quest!"}};
-	absrecruit1->skipcondition = BURGERMENDEF;
+	absrecruit1.skipcondition = BURGERMENDEF;
 	Conversation absrecruit2 = {{self, "Hey knight man wanna join me?"},
 							    {forestknight, "I do not see why not."}};
-	absrecruit1->alt = absrecruit2;
+	absrecruit1.alt = &absrecruit2;
 	forestknight->addRecruitmentDialogue(absrecruit1);
 	forestknight->addDismissalDialogue({{forestknight, "I shall return to defending the forest."},
 										{forestknight, "Farewell, friend!"}});
 	
-	//forest slash
+	Attack* forestslash = new Attack("FOREST SLASH", "slashed", -5, 15, 10, 1, 1, 1);
+	forestslash->afterdesc = " with his forest sword";
+	forestknight->setBasicAttack(forestslash);
 	
-	//defend
+	/*Attack* defend = new Attack("PROTECT", "is protecting", 10, 20, 20, 1, 1, 3, true, 10);
+	forestknight->addSpecialAttack(emp);*/
 
-	//redwood rend
+	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", 5, 25, 30, 1, 1, 3, false, 12);
+	redwoodrend->afterdesc = " with the might of a redwood";
+	forestknight->addSpecialAttack(redwoodrend);
 
-	//war cry
+	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", 20, 0, 0, 0, 0, 7, true, 15);
+	Effect* galvanized = new Effect("GALVANIZED", 5, 0, 0, 2.0f, 2.0f);
+	warcry->addEffect(galvanized);
+	forestknight->addSpecialAttack(warcry);
 
-	//enroot
+	Attack* enrootf = new Attack("ENROOT", "rooted into the soil", 10, 0, 0, 0, 0, 0, true, 18);
+	Effect* rootedf = new Effect("ROOTED", 5, -10, 0, 0, 3.0f, 3.0f);
+	enrootf->addEffect(rootedf);
+	forestknight->addSpecialAttack(enrootf);
 
-	//sequoia smash
+	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", 18, 50, 5, 1, 1, 1, false, 20);
+	sequoiasmash->afterdesc = " with the weight of a sequoia";
+	forestknight->addSpecialAttack(sequoiasmash);
 
-	//splinter
+	Attack* splinter = new Attack("SPLINTER", "swung splinters from his sword at", 12, 0, 0, 1, 2, 3, true, 25);
+	Effect* splintered = new Effect("SPLINTERED", 5, 10);
+	splinter->addEffect(splintered);
+	forestknight->addSpecialAttack(splinter);
 
-	//blitz
+	Attack* blitz = new Attack("BLITZ", "rushed at", 25, 5, 15, 10, 10, 1, false, 31);
+	blitz->afterdesc = " with a rapid flurry of sword strikes";
+	orbitalstrike->addDescription("Rush at the target with a rapid flurry of strikes.");
+	forestknight->addSpecialAttack(blitz);
 
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
 	archie->setDialogue("Safe travels!");
@@ -608,10 +649,10 @@ NPC* SetupWorld() {
 							 	   {archie, "Just keep heading NORTH, and you'll soon reach BURGERSBURG."},
 								   {archie, "Safe travels!"},
 								   {archie, "Make sure to bring me back a BURGER!"}};
-	archcondefault->skipcondition = TEMPLEQUEST;
+	archcondefault.skipcondition = TEMPLEQUEST;
 	archie->addConversation(archcondefault);
 
-	Conversation archrej1 = {{self, "Hey wanna join me on my BURGER QUEST?"}
+	Conversation archrej1 = {{self, "Hey wanna join me on my BURGER QUEST?"},
 							 {archie, "I am sorry. Though I would love to join you on your BURGER QUEST,"},
 							 {archie, "I must stay here and watch over the village."},
 							 {archie, "Make sure to bring back a BURGER for me!"}};
@@ -619,11 +660,11 @@ NPC* SetupWorld() {
 	Conversation archrej2 = {{self, "Hey wanna help me destroy BURGERs?"},
 							{archie, "Destroy BURGERs?"},
 							{archie, "Well, I must watch over the village, sorry."}};
-	archrej1->alt = archrej2;
+	archrej1.alt = &archrej2;
 	archrej2.skipcondition = BURGERMENDEF;
 	Conversation archrej3 = {{self, "Hey wanna join my team?"},
 							{archie, "I appreciate the offer, but I must watch over the village."}};
-	archrej2->alt = archrej3;
+	archrej2.alt = &archrej3;
 	archie->addRejectionDialogue(archrej1);
 
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 2, Stats(30, 10, 5, 0, 2, 20, 0));
@@ -1359,13 +1400,14 @@ NPC* SetupWorld() {
 
 	//set up generic non-npc enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 5));
-	Attack* headbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
+	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
+	headbutt->recoil = 5;
 	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
-	pricklyhog->setBasicAttack(headbutt);
+	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
 
 	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 10));
-	greaterhog->setBasicAttack(headbutt);
+	greaterhog->setBasicAttack(hogheadbutt);
 	greaterhog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 5));
@@ -1635,14 +1677,15 @@ NPC* SetupWorld() {
 								{jimshady1, "Shut up."}});
 	jimshady1->addRejectionDialogue("No go away.");
 
-	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else.", forestgarden, 5, Stats(20, 15, 5, 5, 10, 20, 15), true);
+	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else as well.", forestgarden, 0, Stats(20, 15, 5, 5, 10, 20, 15));
+	roguerobot->setLeader(true, 5);
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
 	roguerobot->setBasicAttack(snip);
-	//roguerobot->setLink(egadwick);
-	/*roguerobot->addLinkedConvo(egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?");
-	roguerobot->addLinkedConvo(self, "Yep I did.");
-	roguerobot->addLinkedConvo(egadwick, "Oh thank goodness! Thanks a bunch, kiddo!");
-	roguerobot->addLinkedConvo(egadwick, "Now I can safely be in the great outdoors!");*/
+	roguerobot->addRecruitLink(egadwick);
+	roguerobot->addLinkedConvo(egadwick, {{egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?"},
+										  {self, "Yep I did."},
+										  {egadwick, "Oh thank goodness! Thanks a bunch, kiddo!"},
+										  {egadwick, "Now I can safely be in the great outdoors!"}});
 
 	NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);

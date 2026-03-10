@@ -207,14 +207,13 @@ namespace Helper {
 		}
 	}
 	//prints a conversation, must be here because having this as Conversation's function was causing a plethora of compiler errors
-	void printConversation(const Conversation& _convo) {
+	void printConversation(Conversation* _convo) {
 		cout << "\n";
-		const vector<pair<NPC*, const char*>>& convo;
-		Conversation current = _convo;
-		while (WorldState[current.skipcondition]) {
-			current = current.alt;
+		Conversation* current = _convo;
+		while (WorldState[current->skipcondition]) {
+			current = current->alt;
 		}
-		convo = current.lines);
+		const vector<pair<NPC*, const char*>> convo = current->lines;
 		for (int i = 0; i < convo.size(); i++) { //prints all the dialogue in the conversation
 			if (convo[i].first != NULL) {
 				cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
