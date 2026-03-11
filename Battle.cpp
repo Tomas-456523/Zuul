@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <queue>
+#include <cmath>
 #include "Battle.h"
 #include "NPC.h"
 #include "Item.h"
@@ -177,7 +178,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
 	//hits all the targets, we must iterate in order to account for multi-target attacks
 	for (int i = 0; i < tarparty.size(); i++) {
-		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2) { //if they're within range
+		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2 && tarparty[i]->getHealth()) { //if they're within range and still have health
 			int effectiveAttack = 0;
 			int effectivePierce = 0;
 			if (attack->instakill && !tarparty[i]->getBoss()) { //instakill attacks remove all health except for bosses
@@ -188,7 +189,12 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 			} //damages the target
 			int hits = rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits; //some moves hit a random amount of times within a certain range
 			for (int j = 0; j < hits; j++) {
-				tarparty[i]->damage(effectiveAttack, effectivePierce, 1);
+				float randmultiplier = 0.9f + fmod(rand(), 0.2f); //randomly vary attack power of every hit by 10%
+				if (!rand()%20) { //5% chance to crit
+					cout << "\nCRITICAL HIT!";
+					randmultiplier *= 1.75f;
+				}
+				tarparty[i]->damage(effectiveAttack*randmultiplier, effectivePierce, 1);
 				CinPause();
 			}
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
