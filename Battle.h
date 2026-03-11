@@ -30,7 +30,7 @@ public:
 	void tickEffect(Effect& effect); //ticks the given effect
 	void tickEffects(); //ticks all effects on every npc
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target); //affects the given target based on the given attack
-	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 1); //interpret and carry out an attack command given by the player
+	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 2); //interpret and carry out an attack command given by the player
 	bool playerTurn(NPC* plr); //the player chooses what to do here
 	void npcTurn(NPC* npc); //the npc chooses an attack to do
 	

@@ -405,35 +405,52 @@ NPC* SetupWorld() {
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
 
 	Attack* punch = new Attack("PUNCH", "punched", -5, 10, 0, 1, 1, 1);
-	punch->addDescription("Throw a simple punch at the target.");
+	punch->addDescription("Throw a simple punch at the target. (10 ATTACK)");
 	self->setBasicAttack(punch);
 
 	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
-	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target.");
+	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target. (12 ATTACK, 10 PIERCE)");
 	self->addSpecialAttack(energyball);
 
-	Attack* kick = new Attack("KICK", "jumped at", 3, 15, 0, 1, 1, 1, false, 3);
+	Attack* kick = new Attack("KICK", "jumped at", 6, 15, 0, 1, 1, 1, false, 3);
 	kick->afterdesc = " with a kick";
-	kick->addDescription("Launch a flying side kick at the target.");
+	kick->addDescription("Launch a flying side kick at the target. (15 ATTACK)");
 	self->addSpecialAttack(kick);
 
 	Attack* headbutt = new Attack("HEADBUTT", "flew at", 5, 25, 0, 1, 1, 1, false, 5);
 	headbutt->afterdesc = " like a missile";
 	headbutt->recoil = 5;
-	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts.");
+	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
 	self->addSpecialAttack(headbutt);
 
-	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", 7, 2, 0, 6, 7, 1, false, 10);
-	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches.");
+	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", 10, 20, 10, 1, 1, 1, false, 8);
+	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
+
+	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", 7, 5, 0, 6, 7, 1, false, 10);
+	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK PER HIT)");
 	self->addSpecialAttack(punchflurry);
+
+	Attack* energize = new Attack("ENERGIZE", "energized", 14, 0, 0, 1, 1, 1, true, 15);
+	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 2.0f, 0, 0, 0);
+	energize->addEffect(energized);
+	energize->addDescription("Imbue yourself or an teammate with energy, doubling the next attack's power.");
+
+	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", 12, 35, 15, 1, 1, 1, false, 12);
+	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK, 15 PIERCE)");
+
+	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", 19, 50, 25, 1, 1, 1, false, 18);
+	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK, 25 PIERCE)");
+	
+	Attack* spbomb = new Attack("SP BOMB", "lobbed a ball of the team's collective SP energy at", 0, 0, 0, 1, 1, 9, false, 25);
+	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 
 	//MARK: Floria
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 1));
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely? :>"},
 							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."},
 							 {NULL, "FLORIA - :>"},
-							 {NULL, "\b\rFLORIA - ¦>"},
-							 {NULL, "\b\rFLORIA - :>"}});
+							 {NULL, "FLORIA - ¦>"},
+							 {NULL, "FLORIA - :>"}});
 	floria->setDialogue("I just love flowers!");
 	floria->addGymDialogue({{floria, "I love running in circles around the gym!"}, {floria, "Exercise is so fun!"}});
 	Conversation floriarecruit1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}};
@@ -447,7 +464,7 @@ NPC* SetupWorld() {
 	floria->addRecruitedDialogue("I must see all the flowers!");
 	floria->addDismissalDialogue("I'm going to go back to my flower field!");
 	floria->setTalkOnRecruit(true);
-	floria->setRecruitable();
+	floria->setRecruitable(true);
 
 	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -5, -5, 20, 1, 1, 1, true);
 	floria->setBasicAttack(heal);
@@ -746,26 +763,12 @@ NPC* SetupWorld() {
 
 	//Effect* smoothiebuff = new Effect("MULTIPOSITION", 999999, -30, 10, 70, 70, 70, 70);
 
-	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 2.0f, 0, 0, 0);
-
 	//tent store stock
 	Item* apple = new HpItem("HEALTHY APPLE", "A healthy red apple. (heals 10 HP)", limbo, 10);
-	Item* pineapple = new HpItem("HEALTHY PINE APPLE", "A crunchy and durable pine apple. Very annoying to eat, but apparently very healthy! (heals 20 HP)", limbo, 20);
+	Item* pineapple = new HpItem("HEALTHY PINE APPLE", "A crunchy and durable pine apple. Very annoying to eat, but apparently very healthy! (heals 25 HP)", limbo, 25);
 	Item* noodles = new EffectItem("MIGHTY NOODLES", "Some healthy and tasty homemade noodles sprinkled with mighty spices. (MINIBUFF effect)", limbo, minibuff);
 	Item* lasagna = new EffectItem("MIGHTY LASAGNA", "A healthy and tasty homemade lasagna made with mighty flour. (BUFF effect)", limbo, buff);
 	Item* pizza = new EffectItem("MIGHTY PIZZA", "A healthy and tasty homemade pizza topped with mighty pepperoni. (BIG BUFF EFFECT)", limbo, bigbuff);
-	//set up the advanced energy attacks
-	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", 12, 35, 15, 1, 1, 1, false, 12);
-	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK 15 PIERCE)");
-	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", 19, 50, 25, 1, 1, 1, false, 18);
-	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK 25 PIERCE)");
-	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", 10, 20, 10, 1, 1, 1, false, 8);
-	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK 10 PIERCE)");
-	Attack* energize = new Attack("ENERGIZE", "energized", 14, 0, 0, 1, 1, 1, true, 21);
-	energize->addEffect(energized);
-	energize->addDescription("Imbue yourself or an teammate with energy, adding 50 additional power to their next attack.");
-	Attack* spbomb = new Attack("SP BOMB", "lobbed a ball of the team's collective SP energy at", 0, 0, 0, 1, 1, 9, false, 25);
-	spbomb->addDescription("Gather up the collective SP of the entire team into a ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	Item* energybook = new EducationItem("ADVANCED GUIDE TO ENERGY MANIPULATION", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, precisionstrike);
 	EducationItem* _energybook = (EducationItem*)energybook; //we have to convert the book to EducationItem in order to add the attacks because regular Item*s have no setAttack function
 	_energybook->setAttack(ballisticmissile);
@@ -773,10 +776,10 @@ NPC* SetupWorld() {
 	_energybook->setAttack(energize);
 	_energybook->setAttack(spbomb);
 
-	tentstore->setStock(apple, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage! Enjoy your apple!");
-	tentstore->setStock(pineapple, 2147483647, 30, "JIMMY JOHN - Thank you for your patronage! Enjoy your pine apple!");
-	tentstore->setStock(noodles, 2147483647, 10, "JIMMY JOHN - Thank you for your patronage! Enjoy your noodles!");
-	tentstore->setStock(lasagna, 2147483647, 35, "JIMMY JOHN - Thank you for your patronage! Enjoy your lasagna!");
+	tentstore->setStock(apple, 2147483647, 5, "JIMMY JOHN - Thank you for your patronage! Enjoy your apple!");
+	tentstore->setStock(pineapple, 2147483647, 12, "JIMMY JOHN - Thank you for your patronage! Enjoy your pine apple!");
+	tentstore->setStock(noodles, 2147483647, 5, "JIMMY JOHN - Thank you for your patronage! Enjoy your noodles!");
+	tentstore->setStock(lasagna, 2147483647, 25, "JIMMY JOHN - Thank you for your patronage! Enjoy your lasagna!");
 	tentstore->setStock(pizza, 2147483647, 50, "JIMMY JOHN - Thank you for your patronage! Enjoy your pizza!");
 	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - I don't understand that book. But if it interests you then great! Oh, and thank you for your patronage!");	
 
@@ -1654,10 +1657,10 @@ NPC* SetupWorld() {
 	ninjaguard->setDialogue("You will never get past me!!!!!!! >:D");
 	ninjaguard->addRejectionDialogue("No!!! I will always be a ninja!!!!!! >:D");
 
-	NPC* forestrando = new NPC(*grassman);
+	/*NPC* forestrando = new NPC(*grassman);
 	forestrando->setLeader(true, 5, forestleft);
 	forestrando->setDialogue("*angry bush noises*");
-	forestrando->addRejectionDialogue("*angry bush noises*");
+	forestrando->addRejectionDialogue("*angry bush noises*");*/
 
 	NPC* forestguard2 = new NPC(*buffgrassman);
 	forestguard2->setLeader(true, 2, foresttempleentrance);
@@ -2424,11 +2427,26 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	//treasure chest items either give money or are trapped and start a battle
 	} else if (!strcmp(item->getType(), "treasure")) {
 		TreasureItem* treasure = (TreasureItem*)item; //converts to the corresponding subclass
-		/*if (treasure->getMimic() != NULL) {
-			fight(currentRoom, party, inventory, treasure->getMimic()->getName(), mony);
-		}*/ //hidden bool for npcs?
-		mony += treasure->getMony(); //adds the mony to the player's mony balance
-		cout << "\nYou opened the " << itemname << " and got " << treasure->getMony() << " monies! You now have " << mony << " monies!"; //says how much they got and new balance
+		cout << "\nYou opened the " << itemname << "...";
+		CinPause();
+		if (NPC* mimic = treasure->getMimic()) { //if the item has a mimic
+			mimic->setRoom(currentRoom);
+			cout << "\nYou were met with a " << mimic->getName() << "!";
+			CinPause();
+			fight(currentRoom, party, inventory, mimic->getName(), mony);
+		} else {
+			if (int monies = treasure->getMony()) { //if the treasure has monies
+				mony += monies; //adds the mony to the player's mony balance
+				cout << "\nYou got " << monies << " monies! You now have " << mony << " monies!"; //says how much they got and new balance
+			}
+			if (Item* newitem = treasure->getItem()) { //if the treasure had an item
+				cout << "\nYou ";
+				if (treasure->getMony()) cout << "also ";
+				newitem->unRoom(); //removes the item from the room
+				inventory->push_back(newitem); //adds it to the inventory
+				cout << "got a " << newitem->getName() << "!";
+			}
+		}
 	//switch items are in one factory and switch the direction of all the conveyor belts
 	} else if (!strcmp(item->getType(), "switch")) {
 		ConveyorSwitch* cswitch = (ConveyorSwitch*)item; //converts to the corresponding subclass
