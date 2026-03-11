@@ -105,7 +105,7 @@ NPC* SetupWorld() {
 	Room* tentlab = new Room("in the tent lab. There's a ton of machinery, and many generic science beakers with colored liquids.");
 	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently due to a lobster infestation.");
 	tentstation->setStation();
-	Room* tentchurch = new Room("in the village church. It's a really big tent, complete with stained glass and everything."); // Nobody really goes here anymore, especially since the priest mysteriously disappeared a long time ago. (for full version)
+	Room* tentchurch = new Room("in the village church. It's a really big tent, complete with stained glass and everything.\nNobody really goes here anymore, since the priest mysteriously disappeared a long time ago.");
 	Room* docks = new Room("at the village docks. Your tent house is set up here because your dad likes fishing.");
 	Room* tenthouse = new Room("in your family's house, in what could be considered the multiuse bed/dining/living room.");
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
@@ -661,7 +661,8 @@ NPC* SetupWorld() {
 	blitz->afterdesc = " with a rapid flurry of sword strikes";
 	orbitalstrike->addDescription("Rush at the target with a rapid flurry of strikes.");
 	forestknight->addSpecialAttack(blitz);
-
+	
+	//MARK: other npcs
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
 	archie->setDialogue("Safe travels!");
 	Conversation archcondefault = {{archie, "So you are going on a BURGER QUEST, I hear?"},
@@ -685,6 +686,58 @@ NPC* SetupWorld() {
 							{archie, "I appreciate the offer, but I must watch over the village."}};
 	archrej2.alt = &archrej3;
 	archie->addRejectionDialogue(archrej1);
+	
+	NPC* fisho = new NPC("FISHERMAN", "FRED", "Your dad, a fisherman who frequently fishes at the village docks.", docks, 25);
+	fisho->setDialogue("The fish do be fishing today.");
+	Conversation fishrej1 = {{self, "Hey wanna join me on my BURGER QUEST?"},
+							 {fisho, "I've already gone on mine."},
+							 {fisho, "It might be difficult but I know you're capable of doing this."}};
+	fishrej1.skipcondition = TEMPLEQUEST;
+	Conversation fishrej2 = {{self, "Hey wanna help me destroy BURGERs?"},
+							{fisho, "Uh, I'm busy fishing sorry."}};
+	fishrej1.alt = &fishrej2;
+	fishrej2.skipcondition = BURGERMENDEF;
+	Conversation fishrej3 = {{self, "Hey wanna join my team?"},
+							{fisho, "Sorry, kid, I gotta be fishing right now."}};
+	fishrej2.alt = &fishrej3;
+	fisho->addRejectionDialogue(fishrej1);
+	Conversation fishdef = {{fisho, "Hey I heard you're finally on a BURGER QUEST?"},
+							{fisho, "The trek has gotten more difficult recently,"},
+							{fisho, "but I know you're capable."},
+							{fisho, "Here, take this fish I just caught."},
+							{fisho, "It's not much but I'm sure it'll be useful to you."},
+							{self, "Thanks dad."},
+							{fisho, "Of course! Well, have a safe trip!"}};
+	fishdef.skipcondition = TEMPLEQUEST;
+	fisho->addConversation(fishdef);
+
+	Item* fish = new HpItem("HEALTHY FISH", "A fish given by your dad to support your BURGER QUEST. (heals 15 HP)", limbo, 15);
+	fisho->setGift(fish);
+
+	NPC* mango = new NPC("", "MANGOLIA", "Your mom, a fisherman who frequently fishes at the village docks.", tenthouse, 10);
+	mango->setDialogue("The fish do be fishing today.");
+	Conversation mangorej1 = {{self, "Hey wanna join me on my BURGER QUEST?"},
+							  {mango, "Sorry sweetie I can't be going on quests anymore."},
+							  {mango, "But I hope yours goes well!"}};
+	mangorej1.skipcondition = TEMPLEQUEST;
+	Conversation mangorej2 = {{self, "Hey wanna help me destroy BURGERs?"},
+							  {mango, "Now I don't wanna hear any of this nonsense."},
+							  {mango, "Besides, how would you even do that?"}};
+	mangorej1.alt = &mangorej2;
+	mangorej2.skipcondition = BURGERMENDEF;
+	Conversation mangorej3 = {{self, "Hey wanna join my team?"},
+							  {mango, "Sorry sweetie, I don't have time to play right now."}};
+	fishrej2.alt = &mangorej3;
+	mango->addRejectionDialogue(mangorej1);
+	Conversation mangodef = {{mango, "Ah! I've heard you're on your BURGER QUEST."},
+							 {mango, "I'm just so proud!"},
+							 {mango, "Here, take this cake I made just for this occasion!"},
+							 {self, "Thanks mom."},
+							 {mango, "Of course sweetie! Have a safe trip!"}};
+	mango->addConversation(mangodef);
+
+	Item* cake = new HpItem("HEALTHY CAKE", "A cake your mom made to commemorate your BURGER QUEST. (heals 100 HP)", limbo, 100);
+	mango->setGift(cake);
 
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 2, Stats(30, 10, 5, 0, 2, 20, 0));
 	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
@@ -753,8 +806,6 @@ NPC* SetupWorld() {
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->addRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
-
-	//NPC* fisho = new NPC("FISHERMAN", "FRED", "A middle-aged fisherman who frequently fishes at the village docks.", docks, 30, 10, );
 
 	Effect* minibuff = new Effect("MINIBUFF", 4, 0, 0, 1.25f, 1.25f, 1.25f, 1.25f);
 	Effect* buff = new Effect("BUFF", 4, 0, 0, 1.5f, 1.5f, 1.5f, 1.5f);
@@ -1464,27 +1515,35 @@ NPC* SetupWorld() {
 	carnplant->addSpecialAttack(nutrientabsorb);*/
 
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
-	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", -6, 18, 7, 1, 1, 1);
-	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", 2, 10, 7, 1, 1, 1);
+	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", -6, 10, 0, 1, 1, 1);
+	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", 2, 18, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0f);
-	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 15, 10, 5, 1, 1, 1, true, 2);
+	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 15, 10, 5, 1, 1, 1, true, 10);
 	flowerempower->addEffect(flowerpower);
-	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 18, 30, 10, 1, 1, 10);
+	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 18, 30, 10, 1, 1, 10, false, 10);
 	flowerfiend->setBasicAttack(vinewhip);
 	flowerfiend->addSpecialAttack(crunch);
 	//flowerfiend->addSpecialAttack(nutrientabsorb);
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
-	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(20, 20, 6, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
-	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
+	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(60, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
 	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", 5, 0, 0, 1, 1, 7);
+	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
 	savageroar->addEffect(intimidated);
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", 10, 1, 10, 1, 3, 7);
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", 10, 1, 5, 1, 3, 7);
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
+
+	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 9));
+	Attack* chomp = new Attack("CHOMP", "chomped", -5, 10, 10, 1, 1, 1);
+	Attack* stomp = new Attack("STOMP", "jumped onto", 5, 30, 0, 1, 1, 1);
+	Attack* monymeteor = new Attack("MONY METEOR", "spit a heavy mass of monies at", 10, 50, 0, 1, 1, 3);
+	mimic->setBasicAttack(chomp);
+	mimic->addSpecialAttack(stomp);
+	mimic->addSpecialAttack(monymeteor);
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
 	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
@@ -1716,7 +1775,7 @@ NPC* SetupWorld() {
 								{jimshady1, "Shut up."}});
 	jimshady1->addRejectionDialogue("No go away.");
 
-	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT 1.0", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else as well.", forestgarden, 0, Stats(20, 15, 5, 5, 10, 20, 15));
+	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else as well.", forestgarden, 0, Stats(20, 15, 5, 5, 10, 20, 15));
 	roguerobot->setLeader(true, 5);
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
 	roguerobot->setBasicAttack(snip);
@@ -1737,6 +1796,17 @@ NPC* SetupWorld() {
 	flowerguard->blockExit(WEST, ENEMY, "blocked by the FLOWER FIEND.");
 	flowerguard->setDialogue("*flowery shriek*");
 	flowerguard->addRejectionDialogue("*flowery shriek*");
+
+	NPC* mimic1 = new NPC(*mimic);
+	mimic1->setLeader(true, 30, NULL);
+	mimic1->setDialogue("*unhinged roar*");
+	mimic1->addRejectionDialogue("*unhinged roar*");
+	mimic1->setEscapable(false);
+	mimic1->setForceBattle();
+	mimic1->setBoss(true);
+	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
+
+	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, NULL, mimic1);
 		
 	NPC* forestboss = new NPC(*savagehog);
 	savagehog->setLeader(true, 5, bossgrove, true, true);
