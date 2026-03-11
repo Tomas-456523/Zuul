@@ -194,9 +194,11 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 				tarparty[i]->setEffect(attack->appliedeffect);
 			}
+			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
+				attacker->damage(attack->recoil * attacker->getAttack() * attacker->getAttMultiplier() / 10, 0, 1);
+			}
 		}
 	}
-	CinPause();
 }
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item
 bool Battle::useItem(const char* itemname) {
@@ -399,7 +401,7 @@ void Battle::reorder(queue<NPC*>& orderly_fashion) {
 //interpret and carry out player attacks, and return whether we successfully launched an attack MARK: parse attack
 bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax) {
 	//we have to check multiple times, since attacks may have 0 or more spaces in them
-	for (int i = 0; i <= checkMax; i++) {
+	for (int i = checkMax-1; i >= 0; i--) {
 		if (i > 0) { //if it's the first one, we've already parsed it the same, no need to parse again
 			ParseCommand(commandP, commandWordP, commandExtensionP, i);
 		}
@@ -412,7 +414,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 		}
 
 		if (target == NULL) { //if no target was found
-			if (i == checkMax) { //prints an error if we've already checked as many times as permitted
+			if (i == 0) { //prints an error if we've already checked as many times as permitted
 				cout << "\nInvalid target \"" << commandExtensionP << "\".";
 				return false;
 			}
@@ -457,7 +459,7 @@ bool Battle::playerTurn(NPC* plr) {
 		ParseCommand(command, commandWord, commandExtension); //parses the command, splitting it into the command word and the rest (and a space)
 
 		if (!strcmp(commandWord, "USE")) { //for using an item
-			continuing = useItem(commandExtension); //may potentially end the player turn if valid item is used
+			continuing = !useItem(commandExtension); //may potentially end the player turn if valid item is used
 		} else if (!strcmp(commandWord, "INVENTORY")) { //for printing a list of items in the inventory
 			printInventory();
 		} else if (!strcmp(commandWord, "PARTY")) { //for printing a list of all teammates

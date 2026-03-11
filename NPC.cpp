@@ -280,9 +280,6 @@ void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
 void NPC::Recruit() { //recruits the npc
-	if (conversations.size() > 0) {
-		printDialogue(); //I want the player to hear the dialogue before being recriuted so we print it here if it hasn't been heard yet
-	}
 	if (!newDialogue.empty()) {
 		dialogue = newDialogue;
 	}
@@ -398,10 +395,12 @@ void NPC::blockExit(const char* _exitBlocking, const char* type, const char* rea
 	}
 }
 void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
-	if (damage >= 0) {
+	if (damage > 0) {
 		cout << "\n" << name << " took " << damage << " damage"; //no "!", it gets printed later
-	} else {
+	} else if (damage < 0) {
 		cout << "\n" << name << " recovered " << -damage << " HP"; //no "!"
+	} else {
+		cout << "\n" << name << " was not affected.";
 	}
 	if (status != NULL) { //prints the status that caused it
 		cout << " due to " << status;
