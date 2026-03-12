@@ -162,6 +162,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 			attack->power += npc->getSP();
 			npc->alterSp(-npc->getSP());
 		}
+		cout << attacker->getName() << " gathered the team's SP into an SP BOMB!";
+		CinPause();
 	} //says what happened
 	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << attack->afterdesc << "!";
 	vector<NPC*> tarparty; //gets which party is being targeted based on if the target is an enemy or not
@@ -179,9 +181,17 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	//hits all the targets, we must iterate in order to account for multi-target attacks
 	for (int i = 0; i < tarparty.size(); i++) {
 		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2 && tarparty[i]->getHealth()) { //if they're within range and still have health
+			NPC* reciever = tarparty[i]; //who will recieve the damage, could be the target or the npc guarding the target
+			if (NPC* guardian = reciever->getGuardian()) { //MARK: AND THE MOVE ISN'T POSITIVE
+				cout << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
+				reciever = guardian;
+				CinPause();
+			}
 			int effectiveAttack = 0;
 			int effectivePierce = 0;
-			if (attack->instakill && !tarparty[i]->getBoss()) { //instakill attacks remove all health except for bosses
+			if (attack->spbomb) { //sp bombs don't get multipliers
+				effectiveAttack = attack->power;
+			} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
 				effectiveAttack = effectivePierce = 2147483647; //just send as much damage as possible
 			} else {
 				effectiveAttack = attack->power * attacker->getAttack() * attacker->getAttMultiplier() / 10;
@@ -194,15 +204,19 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 					cout << "\nCRITICAL HIT!";
 					randmultiplier *= 1.75f;
 				}
-				tarparty[i]->damage(effectiveAttack*randmultiplier, effectivePierce, 1);
+				reciever->damage(effectiveAttack*randmultiplier, effectivePierce, 1);
 				CinPause();
 			}
 			if (!hits) cout << "\nThe attack missed!";
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
-				tarparty[i]->setEffect(attack->appliedeffect);
+				reciever->setEffect(attack->appliedeffect);
 			}
 			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 				attacker->damage(attack->recoil * attacker->getAttack() * attacker->getAttMultiplier() / 10, 0, 1);
+			}
+			if (attack->protect) {
+				reciever->setGuardian(attacker);
+				attacker->setGuarding(reciever);
 			}
 		}
 	}

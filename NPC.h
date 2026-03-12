@@ -73,6 +73,9 @@ public: //you need to set stats on creation
 	float getSPUseMultiplier();
 	float getDamageMultiplier();
 
+	NPC* getGuardian();
+	NPC* getGuarding();
+
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
 	void addConversation(const Conversation& _dialogue); //add a conversation
@@ -125,6 +128,8 @@ public: //you need to set stats on creation
 	void setExtraXP(int xp);
 	void setExtraMonies(int monies);
 	void setTalkOnRecruit(bool talk);
+	void setGuardian(NPC* npc);
+	void setGuarding(NPC* npc);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
