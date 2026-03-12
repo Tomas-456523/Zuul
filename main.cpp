@@ -1840,6 +1840,7 @@ NPC* SetupWorld() {
 						   {viola, "Yeah I know..."},
 						   {viola, "I'm just going to go to that cliff over there..."},
 						   {NULL, "VIOLA went to that cliff over there."}});
+	viola->addLinkedDialogue(viola, "")
 	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
 	viola->setTalkOnDefeat();

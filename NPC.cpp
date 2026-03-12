@@ -63,9 +63,10 @@ void NPC::printRejectionDialogue() {
 	if (rejectionDialogue.size() != 1) rejectionDialogue.pop();
 }
 void NPC::printRecruitmentDialogue() {
-	if (speakOnRecruit) { //if we have to print normal dialogue before regular dialogue
+	if (speakOnRecruit && !conversations.empty()) { //if we have to print normal dialogue before regular dialogue
 		printDialogue();
 		speakOnRecruit = false; //only do this once
+		CinPause();
 	}
 	if (recruitmentDialogue.empty()) return;
 	printDialogue(&recruitmentDialogue.front());
@@ -139,11 +140,13 @@ bool NPC::getLeader() {
 bool NPC::getEscapable() { //if you can escape battle with this npc
 	return escapable;
 }
-int NPC::getXpReward() { //arbitrary formula to reward xp
-	return level*level+5 + xpReward;
+int NPC::getXpReward() {
+	if (xpReward) return  xpReward;
+	return level*level+5; //arbitrary formula to reward xp
 }
-int NPC::getMonyReward() { 
-	return level*2 + monyReward;
+int NPC::getMonyReward() {
+	if (monyReward) return monyReward;
+	return level*2;
 }
 Attack* NPC::getBasicAttack() {
 	return standard_attack;
@@ -218,6 +221,12 @@ float NPC::getSPUseMultiplier() {
 float NPC::getDamageMultiplier() {
 	return damageMultiplier;
 }
+NPC* getGuardian() {
+	return guardian;
+}
+NPC* getGuarding() {
+	return guarding;
+}
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
 }
@@ -280,9 +289,6 @@ void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
 void NPC::Recruit() { //recruits the npc
-	if (conversations.size() > 0) {
-		printDialogue(); //I want the player to hear the dialogue before being recriuted so we print it here if it hasn't been heard yet
-	}
 	if (!newDialogue.empty()) {
 		dialogue = newDialogue;
 	}
@@ -385,6 +391,12 @@ void NPC::setExtraMonies(int monies) {
 void NPC::setTalkOnRecruit(bool talk) {
 	speakOnRecruit = talk;
 }
+void NPC::setGuardian(NPC* npc) {
+	guardian = npc;
+}
+void NPC::setGuarding(NPC* npc) {
+	guarding = npc;
+}
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;
 }
@@ -398,15 +410,18 @@ void NPC::blockExit(const char* _exitBlocking, const char* type, const char* rea
 	}
 }
 void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
-	if (damage >= 0) {
-		cout << "\n" << name << " took " << damage << " damage"; //no "!", it gets printed later
+	if (stats.hpmax <= 999) damage = min(damage, 999); //cap damage printing at 999, unless we actually have reason to print that high
+	if (damage > 0) {
+		cout << "\n" << name << " took " << damage << " damage!";
+	} else if (damage < 0) {
+		cout << "\n" << name << " recovered " << -damage << " HP!";
 	} else {
-		cout << "\n" << name << " recovered " << -damage << " HP"; //no "!"
+		cout << "\n" << name << " was not affected.";
 	}
 	if (status != NULL) { //prints the status that caused it
 		cout << " due to " << status;
 	}
-	cout << "!\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
+	cout << "\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
 	if (health <= 0) { //says that the npc is incapacitated if it now has 0 hp
 		CinPause();
 		cout << "\n" << name << " is incapacitated!";
@@ -460,7 +475,7 @@ int NPC::damage(float power, float pierce, int hits) {
 	}
 	if (totalhits > 0) { //subtract the damage and print how much was done
 		health -= totalDamage;
-		printDamage(totalDamage);
+		printDamage(damage);
 	}
 	return totalDamage;
 }
@@ -468,7 +483,7 @@ int NPC::damage(float power, float pierce, int hits) {
 void NPC::directDamage(int damage, const char* status) {
 	int totalDamage = Clamp(damage,health-stats.hpmax,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	health -= totalDamage;
-	printDamage(totalDamage, status); //prints the damage taken and why it was taken
+	printDamage(damage, status); //prints the damage taken and why it was taken
 }
 void NPC::setLevel(int _level) { //manually sets the level of the npc (will not level down)
 	int lvlguard = 100; //guards the level up past a certain amount to avoid the program freezing on large level settings
@@ -765,40 +780,6 @@ void NPC::defeat() {
 		data.first->setRedirect(data.second);
 		redirectRooms.pop();
 	}
-	//OLD CODE for reference
-	/*if (linkedNPC != NULL) { //do stuff for linked npc
-		if (!linkedNPC->getLobster() && strcmp(linkedNPC->getName(), "TOMAS")) { //set npc to recuitable unless it's the lobster (or my character util I make a better system)
-			linkedNPC->setRecruitable(true);
-		}
-		if (linkedNPC->getLeader()) { //unleader the linked npc
-			linkedNPC->setLeader(false);
-			linkedNPC->undefeat(); //and undefeat them
-		}
-		for (int i = 0; i < linkedConversation.size(); i++) { //adds the linked conversation to the linked npc
-			linkedNPC->addConversation(linkedConversation[i].first, linkedConversation[i].second, !i); //new conversation if it's the first line (the !i)
-		}
-		if (strcmp(linkedDialogue, "")) { //if there's linked dialogue we set that too
-			linkedNPC->setDialogue(linkedDialogue);
-		}
-		linkedNPC = NULL; //nullify them because we won't be using the linked npc anymore from here
-	}
-	if (linkedRoom != NULL) { //change the description of the linked room
-		linkedRoom->setDescription(linkedDescription);
-	}
-	if (redirectRoom.first != NULL) { //set the redirect in the room
-		redirectRoom.first->setRedirect(redirectRoom.second);
-		redirectRoom = make_pair((Room*)NULL, (Room*)NULL); //nullify the redirect
-	}
-	if (defeatChange) { //do changes to the npc if applicable
-		title = defeatTitle;
-		description = defeatDescription;
-		dialogue = defeatDialogue;
-		if (defeatRoom != NULL) { //move them to this room and now that's their home room
-			setRoom(defeatRoom);
-			setHome(defeatRoom);
-		}
-		defeatChange = false; //no need to change again
-	}*/
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;

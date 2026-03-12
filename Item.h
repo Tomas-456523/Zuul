@@ -257,13 +257,15 @@ private:
 //treasure items, for giving monies and maybe fighting an enemy trap
 class TreasureItem : public Item {
 public:
-	TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, NPC* _mimic);
+	TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, Item* _item = NULL, NPC* _mimic = NULL);
 
 	NPC* getMimic(); //get the trap enemy if there is one
 	int getMony(); //get how many monies to give
+	Item* getItem();
 private:
 	NPC* mimic; //the trap enemy it makes you fight
 	int mony; //how many monies it gives
+	Item* item; //the item stored in the thing
 };
 
 //conveyor switches, for switching the direction of conveyor belts

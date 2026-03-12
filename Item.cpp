@@ -358,10 +358,11 @@ const char* InfoItem::getText() {
 }
 
 //treasure items, for getting monies and also maybe fighting an enemy if it's trapped
-TreasureItem::TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, NPC* _mimic) : Item(_name, _description, _room, false, true) {
+TreasureItem::TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, Item* _item, NPC* _mimic) : Item(_name, _description, _room, false, true) {
 	type = "treasure"; //sets the type
 	mimic = _mimic; //sets the trap enemy if there is one
 	mony = _mony;
+	item = _item;
 }
 //gets the trap enemy if there is one
 NPC* TreasureItem::getMimic() {
@@ -370,6 +371,10 @@ NPC* TreasureItem::getMimic() {
 //gets how many monies you get by USE-ing the treasure item
 int TreasureItem::getMony() {
 	return mony;
+}
+//gets the item stored in the treasure item
+Item* TreasureItem::getItem() {
+	return item;
 }
 
 //conveyor switches, for switching the direction of conveyor belt rooms in one factory
