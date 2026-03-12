@@ -110,6 +110,7 @@ public: //you need to set stats on creation
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
+	void removeSpecialAttack(Attack* attack);
 	void blockExit(const char* _exitBlocking, const char* type, const char* reason, bool bothsides = false);
 	void setEscapable(bool _escapable);
 	void calculateWeights();

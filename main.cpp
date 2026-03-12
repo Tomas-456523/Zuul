@@ -184,7 +184,7 @@ NPC* SetupWorld() {
 	Room* mineexit = new Room("at the high-up exit of the mineshaft. SO MANY STAIRS...");
 	Room* mineshaftside = new Room("in a side tunnel of the mineshaft. There's a bunch of loose minecarts here.");
 	Room* kaboomroom = new Room("in a very unstable looking room. It's filled to the brim with dynamite, which is concerning considering that maniac that hangs out here.");
-	Room* berryroom = new Room("in a hidden room full of cactus. A CACTIBERRY is supposed to be growing here... oh well.");
+	Room* berryroom = new Room("in a hidden room full of subterranean cactus.");
 	Room* volcanoentrance = new Room("at the northernmost end of the mineshaft. Burning light and ash enter through the mineshaft entrance.");
 	Room* desertstation = new Room("in a train station, which seems to have been accidentally intercepted by the mineshaft.");
 	desertstation->setStation();
@@ -860,13 +860,13 @@ NPC* SetupWorld() {
 	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
 	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
-	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 0, 7, 5, 0, 2, 3);
-	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them.");
-	Item* shuriken = new EducationItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
+	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 2, 7, 5, 0, 2, 3);
+	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
+	Item* shuriken = new WeaponItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
-	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", 0, 8, 5, 0, 6, 7);
-	bonedrill->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them.");
-	Item* bonecone = new EducationItem("BONE CONE", "A cone-shaped bone. I bet you could think of an attack USE-ing this.", desertgrave, bonedrill);
+	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", 10, 8, 5, 5, 6, 1);
+	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 6 hits)");
+	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
@@ -947,6 +947,10 @@ NPC* SetupWorld() {
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true);
 	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
+
+	Item* cactiberry = new MaterialItem("CACTIBERRY", "Special berry that is pale green and prickly, adorned with a pink flower.", berryroom);
+	Item* radiberry = new MaterialItem("RADIBERRY", "Special radioactive berry that glows neon green. Might wanna handle this one quickly.", factorygarden);
+	Item* ninjaberry = new MaterialItem("NINJABERRY", "Special black berry pertaining to the ninjas, complete with a natural belt.", berryroom);
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -1391,7 +1395,7 @@ NPC* SetupWorld() {
 	tunnellobster->setTunnelDirection(burgstation, TO_BURGERSBURG);
 	tunnellobster->setTunnelDirection(basestation, TO_THE_BASEMENT);
 	//tunnellobster->setLink(tunnellobster);
-	//tunnellobster->setDefeatNPC("", "An immense, tamed crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises).", NULL);
+	//tunnellobster->setDefeatNPC("", "Your big pet crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises).", NULL);
 	tunnellobster->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
 	tunnellobster->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
 
@@ -1405,24 +1409,24 @@ NPC* SetupWorld() {
 	basestation->setBackup(backupcaller3);
 
 	//set up generic non-npc enemies MARK: enemies (internal)
-	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 5));
+	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
 	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
 	headbutt->recoil = 5;
 	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
 	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
 
-	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 10));
+	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 9));
 	greaterhog->setBasicAttack(hogheadbutt);
 	greaterhog->addSpecialAttack(homing_prickle);
 
-	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 5));
+	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 9));
 	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -2, 15, 0, 1, 1, 1);
 	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
 
-	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 6));
+	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 9));
 	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 2.0f, 2.0f, 2.0f);
 	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", 4, 0, 0, 1, 1, 5, true);
 	buffgrassman->setBasicAttack(grassstrike);
@@ -1432,11 +1436,11 @@ NPC* SetupWorld() {
 	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 1, 0, 4, 4, 1);
 	enemydeer->setBasicAttack(deercombo);
 
-	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 4, 0, 5, 20, 15));
+	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 4, 0, 5, 20, 9));
 	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 4, 5, 0, 3, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
-	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 0, Stats(50, 20, 10, 5, 15, 20, 10));
+	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 0, Stats(50, 20, 10, 5, 15, 20, 9));
 	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shrimplebeam);
@@ -1444,7 +1448,7 @@ NPC* SetupWorld() {
 	engarde->guardset = 1;
 	jimshady->setEffect(engarde, false);
 
-	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 30, 0));
+	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 30, 9));
 	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", 0, 0, 0, 1, 1, 1);
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
 	Effect* flinch = new Effect("FLINCH", 1);
@@ -1479,14 +1483,28 @@ NPC* SetupWorld() {
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
 
-	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 6, 5));
-	Effect* sanded = new Effect("SAND IN THE EYES", 4, 0, 0, .8f, -10);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at ", -2, 5, 0, 1, 1, 1);
+	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
+	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at ", -3, 5, 0, 1, 1, 1);
 	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
-	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", 1, 3, 0, 1, 1, 1);
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", 1, 12, 0, 1, 1, 1);
 	sandman->setBasicAttack(sandthrow);
 	sandman->addSpecialAttack(sandpunch);
+
+	NPC* pyramid = new NPC("", "PYRAMON", "Floa");
+
+	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", limbo, 0, Stats(5, 0, 30, 0, 30, 15, 9));
+	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
+	shieldup->guardset = 5;
+	skeleviking->setEffect(shieldup, false);
+	Attack* vslash = new Attack("VIKING SLASH", "hit", -5, 5, 0, 1, 1, 1);
+	vslash->afterdesc = " with his sword";
+	skeleviking->setBasicAttack(vslash);
+	Attack* vbonecone = new Attack("BONE CONE", "launched his helmet's bone cones at", 5, 1, 0, 4, 4, 1);
+	skeleviking->addSpecialAttack(vbonecone);
+	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", 10, 8, 0, 3, 4, 3);
+	skeleviking->setBasicAttack(vtornado);
 
 	//most of the enemies have these placeholder attacks and also placeholder stats due to time constraints, so I'll add those in the full version
 	Attack* genericattack = new Attack("ATTACK", "attacked", -5);
@@ -1726,15 +1744,11 @@ NPC* SetupWorld() {
 	forestboss->addRejectionDialogue("*ROAR MEANING NO*");
 	forestboss->setForceBattle();
 
-	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", desertgrave, 0, Stats());
-	skeleviking->setLeader(true, 10);
+	NPC* dgraveguard = new NPC(*skeleviking);
+	skeleviking->setLeader(true, 2);
 	skeleviking->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEVIKING.");
-	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
-	shieldup->guardset = 2;
-	skeleviking->setEffect(shieldup, false);
-	skeleviking->setBasicAttack(genericattack);
-	skeleviking->setDialogue("*angry noise*");
-	skeleviking->addRejectionDialogue("*angry noise*");
+	dgraveguard->setDialogue("*angry silence*");
+	dgraveguard->addRejectionDialogue("*angry silence*");
 
 	NPC* desertguard = new NPC(*sandman);
 	desertguard->setLeader(true, 5, desert);
@@ -1747,13 +1761,13 @@ NPC* SetupWorld() {
 	desertguard2->blockExit(SOUTHEAST, ENEMY, "blocked by the SANDMAN.", true);
 
 	NPC* jimshady2 = new NPC(*jimshady);
-	jimshady2->setLeader(true, 5, desert);
+	jimshady2->setLeader(true, 8, desert);
 	jimshady2->blockExit(NORTHEAST, ENEMY, "blocked by JIM SHADY.", true);
 	jimshady2->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
-	/*jimshady2->addConversation(jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!");
-	jimshady2->addConversation(self, "No you still aren't.");
-	jimshady2->addConversation(jimshady1, "Nobody asked you.");*/
-	jimshady2->addRejectionDialogue("No go away.");
+	jimshady2->addConversation({{jimshady2, "I'm JIM SHADY, yes I'm the REAL SHADY!"},
+								{self, "No you still aren't."},
+								{jimshady2, "Nobody asked you."}});
+	jimshady2->addRejectionDialogue("No begone.");
 
 	NPC* canyonguard = new NPC(*skeleminer);
 	canyonguard->setLeader(true, 8, canyon1);
@@ -1774,8 +1788,8 @@ NPC* SetupWorld() {
 	boomguard->setParty(rockbug, rockbug);
 	boomguard->blockExit(SOUTHWEST, ENEMY, "blocked by the DREADNAUT.");
 
-	NPC* minerando = new NPC(*rascal);
-	minerando->setLeader(true, 67, mineshaftside);
+	/*NPC* minerando = new NPC(*rascal);
+	minerando->setLeader(true, 67, mineshaftside);*/
 
 	/*NPC* richguard0 = new NPC(*richguy1);
 	richguard->setLeader(true, 20, ceolobby);
@@ -1797,30 +1811,37 @@ NPC* SetupWorld() {
 	richguard3->blockExit(UP, ENEMY, "manually blocked by a bunch of BUSINESSPEOPLE.");
 
 	//set up enemy and teammate viola
-	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 10, Stats(30, 0, 10, 0, 10, 20, 20));
+	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(30, 0, 10, 0, 10, 20, 20));
 	//viola->setScale(0, 0, 1, 0, 1, 0, 2);
-	viola->setLeader(true, 20);
-	/*viola->addConversation(self, "Hey did you kidnap everyone in that town over there?");
-	viola->addConversation(viola, "So what if I did?");
-	viola->addConversation(self, "Lady you can't just go kidnapping people.");
-	viola->addConversation(viola, "OH YEAH? FIGHT ME!");
-	viola->addConversation(self, "Ok.");*/
+	viola->setLeader(true, 15);
+	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
+							{viola, "So what if I did?"},
+							{self, "Lady you can't just go kidnapping people."},
+							{viola, "OH YEAH? FIGHT ME!"},
+							{self, "Ok."}});
 	viola->setDialogue("AHAHAHAHAHAHAHA!");
 	viola->addGymDialogue("It's leg day oh nooo :(");
-	viola->addRejectionDialogue("Nah, but you can join me and my friends if you want! AHAHAHA!");
-	viola->addRecruitmentDialogue("Really? After what I did? Maybe I could do something good by following you. I think I'll go with. Thanks.");
+	viola->addRejectionDialogue({{self, "Hey wanna join me on my BURGER QUEST?"},
+								 {viola, "..."},
+								 {viola, "no"}});
+	viola->addRecruitmentDialogue({{self, "Yo, wanna join my team?"},
+								   {viola, "Really?"},
+								   {viola, "After what I did?"},
+								   {self, "uhh yeah."},
+								   {viola, "Um..."},
+								   {viola, "Alright."}});
 	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
 	viola->addDismissalDialogue("Well I guess I can watch over the town from that cliff over there. That might be good.");
 	viola->addRedirect(deserttown, deserttownfixed);
 	viola->addRecruitLink(viola);
-	/*viola->addLinkedConvo(viola, "I'm sorry. I'll free everyone...");
-	viola->addLinkedConvo(viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them...");
-	viola->addLinkedConvo(self, "That's not a very good reason.");
-	viola->addLinkedConvo(viola, "Yeah I know...");
-	viola->addLinkedConvo(viola, "I'm just going to go to that cliff over there...");
-	viola->addLinkedConvo(NULL, "VIOLA went to that cliff over there.");
+	viola->addLinkedConvo({{viola, "I'm sorry. I'll free everyone..."},
+						   {viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them..."},
+						   {self, "That's not a very good reason."},
+						   {viola, "Yeah I know..."},
+						   {viola, "I'm just going to go to that cliff over there..."},
+						   {NULL, "VIOLA went to that cliff over there."}});
 	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
-	viola->setRecruitDialogueChange("Alright! Maybe I can do something good by following you.", "I think I'm doing a good job protecting the town so far.");*/
+	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
@@ -2164,7 +2185,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 }
 
 //takes an item from the current room and adds it to the inventory MARK: take item
-void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname) {
+void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname, NPC* player) { //I don't want to have to pass player here but we need to teach player attacks when taking weapon items
 	//finds the item in the room based on the name
 	Item* item = getItemInVector(currentRoom->getItems(), itemname);
 	//prints the reason you can't take the item based on the circumstances
@@ -2203,11 +2224,18 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname)
 			currentRoom->setExit(cover->getDirection(), cover->getRoom());
 			cout << "\nAn exit DOWNwards was revealed!";
 		}
+	} else if (!strcmp(item->getType(), "weapon")) { //weapon items enable the use of their move
+		CinPause();
+		WeaponItem* weapon = (WeaponItem*)item;
+		Attack* attack = weapon->getAttack();
+		player->addSpecialAttack(attack);
+		cout << player->getName() << " can now use " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
+		CinPause();
 	}
 }
 
 //drops an item from the inventory into the current room MARK: drop item
-void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname) {
+void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname, NPC* player) { //pass player for the same reason as takeItem
 	Item* item = getItemInVector(*inventory, itemname); //finds the item in the inventory
 	if (item == NULL) { //gives error message if we have no itemname
 		cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
@@ -2217,6 +2245,14 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname)
 	//erases the item from the inventory
 	inventory->erase(remove(inventory->begin(), inventory->end(), item), inventory->end());
 	cout << "\nYou dropped the " << itemname << ".";
+	if (!strcmp(item->getType(), "weapon")) { //weapon items enable the use of their move
+		CinPause();
+		WeaponItem* weapon = (WeaponItem*)item;
+		Attack* attack = weapon->getAttack();
+		player->removeSpecialAttack(attack);
+		cout << player->getName() << " can no longer use " << attack->name << ".";
+		CinPause();
+	}
 }
 
 //uses an item, with functionality based on type MARK: use item

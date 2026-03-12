@@ -141,11 +141,23 @@ public:
 	EducationItem(const char* _name, const char* _description, Room* _room, Attack* _attack);
 
 	void setAttack(Attack* attack); //set extra attacks
-	vector<Attack*>& getAttacks(); //gets the attacks this item teacher
+	vector<Attack*>& getAttacks(); //gets the attacks this item teaches
 
 	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	vector<Attack*> attacks; //the attacks this item teacher
+};
+
+//weapon items for using new attacks
+class WeaponItem : public Item {
+public:
+	WeaponItem(const char* _name, const char* _description, Room* _room, Attack* _attack);
+
+	Attack* getAttack(); //gets the attack this item teaches
+
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
+private:
+	Attack* attack; //the attacks this item teacher
 };
 
 //caller items for calling the lobster
