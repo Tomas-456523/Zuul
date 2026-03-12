@@ -221,6 +221,12 @@ float NPC::getSPUseMultiplier() {
 float NPC::getDamageMultiplier() {
 	return damageMultiplier;
 }
+NPC* getGuardian() {
+	return guardian;
+}
+NPC* getGuarding() {
+	return guarding;
+}
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
 }
@@ -384,6 +390,12 @@ void NPC::setExtraMonies(int monies) {
 }
 void NPC::setTalkOnRecruit(bool talk) {
 	speakOnRecruit = talk;
+}
+void NPC::setGuardian(NPC* npc) {
+	guardian = npc;
+}
+void NPC::setGuarding(NPC* npc) {
+	guarding = npc;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;

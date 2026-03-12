@@ -441,7 +441,7 @@ NPC* SetupWorld() {
 	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", 19, 50, 25, 1, 1, 1, false, 18);
 	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK, 25 PIERCE)");
 	
-	Attack* spbomb = new Attack("SP BOMB", "lobbed a ball of the team's collective SP energy at", 0, 0, 0, 1, 1, 9, false, 25);
+	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", 0, 0, 0, 1, 1, 9, false, 25);
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
 
