@@ -443,6 +443,7 @@ NPC* SetupWorld() {
 	
 	Attack* spbomb = new Attack("SP BOMB", "lobbed a ball of the team's collective SP energy at", 0, 0, 0, 1, 1, 9, false, 25);
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
+	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
 
 	//MARK: Floria
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 1));
@@ -631,8 +632,9 @@ NPC* SetupWorld() {
 	forestslash->afterdesc = " with his forest sword";
 	forestknight->setBasicAttack(forestslash);
 	
-	/*Attack* defend = new Attack("PROTECT", "is protecting", 10, 20, 20, 1, 1, 3, true, 10);
-	forestknight->addSpecialAttack(emp);*/
+	Attack* defend = new Attack("PROTECT", "is protecting", 10, 20, 20, 1, 1, 3, true, 10);
+	forestknight->addSpecialAttack(defend);
+	defend->protect = true; //defend start protecting
 
 	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", 5, 25, 30, 1, 1, 3, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
@@ -789,16 +791,18 @@ NPC* SetupWorld() {
 	// (\               				// (\               				// (\               			// (\               
 	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,
 	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |
-	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  ^ ___/  |
-	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//  _____\, `  _____  `-"""/
-	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//  ""---___ /___ ___\__--"
+	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  /\___/  |
+	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//    ___\, `' _____  `-"""/
+	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//    "--___ /___ ___\__--"
 	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//          |  |   |  |
 	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /
-	//             """""				//             """""				//             """""			//             """""
-	//            |     |				//            |     |				//            |     |			//            |     |
+	//             """""				//             """""				//             """""			//             """""" \ 
+	//            |     |				//            |     |				//            |     |			//            |     |.`\ 
 	
-	NPC* henryjerry = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The sleep-deprived protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
-
+	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
+	//self, "WHAT!?!?"
+	//self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"
+	//hj, "Yeah that's my name."
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
 	burgerprisoner->setDialogue("Hi how are you doing?");
 	burgerprisoner->addRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
@@ -837,7 +841,7 @@ NPC* SetupWorld() {
 	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5);
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
 	mrdeer->setGift(deerkey);
-	mrdeer->addConversation({{self, "Hello MR. DEER!"},
+	mrdeer->addConversation({{self, "Hello Mr. Deer!"},
 							 {mrdeer, "*salutatory deer noises*"},
 							 {self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key."},
 							 {mrdeer, "*warning deer noises*"},
@@ -846,7 +850,7 @@ NPC* SetupWorld() {
 							 {mrdeer, "..."},
 							 {self, "I hope he gives me the key..."},
 							 {mrdeer, "*reluctantly affirmative deer noise*"},
-							 {self, "AYYY thank you so much MR. DEER!"}});
+							 {self, "AYYY thank you so much Mr. Deer!"}});
 	mrdeer->setDialogue("*deer noises*");
 	mrdeer->addRejectionDialogue("*no thank you deer noise*");
 
@@ -1459,38 +1463,38 @@ NPC* SetupWorld() {
 	basestation->setBackup(backupcaller3);
 
 	//set up generic non-npc enemies MARK: enemies (internal)
-	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 5));
+	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
 	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
 	headbutt->recoil = 5;
-	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 5, 3, 5, 2, 4, 3);
+	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 6, 3, 5, 2, 4, 3);
 	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
 
-	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 10));
+	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 9));
 	greaterhog->setBasicAttack(hogheadbutt);
 	greaterhog->addSpecialAttack(homing_prickle);
 
-	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 5));
-	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -2, 15, 0, 1, 1, 1);
-	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
+	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 9));
+	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -5, 15, 0, 1, 1, 1);
+	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 10, 50, 50, 1, 1, 1, false, 2);
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
 
-	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 6));
+	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 9));
 	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 2.0f, 2.0f, 2.0f);
-	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", 4, 0, 0, 1, 1, 5, true);
+	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", 10, 0, 0, 1, 1, 5, true);
 	buffgrassman->setBasicAttack(grassstrike);
 	buffgrassman->addSpecialAttack(benchpress);
 
-	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 0, Stats(10, 6, 3, 1, 5, 5, 5));
-	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 1, 0, 4, 4, 1);
+	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 0, Stats(10, 6, 10, 1, 5, 5, 9));
+	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 5, 0, 4, 4, 1);
 	enemydeer->setBasicAttack(deercombo);
 
-	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 4, 0, 5, 20, 15));
-	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 4, 5, 0, 3, 3);
+	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 8, 0, 5, 20, 15));
+	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 8, 5, 1, 2, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
-	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 0, Stats(50, 20, 10, 5, 15, 20, 10));
+	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 0, Stats(50, 30, 10, 35, 15, 20, 9));
 	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shrimplebeam);
@@ -1498,11 +1502,11 @@ NPC* SetupWorld() {
 	engarde->guardset = 1;
 	jimshady->setEffect(engarde, false);
 
-	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 30, 0));
+	/*NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 30, 0));
 	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", 0, 0, 0, 1, 1, 1);
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
 	Effect* flinch = new Effect("FLINCH", 1);
-	shrimpleshimmy->addEffect(flinch);
+	shrimpleshimmy->addEffect(flinch);*/
 
 	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
 	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
@@ -1523,7 +1527,11 @@ NPC* SetupWorld() {
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
-
+	NPC* egadbot= new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else as well.", limbo, 0, Stats(20, 30, 5, 5, 10, 20, 9));
+	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
+	egadbot->setBasicAttack(snip);
+	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", 10, 20, 0, 1, 1, 1);
+	egadbot->addSpecialAttack(timber);
 
 	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(60, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
 	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
@@ -1535,7 +1543,7 @@ NPC* SetupWorld() {
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
 
-	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 9));
+	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 30, 9));
 	Attack* chomp = new Attack("CHOMP", "chomped", -5, 10, 10, 1, 1, 1);
 	Attack* stomp = new Attack("STOMP", "jumped onto", 5, 30, 0, 1, 1, 1);
 	Attack* monymeteor = new Attack("MONY METEOR", "spit a heavy mass of monies at", 10, 50, 0, 1, 1, 3);
@@ -1737,7 +1745,7 @@ NPC* SetupWorld() {
 	hogguard->addRejectionDialogue("*angry squeal*");
 
 	NPC* hogguard2 = new NPC(*greaterhog);
-	hogguard2->setLeader(true, 4, forestspork);
+	hogguard2->setLeader(true, 3, forestspork);
 	hogguard2->setParty(pricklyhog, pricklyhog);
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
 	hogguard2->setDialogue("*angry squeal*");
@@ -1748,7 +1756,7 @@ NPC* SetupWorld() {
 	forestguard3->setParty(grassman, grassman);
 	forestguard3->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard3->setDialogue("*burly bush noises*");
-	forestguard3->addRejectionDialogue("*angry bush noises*");
+	forestguard3->addRejectionDialogue("*haughty bush noises*");
 
 	NPC* jimshady1 = new NPC(*jimshady);
 	jimshady1->setLeader(true, 5, forestwall);
@@ -1759,15 +1767,13 @@ NPC* SetupWorld() {
 								{jimshady1, "Shut up."}});
 	jimshady1->addRejectionDialogue("No go away.");
 
-	NPC* roguerobot = new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else as well.", forestgarden, 0, Stats(20, 15, 5, 5, 10, 20, 15));
-	roguerobot->setLeader(true, 5);
-	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
-	roguerobot->setBasicAttack(snip);
-	roguerobot->addRecruitLink(egadwick);
-	roguerobot->addLinkedConvo(egadwick, {{egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?"},
-										  {self, "Yep I did."},
-										  {egadwick, "Oh thank goodness! Thanks a bunch, kiddo!"},
-										  {egadwick, "Now I can safely be in the great outdoors!"}});
+	NPC* roguerobot = new NPC(*egadbot);
+	egadbot->setLeader(true, 3, forestgarden);
+	egadbot->addRecruitLink(egadwick);
+	egadbot->addLinkedConvo(egadwick, {{egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?"},
+									   {self, "Yep I did."},
+									   {egadwick, "Oh thank goodness! Thanks a bunch, kiddo!"},
+									   {egadwick, "Now I can safely be in the great outdoors!"}});
 
 	/*NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);
@@ -1791,7 +1797,7 @@ NPC* SetupWorld() {
 	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
 
 	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, NULL, mimic1);
-		
+	
 	NPC* forestboss = new NPC(*savagehog);
 	savagehog->setLeader(true, 5, bossgrove, true, true);
 	savagehog->setParty(pricklyhog, greaterhog);
@@ -2570,8 +2576,8 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	}
 	//adds the npc to your party
 	party->push_back(npc);
-	npc->Recruit(); //sets the npc to recruited
 	npc->printRecruitmentDialogue(); //print the recruitment dialogue
+	npc->Recruit(); //sets the npc to recruited
 	cout << "\n" << npcname << " was added to your party! (Party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
 		printLvlUpData(npc);
@@ -2854,7 +2860,7 @@ int main() {
 			printHelp(validCommands, flavorText);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game
 			continuing = false;
-		} else { //prints an error message if the player typed something that isn't an actual command
+		} else if (strcmp(commandWord, "")) { //prints an error message if the player typed something that isn't an actual command, unless it was just nothing because that happens sometimes
 			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
 		}
 

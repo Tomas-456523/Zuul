@@ -197,6 +197,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 				tarparty[i]->damage(effectiveAttack*randmultiplier, effectivePierce, 1);
 				CinPause();
 			}
+			if (!hits) cout << "\nThe attack missed!";
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 				tarparty[i]->setEffect(attack->appliedeffect);
 			}
@@ -405,7 +406,7 @@ void Battle::reorder(queue<NPC*>& orderly_fashion) {
 bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax) {
 	//we have to check multiple times, since attacks may have 0 or more spaces in them
 	for (int i = checkMax-1; i >= 0; i--) {
-		if (i > 0) { //if it's the first one, we've already parsed it the same, no need to parse again
+		if (i < checkMax) { //if it's the first one, we've already parsed it the same, no need to parse again
 			ParseCommand(commandP, commandWordP, commandExtensionP, i);
 		}
 		//finds the target using what is currently thought to be the name
@@ -440,8 +441,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 		}
 	}
 	
-	//prints error message and returns false because no attack was launched successfully, so the player must type something elsse
-	cout << "\nInvalid command or attack \"" << commandWordP << "\" (type HELP for help, or ATTACKS for list of attacks).";
+	//prints error message and returns false because no attack was launched successfully, so the player must type something else
+	if (strcmp(commandWordP, ""), strcmp(commandExtensionP, "")) { //unless there was completely blank input
+		cout << "\nInvalid command or attack \"" << commandWordP << "\" (type HELP for help, or ATTACKS for list of attacks).";
+	}
 	return false;
 }
 //the player's controls. Returns whether the player did a valid action or not MARK: player turn
@@ -522,19 +525,35 @@ void Battle::npcTurn(NPC* npc) {
 		attackPlayer = !attackPlayer;
 	}
 
+	vector<NPC*>& targetTeam = attackPlayer ? playerTeam : enemyTeam;
+
 	//defaults to basic attack if attack is meant to target fainted npcs (revive moves) but no potential target is incapacitated
-	if ((!attackPlayer && attack->targetFainted && aliveCount(playerTeam) == playerTeam.size()) ||
-		(!attackPlayer && attack->targetFainted && aliveCount(enemyTeam) == enemyTeam.size())) {
+	if (attack->targetFainted && aliveCount(targetTeam) == targetTeam.size()) {
 		attack = npc->getBasicAttack();
+	}
+
+	if (attack->power < 0) { //if it's a healing attack, it must have a valid non-full hp npc to target
+		bool allfullhp = true; //start assuming there is nobody to heal
+		for (NPC* tar : targetTeam) { //if we find someone with non-max health, there is clearly no problem
+			if (tar->getHealth() < tar->getHealthMax()) {
+				allfullhp = false; //no all full hp problem
+				break; //no need to keep checking
+			}
+		}
+		if (allfullhp) { //healing attacks will not work if all potential targets have full hp
+			if (npc->getBasicAttack()->power < 0) { //print circumstances if the basic attack is also healing
+				cout << "\n" << npc->getName() << " isn't sure what to do...";
+				return;
+			}
+			attack = npc->getBasicAttack(); //default to basic attack if it isn't also healing
+		}
 	}
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
+	size_t healchecks = 0; //heals specifically may fail
 	while (target == NULL) {
-		if (attackPlayer) { //finds a random target in the player team
-			target = playerTeam[rand() % playerTeam.size()];
-		} else { //finds a random target in the enemy team
-			target = enemyTeam[rand() % enemyTeam.size()];
-		} //if the attack targets > 0 hp npcs, the check fails if the target canidate has 0 hp
+		target = targetTeam[rand() % targetTeam.size()]; //finds a random target in the player team
+		//if the attack targets > 0 hp npcs, the check fails if the target canidate has 0 hp
 		if (!attack->targetFainted) {
 			if (target->getHealth() <= 0) {
 				target = NULL;

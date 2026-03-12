@@ -199,6 +199,9 @@ protected:
 	bool isEnemy = false;
 	bool isBoss = false; //bosses cannot be instakilled
 
+	NPC* guardian = NULL; //what npc is guarding this one
+	NPC* guarding = NULL; //what npc this npc is guarding
+
 	bool isLobster = false; //if it's the lobster
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels  if it's the lobster
 

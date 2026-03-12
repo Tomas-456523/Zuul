@@ -31,6 +31,7 @@ struct Attack {
 	int recoil = 0; //how much damage the user takes (calculated later using their own attack stat)
 
 	bool spbomb = false;
+	bool protect = false; //if this is the move that makes the mover start defending the target
 
 	int minLevel; //must be at least this level to use the attack
 
@@ -56,9 +57,6 @@ struct Attack {
 		minLevel = _minlevel;
 		spleak = _spleak;
 		lifesteal = _lifesteal;
-		if (!strcmp(name, "SP BOMB")) { //we check if it's this one move because of its unique functionality
-			spbomb = true;
-		}
 		Helper::attacksH.push_back(this); //store a pointer to this attack in the attacks vector
 	}
 
