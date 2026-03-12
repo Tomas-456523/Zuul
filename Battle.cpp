@@ -308,6 +308,9 @@ bool Battle::useItem(const char* itemname) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
 		cout << "\n" << info->getText(); //prints the info item's information
 		return false;
+	} else if (!strcmp(item->getType(), "weapon")) { //weapon items are another way of just using their attack
+		WeaponItem* weapon = (WeaponItem*)item;
+		carryOutAttack(weapon->getAttack(), playerTeam[0], npc);
 	} else { //otherwise the player tried to use an item that is only usable in the overworld so we give an error message
 		cout << "\nThe " << itemname << " can't be used in battle!";
 		return false;

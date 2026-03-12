@@ -223,6 +223,19 @@ Item* EducationItem::Duplicate() { //returns a new education item as an Item*
 	return new EducationItem(*this);
 }
 
+//weapon items, for using new moves
+WeaponItem::WeaponItem(const char* _name, const char* _description, Room* _room, Attack* _attack) : Item(_name, _description, _room, true, false, true, true) {
+	attack = _attack;
+	type = "weapon"; //sets the type
+}
+//returns the attack this item gives the ability to use
+Attack* WeaponItem::getAttack() {
+	return attack;
+}
+Item* WeaponItem::Duplicate() { //returns a new weapon item as an Item*
+	return new WeaponItem(*this);
+}
+
 //caller items, for summoning npcs to the current room
 CallerItem::CallerItem(const char* _name, const char* _description, Room* _room, NPC* npc) : Item(_name, _description, _room, true) {
 	npc_called = npc;

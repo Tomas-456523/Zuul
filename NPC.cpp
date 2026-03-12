@@ -490,6 +490,9 @@ void NPC::setBasicAttack(Attack* attack) {
 void NPC::addSpecialAttack(Attack* attack) {
 	special_attacks.push_back(attack);
 }
+void NPC::removeSpecialAttack(Attack* attack) {
+	special_attacks.erase(remove(special_attacks.begin(), special_attacks.end(), attack), special_attacks.end());
+}
 void NPC::setEscapable(bool _escapable) {
 	escapable = _escapable;
 }
