@@ -663,6 +663,22 @@ NPC* SetupWorld() {
 	blitz->afterdesc = " with a rapid flurry of sword strikes";
 	orbitalstrike->addDescription("Rush at the target with a rapid flurry of strikes.");
 	forestknight->addSpecialAttack(blitz);
+
+	//MARK: Mike
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
+	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
+
+	//dynamite
+
+	//flashbang
+
+	//big bundle
+
+	//bunker buster
+
+	//dedefenser
+
+	//minesweeper
 	
 	//MARK: other npcs
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
@@ -914,9 +930,6 @@ NPC* SetupWorld() {
 	//Dialogue for after I finish making the game:
 	//(self, "Can I recruit TECH DEMO MAN?", true);
 	//(developer, "No.")
-
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
-	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 2, 7, 5, 0, 2, 3);
 	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
@@ -1498,7 +1511,7 @@ NPC* SetupWorld() {
 	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 8, 5, 1, 2, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
-	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This JIM SHADY is just imitating.", limbo, 0, Stats(50, 30, 10, 35, 15, 20, 9));
+	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This Jim Shady is just imitating.", limbo, 0, Stats(50, 30, 10, 35, 15, 20, 9));
 	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shrimplebeam);
@@ -1510,7 +1523,7 @@ NPC* SetupWorld() {
 	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", 0, 0, 0, 1, 1, 1);
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
 	Effect* flinch = new Effect("FLINCH", 1);
-	shrimpleshimmy->addEffect(flinch);*/
+	shrimpleshimmy->addEffect(flinch);
 
 	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
 	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
@@ -1564,7 +1577,7 @@ NPC* SetupWorld() {
 	sandman->setBasicAttack(sandthrow);
 	sandman->addSpecialAttack(sandpunch);
 
-	NPC* pyramid = new NPC("", "PYRAMON", "Floa");
+	//NPC* pyramid = new NPC("", "PYRAMON", "Floa");
 
 	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", limbo, 0, Stats(5, 0, 30, 0, 30, 15, 9));
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
@@ -1589,30 +1602,54 @@ NPC* SetupWorld() {
 	npc->addSpecialAttack(genericcc);
 	*/
 
-	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Rolling weed of the desert that causes earthquakes.", limbo, 0, Stats());
+	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats());
 	rumbleweed->setBasicAttack(genericattack);
 	rumbleweed->addSpecialAttack(genericspecial);
 	rumbleweed->addSpecialAttack(genericcc);
 
-	NPC* rockbug = new NPC("", "ROCK BUG", "Bug made of rock and does stuff and lives in the mines and is aggressive.", limbo, 0, Stats());
+	NPC* rockbug = new NPC("", "ROCK BUG", "Sizable geometric bug who normally lives in the rock, but becomes very agressive when disturbed.", limbo, 0, Stats());
 	rockbug->setBasicAttack(genericattack);
 	rockbug->addSpecialAttack(genericspecial);
 	rockbug->addSpecialAttack(genericcc);
 
-	NPC* rascal = new NPC("", "MINE RASCAL", "Little thingy who lives in the mines.", limbo, 0, Stats());
+	/*NPC* rascal = new NPC("", "MINE RASCAL", "Little thingy who lives in the mines.", limbo, 0, Stats());
 	rascal->setBasicAttack(genericattack);
 	rascal->addSpecialAttack(genericspecial);
-	rascal->addSpecialAttack(genericcc);
+	rascal->addSpecialAttack(genericcc);*/
 
-	NPC* skeleminer = new NPC("", "SKELEMINER", "Skeleton miner who is a skeleton and mines with a lamp helmet those things you know.", limbo, 0, Stats());
+	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats());
 	skeleminer->setBasicAttack(genericattack);
 	skeleminer->addSpecialAttack(genericspecial);
 	skeleminer->addSpecialAttack(genericcc);
 
-	NPC* dreadnaut = new NPC("", "DREADNAUT", "Big armored military bug or crustacean with a tank cannon.", limbo, 0, Stats());
+	NPC* dreadnaut = new NPC("", "DREADNAUT", "Hefty armored bug complete with a tank cannon.", limbo, 0, Stats());
 	dreadnaut->setBasicAttack(genericattack);
 	dreadnaut->addSpecialAttack(genericspecial);
 	dreadnaut->addSpecialAttack(genericcc);
+
+	//MARK: Viola (enemy)
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(90, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
+	tkviola->setBasicAttack(genericattack);
+
+	//wave
+
+	//smackdown
+
+	//fling
+
+	//suspend
+
+	//crunch
+
+	//force field
+
+	//spatial pop
+
+	//intense gravity
+
+	//black hole
+
+	NPC* greer = new NPC("BURGER OFFICIAL", "GREER", "Greedy BURGER official sent to manage all the desert's remaining water.", minespring, 1, Stats(100, 40, 10, 0, 0, 0, 10));
 
 	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo, 0, Stats());
 	magman->setBasicAttack(genericattack);
@@ -1719,7 +1756,7 @@ NPC* SetupWorld() {
 	ninjachief->addSpecialAttack(genericspecial);
 	ninjachief->addSpecialAttack(genericcc);
 
-	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
 	//NPC* npc = new NPC("TITLE", "NAME", "DESCRIPTION", limbo, hp, def, att, tou, pie, spe, ski);
 
@@ -1891,10 +1928,10 @@ NPC* SetupWorld() {
 	richguard3->setParty(businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, richguy1, richguy1, richguy1, richguy1, richguy1, richguy2, richguy2, richguy2, richguy2);
 	richguard3->blockExit(UP, ENEMY, "manually blocked by a bunch of BUSINESSPEOPLE.");
 
-	//set up enemy and teammate viola
-	NPC* viola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town. Her hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(30, 0, 10, 0, 10, 20, 20));
-	//viola->setScale(0, 0, 1, 0, 1, 0, 2);
+	//set up teammate viola MARK: Viola
+	NPC* viola = new NPC(*tkviola);
 	viola->setLeader(true, 15);
+	viola->setBoss(true);
 	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
 							{viola, "So what if I did?"},
 							{self, "Lady you can't just go kidnapping people."},
@@ -1912,25 +1949,29 @@ NPC* SetupWorld() {
 								   {viola, "Um..."},
 								   {viola, "Alright."}});
 	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
-	viola->addDismissalDialogue("Well I guess I can watch over the town from that cliff over there. That might be good.");
+	viola->addDismissalDialogue({{viola, "Well, I guess I'll go watch over the town."},
+								 {viola, "It's the least I could do..."}});
 	viola->addRedirect(deserttown, deserttownfixed);
 	viola->addRecruitLink(viola);
-	viola->addLinkedConvo({{viola, "I'm sorry. I'll free everyone..."},
-						   {viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them..."},
-						   {self, "That's not a very good reason."},
-						   {viola, "Yeah I know..."},
-						   {viola, "I'm just going to go to that cliff over there..."},
-						   {NULL, "VIOLA went to that cliff over there."}});
-	viola->addLinkedDialogue(viola, "")
-	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
+	viola->addLinkedConvo(viola, {{viola, "I'm sorry. I'll free everyone..."},
+								  {viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them..."},
+								  {self, "That's not a very good reason."},
+								  {viola, "Yeah I know..."},
+								  {viola, "I'm just going to go to that cliff over there..."},
+								  {NULL, "VIOLA went to that cliff over there."}});
+	viola->addLinkedTitle(viola, "GRAVITY GIRL");
+	viola->addLinkedDesc(viola, "Telekinetic teenager trying to use her powers for something good.");
+	viola->addLinkedDialogue(viola, {{viola, "I can't believe I let all that power go to my head..."}});
+	viola->addDefeatRoom(viola, thatcliff);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
-	viola->setBasicAttack(genericattack);
 
-	NPC* greer = new NPC("BURGER OFFICIAL", "GREER", "Greedy BURGER official sent to manage all the desert's remaining water.", minespring, 1, Stats(100, 40, 10, 0, 0, 0, 10));
-	greer->setLeader(true, 30, NULL, false);
+	//
+
+	NPC* springguard = new NPC(*greer);
+	springguard->setLeader(true, 30, NULL, false);
 	/*glutton->addConversation(self, "Hey why are you drinking all that water?");
 	glutton->addConversation(self, "You don't need that much save it for everyone else!");
 	glutton->addConversation(glutton, "Ehehehehe... all da watah is all mine, pal.");
@@ -1950,10 +1991,11 @@ NPC* SetupWorld() {
 	glutton->addLinkedConvo(NULL, "GREER disappeared into the darkness...");
 	glutton->addLinkedConvo(NULL, "The spring's water can now freely flow into the oasis!");
 	glutton->setLinkedRoom(ceoroom, "in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.\nThere is a rotund corpse in the corner");*/
-	greer->setTalkOnDefeat();
-	greer->setForceBattle();
-	greer->setEscapable(false);
-	greer->setBasicAttack(genericattack);
+	springguard->setTalkOnDefeat();
+	springguard->setForceBattle();
+	springguard->setEscapable(false);
+	springguard->setBoss(true);
+	springguard->setBasicAttack(genericattack);
 
 	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
 	lavaguard->setLeader(true, 40, NULL, false);
@@ -2868,9 +2910,9 @@ int main() {
 		if (!strcmp(commandWord, "GO")) { //for going in a direction
 			travel(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "TAKE")) { //for taking an item
-			takeItem(currentRoom, inventory, &commandExtension[0]);
+			takeItem(currentRoom, inventory, &commandExtension[0], self);
 		} else if (!strcmp(commandWord, "DROP")) { //for dropping an item
-			dropItem(currentRoom, inventory, &commandExtension[0]);
+			dropItem(currentRoom, inventory, &commandExtension[0], self);
 		} else if (!strcmp(commandWord, "USE")) { //for using an item (or tunnel lobster)
 			useItem(currentRoom, inventory, party, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "RECRUIT")) { //for recruiting npcs

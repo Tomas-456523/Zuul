@@ -221,10 +221,10 @@ float NPC::getSPUseMultiplier() {
 float NPC::getDamageMultiplier() {
 	return damageMultiplier;
 }
-NPC* getGuardian() {
+NPC* NPC::getGuardian() {
 	return guardian;
 }
-NPC* getGuarding() {
+NPC* NPC::getGuarding() {
 	return guarding;
 }
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
@@ -523,6 +523,21 @@ void NPC::addRecruitLink(NPC* npc) { //links this npc to be set to recuritable l
 void NPC::addLinkedRoom(Room* room, const char* desc) { //room's description gets changed to this after this npc is defeated
 	roomChanges.push({room, desc});
 }
+void NPC::addLinkedDialogue(NPC* speaker, const Conversation& dialogue) {
+	linkedDialogue.push({speaker, dialogue});
+}
+void NPC::addLinkedTitle(NPC* npc, const char* title) {
+	linkedTitles.push({npc, title});
+}
+void NPC::addLinkedDesc(NPC* npc, const char* desc) {
+	linkedDescriptions.push({npc, desc});
+}
+void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a conversation to add to the linked npc
+	linkedConversations.push({speaker, dialogue});
+}
+void NPC::addDefeatRoom(NPC* npc, Room* room) {
+	defeatRooms.push({npc, room});
+}
 void NPC::setGift(Item* item) { //set a gift to give to the player after talking
 	gift = item;
 }
@@ -786,9 +801,6 @@ void NPC::undefeat() { //tells the enemy it's not defeated
 }
 void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc's name
 	strcat(name, suffix);
-}
-void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a conversation to add to the linked npc
-	linkedConversations.push({speaker, dialogue});
 }
 //prints the npc's dialogue, prioritizing thisone if it's passed
 void NPC::printDialogue(Conversation* thisone) {
