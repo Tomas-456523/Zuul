@@ -153,35 +153,15 @@ void Battle::tickEffects() {
 		}
 	}
 }
-//carries out the attack (makes it hit the target) MARK: carry out attack
-void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
-	attacker->alterSp(-attack->cost); //removes sp from the attacker
-	if (attack->spbomb) { //if it's this one move, we have to check due to its unique functionality
-		attack->power = 0; //starts at 0 damage
-		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
-			attack->power += npc->getSP();
-			npc->alterSp(-npc->getSP());
-		}
-		cout << attacker->getName() << " gathered the team's SP into an SP BOMB!";
-		CinPause();
-	} //says what happened
-	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description << " " << target->getName() << attack->afterdesc << "!";
-	vector<NPC*> tarparty; //gets which party is being targeted based on if the target is an enemy or not
-	if (target->getEnemy()) {
-		tarparty = enemyTeam;
-	} else {
-		tarparty = playerTeam;
-	} //says if we hit multiple targets
-	if (attack->targets > 1 && tarparty.size() > 1) {
-		cout << "\n" << attacker->getName() << "'s surrounding teammates were also affected!";
-	}
-	CinPause();
-	//gets the position of the target in the team vector
-	int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
-	//hits all the targets, we must iterate in order to account for multi-target attacks
-	for (int i = 0; i < tarparty.size(); i++) {
+//hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
+void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos) {
+	for (int i = 0; i < tarparty.size(); i++) { //hits all the targets, we must iterate in order to account for multi-target attacks
 		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2 && tarparty[i]->getHealth()) { //if they're within range and still have health
 			NPC* reciever = tarparty[i]; //who will recieve the damage, could be the target or the npc guarding the target
+			if (!attack->targetFainted && !reciever->getHealth()) { //ignore incapacitated affected npcs
+				cout << "\n" << reciever->getName() << " is incapacitated and was not affected.";
+				continue;
+			}
 			if (NPC* guardian = reciever->getGuardian()) { //MARK: AND THE MOVE ISN'T POSITIVE
 				cout << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
 				reciever = guardian;
@@ -197,7 +177,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 				effectiveAttack = attack->power * attacker->getAttack() * attacker->getAttMultiplier() / 10;
 				effectivePierce = attack->pierce * attacker->getPierce() * attacker->getPierceMultiplier() / 10;
 			} //damages the target
-			int hits = rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits; //some moves hit a random amount of times within a certain range
+			int hits = 1; //some moves hit a random amount of times within a certain range
+			if (attack->focushits) rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits;
 			for (int j = 0; j < hits; j++) {
 				float randmultiplier = 0.9f + fmod(rand(), 0.2f); //randomly vary attack power of every hit by 10%
 				if (!rand()%20) { //5% chance to crit
@@ -215,10 +196,52 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 				attacker->damage(attack->recoil * attacker->getAttack() * attacker->getAttMultiplier() / 10, 0, 1);
 			}
 			if (attack->protect) {
+				attacker->getGuarding()->setGuardian(NULL); //can only guard one npc at a time
 				reciever->setGuardian(attacker);
 				attacker->setGuarding(reciever);
 			}
 		}
+	}
+}
+//carries out the attack (makes it hit the target) MARK: carry out attack
+void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
+	attacker->alterSp(-attack->cost); //removes sp from the attacker
+	if (attack->spbomb) { //if it's this one move, we have to check due to its unique functionality
+		attack->power = 0; //starts at 0 damage
+		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
+			attack->power += npc->getSP();
+			npc->alterSp(-npc->getSP());
+		}
+		cout << attacker->getName() << " gathered the team's SP into an SP BOMB!";
+		CinPause();
+	} //says what happened
+	cout << "\n" << attacker->getName() << " used " << attack->name << "!\n" << attacker->getName() << " " << attack->description;
+	if (attack->focushits) cout << " " << target->getName() << attack->afterdesc; //prints the target unless it's not focused on a specific target
+	cout << "!"; //punctuate it!
+	vector<NPC*> tarparty; //gets which party is being targeted based on if the target is an enemy or not
+	if (target->getEnemy()) {
+		tarparty = enemyTeam;
+	} else {
+		tarparty = playerTeam;
+	} //says if we hit multiple targets
+	if (!attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
+		cout << "\n" << target->getName() << "'s surrounding teammates were also affected!";
+	}
+	CinPause();
+	if (attack->focushits) { //normal moves which focus damage on one target
+		//gets the position of the target in the team vector
+		int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
+		hitTargets(attacker, attack, tarparty, tarPos);
+	} else { //unfocused moves which hit a random target for every hit
+		for (size_t i = 0; i < rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits; i++) {
+			int tarPos = rand() % tarparty.size();
+			hitTargets(attacker, attack, tarparty, tarPos);
+		}
+	}
+	if (attack->selfeffect != NULL) { //adds an effect to the attacker if the attack had an applicable one
+		attacker->setEffect(attack->selfeffect);
+		cout << "\n" << atacker->getName() << " is " << attack->selfeffect->name << "!";
+		CinPause();
 	}
 }
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item
@@ -549,6 +572,11 @@ void Battle::npcTurn(NPC* npc) {
 		attack = npc->getBasicAttack();
 	}
 
+	//defaults to basic attack if trying to protect someone but only this npc is capacitated, so there's nobody else to protect (assumes all npcs with protect moves cannot get hypnotized)
+	if (attack->protect && aliveCount(targetTeam) == 1) {
+		attack = npc->getBasicAttack();
+	}
+
 	if (attack->power < 0) { //if it's a healing attack, it must have a valid non-full hp npc to target
 		bool allfullhp = true; //start assuming there is nobody to heal
 		for (NPC* tar : targetTeam) { //if we find someone with non-max health, there is clearly no problem
@@ -574,11 +602,11 @@ void Battle::npcTurn(NPC* npc) {
 		if (!attack->targetFainted) {
 			if (target->getHealth() <= 0) {
 				target = NULL;
+			} else if (attack->protect && target == npc) {
+				target = NULL; //not allowed to protect self, because that would be using sp to change literally nothing (unless was already protecting someone, then it would just be weird)
 			}
-		} else { //if the attack targets 0 hp npcs, the check fails if the target canidate has > 0 hp
-			if (target->getHealth() > 0) {
-				target = NULL;
-			}
+		} else if (target->getHealth() > 0) { //if the attack targets 0 hp npcs, the check fails if the target canidate has > 0 hp
+			target = NULL;
 		}
 	} //launches the attack!
 	carryOutAttack(attack, npc, target);

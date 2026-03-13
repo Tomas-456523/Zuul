@@ -28,7 +28,8 @@ public:
 	bool getTargetNeeded(); //gets if the item needs a target (if you have to specify who to use it on)
 	bool getConsumable(); //gets if the item gets deleted after use
 	bool getForEnemy(); //gets if it's meant to hit the opponents in battle as opposed to for your team
-	
+	NPC* getGuard();
+
 	void buy(int& mony, vector<Item*>* inventory); //buys a copy of the item and adds it to the inventory
 	void setDenial(const char* denial); //sets a description of why you can't take the item
 	void setRoom(Room* _room); //sets the item's current room
@@ -36,6 +37,8 @@ public:
 
 	void setStock(int _stock, int _price, const char* buydesc = ""); //makes the item for sale
 	void setTakable(bool _takable = true); //manually sets the item to takable, for item types that default to something we don't want
+
+	void setGuard(NPC* npc); //set a guard that prevents you from using the item
 
 	virtual Item* Duplicate(); //duplicates the item, used by buy and overwritten by all buyable item subclasses in order to prevent splitting when duplicating them
 protected:
@@ -53,6 +56,8 @@ protected:
 
 	bool targetRequired; //if the item needs a target specified before using it
 	bool useOnEnemy; //if the target has to be an enemy in battle
+
+	NPC* guard = NULL; //npc that stops you from using or taking the item until defeated
 
 	Room* room = NULL; //the room that the item is in
 };

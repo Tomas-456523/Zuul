@@ -39,6 +39,7 @@ struct Attack {
 	int spleak; //how much sp the attack removes from the target
 
 	Effect* appliedeffect = NULL; //targets get affected by this effect when hit
+	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
 
 	Attack() {} //default constructor so NPC doesn't throw error
 

@@ -94,7 +94,7 @@ NPC* SetupWorld() {
 	const char* LAVA = "LAVA";
 	const char* STUFF = "STUFF";
 
-	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms
+	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms (WW)
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//create all WANING WOODLANDS rooms
@@ -142,7 +142,7 @@ NPC* SetupWorld() {
 	Room* fdintermission1 = new Room("on the path between the woodlands and the wastelands.");
 	Room* fdintermission2 = new Room("on the path between the woodlands and the wastelands. The foliage is sparse here. BURGERSBURG can be seen faintly in the distance.");
 	Room* fdintermission3 = new Room("on the path between the woodlands and the wastelands. Dead trees surround you. The BURGER RESTAURANT is just barely visible from here.");
-	//Create all DESOLATE DESERT rooms
+	//Create all DESOLATE DESERT rooms MARK: DD
 	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you! and those two guys I guess).");
 	desert->setWelcome("Welcome to DESOLATE DESERT!");
 	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
@@ -165,7 +165,7 @@ NPC* SetupWorld() {
 	//the desert town gets fixed after defeating VIOLA, but rather than reset all the descriptions manually I just make the abandoned town redirect you to the fixed one
 	Room* deserttownfixed = new Room("in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
 	Room* desertshopfixed = new Room("in the desert store. It smells like pastries and medicine.");
-	Room* desertgymfixed = new Room("in the desert gym. Now that it's back in business it's time to get on that GRIND!\nSimply DISMISS your teammates here to make them stay in shape until you come back!");
+	Room* desertgymfixed = new Room("in the desert gym. Now that it's back in business it's time to get on that GRIND!\nSimply DISMISS your teammates here to make them stay in shape while you're gone!");
 	desertgymfixed->setGym();
 	Room* deserthousefixed = new Room("in some house which still has zero purpose."); //I have no idea what to put in this house
 	Room* oasis = new Room("in an oasis, presumably the town's source of water, though the water is long gone and the plants are dry husks.");
@@ -192,12 +192,12 @@ NPC* SetupWorld() {
 	deserttunnel->setStation();
 	Room* minespring = new Room("at an underground spring which channels water into the town oasis. There's many dead miners here.");
 
-	//Create all HELLISH HIGHLANDS rooms
+	//Create all HELLISH HIGHLANDS rooms MARK: HH
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
 	volcano->setWelcome("WELCOME TO HELLISH HIGHLANDS!");
 	volcano->setWelcome("<<< THE END OF THE ROAD >>>");
-	volcano->setWelcome("The air burns your skin and ash fills your lungs.");
-	volcano->setWelcome("The BURGER RESTAURANT can be seen clearly, but its image is heavily distorted by the heat.");
+	volcano->setWelcome("Radiation from the lava burns against your skin."); //The air burns your skin and ash fills your lungs
+	volcano->setWelcome("The BURGER RESTAURANT can be seen clearly, its image heavily distorted by the heat.");
 	volcano->setWelcome("You're almost there.");
 	Room* volcano1 = new Room("in the volcanic highlands. An old, abandoned factory stands to the EAST.");
 	Room* volcano2 = new Room("in a volcanic plain. The ashen remains of some plants can be seen here.");
@@ -207,7 +207,7 @@ NPC* SetupWorld() {
 	Room* volcano4 = new Room("on a scorched path. It reminds you of pepperoni pizza.");
 	Room* volcano5 = new Room("at a... knife in the road.");
 	Room* volcano6 = new Room("in a volcanic valley. Another factory stands here, more charred than the rest, yet still holding up.");
-	Room* volcano7 = new Room("at the very edge of the volcanic valley. An huge old bridge forms a road to the city.");
+	Room* volcano7 = new Room("at the very edge of the volcanic valley. An huge white bridge forms a road to the city.");
 	//first factory, very small
 	Room* factory1 = new Room("in the factory, on a small grated bridge over a pool of lava.");
 	Room* factorykitchen = new Room("in a makeshift kitchen made from a factory observation room.\nWhatever was made here before, it now only churns out slag.");
@@ -274,7 +274,7 @@ NPC* SetupWorld() {
 	Room* bridge2 = new Room("halfway through the bridge. An eternal night looms over the city.");
 	Room* bridge3 = new Room("on the far end of the bridge. The gate into BURGERSBURG stands right up ahead.");
 
-	//Create MOUNT MINBUS rooms. This place is basically just a small boss arena
+	//Create MOUNT MINBUS rooms. This place is basically just a small boss arena MARK: MM
 	Room* mountain = new Room("on a mountain, far, far away from anywhere you know. Dark clouds block view of both the sky and land.");
 	mountain->setWelcome("WELCOME TO MOUNT MINBUS!");
 	mountain->setWelcome("<<< THE EDGE OF THE WORLD >>>");
@@ -287,7 +287,7 @@ NPC* SetupWorld() {
 	Room* mountainpeak = new Room("at the peak of the mountain, watching over a sea of clouds. You can't even see the BURGER RESTAURANT from here; it really is so far away.\nThere's a tent here in the style of your home village.");
 	Room* tenthome = new Room("in the developer's house.");
 
-	//Create all BURGERSBURG rooms
+	//Create all BURGERSBURG rooms MARK: BB
 	Room* BURGERSBURG = new Room("at the gate of BURGERSBURG. The BURGER RESTAURANT is just down main street.");
 	BURGERSBURG->setWelcome("Welcome to BURGERSBURG!");
 	BURGERSBURG->setWelcome("<<< THE CAPITAL OF SIN >>>");
@@ -433,7 +433,7 @@ NPC* SetupWorld() {
 	Attack* energize = new Attack("ENERGIZE", "energized", 14, 0, 0, 1, 1, 1, true, 15);
 	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 2.0f, 0, 0, 0);
 	energize->addEffect(energized);
-	energize->addDescription("Imbue yourself or an teammate with energy, doubling the next attack's power.");
+	energize->addDescription("Imbue yourself or an teammate with energy, doubling your attack for one turn.");
 
 	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", 12, 35, 15, 1, 1, 1, false, 12);
 	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK, 15 PIERCE)");
@@ -500,7 +500,7 @@ NPC* SetupWorld() {
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
 
-	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", 30, -2147483647, 20, 1, 1, 1, true, 20);
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", 30, -2147483648, 20, 1, 1, 1, true, 20);
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
@@ -665,10 +665,10 @@ NPC* SetupWorld() {
 	forestknight->addSpecialAttack(blitz);
 
 	//MARK: Mike
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for exploding things. A frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
 	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
-	//dynamite
+	Attack* mdynamite;
 
 	//flashbang
 
@@ -833,13 +833,17 @@ NPC* SetupWorld() {
 	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5f, 2.5f, 2.5f, 2.5f);
 
 	//Effect* smoothiebuff = new Effect("MULTIPOSITION", 999999, -30, 10, 70, 70, 70, 70);
+	
+	
+	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 2147483647); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
 
 	//tent store stock
 	Item* apple = new HpItem("HEALTHY APPLE", "A healthy red apple. (heals 10 HP)", limbo, 10);
 	Item* pineapple = new HpItem("HEALTHY PINE APPLE", "A crunchy and durable pine apple. Very annoying to eat, but apparently very healthy! (heals 25 HP)", limbo, 25);
-	Item* noodles = new EffectItem("MIGHTY NOODLES", "Some healthy and tasty homemade noodles sprinkled with mighty spices. (MINIBUFF effect)", limbo, minibuff);
-	Item* lasagna = new EffectItem("MIGHTY LASAGNA", "A healthy and tasty homemade lasagna made with mighty flour. (BUFF effect)", limbo, buff);
-	Item* pizza = new EffectItem("MIGHTY PIZZA", "A healthy and tasty homemade pizza topped with mighty pepperoni. (BIG BUFF EFFECT)", limbo, bigbuff);
+	Item* starapple = new HpItem("HEALTHY STAR APPLE", "A sparkling star-shaped fruit with enough nutrients to last you 10 days. (heals 50 HP)", limbo, 50);
+	Item* noodles = new EffectItem("MIGHTY NOODLES", "Some homemade noodles sprinkled with mighty spices. (MINIBUFF effect)", limbo, minibuff);
+	Item* lasagna = new EffectItem("MIGHTY LASAGNA", "A homemade lasagna made with mighty flour. (BUFF effect)", limbo, buff);
+	Item* pizza = new EffectItem("MIGHTY PIZZA", "A homemade pizza topped with mighty pepperoni. (BIG BUFF EFFECT)", limbo, bigbuff);
 	Item* energybook = new EducationItem("ADVANCED GUIDE TO ENERGY MANIPULATION", "A book full of energy manipulation techniques. You could learn some cool attacks from this.", limbo, precisionstrike);
 	EducationItem* _energybook = (EducationItem*)energybook; //we have to convert the book to EducationItem in order to add the attacks because regular Item*s have no setAttack function
 	_energybook->setAttack(ballisticmissile);
@@ -848,7 +852,8 @@ NPC* SetupWorld() {
 	_energybook->setAttack(spbomb);
 
 	tentstore->setStock(apple, 2147483647, 5, "JIMMY JOHN - Thank you for your patronage! Enjoy your apple!");
-	tentstore->setStock(pineapple, 2147483647, 12, "JIMMY JOHN - Thank you for your patronage! Enjoy your pine apple!");
+	tentstore->setStock(pineapple, 2147483647, 20, "JIMMY JOHN - Thank you for your patronage! Enjoy your pine apple!");
+	tentstore->setStock(starapple, 2147483647, 60, "JIMMY JOHN - Thank you for your patronage! Enjoy your star apple!");
 	tentstore->setStock(noodles, 2147483647, 5, "JIMMY JOHN - Thank you for your patronage! Enjoy your noodles!");
 	tentstore->setStock(lasagna, 2147483647, 25, "JIMMY JOHN - Thank you for your patronage! Enjoy your lasagna!");
 	tentstore->setStock(pizza, 2147483647, 50, "JIMMY JOHN - Thank you for your patronage! Enjoy your pizza!");
@@ -983,6 +988,27 @@ NPC* SetupWorld() {
 	skateboard->setTakable();
 	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
 
+	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", "applied the sunscreen. No amount of heat should bother you now!", limbo, HEAT, true);
+	KeyItem* _sunscreen = (KeyItem*)sunscreen;
+	_sunscreen->setTarget(volcanoentrance);
+	desertshopfixed->setStock(sunscreen, 1, 20, "MERRO - \"Thank you for your monies.\"");
+
+	Item* vitaminb = new SpItem("VITAMIN B", "A small supplement bottle of pure Vitamin B. (Restores 15 SP)", limbo, 15);
+	desertshopfixed->setStock(vitaminb, 2147483647, 20, "MERRO - \"Thank you for your monies.\"");
+	Item* iron = new SpItem("IRON", "A small bottle of iron supplement. (Restores 30 SP)", limbo, 30);
+	desertshopfixed->setStock(iron, 2147483647, 40, "MERRO - \"Thank you for your monies.\"");
+	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 2147483647);
+	desertshopfixed->setStock(magnesium, 2147483647, 100, "MERRO - \"Thank you for your monies.\"");
+
+	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 2147483647);
+	desertshopfixed->setStock(reviveroot, 2147483647, 300, "MERRO - \"Thank you for your monies.\"");
+	
+	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing,\nthough not to the extent of its fresh version.", burgstore, 10);
+
+	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
+	skateboard->setTakable();
+	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
+
 	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
 	coolstreet3->setStock(hotdog, 2147483647, 2, "HARRY - \"Ayy thanks for the purchase enjoy your hot dog!\"");
 
@@ -1000,11 +1026,6 @@ NPC* SetupWorld() {
 	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 0, Stats(200000, 200000, 20, 20000, 10, 15, 20));
 	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
 	techdemoman->addRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
-
-	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", "applied the sunscreen. No amount of heat should bother you now!", limbo, HEAT, true);
-	KeyItem* _sunscreen = (KeyItem*)sunscreen;
-	_sunscreen->setTarget(volcanoentrance);
-	desertshopfixed->setStock(sunscreen, 1, 20, "MERRO - \"Thank you for your monies.\"");
 	
 	/*NPC* child = new NPC("CHILD", "JILLY", "A small child, daughter of MATILDA.", limbo);
 	NPC* worriedmother = new NPC("", "MATILDA", "A frequent churchgoer.", burgchurch);
@@ -1016,7 +1037,8 @@ NPC* SetupWorld() {
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there, short individual! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
-	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true);
+	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", 0, 20, 20, 1, 1, 1);
+	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true, pdynamite);
 	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
 
 	Item* cactiberry = new MaterialItem("CACTIBERRY", "Special berry that is pale green and prickly, adorned with a pink flower.", berryroom);
@@ -1454,32 +1476,7 @@ NPC* SetupWorld() {
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
 
-	//set up enemies
-
-	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", tunnels, 10, Stats(200, 20, 10, 20, 10, 50, 10));
-	tunnellobster->setLobster(tunnels);
-	tunnellobster->setLeader(true, 10, desertstation, false);
-	tunnellobster->setTunnelDirection(tentstation, TO_THE_VILLAGE);
-	tunnellobster->setTunnelDirection(desertstation, TO_THE_DESERT);
-	tunnellobster->setTunnelDirection(deserttunnel, TO_THE_DESERT);
-	tunnellobster->setTunnelDirection(volcanostation, TO_THE_HIGHLANDS);
-	tunnellobster->setTunnelDirection(burgstation, TO_BURGERSBURG);
-	tunnellobster->setTunnelDirection(basestation, TO_THE_BASEMENT);
-	//tunnellobster->setLink(tunnellobster);
-	//tunnellobster->setDefeatNPC("", "Your big pet crustacean who inhabits the tunnels below.", "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises).", NULL);
-	tunnellobster->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
-	tunnellobster->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
-
-	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, tunnellobster);
-	
-	Item* backupcaller1 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, tunnellobster);
-	volcanostation->setBackup(backupcaller1);
-	Item* backupcaller2 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, tunnellobster);
-	burgstation->setBackup(backupcaller2);
-	Item* backupcaller3 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, tunnellobster);
-	basestation->setBackup(backupcaller3);
-
-	//set up generic non-npc enemies MARK: enemies (internal)
+	//set up enemies enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
 	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
 	headbutt->recoil = 5;
@@ -1550,7 +1547,7 @@ NPC* SetupWorld() {
 	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", 10, 20, 0, 1, 1, 1);
 	egadbot->addSpecialAttack(timber);
 
-	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(60, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
+	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
 	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", 5, 0, 0, 1, 1, 7);
 	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
@@ -1559,6 +1556,7 @@ NPC* SetupWorld() {
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
+	savagehog->setBoss(true);
 
 	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 30, 9));
 	Attack* chomp = new Attack("CHOMP", "chomped", -5, 10, 10, 1, 1, 1);
@@ -1567,6 +1565,7 @@ NPC* SetupWorld() {
 	mimic->setBasicAttack(chomp);
 	mimic->addSpecialAttack(stomp);
 	mimic->addSpecialAttack(monymeteor);
+	mimic->setBoss(true);
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
 	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
@@ -1602,13 +1601,23 @@ NPC* SetupWorld() {
 	npc->addSpecialAttack(genericcc);
 	*/
 
-	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats());
-	rumbleweed->setBasicAttack(genericattack);
-	rumbleweed->addSpecialAttack(genericspecial);
-	rumbleweed->addSpecialAttack(genericcc);
+	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(10, 2, 20, 1, 15, 30, 9));
+	Attack* tumble = new Attack("TUMBLE", "rolled into", -5, 10, 10, 1, 1, 1);
+	Effect* brambled = new Effect("BRAMBLED", 3, 5);
+	tumble->addEffect(brambled);
+	Attack* rumble = new Attack("RUMBLE", "shook the ground under", 2, 5, 0, 3, 3, 7);
+	rumbleweed->setBasicAttack(tumble);
+	rumbleweed->addSpecialAttack(rumble);
 
-	NPC* rockbug = new NPC("", "ROCK BUG", "Sizable geometric bug who normally lives in the rock, but becomes very agressive when disturbed.", limbo, 0, Stats());
-	rockbug->setBasicAttack(genericattack);
+	NPC* rockbug = new NPC("", "ROCK BUG", "Sizable geometric bug who normally lives in the rock, but becomes very agressive when disturbed.", limbo, 0, Stats(15, 30, 5, 20, 0, 2, 9));
+	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", -5, 20, 0, 1, 1, 1);
+	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5f, 1.5f, 1.5f, 1, 50.0f);
+	Attack* saltcure = new Attack("SALT CURE", "coughed up crystals of curing salt onto", 15, 5, 0, 1, 1, 1);
+	Effect* saltcured = new Effect("SALT CURED", 2147483647);
+	saltcured->spusage = 2.0f; //salt cured means you take double damage and use double sp
+	saltcured->damagebuff = 2.0f;
+	saltcure->addEffect(saltcure);
+	rockbug->setBasicAttack(rocknroll);
 	rockbug->addSpecialAttack(genericspecial);
 	rockbug->addSpecialAttack(genericcc);
 
@@ -1617,23 +1626,44 @@ NPC* SetupWorld() {
 	rascal->addSpecialAttack(genericspecial);
 	rascal->addSpecialAttack(genericcc);*/
 
-	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats());
-	skeleminer->setBasicAttack(genericattack);
-	skeleminer->addSpecialAttack(genericspecial);
-	skeleminer->addSpecialAttack(genericcc);
+	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 9));
+	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe at", -5, 10, 15, 1, 1, 7);
+	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", 3, 20, 20, 1, 1, 1);
+	Attack* pickstrike = new Attack("MINE", "struck", 6, 25, 40, 1, 1, 1);
+	pickstrike->afterdesc = " with his pickaxe"
+	skeleminer->setBasicAttack(pickaxerang);
+	skeleminer->addSpecialAttack(sdynamite);
+	skeleminer->addSpecialAttack(pickstrike);
 
-	NPC* dreadnaut = new NPC("", "DREADNAUT", "Hefty armored bug complete with a tank cannon.", limbo, 0, Stats());
-	dreadnaut->setBasicAttack(genericattack);
-	dreadnaut->addSpecialAttack(genericspecial);
-	dreadnaut->addSpecialAttack(genericcc);
+	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(100, 30, 20, 30, 20, 5, 9));
+	Attack* pincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
+	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", 5, 1, 100, 15, 15, 1);
+	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", 10, 30, 20, 1, 1, 3);
+	dreadnaut->setBasicAttack(pincer);
+	dreadnaut->addSpecialAttack(rapidfire);
+	dreadnaut->addSpecialAttack(tankshell);
+	dreadnaut->setBoss(true); //more of a miniboss
+
+	//MARK: Tunnel Lobster (enemy)
+	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", limbo, 0, Stats(200, 20, 15, 20, 15, 50, 9));
+	Attack* pincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
+	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", 6, 25, 0, 1, 1, 3);
+	tailsmack->afterdesc = " with its tail";
+	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking loose chunks of the ceiling", 8, 20, 0, 5, 5, 1);
+	lobroar->focushits = false;
+	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", 13, 40, 0, 1, 1, 1);
+	trainrush->afterdesc = "like a train";
 
 	//MARK: Viola (enemy)
 	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(90, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
 	tkviola->setBasicAttack(genericattack);
+	tkviola->setBoss(true);
 
 	//wave
 
 	//smackdown
+
+	//guard
 
 	//fling
 
@@ -1650,6 +1680,9 @@ NPC* SetupWorld() {
 	//black hole
 
 	NPC* greer = new NPC("BURGER OFFICIAL", "GREER", "Greedy BURGER official sent to manage all the desert's remaining water.", minespring, 1, Stats(100, 40, 10, 0, 0, 0, 10));
+	greer->setBoss(true);
+
+	//
 
 	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo, 0, Stats());
 	magman->setBasicAttack(genericattack);
@@ -1791,7 +1824,7 @@ NPC* SetupWorld() {
 	forestguard2->setParty(pricklyhog);
 	forestguard2->blockExit(NORTH, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard2->setDialogue("*burly bush noises*");
-	forestguard2->addRejectionDialogue("*burly bush noises*");
+	forestguard2->addRejectionDialogue("*haughty bush noises*");
 
 	NPC* hogguard = new NPC(*greaterhog);
 	hogguard->setLeader(true, 3, forestfork);
@@ -1844,14 +1877,15 @@ NPC* SetupWorld() {
 
 	NPC* mimic1 = new NPC(*mimic);
 	mimic1->setLeader(true, 30, NULL);
-	mimic1->setDialogue("*unhinged roar*");
+	mimic1->setDialogue("*unhinged roar*"); //you see it's funny because chests have hinges
 	mimic1->addRejectionDialogue("*unhinged roar*");
 	mimic1->setEscapable(false);
 	mimic1->setForceBattle();
-	mimic1->setBoss(true);
 	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
 
 	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, NULL, mimic1);
+	Item* rr2 = new ReviveItem(*reviveroot);
+	Item* chest1 = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasurecliff, 100, rr2); //put a memory crowbar here?
 	
 	NPC* forestboss = new NPC(*savagehog);
 	savagehog->setLeader(true, 5, bossgrove, true, true);
@@ -1872,11 +1906,15 @@ NPC* SetupWorld() {
 	desertguard->setLeader(true, 5, desert);
 	desertguard->setParty(sandman, sandman);
 	desertguard->blockExit(NORTHWEST, ENEMY, "blocked by the SANDMAN.", true);
+	desertguard->setDialogue("*angry falling sand noises*");
+	desertguard->addRejectionDialogue("*angry falling sand noises*");
 
 	NPC* desertguard2 = new NPC(*sandman);
 	desertguard2->setLeader(true, 10, desertdune);
 	desertguard2->setParty(rumbleweed, rumbleweed);
 	desertguard2->blockExit(SOUTHEAST, ENEMY, "blocked by the SANDMAN.", true);
+	desertguard2->setDialogue("*angry falling sand noises*");
+	desertguard2->addRejectionDialogue("*angry falling sand noises*");
 
 	NPC* jimshady2 = new NPC(*jimshady);
 	jimshady2->setLeader(true, 8, desert);
@@ -1889,22 +1927,28 @@ NPC* SetupWorld() {
 
 	NPC* canyonguard = new NPC(*skeleminer);
 	canyonguard->setLeader(true, 8, canyon1);
-	canyonguard->blockExit(NORTHEAST, ENEMY, "blocked by the SANDMAN.");
+	canyonguard->blockExit(NORTHEAST, ENEMY, "blocked by the SKELEMINER.");
 
 	NPC* mineguard = new NPC(*skeleminer);
 	mineguard->setLeader(true, 10, mineshaft2);
 	mineguard->setParty(rockbug, rockbug);
 	mineguard->blockExit(SOUTH, ENEMY, "blocked by the SKELEMINER.", true);
+	dgraveguard->setDialogue("*angry rattling*");
+	dgraveguard->addRejectionDialogue("*angry rattling*");
 	
 	NPC* mineguard2 = new NPC(*skeleminer);
 	mineguard->setLeader(true, 10, mineshaft2);
 	mineguard->setParty(skeleminer);
 	mineguard->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
+	dgraveguard->setDialogue("*angry rattling*");
+	dgraveguard->addRejectionDialogue("*angry rattling*");
 
 	NPC* boomguard = new NPC(*dreadnaut);
 	boomguard->setLeader(true, 15, mineshaftside);
 	boomguard->setParty(rockbug, rockbug);
-	boomguard->blockExit(SOUTHWEST, ENEMY, "blocked by the DREADNAUT.");
+	boomguard->blockExit(SOUTHWEST, ENEMY, "blocked by the DREADNOUGHT.");
+	dgraveguard->setDialogue("*mechanical invertabrate noises*");
+	dgraveguard->addRejectionDialogue("*mechanical rejection*");
 
 	/*NPC* minerando = new NPC(*rascal);
 	minerando->setLeader(true, 67, mineshaftside);*/
@@ -1912,7 +1956,7 @@ NPC* SetupWorld() {
 	/*NPC* richguard0 = new NPC(*richguy1);
 	richguard->setLeader(true, 20, ceolobby);
 	richguard->setParty(richguy2, businessguy);
-	richguard->blockExit(IN_ELEVATOR, ENEMY, "blocked by the RICH PERSON.");*/
+	richguard->blockExit(IN_ELEVATOR, ENEMY, "blocked by the RICH PERSON.");
 
 	NPC* richguard1 = new NPC(*richguy1);
 	richguard1->setLeader(true, 20, ceoelevator1);
@@ -1926,12 +1970,34 @@ NPC* SetupWorld() {
 	NPC* richguard3 = new NPC(*businessguy);
 	richguard3->setLeader(true, 25, ceoelevator3);
 	richguard3->setParty(businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, richguy1, richguy1, richguy1, richguy1, richguy1, richguy2, richguy2, richguy2, richguy2);
-	richguard3->blockExit(UP, ENEMY, "manually blocked by a bunch of BUSINESSPEOPLE.");
+	richguard3->blockExit(UP, ENEMY, "manually blocked by a bunch of BUSINESSPEOPLE.");*/
+	
+	//MARK: Lobster
+	NPC* florian = new NPC(*tunnellobster);
+	florian->setLobster(tunnels);
+	florian->setLeader(true, 10, desertstation, false);
+	florian->setTunnelDirection(tentstation, TO_THE_VILLAGE);
+	florian->setTunnelDirection(desertstation, TO_THE_DESERT);
+	florian->setTunnelDirection(deserttunnel, TO_THE_DESERT);
+	florian->setTunnelDirection(volcanostation, TO_THE_HIGHLANDS);
+	florian->setTunnelDirection(burgstation, TO_BURGERSBURG);
+	florian->setTunnelDirection(basestation, TO_THE_BASEMENT);
+	florian->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
+	florian->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
+	florian->addLinkedDesc(florian, "Your big pet crustacean who inhabits the tunnels below.");
+	florian->addLinkedDialogue(florian, {{florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)."}});
+
+	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, florian);
+	Item* backupcaller1 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
+	volcanostation->setBackup(backupcaller1);
+	Item* backupcaller2 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
+	burgstation->setBackup(backupcaller2);
+	Item* backupcaller3 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
+	basestation->setBackup(backupcaller3);
 
 	//set up teammate viola MARK: Viola
 	NPC* viola = new NPC(*tkviola);
 	viola->setLeader(true, 15);
-	viola->setBoss(true);
 	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
 							{viola, "So what if I did?"},
 							{self, "Lady you can't just go kidnapping people."},
@@ -1947,7 +2013,7 @@ NPC* SetupWorld() {
 								   {viola, "After what I did?"},
 								   {self, "uhh yeah."},
 								   {viola, "Um..."},
-								   {viola, "Alright."}});
+								   {viola, "Alright..."}});
 	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
 	viola->addDismissalDialogue({{viola, "Well, I guess I'll go watch over the town."},
 								 {viola, "It's the least I could do..."}});
@@ -1968,19 +2034,15 @@ NPC* SetupWorld() {
 	viola->setForceBattle();
 	viola->setEscapable(false);
 
-	//
-
 	NPC* springguard = new NPC(*greer);
-	springguard->setLeader(true, 30, NULL, false);
-	/*glutton->addConversation(self, "Hey why are you drinking all that water?");
-	glutton->addConversation(self, "You don't need that much save it for everyone else!");
-	glutton->addConversation(glutton, "Ehehehehe... all da watah is all mine, pal.");
-	glutton->addConversation(glutton, "Official BOIGA MAN ordah.");
-	glutton->addConversation(self, "You can't just do that what the heck >:(");
-	glutton->addConversation(glutton, "If youse want da watah, youse gonna hafta go through me!");
-	glutton->addConversation(self, "Alright then.");
-	glutton->setRedirect(oasis, oasisfixed);
-	glutton->setLink(glutton);
+	springguard->setLeader(true, 20, NULL, false);
+	/*springguard->addConversation(self, "Is that ?");
+	springguard->addConversation(self, "You don't need that much save it for everyone else!");
+	springguard->addConversation(glutton, "Ehehehehe... all da watah is all mine, pal.");
+	springguard->addConversation(glutton, "Official BOIGA MAN ordah.");
+	springguard->addConversation(self, "You can't just do that what the heck >:(");
+	springguard->addConversation(glutton, "If youse want da watah, youse gonna hafta go through me!");
+	springguard->addConversation(self, "Alright then.");
 	glutton->setDialogue("Ehehehe... da watah's all fer me!");
 	glutton->setRejectionDialogue("Now why would I wanna join youse, huh?");
 	glutton->addLinkedConvo(glutton, "Ah you gots me...");
@@ -1989,15 +2051,14 @@ NPC* SetupWorld() {
 	glutton->addLinkedConvo(glutton, "But what else's theah to do?");
 	glutton->addLinkedConvo(glutton, "Great job lad.");
 	glutton->addLinkedConvo(NULL, "GREER disappeared into the darkness...");
-	glutton->addLinkedConvo(NULL, "The spring's water can now freely flow into the oasis!");
 	glutton->setLinkedRoom(ceoroom, "in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.\nThere is a rotund corpse in the corner");*/
 	springguard->setTalkOnDefeat();
 	springguard->setForceBattle();
 	springguard->setEscapable(false);
-	springguard->setBoss(true);
 	springguard->setBasicAttack(genericattack);
+	springguard->setre
 
-	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons. He appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
+	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
 	lavaguard->setLeader(true, 40, NULL, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("*ethereal breathing*");
@@ -2079,9 +2140,9 @@ NPC* SetupWorld() {
 	_cloaking->setTarget(richneighborhood3);
 
 	//make coolant attack that slows down enemies
-	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
-	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick useful for travelling over chasms.", "used the pole to go over the chasm!", desertpole, CHASM, true);
-	Item* minecart = new MovementItem("MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
+	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
+	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", "used the pole to go over the chasm!", desertpole, CHASM, true);
+	Item* minecart = new MovementItem("MINECART", "A spare minecart, used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
 
 	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
 	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
@@ -2326,15 +2387,19 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		//otherwise the player is trying to take something that isn't even there
 		cout << "\nThere is no \"" << itemname << "\" here.";
 		return;
+	} //you're not allowed to take items if they're being guarded
+	if (NPC* guard = item->getGuard()) {
+		cout << "The " << itemname << " is being guarded by " << guard->getName() << ".";
+		return;
 	}
 	//you're not allowed to take items not marked as takable
 	if (!item->getTakable()) {
 		cout << "\n";
 		if (strcmp(item->getDenial(), "")) { //if there is a custom denial we use it
 			cout <<  item->getDenial();
-			return;
-		} //otherwise say the generic denial
-		cout << "You can't take the " << itemname << "!";
+		} else { //otherwise say the generic denial
+			cout << "You can't take the " << itemname << "!";
+		}
 		return;
 	}
 	item->unRoom(); //removes the item from the room
@@ -2440,6 +2505,9 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	}
 	if (item == NULL) { //print that no item called itemname was found
 		cout << "\nYou have no \"" << itemname << "\".";
+		return;
+	} else if (NPC* guard = item->getGuard()) { //can't use items being guarded
+		cout << "The " << itemname << " is being guarded by " << guard->getName() << ".";
 		return;
 	} else if (item->getTargetNeeded() && npc == NULL && strcmp(item->getType(), "key") && strcmp(item->getType(), "movement")) { //if the item needed a target but no " ON " was given we give error text
 		if (party->size() > 1) { //if the party isn't only the player
@@ -2619,8 +2687,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	} else { //other types of items must be used in battles
 		cout << "\nThe " << itemname << " can only be used in battle!";
 		return;
-	}
-	//if the item is one-use only we delete the item
+	} //if the item is one-use only we delete the item
 	if (item->getConsumable()) {
 		deleteItem(currentRoom, inventory, item);
 	}

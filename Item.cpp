@@ -67,6 +67,10 @@ bool Item::getConsumable() {
 bool Item::getForEnemy() {
 	return useOnEnemy;
 }
+//returns who is guarding this item
+NPC* Item::getGuard() {
+	return guard;
+}
 //sets the description of why you can't take the item
 void Item::setDenial(const char* denial) {
 	denyDescription = denial;
@@ -114,6 +118,10 @@ void Item::setStock(int _stock, int _price, const char* buydesc) {
 	stock = _stock; //set how much of the item are for sale
 	price = _price; //set the price of the item
 	buyDescription = buydesc; //set the buy description
+}
+//returns someone to guard this item
+void Item::setGuard(NPC* npc) {
+	guard = npc;
 }
 //virtual function for duplicating the item
 Item* Item::Duplicate() {
