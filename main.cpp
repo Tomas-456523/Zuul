@@ -1479,13 +1479,8 @@ NPC* SetupWorld() {
 	greaterhog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 9));
-<<<<<<< HEAD
-	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -2, 15, 0, 1, 1, 1);
-	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 5, 20, 5, 1, 1, 2, false, 2);
-=======
 	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -5, 15, 0, 1, 1, 1);
 	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 10, 50, 50, 1, 1, 1, false, 2);
->>>>>>> fix-merge
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
 
@@ -1552,8 +1547,6 @@ NPC* SetupWorld() {
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
 
-<<<<<<< HEAD
-=======
 	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 30, 9));
 	Attack* chomp = new Attack("CHOMP", "chomped", -5, 10, 10, 1, 1, 1);
 	Attack* stomp = new Attack("STOMP", "jumped onto", 5, 30, 0, 1, 1, 1);
@@ -1562,7 +1555,6 @@ NPC* SetupWorld() {
 	mimic->addSpecialAttack(stomp);
 	mimic->addSpecialAttack(monymeteor);
 
->>>>>>> fix-merge
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
 	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
 	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at ", -3, 5, 0, 1, 1, 1);
@@ -1929,10 +1921,7 @@ NPC* SetupWorld() {
 						   {viola, "Yeah I know..."},
 						   {viola, "I'm just going to go to that cliff over there..."},
 						   {NULL, "VIOLA went to that cliff over there."}});
-<<<<<<< HEAD
 	viola->addLinkedDialogue(viola, "")
-=======
->>>>>>> fix-merge
 	viola->setDefeatNPC("GRAVITY GIRL", "Telekinetic teenager trying to use her powers for something good.", "I can't believe I let all that power go to my head...", thatcliff);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
 	viola->setTalkOnDefeat();
