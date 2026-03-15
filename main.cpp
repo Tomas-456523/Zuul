@@ -158,21 +158,17 @@ NPC* SetupWorld() {
 	Room* desertgrave = new Room("deep in the desert. There's some sort of bovine skeleton here.");
 	Room* desertpole = new Room("deep in the desert. All you can see for miles is sand.");
 	Room* deserthill = new Room("on a very high dune. It'd be fun to roll all the way down, but your hair would be very annoying to clean afterwards.");
-	Room* deserttown = new Room("in the abandoned desert village. It's strange; where did everyone go?");
-	Room* desertshop = new Room("in an abandoned store. It would feel cozy if not for the smell of the expired products.");
+	Room* deserttown = new Room("in an abandoned desert town. Everything still seems to be organized normally, though.");
+	Room* desertshop = new Room("in an abandoned store. The products are on the verge of expiration.");
 	Room* desertgym = new Room("in an abandoned gym. There's all the equipment you could ask for here, but no rock wall.");
-	Room* deserthouse = new Room("in some house with zero purpose. It only exists because the town would feel weird with only two houses.");
-	//the desert town gets fixed after defeating VIOLA, but rather than reset all the descriptions manually I just make the abandoned town redirect you to the fixed one
-	Room* deserttownfixed = new Room("in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
+	Room* deserthouse = new Room("in some house with zero purpose. It only exists because the town would feel weird with only two houses."); //I have no idea what to put in this house
 	Room* desertshopfixed = new Room("in the desert store. It smells like pastries and medicine.");
 	Room* desertgymfixed = new Room("in the desert gym. Now that it's back in business it's time to get on that GRIND!\nSimply DISMISS your teammates here to make them stay in shape while you're gone!");
 	desertgymfixed->setGym();
-	Room* deserthousefixed = new Room("in some house which still has zero purpose."); //I have no idea what to put in this house
-	Room* oasis = new Room("in an oasis, presumably the town's source of water, though the water is long gone and the plants are dry husks.");
-	Room* oasisfixed = new Room("in the town oasis, now fully restored! Some signs of greenery are starting to appear."); //oasis gets fixed after beating the BURGER GLUTTON underground
+	Room* oasis = new Room("in an oasis, presumably the town's source of water. The water is long gone and the plants are dry husks.");
 	Room* canyon = new Room("in a small canyon that cuts into a plateau. There's an old-timey entrance to a train station here.");
-	Room* thatcliff = new Room("on this cliff over here."); //VIOLA goes here after being defeated
-	Room* canyon1 = new Room("in a long, shaded canyon, forming YET ANOTHER fork in the road. You know, these would actually be really annoying forks if you think about it.");
+	Room* thatcliff = new Room("on this cliff over here."); //Viola goes here after being defeated
+	Room* canyon1 = new Room("in a long, shaded canyon, forming a fork in the road. You know, these would actually be really annoying forks if you think about it.");
 	Room* canyon2 = new Room("at the end of the canyon, though a path seems to have been made upwards.");
 	Room* canyon3 = new Room("at the end of the canyon. There's much evidence of mining here, and a mineshaft entrance here leads underground.");
 	Room* cliff1 = new Room("very high up on a cliff; the temperature almost feels normal!");
@@ -665,7 +661,7 @@ NPC* SetupWorld() {
 	forestknight->addSpecialAttack(blitz);
 
 	//MARK: Mike
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 15, Stats(15, 5, 20, 0, 20, 12, 5));
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(15, 5, 20, 0, 20, 12, 9));
 	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
 	Attack* mdynamite;
@@ -679,6 +675,12 @@ NPC* SetupWorld() {
 	//dedefenser
 
 	//minesweeper
+
+	//MARK: Cacty
+	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 15, Stats(10, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
+	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
+	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "Cacty is too dehydrated to join you."}});
+	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
 	
 	//MARK: other npcs
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
@@ -863,17 +865,17 @@ NPC* SetupWorld() {
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
 	mrdeer->setGift(deerkey);
 	mrdeer->addConversation({{self, "Hello Mr. Deer!"},
-							 {mrdeer, "*salutatory deer noises*"},
+							 {NULL, "MR DEER - *salutatory deer noises*"}, //we have to use this weird fake name printing so we can have the * without the "
 							 {self, "I'm going on a BURGER QUEST, but I can't get past the great forest wall without your key."},
-							 {mrdeer, "*warning deer noises*"},
-							 {mrdeer, "*concerned deer noise*"},
-							 {mrdeer, "*thinking deer noises*"},
-							 {mrdeer, "..."},
-							 {self, "I hope he gives me the key..."},
-							 {mrdeer, "*reluctantly affirmative deer noise*"},
+							 {NULL, "MR DEER - *warning deer noises*"},
+							 {NULL, "MR DEER - *concerned deer noise*"},
+							 {NULL, "MR DEER - *thinking deer noises*"},
+							 {NULL, "..."},
+							 {self, "(I hope he gives me the key...)"},
+							 {NULL, "MR DEER - *reluctantly affirmative deer noise*"},
 							 {self, "AYYY thank you so much Mr. Deer!"}});
-	mrdeer->setDialogue("*deer noises*");
-	mrdeer->addRejectionDialogue("*no thank you deer noise*");
+	mrdeer->setDialogue({{NULL, "MR DEER - *deer noises*"}});
+	mrdeer->addRejectionDialogue({{NULL, "MR DEER - *no thank you deer noise*"}});
 
 	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall.\nThere may be more to him, but all you can see is his face.", mineshaft3, 25000, Stats(15000, 15000, 15000, 15000, 0, 2000, 500));
 	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
@@ -933,12 +935,12 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(self, "Dang that's crazy.");*/
 
 	//Dialogue for after I finish making the game:
-	//(self, "Can I recruit TECH DEMO MAN?", true);
-	//(developer, "No.")
+	//{{self, "Can I recruit TECH DEMO MAN?", true},
+	// {developer, "No."}}
 
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 2, 7, 5, 0, 2, 3);
 	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
-	Item* shuriken = new WeaponItem("SHURIKEN", "A ninja shuriken with a note attached: \"Congratulations on defeating our ninja scout. Take this shuriken and train in the ninja ways, and maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
+	Item* shurikens = new WeaponItem("SHURIKENS", "A bundle of ninja shurikens with a note attached:\n\"Congratulations on defeating our ninja scout. Take these shurikens and train in the ninja ways,\nand maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
 	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", 10, 8, 5, 5, 6, 1);
 	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 6 hits)");
@@ -947,6 +949,7 @@ NPC* SetupWorld() {
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
 	gymbro->addRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
+	gymbro->setGymStart(1); //he will always catch up to your level
 
 	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
 	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", 0, 1, 2, 1, 1, 1);
@@ -1005,10 +1008,6 @@ NPC* SetupWorld() {
 	
 	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing,\nthough not to the extent of its fresh version.", burgstore, 10);
 
-	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
-	skateboard->setTakable();
-	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
-
 	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
 	coolstreet3->setStock(hotdog, 2147483647, 2, "HARRY - \"Ayy thanks for the purchase enjoy your hot dog!\"");
 
@@ -1044,6 +1043,22 @@ NPC* SetupWorld() {
 	Item* cactiberry = new MaterialItem("CACTIBERRY", "Special berry that is pale green and prickly, adorned with a pink flower.", berryroom);
 	Item* radiberry = new MaterialItem("RADIBERRY", "Special radioactive berry that glows neon green. Might wanna handle this one quickly.", factorygarden);
 	Item* ninjaberry = new MaterialItem("NINJABERRY", "Special black berry pertaining to the ninjas, complete with a natural belt.", berryroom);
+
+	NPC* bob = new NPC("", "BOB", "A small child wearing a newsboy cap. He has a hard time making human friends and prefers plants.", limbo, 0);
+	Conversation bobcon = {{bob, "Oh my poor friend Cacty!"},
+						   {bob, "He's so dehydrated!"},
+						   {bob, "If only the underground spring never dried up!"},
+						   {self, "The what?"},
+						   {bob, "The underground spring that fueled the oasis!"},
+						   {bob, "Clearly there's something wrong with it because the oasis is dry!"}};
+	bobcon.skipcondition = GREERDEF;
+	bob->addConversation(bobcon);
+	bob->setDialogue({{bob, "Oh my poor friend Cacty!"},
+					  {bob, "He's so dehydrated!"}});
+	bob->addRejectionDialogue("No my mama says I'm too young to go adventuring.");
+
+	Item* valve = new WorldChangeItem("WATER VALVE", "A valve on the pipe managing the spring's water. It's currently redirecting the water away from the oasis.", minespring, "turn the valve counterclockwise. The spring's water is now flowing to the oasis!");
+	WorldChange& valvechanges = ((WorldChangeItem*)valve)->getChanges();
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -1147,18 +1162,9 @@ NPC* SetupWorld() {
 	desertshop->setExit(OUTSIDE,deserttown);
 	desertgym->setExit(OUTSIDE,deserttown);
 	deserthouse->setExit(OUTSIDE,deserttown);
-	deserttownfixed->setExit(NORTH, canyon1);
-	deserttownfixed->setExit(SOUTH, deserthill);
-	deserttownfixed->setExit(EAST, oasis);
-	deserttownfixed->setExit(WEST, canyon);
-	deserttownfixed->setExit(IN_HOUSE_1, desertshopfixed);
-	deserttownfixed->setExit(IN_HOUSE_2, desertgymfixed);
-	deserttownfixed->setExit(IN_HOUSE_3, deserthousefixed);
-	desertshopfixed->setExit(OUTSIDE,deserttownfixed);
-	desertgymfixed->setExit(OUTSIDE,deserttownfixed);
-	deserthousefixed->setExit(OUTSIDE,deserttownfixed);
+	desertshopfixed->setExit(OUTSIDE,deserttown);
+	desertgymfixed->setExit(OUTSIDE,deserttown);
 	oasis->setExit(WEST, deserttown);
-	oasisfixed->setExit(WEST, deserttown);
 	canyon->setExit(UP, thatcliff);
 	canyon->setExit(EAST, deserttown);
 	canyon->setExit(UNDERGROUND, desertstation);
@@ -1616,7 +1622,7 @@ NPC* SetupWorld() {
 	Effect* saltcured = new Effect("SALT CURED", 2147483647);
 	saltcured->spusage = 2.0f; //salt cured means you take double damage and use double sp
 	saltcured->damagebuff = 2.0f;
-	saltcure->addEffect(saltcure);
+	saltcure->addEffect(saltcured);
 	rockbug->setBasicAttack(rocknroll);
 	rockbug->addSpecialAttack(genericspecial);
 	rockbug->addSpecialAttack(genericcc);
@@ -1626,33 +1632,38 @@ NPC* SetupWorld() {
 	rascal->addSpecialAttack(genericspecial);
 	rascal->addSpecialAttack(genericcc);*/
 
-	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 9));
+	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 13, 9));
 	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe at", -5, 10, 15, 1, 1, 7);
 	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", 3, 20, 20, 1, 1, 1);
 	Attack* pickstrike = new Attack("MINE", "struck", 6, 25, 40, 1, 1, 1);
-	pickstrike->afterdesc = " with his pickaxe"
+	pickstrike->afterdesc = " with his pickaxe";
 	skeleminer->setBasicAttack(pickaxerang);
 	skeleminer->addSpecialAttack(sdynamite);
 	skeleminer->addSpecialAttack(pickstrike);
 
 	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(100, 30, 20, 30, 20, 5, 9));
-	Attack* pincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
+	Attack* dpincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
 	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", 5, 1, 100, 15, 15, 1);
 	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", 10, 30, 20, 1, 1, 3);
-	dreadnaut->setBasicAttack(pincer);
+	dreadnaut->setBasicAttack(dpincer);
 	dreadnaut->addSpecialAttack(rapidfire);
 	dreadnaut->addSpecialAttack(tankshell);
 	dreadnaut->setBoss(true); //more of a miniboss
 
 	//MARK: Tunnel Lobster (enemy)
 	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", limbo, 0, Stats(200, 20, 15, 20, 15, 50, 9));
-	Attack* pincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
+	Attack* lpincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
 	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", 6, 25, 0, 1, 1, 3);
 	tailsmack->afterdesc = " with its tail";
 	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking loose chunks of the ceiling", 8, 20, 0, 5, 5, 1);
 	lobroar->focushits = false;
 	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", 13, 40, 0, 1, 1, 1);
 	trainrush->afterdesc = "like a train";
+	tunnellobster->setBasicAttack(lpincer);
+	tunnellobster->addSpecialAttack(tailsmack);
+	tunnellobster->addSpecialAttack(lobroar);
+	tunnellobster->addSpecialAttack(trainrush);
+	tunnellobster->setBoss(true);
 
 	//MARK: Viola (enemy)
 	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(90, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
@@ -1679,8 +1690,12 @@ NPC* SetupWorld() {
 
 	//black hole
 
-	NPC* greer = new NPC("BURGER OFFICIAL", "GREER", "Greedy BURGER official sent to manage all the desert's remaining water.", minespring, 1, Stats(100, 40, 10, 0, 0, 0, 10));
+	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 10));
 	greer->setBoss(true);
+
+	//gun
+
+	//water valve
 
 	//
 
@@ -1799,14 +1814,14 @@ NPC* SetupWorld() {
 	NPC* forestguard = new NPC(*grassman);
 	forestguard->setLeader(true, 1, forestentrance);
 	forestguard->blockExit(NORTH, ENEMY, "guarded by the GRASSMAN.");
-	forestguard->setDialogue("*angry bush noises*");
-	forestguard->addRejectionDialogue("*angry bush noises*");
+	forestguard->setDialogue({{NULL, "GRASSMAN - *angry bush noises*"}});
+	forestguard->addRejectionDialogue({{NULL, "GRASSMAN - *angry bush noises*"}});
 
 	NPC* deerguard = new NPC(*enemydeer);
 	deerguard->setLeader(true, 3, forestleft);
 	deerguard->blockExit(WEST, ENEMY, "guarded by the ENEMY DEER.");
-	deerguard->setDialogue("*angry deer noises*");
-	deerguard->addRejectionDialogue("*angry deer noises*");
+	deerguard->setDialogue({{NULL, "ENEMY DEER - *angry deer noises*"}});
+	deerguard->addRejectionDialogue({{NULL, "ENEMY DEER - *angry deer noises*"}});
 
 	NPC* ninjaguard = new NPC(*ninjascout);
 	ninjaguard->setLeader(true, 5, forestright);
@@ -1823,28 +1838,28 @@ NPC* SetupWorld() {
 	forestguard2->setLeader(true, 2, foresttempleentrance);
 	forestguard2->setParty(pricklyhog);
 	forestguard2->blockExit(NORTH, ENEMY, "guarded by the BUFF GRASSMAN.");
-	forestguard2->setDialogue("*burly bush noises*");
-	forestguard2->addRejectionDialogue("*haughty bush noises*");
+	forestguard2->setDialogue({{NULL, "BUFF GRASSMAN - *burly bush noises*"}});
+	forestguard2->addRejectionDialogue({{NULL, "*BUFF GRASSMAN - haughty bush noises*"}});
 
 	NPC* hogguard = new NPC(*greaterhog);
 	hogguard->setLeader(true, 3, forestfork);
 	hogguard->blockExit(NORTHEAST, ENEMY, "guarded by the GREATER HOG.");
-	hogguard->setDialogue("*angry squeal*");
-	hogguard->addRejectionDialogue("*angry squeal*");
+	hogguard->setDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
+	hogguard->addRejectionDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
 
 	NPC* hogguard2 = new NPC(*greaterhog);
 	hogguard2->setLeader(true, 3, forestspork);
 	hogguard2->setParty(pricklyhog, pricklyhog);
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
-	hogguard2->setDialogue("*angry squeal*");
-	hogguard2->addRejectionDialogue("*angry squeal*");
+	hogguard2->setDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
+	hogguard2->addRejectionDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
 
 	NPC* forestguard3 = new NPC(*buffgrassman);
 	forestguard3->setLeader(true, 5, forestnice);
 	forestguard3->setParty(grassman, grassman);
 	forestguard3->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
-	forestguard3->setDialogue("*burly bush noises*");
-	forestguard3->addRejectionDialogue("*haughty bush noises*");
+	forestguard3->setDialogue({{NULL, "BUFF GRASSMAN - *burly bush noises*"}});
+	forestguard3->addRejectionDialogue({{NULL, "*BUFF GRASSMAN - haughty bush noises*"}});
 
 	NPC* jimshady1 = new NPC(*jimshady);
 	jimshady1->setLeader(true, 5, forestwall);
@@ -1856,12 +1871,14 @@ NPC* SetupWorld() {
 	jimshady1->addRejectionDialogue("No go away.");
 
 	NPC* roguerobot = new NPC(*egadbot);
-	egadbot->setLeader(true, 3, forestgarden);
-	egadbot->addRecruitLink(egadwick);
-	egadbot->addLinkedConvo(egadwick, {{egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?"},
+	roguerobot->setLeader(true, 3, forestgarden);
+	roguerobot->addRecruitLink(egadwick);
+	roguerobot->addLinkedConvo(egadwick, {{egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?"},
 									   {self, "Yep I did."},
 									   {egadwick, "Oh thank goodness! Thanks a bunch, kiddo!"},
 									   {egadwick, "Now I can safely be in the great outdoors!"}});
+	roguerobot->setDialogue({{NULL, "EGARDENBOT - *rogue snipping noises*"}});
+	roguerobot->addRejectionDialogue({{NULL, "EGARDENBOT - *rogue snipping noises*"}});
 
 	/*NPC* plantguard = new NPC(*carnplant);
 	plantguard->setLeader(true, 4, foresttempleentrance);
@@ -1872,49 +1889,50 @@ NPC* SetupWorld() {
 	NPC* flowerguard = new NPC(*flowerfiend);
 	flowerguard->setLeader(true, 3, flowerfield);
 	flowerguard->blockExit(WEST, ENEMY, "blocked by the FLOWER FIEND.");
-	flowerguard->setDialogue("*flowery shriek*");
-	flowerguard->addRejectionDialogue("*flowery shriek*");
+	flowerguard->setDialogue({{NULL, "FLOWER FIEND - *flowery shriek*"}});
+	flowerguard->addRejectionDialogue({{NULL, "FLOWER FIEND - *flowery shriek*"}});
 
 	NPC* mimic1 = new NPC(*mimic);
 	mimic1->setLeader(true, 30, NULL);
-	mimic1->setDialogue("*unhinged roar*"); //you see it's funny because chests have hinges
-	mimic1->addRejectionDialogue("*unhinged roar*");
+	mimic1->setDialogue({{NULL, "MIMIC - *unhinged roar*"}}); //you see it's funny because chests have hinges
+	mimic1->addRejectionDialogue({{NULL, "MIMIC - *unhinged roar*"}});
 	mimic1->setEscapable(false);
 	mimic1->setForceBattle();
 	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
+	mimic1->setBoss(true); //of the mini variety
 
 	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, NULL, mimic1);
-	Item* rr2 = new ReviveItem(*reviveroot);
+	Item* rr2 = new ReviveItem(*(ReviveItem*)(reviveroot));
 	Item* chest1 = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasurecliff, 100, rr2); //put a memory crowbar here?
 	
 	NPC* forestboss = new NPC(*savagehog);
-	savagehog->setLeader(true, 5, bossgrove, true, true);
-	savagehog->setParty(pricklyhog, greaterhog);
-	savagehog->blockExit(NORTH, ENEMY, "blocked off by the MAMMOTH HOG!");
-	savagehog->setEscapable(false);
-	forestboss->setDialogue("*SAVAGE ROAR*");
-	forestboss->addRejectionDialogue("*ROAR MEANING NO*");
+	forestboss->setLeader(true, 5, bossgrove, true, true);
+	forestboss->setParty(pricklyhog, greaterhog);
+	forestboss->blockExit(NORTH, ENEMY, "blocked off by the MAMMOTH HOG!");
+	forestboss->setEscapable(false);
+	forestboss->setDialogue({{NULL, "MAMMOTH HOG - *SAVAGE ROAR*"}});
+	forestboss->addRejectionDialogue({{NULL, "MAMMOTH HOG - *ROAR MEANING NO*"}});
 	forestboss->setForceBattle();
 
 	NPC* dgraveguard = new NPC(*skeleviking);
-	skeleviking->setLeader(true, 2);
-	skeleviking->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEVIKING.");
-	dgraveguard->setDialogue("*angry silence*");
-	dgraveguard->addRejectionDialogue("*angry silence*");
+	dgraveguard->setLeader(true, 2);
+	dgraveguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEVIKING.");
+	dgraveguard->setDialogue({{NULL, "SKELEVIKING - *angry silence*"}});
+	dgraveguard->addRejectionDialogue({{NULL, "SKELEVIKING - *angry silence*"}});
 
 	NPC* desertguard = new NPC(*sandman);
 	desertguard->setLeader(true, 5, desert);
 	desertguard->setParty(sandman, sandman);
 	desertguard->blockExit(NORTHWEST, ENEMY, "blocked by the SANDMAN.", true);
-	desertguard->setDialogue("*angry falling sand noises*");
-	desertguard->addRejectionDialogue("*angry falling sand noises*");
+	desertguard->setDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
+	desertguard->addRejectionDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
 
 	NPC* desertguard2 = new NPC(*sandman);
-	desertguard2->setLeader(true, 10, desertdune);
+	desertguard2->setLeader(true, 6, desertdune);
 	desertguard2->setParty(rumbleweed, rumbleweed);
 	desertguard2->blockExit(SOUTHEAST, ENEMY, "blocked by the SANDMAN.", true);
-	desertguard2->setDialogue("*angry falling sand noises*");
-	desertguard2->addRejectionDialogue("*angry falling sand noises*");
+	desertguard2->setDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
+	desertguard2->addRejectionDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
 
 	NPC* jimshady2 = new NPC(*jimshady);
 	jimshady2->setLeader(true, 8, desert);
@@ -1926,29 +1944,32 @@ NPC* SetupWorld() {
 	jimshady2->addRejectionDialogue("No begone.");
 
 	NPC* canyonguard = new NPC(*skeleminer);
-	canyonguard->setLeader(true, 8, canyon1);
+	canyonguard->setLeader(true, 6, canyon1);
+	canyonguard->setParty(rockbug);
 	canyonguard->blockExit(NORTHEAST, ENEMY, "blocked by the SKELEMINER.");
+	canyonguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
+	canyonguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
 	NPC* mineguard = new NPC(*skeleminer);
-	mineguard->setLeader(true, 10, mineshaft2);
+	mineguard->setLeader(true, 6, mineshaft2);
 	mineguard->setParty(rockbug, rockbug);
 	mineguard->blockExit(SOUTH, ENEMY, "blocked by the SKELEMINER.", true);
-	dgraveguard->setDialogue("*angry rattling*");
-	dgraveguard->addRejectionDialogue("*angry rattling*");
+	mineguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
+	mineguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	
 	NPC* mineguard2 = new NPC(*skeleminer);
-	mineguard->setLeader(true, 10, mineshaft2);
-	mineguard->setParty(skeleminer);
-	mineguard->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
-	dgraveguard->setDialogue("*angry rattling*");
-	dgraveguard->addRejectionDialogue("*angry rattling*");
+	mineguard2->setLeader(true, 8, mineshaft2);
+	mineguard2->setParty(sandman);
+	mineguard2->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
+	mineguard2->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
+	mineguard2->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
 	NPC* boomguard = new NPC(*dreadnaut);
-	boomguard->setLeader(true, 15, mineshaftside);
+	boomguard->setLeader(true, 8, mineshaftside);
 	boomguard->setParty(rockbug, rockbug);
 	boomguard->blockExit(SOUTHWEST, ENEMY, "blocked by the DREADNOUGHT.");
-	dgraveguard->setDialogue("*mechanical invertabrate noises*");
-	dgraveguard->addRejectionDialogue("*mechanical rejection*");
+	boomguard->setDialogue({{NULL, "DREADNOUGHT - *mechanical invertabrate noises*"}});
+	boomguard->addRejectionDialogue({{NULL, "DREADNOUGHT - *mechanical rejection*"}});
 
 	/*NPC* minerando = new NPC(*rascal);
 	minerando->setLeader(true, 67, mineshaftside);*/
@@ -1987,7 +2008,8 @@ NPC* SetupWorld() {
 	florian->addLinkedDesc(florian, "Your big pet crustacean who inhabits the tunnels below.");
 	florian->addLinkedDialogue(florian, {{florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)."}});
 
-	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", desertstation, florian);
+	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
+	desertstation->setBackup(lobstercaller);
 	Item* backupcaller1 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
 	volcanostation->setBackup(backupcaller1);
 	Item* backupcaller2 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
@@ -2017,7 +2039,10 @@ NPC* SetupWorld() {
 	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
 	viola->addDismissalDialogue({{viola, "Well, I guess I'll go watch over the town."},
 								 {viola, "It's the least I could do..."}});
-	viola->addRedirect(deserttown, deserttownfixed);
+	viola->addRedirect(desertshop, desertshopfixed);
+	viola->addRedirect(desertgym, desertgymfixed);
+	viola->addLinkedRoom(deserttown, "in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
+	viola->addLinkedRoom(deserthouse, "in some house which still has zero purpose.");
 	viola->addRecruitLink(viola);
 	viola->addLinkedConvo(viola, {{viola, "I'm sorry. I'll free everyone..."},
 								  {viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them..."},
@@ -2056,7 +2081,9 @@ NPC* SetupWorld() {
 	springguard->setForceBattle();
 	springguard->setEscapable(false);
 	springguard->setBasicAttack(genericattack);
-	springguard->setre
+	springguard->addLinkedRoom(oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to appear.");
+	springguard->guardItem(valve);
+	springguard->setWorldCondition(GREERDEF);
 
 	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
 	lavaguard->setLeader(true, 40, NULL, false);
@@ -2396,7 +2423,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	if (!item->getTakable()) {
 		cout << "\n";
 		if (strcmp(item->getDenial(), "")) { //if there is a custom denial we use it
-			cout <<  item->getDenial();
+			cout << item->getDenial();
 		} else { //otherwise say the generic denial
 			cout << "You can't take the " << itemname << "!";
 		}
@@ -2491,7 +2518,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		}
 		if (item != NULL) { //we try to find the npc we're targetting
 			npc = getNPCInVector(*party, npcName);
-			if (!item->getTargetNeeded()) { //no need to clarify the target if one isn't required (we check for this because I thought the commands would look weird otherwise, like "USE SWITCH ON BOB", like what does Bob have to do with this? It's a switch!
+			if (!item->getTargetNeeded()) { //no need to clarify the target if one isn't required (we check for this because I thought the commands would look weird otherwise, like "USE SWITCH ON BOB", like what does Bob have to do with this? It's a switch!)
 				cout << "\nThe " << itemName << " doesn't need a target!";
 				return;
 			} else if (npc == NULL) { //print if no npc matching the name was found, also since we're not in battle you can only use targeted items on your party
@@ -2680,6 +2707,11 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			cveyor->switchConveyor();
 		} //describes what just happened
 		cout << "\nYou pulled the switch to the other side. All the assembly lines have switched directions!";
+	//world change items do changes to the world, just like when npcs get defeated and do all that stuff
+	} else if (!strcmp(item->getType(), "worldchange")) {
+		WorldChangeItem* changer = (WorldChangeItem*)item;
+		applyWorldChange(changer->getChanges()); //do the changes
+		cout << "\nYou " << changer->getUseText(); //prints what the player did and what it accomplished
 	//you can't use materials; they get a unique error message
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
@@ -2727,6 +2759,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	cout << "\n" << npcname << " was added to your party! (Party size: " << party->size() << "/" << maxParty << ")"; //prints success text
 	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
 		printLvlUpData(npc);
+		npc->setGymStart(0); //no longer training so we reset training time
 	}
 }
 
@@ -2753,6 +2786,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 	bool gym = currentRoom->getGym();
 	if (gym) {
 		cout << "\n" << npcname << " is now on the GRIND at the gym, and will now train to stay at your level!";
+		npc->setGymStart(time(NULL)); //track when they started training
 	} else { //in every other room, they just say something and go back home
 		npc->printDismissalDialogue();
 		cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
@@ -2973,6 +3007,10 @@ int main() {
 		AllCaps(command); //capitalizes the command for easier parsing
 
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
+
+		if (currentRoom->getGym()) { //if we're in a gym, update all the traning teammates' levels before doing the action
+			currentRoom->scaleNPCs(self->getLevel()-1);
+		}
 
 		if (!strcmp(commandWord, "GO")) { //for going in a direction
 			travel(currentRoom, &commandExtension[0], party, inventory);

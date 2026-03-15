@@ -263,9 +263,13 @@ vector<const char*> Room::unblockAll(const char* type) { //unblock all the block
 	}
 	return matches; //returns exits that were unblocked
 }
-void Room::scaleNPCs(int level) { //levels up every npc in the room to the given level
+void Room::scaleNPCs(int cap) { //levels up every npc in the gym depending on the time they've been there
+	time_t now = time(NULL); //gets what time it is right now
 	for (NPC* npc : npcs) {
-		npc->setLevel(level);
+		time_t start = npc->getGymStart();
+		if (!start) continue; //if they have no gym start time, there's nothing to do here
+		int level = (now - start)*(cap-npc->getLevel()+1)/600 + npc->getLevel(); //calculate new level based on time difference, 1 level per minute by default, plus a "catching up" factor (level difference / 10)
+		npc->setLevel(min(level, cap)); //set the new level, capped at the given cap (player level - 1)
 	}
 }
 void Room::undefeatEnemies() {

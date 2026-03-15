@@ -13,6 +13,8 @@
 #include "Attack.h"
 #include "Conversation.h"
 #include "Stats.h"
+#include "WorldState.h"
+#include "WorldChange.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
@@ -65,13 +67,13 @@ public: //you need to set stats on creation
 	int getConvoSize(); //how many conversations are left to say
 	bool getRespawn(); //if they respawn
 	bool getBoss();
-
 	float getAttMultiplier();
 	float getDefMultiplier();
 	float getToughMultiplier();
 	float getPierceMultiplier();
 	float getSPUseMultiplier();
 	float getDamageMultiplier();
+	time_t getGymStart();
 
 	NPC* getGuardian();
 	NPC* getGuarding();
@@ -131,6 +133,8 @@ public: //you need to set stats on creation
 	void setTalkOnRecruit(bool talk);
 	void setGuardian(NPC* npc);
 	void setGuarding(NPC* npc);
+	void setGymStart(time_t start);
+	void setWorldCondition(size_t cond); //set a world condition for this npc to edit on defeat
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
@@ -140,6 +144,7 @@ public: //you need to set stats on creation
 	void addLinkedDesc(NPC* npc, const char* desc);
 	void addLinkedRoom(Room* room, const char* desc); //room to affect on defeat
 	void addRedirect(Room* room1, Room* room2); //set room to redirect upon defeat
+	void guardItem(Item* item); //start guarding the item
 	
 	void printDialogue(Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
 	void printRejectionDialogue(); //prints the rejection dialogue for the npc
@@ -150,7 +155,6 @@ public: //you need to set stats on creation
 	void printEffects();
 	const char* getDescription(); //gets the description of the character
 	
-
 	bool getTalkOnDefeat(); //gets if the npc talks after being defeated
 	void setTalkOnDefeat(bool talk = true); //sets if the npc talks after being defeated
 
@@ -242,16 +246,9 @@ protected:
 	const char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated
 	Room* altRoom = NULL; //enemies block exits from both sides, so they have to be in two rooms at the same time, unfortunately
 	
-	queue<NPC*> recruitLinks; //these nps are set to recruitable when this npc is defeated
-	queue<pair<NPC*, Conversation>> linkedConversations; //we add these conversations to the npc when defeated
-	queue<pair<NPC*, Conversation>> linkedDialogue; //we set the linked npcs' dialogue to this when defeated
-	queue<pair<NPC*, const char*>> linkedTitles; //we reset these npc's titles when defeated
-	queue<pair<NPC*, const char*>> linkedDescriptions; //we reset these npc's descriptions when defeated
+	WorldChange changes; //stuff this npc does when defeated
 
-	queue<pair<NPC*, Room*>> defeatRooms; //move these npcs to these rooms when defeated
-
-	queue<pair<Room*, const char*>> roomChanges; //we edit the description of these rooms to these descriptions after being defeated
-	queue<pair<Room*, Room*>> redirectRooms; //after defeat, the first rooms are redirected to the second rooms
+	time_t gymStart = 0; //what time the npc was left at the gym (0 means is not at the gym, bad news for anybody hoping to drop their teammate off at the gym on the first second of 1970)
 
 	bool escapable = true; //if you can escape from this enemy in a battle
 	int guard = 0; //how many hits the npc can block before guard is broken

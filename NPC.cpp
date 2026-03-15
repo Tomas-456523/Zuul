@@ -227,6 +227,12 @@ NPC* NPC::getGuardian() {
 NPC* NPC::getGuarding() {
 	return guarding;
 }
+time_t NPC::getGymStart() {
+	return gymStart;
+}
+void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc to edit on defeat
+	changes.worldcon = cond;
+}
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
 }
@@ -397,6 +403,9 @@ void NPC::setGuardian(NPC* npc) {
 void NPC::setGuarding(NPC* npc) {
 	guarding = npc;
 }
+void NPC::setGymStart(time_t start) {
+	gymStart = start;
+}
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;
 }
@@ -518,31 +527,35 @@ void NPC::setGuard(int _guard) {
 	guard = _guard;
 }
 void NPC::addRecruitLink(NPC* npc) { //links this npc to be set to recuritable later
-	recruitLinks.push(npc);
+	changes.recruitLinks.push(npc);
 }
 void NPC::addLinkedRoom(Room* room, const char* desc) { //room's description gets changed to this after this npc is defeated
-	roomChanges.push({room, desc});
+	changes.roomChanges.push({room, desc});
 }
 void NPC::addLinkedDialogue(NPC* speaker, const Conversation& dialogue) {
-	linkedDialogue.push({speaker, dialogue});
+	changes.linkedDialogue.push({speaker, dialogue});
 }
 void NPC::addLinkedTitle(NPC* npc, const char* title) {
-	linkedTitles.push({npc, title});
+	changes.linkedTitles.push({npc, title});
 }
 void NPC::addLinkedDesc(NPC* npc, const char* desc) {
-	linkedDescriptions.push({npc, desc});
+	changes.linkedDescriptions.push({npc, desc});
 }
 void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a conversation to add to the linked npc
-	linkedConversations.push({speaker, dialogue});
+	changes.linkedConversations.push({speaker, dialogue});
 }
 void NPC::addDefeatRoom(NPC* npc, Room* room) {
-	defeatRooms.push({npc, room});
+	changes.defeatRooms.push({npc, room});
 }
 void NPC::setGift(Item* item) { //set a gift to give to the player after talking
 	gift = item;
 }
 void NPC::addRedirect(Room* room1, Room* room2) { //makes room1 redirect to room2 after being defeated
-	redirectRooms.push({room1, room2});
+	changes.redirectRooms.push({room1, room2});
+}
+void NPC::guardItem(Item* item) { //guard the given item until defeat
+	item->setGuard(this);
+	changes.guardedItems.push(item);
 }
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
@@ -749,52 +762,7 @@ void NPC::defeat() {
 		}
 		exitBlocking = NULL;
 	}
-	while (!recruitLinks.empty()) {
-		NPC* npc = recruitLinks.front();
-		npc->setRecruitable(true);
-		if (npc->getLeader()) {
-			npc->setLeader(false);
-			npc->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
-			npc->undefeat();
-		}
-		recruitLinks.pop();
-	}
-	while (!linkedConversations.empty()) {
-		pair<NPC*, Conversation>& data = linkedConversations.front();
-		data.first->addConversation(data.second);
-		linkedConversations.pop();
-	}
-	while (!linkedDialogue.empty()) {
-		pair<NPC*, Conversation>& data = linkedDialogue.front();
-		data.first->setDialogue(data.second);
-		linkedDialogue.pop();
-	}
-	while (!linkedTitles.empty()) {
-		pair<NPC*, const char*>& data = linkedTitles.front();
-		data.first->setTitle(data.second);
-		linkedTitles.pop();
-	}
-	while (!linkedDescriptions.empty()) {
-		pair<NPC*, const char*>& data = linkedDescriptions.front();
-		data.first->setDescription(data.second);
-		linkedDescriptions.pop();
-	}
-	while (!roomChanges.empty()) {
-		pair<Room*, const char*>& data = roomChanges.front();
-		data.first->setDescription(data.second);
-		roomChanges.pop();
-	}
-	while (!defeatRooms.empty()) {
-		pair<NPC*, Room*>& data = defeatRooms.front();
-		data.first->setRoom(data.second);
-		data.first->setHome(data.second);
-		defeatRooms.pop();
-	}
-	while (!redirectRooms.empty()) {
-		pair<Room*, Room*>& data = redirectRooms.front();
-		data.first->setRedirect(data.second);
-		redirectRooms.pop();
-	}
+	applyWorldChange(changes); //apply all the world changes associated with this npc
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;

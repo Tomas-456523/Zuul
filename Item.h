@@ -4,6 +4,8 @@
 #define ITEM
 
 #include <vector>
+#include "WorldChange.h"
+#include "Conversation.h"
 using namespace std;
 
 class Room;
@@ -282,5 +284,17 @@ public:
 	vector<Room*> getConveyors(); //returns the list of affected rooms
 private:
 	vector<Room*> conveyors; //the affected rooms
+};
+
+//world change items, for changing the world
+class WorldChangeItem : public Item {
+public:
+	WorldChangeItem(const char* _name, const char* _description, Room* _room, const char* _useText);
+
+	WorldChange& getChanges(); //returns the world changes, as a reference so it's easier to edit
+	const char* getUseText(); //gets the text printed by using it
+private:
+	WorldChange changes; //the changes to do
+	const char* useText;
 };
 #endif

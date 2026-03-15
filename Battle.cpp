@@ -240,7 +240,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	}
 	if (attack->selfeffect != NULL) { //adds an effect to the attacker if the attack had an applicable one
 		attacker->setEffect(attack->selfeffect);
-		cout << "\n" << atacker->getName() << " is " << attack->selfeffect->name << "!";
+		cout << "\n" << attacker->getName() << " is " << attack->selfeffect->name << "!";
 		CinPause();
 	}
 }

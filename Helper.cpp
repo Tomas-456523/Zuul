@@ -225,6 +225,7 @@ namespace Helper {
 			}
 		}
 	}
+	//print the level up data tracked by this npc
 	void printLvlUpData(NPC* npc) {
 		if (npc->getLevelUp()) {
 			cout << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
@@ -250,6 +251,62 @@ namespace Helper {
 				cout << "\n" << npc->getName() << " learned " << att->name << "!\n" << att->name << " - " << att->trueDesc;
 				CinPause();
 			}
+		}
+	}
+	//changes the world based on the instructions passed, also the item/npc's world changes will be drained as we pass by reference
+	void applyWorldChange(WorldChange& changes) {
+		while (!changes.recruitLinks.empty()) {
+			NPC* npc = changes.recruitLinks.front();
+			npc->setRecruitable(true);
+			if (npc->getLeader()) {
+				npc->setLeader(false);
+				npc->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
+				npc->undefeat();
+			}
+			changes.recruitLinks.pop();
+		}
+		while (!changes.linkedConversations.empty()) {
+			pair<NPC*, Conversation>& data = changes.linkedConversations.front();
+			data.first->addConversation(data.second);
+			changes.linkedConversations.pop();
+		}
+		while (!changes.linkedDialogue.empty()) {
+			pair<NPC*, Conversation>& data = changes.linkedDialogue.front();
+			data.first->setDialogue(data.second);
+			changes.linkedDialogue.pop();
+		}
+		while (!changes.linkedTitles.empty()) {
+			pair<NPC*, const char*>& data = changes.linkedTitles.front();
+			data.first->setTitle(data.second);
+			changes.linkedTitles.pop();
+		}
+		while (!changes.linkedDescriptions.empty()) {
+			pair<NPC*, const char*>& data = changes.linkedDescriptions.front();
+			data.first->setDescription(data.second);
+			changes.linkedDescriptions.pop();
+		}
+		while (!changes.roomChanges.empty()) {
+			pair<Room*, const char*>& data = changes.roomChanges.front();
+			data.first->setDescription(data.second);
+			changes.roomChanges.pop();
+		}
+		while (!changes.defeatRooms.empty()) {
+			pair<NPC*, Room*>& data = changes.defeatRooms.front();
+			data.first->setRoom(data.second);
+			data.first->setHome(data.second);
+			changes.defeatRooms.pop();
+		}
+		while (!changes.redirectRooms.empty()) {
+			pair<Room*, Room*>& data = changes.redirectRooms.front();
+			data.first->setRedirect(data.second);
+			changes.redirectRooms.pop();
+		}
+		while (!changes.guardedItems.empty()) { //unguard all the items
+			changes.guardedItems.front()->setGuard(NULL);
+			changes.redirectRooms.pop();
+		}
+		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
+			WorldState[changes.worldcon] = true;
 		}
 	}
 

@@ -68,7 +68,7 @@ public:
 	void unblockExit(const char* direction); //unblocks the exit
 	vector<const char*> unblockAll(const char* type); //unblocks all the blocked exits of the given block type
 
-	void scaleNPCs(int level); //sets all the npcs to the given level
+	void scaleNPCs(int level); //update all npc levels at the gym capped at the given cap
 
 	void undefeatEnemies(); //makes the enemies in the room not defeated anymore
 private:
