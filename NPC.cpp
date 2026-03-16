@@ -230,6 +230,10 @@ NPC* NPC::getGuarding() {
 time_t NPC::getGymStart() {
 	return gymStart;
 }
+int NPC::getGuard() {
+	if (guard < 0) return 0;
+	return guard;
+}
 void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc to edit on defeat
 	changes.worldcon = cond;
 }
@@ -508,6 +512,11 @@ void NPC::setLevel(int _level) { //manually sets the level of the npc (will not 
 void NPC::setScale(Stats _scale) {
 	scale = _scale;
 }
+void NPC::setBaseStats(Stats _stats) { //reset base stats and calculate new current stats based on it
+	stats -= basestats; //remove current base from stats
+	basestats = _stats; //reset base
+	stats += basestats; //add new base to the total stats
+}
 void NPC::setBasicAttack(Attack* attack) {
 	standard_attack = attack;
 }
@@ -543,6 +552,12 @@ void NPC::addLinkedDesc(NPC* npc, const char* desc) {
 }
 void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a conversation to add to the linked npc
 	changes.linkedConversations.push({speaker, dialogue});
+}
+void NPC::addLinkedStats(NPC* npc, Stats stats) {
+	changes.linkedStats.push({npc, stats});
+}
+void NPC::addAttackRemoval(NPC* npc, Attack* attack) {
+	changes.removeAttacks.push({npc, attack});
 }
 void NPC::addDefeatRoom(NPC* npc, Room* room) {
 	changes.defeatRooms.push({npc, room});

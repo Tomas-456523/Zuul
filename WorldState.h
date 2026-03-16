@@ -5,7 +5,7 @@
 
 namespace Helper {
 	enum WorldCondition {
-		GREERDEF,
+		VALVEUSED,
 		CEOQUEST,
 		TEMPLEQUEST,
 		BURGERMANDEF,

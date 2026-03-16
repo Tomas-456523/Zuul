@@ -26,6 +26,21 @@ struct Stats {
         return left += right;
     }
 
+    Stats& operator-=(const Stats& other) { //for doing stats1 -= stats2
+        hpmax -= other.hpmax;
+        defense -= other.defense;
+        attack -= other.attack;
+        toughness -= other.toughness;
+        pierce -= other.pierce;
+        speed -= other.speed;
+        spmax -= other.spmax;
+        return *this;
+    }
+
+    friend Stats operator-(Stats left, const Stats& right) { //for doing stats1 - stats2
+        return left -= right;
+    }
+
     Stats& operator*=(int other) { //when you multiply a stats by an integer it multlies all the stats by that amount
         hpmax *= other;
         defense *= other;

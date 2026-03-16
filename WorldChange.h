@@ -7,6 +7,7 @@
 #include <utility>
 #include "WorldState.h"
 #include "Conversation.h"
+#include "Stats.h"
 
 class Room;
 class NPC;
@@ -23,6 +24,9 @@ struct WorldChange {
 
 	std::queue<std::pair<Room*, const char*>> roomChanges; //we edit the description of these rooms to these descriptions
 	std::queue<std::pair<Room*, Room*>> redirectRooms; //the first rooms are redirected to the second rooms
+
+	std::queue<std::pair<NPC*, Stats>> linkedStats; //stat changes
+	std::queue<std::pair<NPC*, Attack*>> removeAttacks; //attacks to remove from the npc
 
     std::queue<Item*> guardedItems; //remove these items' guards so they're takable/usable
 

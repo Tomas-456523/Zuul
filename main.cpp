@@ -172,7 +172,7 @@ NPC* SetupWorld() {
 	Room* canyon2 = new Room("at the end of the canyon, though a path seems to have been made upwards.");
 	Room* canyon3 = new Room("at the end of the canyon. There's much evidence of mining here, and a mineshaft entrance here leads underground.");
 	Room* cliff1 = new Room("very high up on a cliff; the temperature almost feels normal!");
-	Room* cliff2 = new Room("on the highest cliff. You have a very good view of the volcanic, even wastier wastelands beyond the desert.");
+	Room* cliff2 = new Room("on the highest cliff. The desert townsfolk are suspended in the air around a girl with a purple dress.");
 	Room* mineshaft = new Room("underground in the mineshaft. It was too hot outside, but now it's very cold :(");
 	Room* mineshaft2 = new Room("at a pickaxe in the road. That's not a utensil...");
 	Room* mineshaft3 = new Room("deep in the mineshaft. A huge face spans the wall; he looks very interesting.");
@@ -600,7 +600,7 @@ NPC* SetupWorld() {
 	egadwick->addSpecialAttack(orbitalstrike);
 	
 	//MARK: Absolom
-	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(20, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 1));
+	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 1));
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
 										{forestknight, "I shan't assist you; this is an object of sin."},
@@ -661,7 +661,7 @@ NPC* SetupWorld() {
 	forestknight->addSpecialAttack(blitz);
 
 	//MARK: Mike
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(15, 5, 20, 0, 20, 12, 9));
+	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9));
 	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
 
 	Attack* mdynamite;
@@ -677,7 +677,7 @@ NPC* SetupWorld() {
 	//minesweeper
 
 	//MARK: Cacty
-	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 15, Stats(10, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
+	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 15, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "Cacty is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
@@ -922,7 +922,7 @@ NPC* SetupWorld() {
 	magmelder->setDialogue("You must drain the lava before more lives are lost!");
 	magmelder->addRejectionDialogue("Nay! I must dwell in lava and you must dwell on land. These things conflict, do they not?");
 
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 0, Stats(67, 67, 67, 67, 67, 67, 67));
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 67));
 	developer->setDialogue("Yo wassup.");
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
@@ -1067,7 +1067,7 @@ NPC* SetupWorld() {
 						   {self, "The what?"},
 						   {bob, "The underground spring that fueled the oasis!"},
 						   {bob, "Clearly there's something wrong with it because the oasis is dry!"}};
-	bobcon.skipcondition = GREERDEF;
+	bobcon.skipcondition = VALVEUSED;
 	bob->addConversation(bobcon);
 	bob->setDialogue({{bob, "Oh my poor friend Cacty!"},
 					  {bob, "He's so dehydrated!"}});
@@ -1075,6 +1075,14 @@ NPC* SetupWorld() {
 
 	Item* valve = new WorldChangeItem("WATER VALVE", "A valve on the pipe managing the spring's water. It's currently redirecting the water away from the oasis.", minespring, "turn the valve counterclockwise. The spring's water is now flowing to the oasis!");
 	WorldChange& valvechanges = ((WorldChangeItem*)valve)->getChanges();
+	valvechanges->worldcon = VALVEUSED;
+	valvechanges->linkedConversations.push({bob, {{bob, "The oasis has filled up with water!"}, {bob, "Do you know how this is?"}, {self, "Yeah I just turned some valve underground."}, {bob, "Remarkable!"}});
+	valvechanges->linkedConversations.push({cacty, {{NULL, "CACTY - *grateful cactus noises*"}, {self, "What how did you know I did that?"}, {NULL, "CACTY - *explanatory cactus noises*"}, {self, "Oh I see."}});
+	valvechanges->linkedDialogue.push({bob, {{bob, "Oh I'm so happy my friend Cacty is hydrated now!"}});
+	valvechanges->linkedDialogue.push({cacty, {{NULL, "CACTY - *happy cactus noises*"}});
+	valvechanges->linkedDescriptions.push({cacty, "Sharp cactus, hydrated back to health. He has a remarkable pink flower and rooty legs to move around."});
+	valvechanges->roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
+	//valvechanges->roomChanges.push({basement, "something about how BURGER production has ceased"});
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -1682,28 +1690,55 @@ NPC* SetupWorld() {
 	tunnellobster->setBoss(true);
 
 	//MARK: Viola (enemy)
-	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(90, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
-	tkviola->setBasicAttack(genericattack);
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(100, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
 	tkviola->setBoss(true);
 
-	//wave
+	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", -5, 10, 20, 1, 1, 1);
+	tkviola->setBasicAttack(wave);
 
-	//smackdown
+	Attack* smackdown = new Attack("SMACKDOWN", "lifted", 5, 20, 0, 1, 1, 1);
+	smackdown->afterdesc = " into the air and smacked them back down";
+	tkviola->addSpecialAttack(smackdown);
 
-	//guard
+	Attack* tkguard = new Attack("INVOLUNTARY GUARD", "set up a guard using a townsperson", 7, 0, 0, 0, 0, 0);
+	tkguard->guardset = 1;
+	tkviola->addSpecialAttack(tkguard);
 
-	//fling
+	Attack* fling = new Attack("FLING", "flung", 5, 20, 0, 1, 1, 1);
+	fling->afterdesc = " into the stratosphere";
+	tkviola->addSpecialAttack(fling);
 
-	//suspend
+	Attack* suspend = new Attack("SUSPEND", "suspended", 7, 0, 0, 1, 1, 1);
+	smackdown->afterdesc = " in the air";
+	Effect* suspended = new Effect("SUSPENDED", 3, 0, 0);
+	suspended->freeze = true;
+	suspend->addEffect(suspended);
+	tkviola->addSpecialAttack(suspend);
 
-	//crunch
-	//force field
+	Attack* crunch = new Attack("CRUNCH", "compressed", 12, 25, 50, 1, 1, 1);
+	crunch->afterdesc = " to a reasonable extent";
+	crunch->addDescription("");
+	tkviola->addSpecialAttack(crunch);
 
-	//spatial pop
+	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", 10, 20, 30, 1, 1, 3, false, 12);
+	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (20 DAMAGE, 30 PIERCE)");
+	tkviola->addSpecialAttack(spatialpop);
+	
+	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", 15, 0, 0, 0, 0, 7, true, 15);
+	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
+	Effect* forcefielded = new Effect("FORCE FIELD", 3, 0, 0, 1, 2);
+	forcefield->addEffect(forcefielded);
+	tkviola->addSpecialAttack(forcefield);
 
-	//intense gravity
+	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", 15, 0, 0, 0, 0, 7, false, 17);
+	intensegravity->addDescription("Intensify gravity around the enemy team, halving their defense.");
+	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5f);
+	intensegravity->addEffect(intensegravitied);
+	tkviola->addSpecialAttack(intensegravity);
 
-	//black hole
+	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", 25, 50, 20, 1, 1, 7, false, 20);
+	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (25 DAMAGE, 50 PIERCE)");
+	tkviola->addSpecialAttack(blackhole);
 
 	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 10));
 	greer->setBoss(true);
@@ -2061,6 +2096,7 @@ NPC* SetupWorld() {
 	viola->addLinkedRoom(deserttown, "in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
 	viola->addLinkedRoom(deserthouse, "in some house which still has zero purpose.");
 	viola->addRecruitLink(viola);
+	viola->addLinkedStats(viola, Stats(20, 0, 10, 0, 10, 20, 19));
 	viola->addLinkedConvo(viola, {{viola, "I'm sorry I'll free everyone..."},
 								  {viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them..."},
 								  {self, "That's not a very good reason."},
@@ -2072,6 +2108,8 @@ NPC* SetupWorld() {
 	viola->addLinkedDialogue(viola, {{viola, "I can't believe I let all that power go to my head..."}});
 	viola->addDefeatRoom(viola, thatcliff);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
+	viola->addLinkedRoom(cliff2, "You have a good view of the volcanic, even wastier wastelands beyond the desert");
+	viola->addAttackRemoval(viola, tkguard);
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);

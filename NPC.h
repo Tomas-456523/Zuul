@@ -74,6 +74,7 @@ public: //you need to set stats on creation
 	float getSPUseMultiplier();
 	float getDamageMultiplier();
 	time_t getGymStart();
+	int getGuard();
 
 	NPC* getGuardian();
 	NPC* getGuarding();
@@ -107,6 +108,7 @@ public: //you need to set stats on creation
 	void setTitle(const char* _title);
 	void setDescription(const char* _description);
 	void setScale(Stats _scale);
+	void setBaseStats(Stats _stats); //reset base stats, used by viola
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false, int instant = 0);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
@@ -144,6 +146,8 @@ public: //you need to set stats on creation
 	void addLinkedDesc(NPC* npc, const char* desc);
 	void addLinkedRoom(Room* room, const char* desc); //room to affect on defeat
 	void addRedirect(Room* room1, Room* room2); //set room to redirect upon defeat
+	void addLinkedStats(NPC* npc, Stats stats);
+	void addAttackRemoval(NPC* npc, Attack* attack);
 	void guardItem(Item* item); //start guarding the item
 	
 	void printDialogue(Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below

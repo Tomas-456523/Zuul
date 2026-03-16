@@ -301,6 +301,16 @@ namespace Helper {
 			data.first->setRedirect(data.second);
 			changes.redirectRooms.pop();
 		}
+		while (!changes.linkedStats.empty()) { //change all changing stats
+			pair<NPC*, stats>& data = changes.linkedStats.front();
+			data.first->setBaseStats(data.second);
+			changes.linkedStats.pop();
+		}
+		while (!changes.removeAttacks.empty()) { //change all changing stats
+			pair<NPC*, Attack*>& data = changes.removeAttacks.front();
+			data.first->removeSpecialAttack(data.second);
+			changes.removeAttacks.pop();
+		}
 		while (!changes.guardedItems.empty()) { //unguard all the items
 			changes.guardedItems.front()->setGuard(NULL);
 			changes.redirectRooms.pop();

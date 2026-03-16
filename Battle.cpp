@@ -195,6 +195,9 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 				attacker->damage(attack->recoil * attacker->getAttack() * attacker->getAttMultiplier() / 10, 0, 1);
 			}
+			if (attack->guardset) { //set the guard if the attack does that, add it to the current guard unless it's negative, then it geos from 0 because getGuard returns that for values < 0
+				attacker->setGuard(attacker->getGuard() + attack->guardset);
+			}
 			if (attack->protect) {
 				attacker->getGuarding()->setGuardian(NULL); //can only guard one npc at a time
 				reciever->setGuardian(attacker);
