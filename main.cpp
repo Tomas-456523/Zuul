@@ -186,7 +186,7 @@ NPC* SetupWorld() {
 	desertstation->setStation();
 	Room* deserttunnel = new Room("in a long, dark train tunnel. You've never seen one that goes on for so long with no collapse.");
 	deserttunnel->setStation();
-	Room* minespring = new Room("at an underground spring which channels water into the town oasis. There's many dead miners here.");
+	Room* minespring = new Room("at the underground spring under the town oasis. There is a mess of pipes managing the water.");
 
 	//Create all HELLISH HIGHLANDS rooms MARK: HH
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
@@ -681,6 +681,22 @@ NPC* SetupWorld() {
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "Cacty is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
+
+	//cactus bomb
+
+	//life plant
+
+	//spine wave
+
+	//cactus carpet
+
+	//acupuncture
+
+	//pressure point
+
+	//dual cacti
+
+	//super spine
 	
 	//MARK: other npcs
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
@@ -1681,7 +1697,6 @@ NPC* SetupWorld() {
 	//suspend
 
 	//crunch
-
 	//force field
 
 	//spatial pop
@@ -1695,7 +1710,9 @@ NPC* SetupWorld() {
 
 	//gun
 
-	//water valve
+	//water valve (push npc away for 1 turn)
+
+	//
 
 	//
 
@@ -2044,14 +2061,14 @@ NPC* SetupWorld() {
 	viola->addLinkedRoom(deserttown, "in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
 	viola->addLinkedRoom(deserthouse, "in some house which still has zero purpose.");
 	viola->addRecruitLink(viola);
-	viola->addLinkedConvo(viola, {{viola, "I'm sorry. I'll free everyone..."},
+	viola->addLinkedConvo(viola, {{viola, "I'm sorry I'll free everyone..."},
 								  {viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them..."},
 								  {self, "That's not a very good reason."},
 								  {viola, "Yeah I know..."},
 								  {viola, "I'm just going to go to that cliff over there..."},
 								  {NULL, "VIOLA went to that cliff over there."}});
 	viola->addLinkedTitle(viola, "GRAVITY GIRL");
-	viola->addLinkedDesc(viola, "Telekinetic teenager trying to use her powers for something good.");
+	viola->addLinkedDesc(viola, "Telekinetic teenager in regret of her prior actions. She is more physically grounded now.");
 	viola->addLinkedDialogue(viola, {{viola, "I can't believe I let all that power go to my head..."}});
 	viola->addDefeatRoom(viola, thatcliff);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
