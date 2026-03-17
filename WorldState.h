@@ -5,6 +5,8 @@
 
 namespace Helper {
 	enum WorldCondition {
+		RECOILED,
+		VIOLADEF,
 		VALVEUSED,
 		CEOQUEST,
 		TEMPLEQUEST,

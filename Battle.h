@@ -77,6 +77,14 @@ private:
 		"HELP",
 		"RUN"
 	};
+
+	const char* idleText[5] = { //flavor text for dummies not doing anything
+		"hanging in there.",
+		"hanging out.",
+		"still there.",
+		"being incredible.",
+		"keeping it frosty."
+	};
 };
 
 #endif

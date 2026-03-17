@@ -98,7 +98,7 @@ NPC* SetupWorld() {
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//create all WANING WOODLANDS rooms
-	Room* village = new Room("in Tactical Tent Village. It's a beautiful day; perfect for staying indoors and gaming.");
+	Room* village = new Room("in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.");
 	Room* villageleft = new Room("at the westernmost end of the village, where the second-tallest tent stands.\nIt's only two stories, but it's comparatively a tent mansion.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
 	Room* tentmansion = new Room("in the tent mansion's living room. There are way too many clocks here.");
@@ -441,7 +441,7 @@ NPC* SetupWorld() {
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
 
-	//MARK: Floria
+	//Flower Girl Floria is primarily a healer with some other stuff for variety as well MARK: Floria
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 1));
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely? :>"},
 							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."},
@@ -512,7 +512,7 @@ NPC* SetupWorld() {
 	mayflower->addEffect(hpbloom);
 	floria->addSpecialAttack(mayflower);
 
-	//MARK: Egadwick
+	//Science Gramps Egadwick is a support + some heavy damage MARK: Egadwick
 	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village.\nHe's always advancing science to the dismay of high school chemistry students.", tentlab, 5, Stats(15, 2, 3, 10, 10, 2, 9), Stats(0, 0, 1, 1, 1, 0, 1));
 	egadwick->setDialogue({{egadwick, "Ah hello kiddo. How's it going?"}, {self, "Pretty good."}, {egadwick, "Ah, that's good to hear."}});
 	egadwick->addGymDialogue({{egadwick, "Eh, exercise isn't really my thing."}, {egadwick, "I gain experience by working out my mind!"}});
@@ -599,7 +599,7 @@ NPC* SetupWorld() {
 	orbitalstrike->addDescription("Call down an orbital laser from Edgadwick's brand new satellite.");
 	egadwick->addSpecialAttack(orbitalstrike);
 	
-	//MARK: Absolom
+	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 1));
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
@@ -660,43 +660,203 @@ NPC* SetupWorld() {
 	orbitalstrike->addDescription("Rush at the target with a rapid flurry of strikes.");
 	forestknight->addSpecialAttack(blitz);
 
-	//MARK: Mike
-	NPC* minermaniac = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9));
-	//minermaniac->setScale(0, 0, 0, 0, 0, 0, 1);
+	//Miner Maniac Mike is a good damage teammate with the risk of friendly fire MARK: Mike
+	NPC* mike = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a reckless mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 1));
+	mike->addConversation({{NULL, "MIKE is throwing dynamite at the rocky wall."},
+						   {self, "That doesn't look very safe."},
+						   {mike, "HAHAHAHA Aren't the blasts just music to your ears?"},
+						   {self, "no it's very loud :|"}});
+	mike->setDialogue("HAHAHAHA I love the smell of explosions in the morning!");
+	Conversation mikerec1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {mike, "Why not, kid! Blowing up rocks is getting old."}};
+	mikerec1.skipcondition = TEMPLEQUEST;
+	Conversation mikerec2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {mike, "HAHAHAHA! Let's go blow up some BURGERs, kid!"}};
+	mikerec1.alt = &mikerec1;
+	mikerec2.skipcondition = BURGERMENDEF;
+	Conversation mikerec3 = {{self, "Hey wanna join my team?"}, {mike, "Why not, kid! Blowing up rocks is getting old."}};
+	mikerec2.alt = &mikerec3;
+	mike->addRecruitmentDialogue(mikerec1);
+	mike->addRecruitedDialogue("HAHAHAHAHA! So many things to explode!");
+	mike->addDismissalDialogue("Alright Imma head back to my cave!");
+	mike->setTalkOnRecruit(true);
+	mike->setRecruitable(true);
 
-	Attack* mdynamite;
+	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", -5, 20, 20, 2, 2, 1);
+	mdynamite->focushits = false;
+	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", 0, 10, 20, 1, 1, 1);
+	mdynamite->recoil = drecoil;
+	mdynamite->recoilchance = 0.3333f;
+	mike->setBasicAttack(mdynamite);
 
-	//flashbang
+	Attack* flashbang = new Attack("FLASHBANG", "threw a flashbang at", 8, 10, 20, 1, 1, 1);
+	Effect* stunned = new Effect("STUNNED", 3);
+	stunned->freeze = true;
+	flashbang->addEffect(stunned);
+	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", 0, 10, 20, 1, 1, 1);
+	frecoil->afterdesc = " as well";
+	frecoil->addEffect(stunned);
+	flashbang->recoil = frecoil;
+	flashbang->recoilchance = 0.3333f;
+	mike->addSpecialAttack(flashbang);
 
-	//big bundle
+	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", 13, 40, 20, 1, 1, 3);
+	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", 0, 20, 20, 1, 1, 1);
+	brecoil->afterdesc = " in the process";
+	bigbundle->recoil = brecoil;
+	bigbundle->recoilchance = 0.3333f;
+	mike->addSpecialAttack(bigbundle);
 
-	//bunker buster
+	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", 11, 30, 100, 1, 1, 1, false, 8);
+	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", 0, 30, 100, 1, 1, 1);
+	bunkerbuster->recoil = bbrecoil;
+	bunkerbuster->recoilchance = 0.3333f;
+	mike->addSpecialAttack(bunkerbuster);
 
-	//dedefenser
+	Attack* dedefenser = new Attack("DEDEFENSER", "threw a heavy charge at", 15, 10, 20, 1, 1, 1, false, 12);
+	Effect* dedefensed = new Effect("DEDEFENSED", 10, 0, 0, 1, 0.5f, 0.25f, 1, 0.5f);
+	dedefenser->addEffect(dedefensed);
+	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", 0, 10, 20, 1, 1, 1);
+	ddrecoil->addEffect(dedefensed);
+	dedefenser->recoil = ddrecoil;
+	dedefenser->recoilchance = 0.3333f;
+	mike->addSpecialAttack(dedefenser);
 
-	//minesweeper
+	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", 20, 60, 35, 1, 1, 5, false, 17);
+	Attack* dcrecoil = new Attack("LOOSE DYNAMITE", "accidentally included", 0, 30, 25, 1, 1, 1);
+	dcrecoil->afterdesc = " in charge's radius";
+	depthcharge->recoil = dcrecoil;
+	depthcharge->recoilchance = 0.67f;
+	mike->addSpecialAttack(depthcharge);
 
-	//MARK: Cacty
-	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 15, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
+	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", 35, 10, 20, 12, 12, 1, false, 20);
+	minesweeper->focushits = false;
+	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", 0, 10, 20, 4, 4, 1);
+	minesweeper->recoil = mrecoil;
+	minesweeper->recoilchance = 1;
+	mike->setBasicAttack(minesweeper);
+
+	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
+	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "Cacty is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
+	
+	Attack* loosespines = new Attack("LOOSE SPINES", "'s loose spines flew at the enemy team", 0, 8, 15, 1, 3, 1);
+	cacty->setRecoilAttack(loosespines);
 
-	//cactus bomb
+	Attack* cactbomb = new Attack("CACTUS BOMB", "threw a cactus bomb at", -5, 3, 15, 4, 6, 1);
+	cacty->setBasicAttack(cactbomb);
 
-	//life plant
+	Attack plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", 7, 0, 0, 0, 0, 0);
+	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
+	plantlifeplant->summon = lifeplant;
+	plantlifeplant->summonamount = 1;
+	cacty->addSpecialAttack(plantlifeplant);
 
-	//spine wave
+	Attack* spinewave = new Attack("SPINE WAVE", "popped a wave of spines at", 7, 6, 15, 3, 3, 3);
+	cacty->addSpecialAttack(cactbomb);
 
-	//cactus carpet
+	Attack* cactcarpet = new Attack("CACTUS CARPET", "threw a carpet of cactus at", 8, 15, 15, 1, 1, 3, false, 14, 0, 0.34f);
+	Effect* spinyfloor = new Effect("SPINY FLOOR", 4, 15);
+	cactcarpet->addEffect(spinyfloor);
+	cactcarpet->lifesteal = 0.34f;
+	cacty->addSpecialAttack(cactcarpet);
 
-	//acupuncture
+	Attack* acupuncture = new Attack("ACUPUNCTURE", "expertly healed", 7, -8, 15, 3, 3, 1, true);
+	acupuncture->afterdesc = " with spines";
+	cacty->addSpecialAttack(acupuncture);
 
-	//pressure point
+	Attack* prespoints = new Attack("PRESSURE POINTS", "fired precise needles at", 8, 10, 20, 1, 1, 1);
+	prespoints->afterdesc = "'s pressure points";
+	Effect* pinned = new Effect("PINNED", 3);
+	pinned->freeze = true;
+	prespoints->addEffect(pinned);
+	cacty->addSpecialAttack(prespoints);
 
-	//dual cacti
+	Attack* dualcacti = new Attack("DUAL CACTI", "threw two cactus bombs at", 12, 4, 15, 3, 4, 3, false, 16);
+	cacty->addSpecialAttack(dualcacti);
 
-	//super spine
+	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", 15, 40, 100, 1, 1, 1, false, 18);
+	cacty->addSpecialAttack(superspine);
+
+	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
+
+	//cast iron
+
+	//5 star meal
+
+	//flambé
+
+	//Hot sauce
+
+	//feast
+
+	//some attack
+	
+	//Michenlin star meal
+
+	//CONGRATULATION
+
+	//Hackerman Carlos is a support MARK: Carlos
+
+	//hack
+
+	//trojan
+
+	//social engineering
+
+	//stack smash
+
+	//ssh trap
+
+	//ddos
+
+	//fork bomb
+
+	//bitcoin mine
+
+	//(null terminator?) prolly not
+
+	//Princess Plum is another support MARK: Plum
+
+	//racket
+
+	//big mushroom
+
+	//burny blossom
+
+	//turtle shell
+
+	//metal hat
+
+	//bobby bomb
+
+	//superstar
+
+	//lightning
+
+	//blue turtle shell
+
+	//life mushroom (gives extra life)
+
+	//Gambler Graham is the rng guy MARK: Graham
+
+	//Ratman is Ratman MARK: Ratman
+
+	//ratarang
+
+	//Rich Guy Richie is the summoner MARK: Richie
+
+	//
+
+	//
+
+	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
+
+	//
+
+	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
+
+	//
 	
 	//MARK: other npcs
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
@@ -904,7 +1064,7 @@ NPC* SetupWorld() {
 								{wallelder, "But the BURGER MAN ordered the woods parched, and reduced it to the wastes seen today."},
 								{wallelder, "He will continue to do so until nature has been expunged from this world."},
 								{wallelder, "By destroying the means to live, he guides the people by hunger and thirst to his city, where they will be more easily tempted by the BURGER RESTAURANT."},
-								{self, "Dang that's crazy."},
+								{self, "Sounds like normal corporation things."},
 								{wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below."}});
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
 	wallelder->addRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");
@@ -967,6 +1127,9 @@ NPC* SetupWorld() {
 	gymbro->addRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
 	gymbro->setGymStart(1); //he will always catch up to your level
 
+	mike->addGymDialogue({{mike, "HA this place is great for practicing my throwing range!"}, {gymbro, "PSST!"}, {gymbro, "Hey, kid."}, {self, "Yeah?"}, {gymbro, "Can you please hurry and RECRUIT this guy back?"}, {gymbro, "He's freaking scary."}});
+	mike->addGymDialogue({{mike, "Check out how far I can throw this dynamite!"}});
+
 	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
 	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", 0, 1, 2, 1, 1, 1);
 	Attack* knifethrow = new Attack("KNIFE THROW", "threw a knife at", 0, 1, 1, 1, 1, 1);
@@ -998,10 +1161,6 @@ NPC* SetupWorld() {
 
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo, IN_ELEVATOR);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
-
-	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant person in the shop.", desertshopfixed, 12);
-	merchant->setDialogue("Welcome, my friend, to my store.");
-	merchant->addRejectionDialogue("No I want to sell things.");
 
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
@@ -1069,11 +1228,33 @@ NPC* SetupWorld() {
 						   {bob, "Clearly there's something wrong with it because the oasis is dry!"}};
 	bobcon.skipcondition = VALVEUSED;
 	bob->addConversation(bobcon);
+	Conversation bobdial = {{bob, "..."}, {NULL, "BOB is frozen in the air."}};
 	bob->setDialogue({{bob, "Oh my poor friend Cacty!"},
 					  {bob, "He's so dehydrated!"}});
 	bob->addRejectionDialogue("No my mama says I'm too young to go adventuring.");
+	
+	NPC* franklin = new NPC("TOWN ELDER", "FRANKLIN", "The town elder of the desert town, and an avid tennis player. He has a big mustache.", limbo, 5);
+	franklin->addConversation({{franklin, "Say, I had a very good view of your fight with Viola."},
+							   {franklin, "I simply must thank you for saving our humble town!"},
+							   {franklin, "Here, have this desert delicacy!"},
+							   {self, "Oh thanks."}});
+	Item* desertdelicacy = new HpItem("DESERT DELICACY", "A very nice desert pie, featuring rare desert fruit. (heals all HP)", limbo, 2147483647);
+	franklin->setGift(desertdelicacy);
+	franklin->addConversation({{self, "So like does this town have a name?"},
+							   {franklin, "..."},
+							   {franklin, "Not really."},
+							   {self, "How about Practical Pueblo?"},
+							   {franklin, "I'll bring it up with the HOA."}});
 
-	NPC* franklin = new NPC("TOWN ELDER", "FRANKLIN", "A small child wearing a newsboy cap. He has a hard time making human friends and prefers plants.", limbo, 0);
+	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant and owner of the desert store. He really wants your monies.", limbo, 12);
+	merchant->setDialogue("Welcome, my friend, to my store.");
+	merchant->addRejectionDialogue("No I want to sell things.");
+
+	/*NPC* olivia = new NPC("", "OLIVIA", "Lady who lives in this house.", limbo, 7);
+	olivia->setDialogue({})*/
+
+	//*...*
+	//____ is frozen in the air.
 
 	Item* valve = new WorldChangeItem("WATER VALVE", "A valve on the pipe managing the spring's water. It's currently redirecting the water away from the oasis.", minespring, "turn the valve counterclockwise. The spring's water is now flowing to the oasis!");
 	WorldChange& valvechanges = ((WorldChangeItem*)valve)->getChanges();
@@ -1755,7 +1936,7 @@ NPC* SetupWorld() {
 
 	//gas leak (x2 sp use, damage) "shot a poison gas main near"
 
-	//
+	//scalding steam (high damage to three)
 
 	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo, 0, Stats());
 	magman->setBasicAttack(genericattack);
@@ -2113,12 +2294,16 @@ NPC* SetupWorld() {
 	viola->addLinkedDesc(viola, "Telekinetic teenager in regret of her prior actions. She is more physically grounded now.");
 	viola->addLinkedDialogue(viola, {{viola, "I can't believe I let all that power go to my head..."}});
 	viola->addDefeatRoom(viola, thatcliff);
+	viola->addDefeatRoom(merro, desertshopfixed);
+	viola->addDefeatRoom(franklin, deserttown);
+	viola->addDefeatRoom(bob, oasis);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
 	viola->addLinkedRoom(cliff2, "You have a good view of the volcanic, even wastier wastelands beyond the desert");
 	viola->addAttackRemoval(viola, tkguard);
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
+	viola->setWorldCondition(VIOLADEF);
 
 	NPC* springguard = new NPC(*greer);
 	springguard->setLeader(true, 20, NULL, false);
@@ -3130,4 +3315,5 @@ int main() {
 	for (Effect* effect : effectsH) {
 		delete effect;
 	}
+	delete inventory;
 }

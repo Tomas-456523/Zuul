@@ -179,7 +179,7 @@ namespace Helper {
 	int aliveCount(vector<NPC*>& team) {
 		int i = 0; //starts at 0 and adds 1 every time someone has >0 hp
 		for (NPC* npc : team) {
-			if (npc->getHealth() > 0) {
+			if (npc->getHealth() > 0 && npc->getBasicAttack()) { //they also don't count if they have no attacks (e.g. a life plant, it doesn't do anything so it doesn't count)
 				i++;
 			}
 		}
@@ -310,6 +310,7 @@ namespace Helper {
 			pair<NPC*, Attack*>& data = changes.removeAttacks.front();
 			data.first->removeSpecialAttack(data.second);
 			changes.removeAttacks.pop();
+			data.first->calculateWeights(); //we just removed a move so we have to recalculate the weights to account for it
 		}
 		while (!changes.guardedItems.empty()) { //unguard all the items
 			changes.guardedItems.front()->setGuard(NULL);

@@ -607,6 +607,8 @@ void Battle::npcTurn(NPC* npc) {
 			attack = npc->getBasicAttack(); //default to basic attack if it isn't also healing
 		}
 	}
+
+	//default to basic if attack->remove && target->getBoss()
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
 	size_t healchecks = 0; //heals specifically may fail
@@ -647,7 +649,11 @@ int Battle::FIGHT() {
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk
 		} else if (current->getFrozen()) { //prints how the npc wanted to move but couldn't due to freezing
-			cout << "\n" << player->getName() << " is frozen in place!";
+			cout << "\n" << current->getName() << " is frozen in place!";
+			CinPause();
+		} else if (!current->getBasicAttack()) {
+			cout << current->getName() << " is " << idleText[rand()%9];
+			CinPause();
 		} else if (current->getPlayerness()) { //starts the player turn!
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn(current);

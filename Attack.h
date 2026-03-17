@@ -8,6 +8,8 @@
 #include "Effect.h"
 using namespace std;
 
+class NPC;
+
 struct Attack; //forward declare itself so it can forward declare attacksH
 namespace Helper { //forward declare Helper to add attacks to attacksH
 	extern vector<Attack*> attacksH;
@@ -43,6 +45,12 @@ struct Attack {
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
 	Effect* synergy = NULL; //if the target has this effect, the attack doubles in power
 	Effect* cancel = NULL; //attack removes this effect
+
+	Attack* recoil = NULL;
+	float recoilchance = 0;
+
+	NPC* summon = NULL; //the npc that the attack summons
+	int summonamount = 0; //how many of the summon to summon
 
 	Attack() {} //default constructor so NPC doesn't throw error
 

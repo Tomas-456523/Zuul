@@ -54,6 +54,7 @@ public: //you need to set stats on creation
 	int getMonyReward();
 	bool getEnemy(); //if npc is enemy
 	Attack* getBasicAttack();
+	Attack* getRecoilAttack();
 	vector<Attack*> getSpecialAttacks();
 	map<Attack*, int> getWeights();
 	bool getLevelUp(); //if we leveled up recently
@@ -118,6 +119,7 @@ public: //you need to set stats on creation
 	void directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
+	void setRecoilAttack(Attack* attack);
 	void addSpecialAttack(Attack* attack);
 	void removeSpecialAttack(Attack* attack);
 	void blockExit(const char* _exitBlocking, const char* type, const char* reason, bool bothsides = false);
@@ -187,8 +189,10 @@ protected:
 
 	vector<NPC*> party; //the npc's party if it is a leader
 
-	Attack* standard_attack; //the npc's normal attack for generating sp
+	Attack* standard_attack = NULL; //the npc's normal attack for generating sp
 	vector<Attack*> special_attacks; //the npc's special attacks that cost sp
+
+	Attack* recoilattack = NULL; //the attack that happens when this npc is hit
 
 	vector<Effect> effects; //the effects affecting this npc
 	map<Attack*, int> attackWeight; //the weight of the npc's attacks

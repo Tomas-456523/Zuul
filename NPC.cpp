@@ -151,6 +151,9 @@ int NPC::getMonyReward() {
 Attack* NPC::getBasicAttack() {
 	return standard_attack;
 }
+Attack* NPC::getRecoilAttack() {
+	return recoilattack;
+}
 vector<Attack*> NPC::getSpecialAttacks() {
 	return special_attacks;
 }
@@ -530,6 +533,9 @@ void NPC::setBaseStats(Stats _stats) { //reset base stats and calculate new curr
 }
 void NPC::setBasicAttack(Attack* attack) {
 	standard_attack = attack;
+}
+void NPC::setRecoilAttack(Attack* attack) {
+	recoilattack = attack;
 }
 void NPC::addSpecialAttack(Attack* attack) {
 	special_attacks.push_back(attack);

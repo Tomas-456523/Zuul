@@ -38,6 +38,10 @@ struct Effect {
 
 	NPC* npc = NULL; //the affected npc, used by instances
 
+	float lifesteal = 0; //what % of damage taken is given to the attacker
+	float spsteal = 0; //what % of sp taken is given to the attacker
+	NPC* absorber = NULL; //who takes the lifestolen hp
+
 	Effect() {} //default constructor to avoid random errors
 
 	//constructs the effect
