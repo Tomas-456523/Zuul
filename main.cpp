@@ -395,7 +395,7 @@ NPC* SetupWorld() {
 	//Create attacks
 	
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "It's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", cliff2, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
 	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -1073,16 +1073,18 @@ NPC* SetupWorld() {
 					  {bob, "He's so dehydrated!"}});
 	bob->addRejectionDialogue("No my mama says I'm too young to go adventuring.");
 
+	NPC* franklin = new NPC("TOWN ELDER", "FRANKLIN", "A small child wearing a newsboy cap. He has a hard time making human friends and prefers plants.", limbo, 0);
+
 	Item* valve = new WorldChangeItem("WATER VALVE", "A valve on the pipe managing the spring's water. It's currently redirecting the water away from the oasis.", minespring, "turn the valve counterclockwise. The spring's water is now flowing to the oasis!");
 	WorldChange& valvechanges = ((WorldChangeItem*)valve)->getChanges();
-	valvechanges->worldcon = VALVEUSED;
-	valvechanges->linkedConversations.push({bob, {{bob, "The oasis has filled up with water!"}, {bob, "Do you know how this is?"}, {self, "Yeah I just turned some valve underground."}, {bob, "Remarkable!"}});
-	valvechanges->linkedConversations.push({cacty, {{NULL, "CACTY - *grateful cactus noises*"}, {self, "What how did you know I did that?"}, {NULL, "CACTY - *explanatory cactus noises*"}, {self, "Oh I see."}});
-	valvechanges->linkedDialogue.push({bob, {{bob, "Oh I'm so happy my friend Cacty is hydrated now!"}});
-	valvechanges->linkedDialogue.push({cacty, {{NULL, "CACTY - *happy cactus noises*"}});
-	valvechanges->linkedDescriptions.push({cacty, "Sharp cactus, hydrated back to health. He has a remarkable pink flower and rooty legs to move around."});
-	valvechanges->roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
-	//valvechanges->roomChanges.push({basement, "something about how BURGER production has ceased"});
+	valvechanges.worldcon = VALVEUSED;
+	valvechanges.linkedConversations.push({bob, {{bob, "The oasis has filled up with water!"}, {bob, "Do you know how this is?"}, {self, "Yeah I just turned some valve underground."}, {bob, "Remarkable!"}}});
+	valvechanges.linkedConversations.push({cacty, {{NULL, "CACTY - *grateful cactus noises*"}, {self, "What how did you know I did that?"}, {NULL, "CACTY - *explanatory cactus noises*"}, {self, "Oh I see."}}});
+	valvechanges.linkedDialogue.push({bob, {{bob, "Oh I'm so happy my friend Cacty is hydrated now!"}}});
+	valvechanges.linkedDialogue.push({cacty, {{NULL, "CACTY - *happy cactus noises*"}}});
+	valvechanges.linkedDescriptions.push({cacty, "Sharp cactus, hydrated back to health. He has a remarkable pink flower and rooty legs to move around."});
+	valvechanges.roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
+	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -1698,6 +1700,8 @@ NPC* SetupWorld() {
 
 	Attack* smackdown = new Attack("SMACKDOWN", "lifted", 5, 20, 0, 1, 1, 1);
 	smackdown->afterdesc = " into the air and smacked them back down";
+	Effect* suspended = new Effect("SUSPENDED", 3, 0, 0);
+	smackdown->synergy = suspended; //because Viola is already holding the npc in the air so it's easier to do more damage
 	tkviola->addSpecialAttack(smackdown);
 
 	Attack* tkguard = new Attack("INVOLUNTARY GUARD", "set up a guard using a townsperson", 7, 0, 0, 0, 0, 0);
@@ -1706,19 +1710,21 @@ NPC* SetupWorld() {
 
 	Attack* fling = new Attack("FLING", "flung", 5, 20, 0, 1, 1, 1);
 	fling->afterdesc = " into the stratosphere";
+	Efect* flung = new Effect("FLUNG", 1);
+	flung->falldamage = 30;
+	fling->cancel = suspended; //throwing someone into the air makes them no longer frozen in place
 	tkviola->addSpecialAttack(fling);
 
 	Attack* suspend = new Attack("SUSPEND", "suspended", 7, 0, 0, 1, 1, 1);
-	smackdown->afterdesc = " in the air";
-	Effect* suspended = new Effect("SUSPENDED", 3, 0, 0);
+	suspend->afterdesc = " in the air";
 	suspended->freeze = true;
 	suspend->addEffect(suspended);
 	tkviola->addSpecialAttack(suspend);
 
-	Attack* crunch = new Attack("CRUNCH", "compressed", 12, 25, 50, 1, 1, 1);
-	crunch->afterdesc = " to a reasonable extent";
-	crunch->addDescription("");
-	tkviola->addSpecialAttack(crunch);
+	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to", 12, 25, 50, 1, 1, 1, false, 11);
+	gutpunch->afterdesc = "'s gut";
+	gutpunch->addDescription("Deliver a telekinetic punch to the target's gut. (25 ATTACK, 50 PIERCE)");
+	tkviola->addSpecialAttack(gutpunch);
 
 	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", 10, 20, 30, 1, 1, 3, false, 12);
 	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (20 DAMAGE, 30 PIERCE)");
@@ -1736,8 +1742,8 @@ NPC* SetupWorld() {
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
 
-	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", 25, 50, 20, 1, 1, 7, false, 20);
-	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (25 DAMAGE, 50 PIERCE)");
+	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", 25, 35, 100, 1, 1, 7, false, 20);
+	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (35 DAMAGE, 100 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
 	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 10));
@@ -1747,7 +1753,7 @@ NPC* SetupWorld() {
 
 	//water valve (push npc away for 1 turn)
 
-	//
+	//gas leak (x2 sp use, damage) "shot a poison gas main near"
 
 	//
 
@@ -2085,7 +2091,7 @@ NPC* SetupWorld() {
 	viola->addRecruitmentDialogue({{self, "Yo, wanna join my team?"},
 								   {viola, "Really?"},
 								   {viola, "After what I did?"},
-								   {self, "uhh yeah."},
+								   {self, "Yeah."},
 								   {viola, "Um..."},
 								   {viola, "Alright..."}});
 	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
@@ -2138,7 +2144,6 @@ NPC* SetupWorld() {
 	springguard->setBasicAttack(genericattack);
 	springguard->addLinkedRoom(oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to appear.");
 	springguard->guardItem(valve);
-	springguard->setWorldCondition(GREERDEF);
 
 	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
 	lavaguard->setLeader(true, 40, NULL, false);

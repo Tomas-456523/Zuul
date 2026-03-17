@@ -31,6 +31,8 @@ struct Effect {
 
 	bool freeze = false; //if the effect causes the target to get frozen
 	bool hypnotize = false; //if the effect causes the target to get hypnotized (attack own party)
+	bool remove = false; //if the attack removes the target from the fight temporarily
+	int falldamage = 0; //if remove == true, how much damage the affected npc takes on return
 
 	int guardset = 0; //if this effect sets guard on the target
 

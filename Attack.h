@@ -41,6 +41,8 @@ struct Attack {
 
 	Effect* appliedeffect = NULL; //targets get affected by this effect when hit
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
+	Effect* synergy = NULL; //if the target has this effect, the attack doubles in power
+	Effect* cancel = NULL; //attack removes this effect
 
 	Attack() {} //default constructor so NPC doesn't throw error
 

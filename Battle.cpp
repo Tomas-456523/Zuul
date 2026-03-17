@@ -173,6 +173,8 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				effectiveAttack = attack->power;
 			} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
 				effectiveAttack = effectivePierce = 2147483647; //just send as much damage as possible
+			} else if (attack->synergy && reciever->getEffect(attack->synergy->name)) { //double attack power if the attack synergizes with the effect
+				effectiveAttack *= 2;
 			} else {
 				effectiveAttack = attack->power * attacker->getAttack() * attacker->getAttMultiplier() / 10;
 				effectivePierce = attack->pierce * attacker->getPierce() * attacker->getPierceMultiplier() / 10;
@@ -191,6 +193,9 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			if (!hits) cout << "\nThe attack missed!";
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 				reciever->setEffect(attack->appliedeffect);
+			}
+			if (attack->cancel != NULL) { //removes the effect this attack cancels out
+				reciever->removeEffect(attack->cancel, false); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
 			}
 			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 				attacker->damage(attack->recoil * attacker->getAttack() * attacker->getAttMultiplier() / 10, 0, 1);
@@ -272,6 +277,9 @@ bool Battle::useItem(const char* itemname) {
 				} else { //if it was for targeting your team
 					cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
 				}
+				return false;
+			} else if (npc->getAway()) { //can't use item on missing npc
+				cout << "\n" << commandExtensionP << " is not in the battlefield right now!";
 				return false;
 			}
 		} else {
@@ -466,6 +474,9 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 				return false;
 			}
 			continue; //goes to the next iteration if we still have more checks to run, with one more space this time!
+		} else if (target->getAway()) { //if the target is not here and targetable at the moment
+			cout << "\n" << commandExtensionP << " is not in the battlefield right now!";
+			return false;
 		} //if it was the basic attack we launch that
 		if (!strcmp(commandWordP, plr->getBasicAttack()->name)) {
 			carryOutAttack(plr->getBasicAttack(), plr, target);

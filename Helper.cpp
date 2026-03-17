@@ -302,7 +302,7 @@ namespace Helper {
 			changes.redirectRooms.pop();
 		}
 		while (!changes.linkedStats.empty()) { //change all changing stats
-			pair<NPC*, stats>& data = changes.linkedStats.front();
+			pair<NPC*, Stats>& data = changes.linkedStats.front();
 			data.first->setBaseStats(data.second);
 			changes.linkedStats.pop();
 		}

@@ -12,6 +12,7 @@
 class Room;
 class NPC;
 class Item;
+struct Attack;
 
 struct WorldChange {
     std::queue<NPC*> recruitLinks; //these npcs are set to recruitable

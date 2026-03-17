@@ -234,6 +234,17 @@ int NPC::getGuard() {
 	if (guard < 0) return 0;
 	return guard;
 }
+bool NPC::getAway() { //get if the npc is away from the battle
+	return away;
+}
+Effect* NPC::getEffect(const char* effect) {
+	for (Effect& ef : effects) { //check if we already have the effect
+		if (!strcmp(effect, ef.name)) {
+			return &ef;
+		}
+	}
+	return NULL;
+}
 void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc to edit on defeat
 	changes.worldcon = cond;
 }
@@ -630,13 +641,16 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 		}
 		hypnosis++;
 	}
+	if (effects[i].remove) {
+		away = true;
+	}
 	if (effect.guardset) {
 		setGuard(effect.guardset);
 	}
 	effect.npc = this; //tell the effect it's affecting this npc
 	effects.push_back(effect); //adds the effect to the effect tracker
 }
-void NPC::removeEffect(Effect& effect) { //removes an effect from the npc
+void NPC::removeEffect(Effect& effect, bool announce) { //removes an effect from the npc
 	for (int i = 0; i < effects.size(); i++) {
 		if (!strcmp(effect.name, effects[i].name)) { //if the names match, no conflicting effect names as far as I know
 			attackMultiplier /= effects[i].attackbuff; //remove the stat multipliers
@@ -645,67 +659,48 @@ void NPC::removeEffect(Effect& effect) { //removes an effect from the npc
 			pierceMultiplier /= effects[i].piercebuff;
 			damageMultiplier /= effects[i].damagebuff;
 			spUseMultiplier /= effects[i].spusage;
-			if (effects[i].defensebuff != 1) { //prints the stat changes
+			if (effect.freeze) { //decrements freeze if applicable
+				freeze--;
+				if (!freeze && announce) { //prints if we're no longer frozen
+					cout << "\n" << name << " broke free!";
+				}
+			}
+			if (effect.hypnotize) { //decrements hypnosis if applicable
+				hypnosis--;
+				if (!hypnosis && announce) { //prints if we're no longer hypnotized
+					cout << "\n" << name << " snapped out of it!";
+				}
+			}
+			if (effects[i].defensebuff != 1 && announce) { //prints the stat changes
 				cout << "\n" << name << "'s DEFENSE went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.defensebuff << "!";
 			}
-			if (effects[i].attackbuff != 1) {
+			if (effects[i].attackbuff != 1 && announce) {
 				cout << "\n" << name << "'s ATTACK went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.attackbuff << "!";
 			}
-			if (effects[i].toughbuff != 1) {
+			if (effects[i].toughbuff != 1 && announce) {
 				cout << "\n" << name << "'s TOUGHNESS went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.toughbuff << "!";
 			}
-			if (effects[i].piercebuff != 1) {
+			if (effects[i].piercebuff != 1 && announce) {
 				cout << "\n" << name << "'s PIERCE went " << (effect.defensebuff > 1 ? "up" : "down") << " by a factor of " << effect.piercebuff << "!";
 			}
-			if (effects[i].damagebuff != 1) {
-				//MARK: please edit this
-				
-
-
-
-
-				//MARK: please edit this
-				
-
-
-
-				
-				//MARK: please edit this
-				
-
-
-
-				
-				//MARK: please edit this
-				
-
-
-
-				
-				//MARK: please edit this
-				
-
-
-
-				
-				//MARK: please edit this
-				
-
-
-
-				
-				//MARK: please edit this
-				
-
-
-
-				
+			if (effects[i].damagebuff != 1 && announce) {
 				//MARK: please edit this
 				cout << "\n" << name << " now takes " << damageMultiplier << " times as much damage!";
 			}
-			if (effects[i].spusage != 1) {
+			if (effects[i].spusage != 1 && announce) {
 				cout << "\n" << name << "'s moves now use " << 1.0f/effect.spusage << " times SP!";
-			}//////////////////////////////////////
+			}
+			if (effects[i].remove) {
+				away = false;
+				cout << "\n" << name << " is back!";
+				if (effects[i].falldamage) {
+					damage(effects[i].falldamage, 0, 1);
+				}
+			}
+			effects.erase(effects.begin() + i); //erase the effect from the vector
+			return; //return because no need to check the rest because we just removed it
+
+			/*
 			if (effects[i].defensebuff) { //says by how much stats dropped if applicable
 				//cout << "\n" << name << "'s DEFENSE went down to " << defense << "!";
 			}
@@ -717,21 +712,7 @@ void NPC::removeEffect(Effect& effect) { //removes an effect from the npc
 			}
 			if (effects[i].piercebuff) {
 				//cout << "\n" << name << "'s PIERCE went down to " << pierce << "!";
-			}
-			if (effect.freeze) { //decrements freeze if applicable
-				freeze--;
-				if (!freeze) { //prints if we're no longer frozen
-					cout << "\n" << name << " broke free!";
-				}
-			}
-			if (effect.hypnotize) { //decrements hypnosis if applicable
-				hypnosis--;
-				if (!hypnosis) { //prints if we're no longer hypnotized
-					cout << "\n" << name << " snapped out of it!";
-				}
-			}
-			effects.erase(effects.begin() + i); //erase the effect from the vector
-			return; //return because no need to check the rest because we just removed it
+			}*/
 		}
 	}
 }

@@ -75,6 +75,8 @@ public: //you need to set stats on creation
 	float getDamageMultiplier();
 	time_t getGymStart();
 	int getGuard();
+	bool getAway();
+	Effect* getEffect(const char* effect); //find the effect with that name in the npc
 
 	NPC* getGuardian();
 	NPC* getGuarding();
@@ -128,7 +130,7 @@ public: //you need to set stats on creation
 	void setGuard(int _guard); //set guard to block attacks
 	void setGift(Item* item); //item to give when talking
 	void setEffect(Effect* effect, bool battle = true); //add an effect to the npc
-	void removeEffect(Effect& effect);
+	void removeEffect(Effect& effect, bool announce = true);
 	void setBoss(bool boss);
 	void setExtraXP(int xp);
 	void setExtraMonies(int monies);
@@ -241,6 +243,7 @@ protected:
 
 	int hypnosis = 0; //how hypnotized the npc is
 	int freeze = 0; //how frozen the npc is
+	bool away = false; //if the npc is away from the battle
 	bool defeated = false; //if the npc is defeated (appears in the room)
 	bool respawns = true; //if the npc appears again after battle
 
