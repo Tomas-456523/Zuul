@@ -175,13 +175,13 @@ NPC* SetupWorld() {
 	Room* cliff2 = new Room("on the highest cliff. The desert townsfolk are suspended in the air around a girl with a purple dress.");
 	Room* mineshaft = new Room("underground in the mineshaft. It was too hot outside, but now it's very cold :(");
 	Room* mineshaft2 = new Room("at a pickaxe in the road. That's not a utensil...");
-	Room* mineshaft3 = new Room("deep in the mineshaft. A huge face spans the wall; he looks very interesting.");
+	Room* mineshaft3 = new Room("deep in the mineshaft. The rock looks extra rocky here.");
 	Room* minelight = new Room("pretty high up, though still underground. You can see the light at the end of the tunnel just up above; how lovely.");
 	Room* mineexit = new Room("at the high-up exit of the mineshaft. SO MANY STAIRS...");
 	Room* mineshaftside = new Room("in a side tunnel of the mineshaft. There's a bunch of loose minecarts here.");
 	Room* kaboomroom = new Room("in a very unstable looking room. It's filled to the brim with dynamite, which is concerning considering that maniac that hangs out here.");
 	Room* berryroom = new Room("in a hidden room full of subterranean cactus.");
-	Room* volcanoentrance = new Room("at the northernmost end of the mineshaft. Burning light and ash enter through the mineshaft entrance.");
+	Room* volcanoentrance = new Room("at the northernmost end of the mineshaft. Burning light radiates through the mineshaft entrance.");
 	Room* desertstation = new Room("in a train station, which seems to have been accidentally intercepted by the mineshaft.");
 	desertstation->setStation();
 	Room* deserttunnel = new Room("in a long, dark train tunnel. You've never seen one that goes on for so long with no collapse.");
@@ -395,7 +395,7 @@ NPC* SetupWorld() {
 	//Create attacks
 	
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "It's a me.", cliff2, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
+	NPC* self = new NPC("\0", "SELF", "It's a me.", deserttown, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
 	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -683,7 +683,7 @@ NPC* SetupWorld() {
 	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", -5, 20, 20, 2, 2, 1);
 	mdynamite->focushits = false;
 	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", 0, 10, 20, 1, 1, 1);
-	mdynamite->recoil = drecoil;
+	mdynamite->recoilatt = drecoil;
 	mdynamite->recoilchance = 0.3333f;
 	mike->setBasicAttack(mdynamite);
 
@@ -694,20 +694,20 @@ NPC* SetupWorld() {
 	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", 0, 10, 20, 1, 1, 1);
 	frecoil->afterdesc = " as well";
 	frecoil->addEffect(stunned);
-	flashbang->recoil = frecoil;
+	flashbang->recoilatt = frecoil;
 	flashbang->recoilchance = 0.3333f;
 	mike->addSpecialAttack(flashbang);
 
 	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", 13, 40, 20, 1, 1, 3);
 	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", 0, 20, 20, 1, 1, 1);
 	brecoil->afterdesc = " in the process";
-	bigbundle->recoil = brecoil;
+	bigbundle->recoilatt = brecoil;
 	bigbundle->recoilchance = 0.3333f;
 	mike->addSpecialAttack(bigbundle);
 
 	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", 11, 30, 100, 1, 1, 1, false, 8);
 	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", 0, 30, 100, 1, 1, 1);
-	bunkerbuster->recoil = bbrecoil;
+	bunkerbuster->recoilatt = bbrecoil;
 	bunkerbuster->recoilchance = 0.3333f;
 	mike->addSpecialAttack(bunkerbuster);
 
@@ -716,28 +716,30 @@ NPC* SetupWorld() {
 	dedefenser->addEffect(dedefensed);
 	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", 0, 10, 20, 1, 1, 1);
 	ddrecoil->addEffect(dedefensed);
-	dedefenser->recoil = ddrecoil;
+	dedefenser->recoilatt = ddrecoil;
 	dedefenser->recoilchance = 0.3333f;
 	mike->addSpecialAttack(dedefenser);
 
 	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", 20, 60, 35, 1, 1, 5, false, 17);
 	Attack* dcrecoil = new Attack("LOOSE DYNAMITE", "accidentally included", 0, 30, 25, 1, 1, 1);
 	dcrecoil->afterdesc = " in charge's radius";
-	depthcharge->recoil = dcrecoil;
+	depthcharge->recoilatt = dcrecoil;
 	depthcharge->recoilchance = 0.67f;
 	mike->addSpecialAttack(depthcharge);
 
 	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", 35, 10, 20, 12, 12, 1, false, 20);
 	minesweeper->focushits = false;
-	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", 0, 10, 20, 4, 4, 1);
-	minesweeper->recoil = mrecoil;
+	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", 0, 10, 20, 3, 3, 1);
+	minesweeper->recoilatt = mrecoil;
 	minesweeper->recoilchance = 1;
-	mike->setBasicAttack(minesweeper);
+	mike->addSpecialAttack(minesweeper);
+
+	//and make him say "Oops."
 
 	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
 	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
-	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "Cacty is too dehydrated to join you."}});
+	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
 	
 	Attack* loosespines = new Attack("LOOSE SPINES", "'s loose spines flew at the enemy team", 0, 8, 15, 1, 3, 1);
@@ -746,14 +748,14 @@ NPC* SetupWorld() {
 	Attack* cactbomb = new Attack("CACTUS BOMB", "threw a cactus bomb at", -5, 3, 15, 4, 6, 1);
 	cacty->setBasicAttack(cactbomb);
 
-	Attack plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", 7, 0, 0, 0, 0, 0);
+	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", 7, 0, 0, 0, 0, 0);
 	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
 	plantlifeplant->summon = lifeplant;
 	plantlifeplant->summonamount = 1;
 	cacty->addSpecialAttack(plantlifeplant);
 
 	Attack* spinewave = new Attack("SPINE WAVE", "popped a wave of spines at", 7, 6, 15, 3, 3, 3);
-	cacty->addSpecialAttack(cactbomb);
+	cacty->addSpecialAttack(spinewave);
 
 	Attack* cactcarpet = new Attack("CACTUS CARPET", "threw a carpet of cactus at", 8, 15, 15, 1, 1, 3, false, 14, 0, 0.34f);
 	Effect* spinyfloor = new Effect("SPINY FLOOR", 4, 15);
@@ -1053,7 +1055,7 @@ NPC* SetupWorld() {
 	mrdeer->setDialogue({{NULL, "MR DEER - *deer noises*"}});
 	mrdeer->addRejectionDialogue({{NULL, "MR DEER - *no thank you deer noise*"}});
 
-	NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall.\nThere may be more to him, but all you can see is his face.", mineshaft3, 25000, Stats(15000, 15000, 15000, 15000, 0, 2000, 500));
+	/*NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall.\nThere may be more to him, but all you can see is his face.", mineshaft3, 25000, Stats(15000, 15000, 15000, 15000, 0, 2000, 500));
 	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
 								{self, "Indeed I am."},
 								{wallelder, "Do not be fooled by the allure of BURGER. Why do you crave it so?"},
@@ -1067,7 +1069,7 @@ NPC* SetupWorld() {
 								{self, "Sounds like normal corporation things."},
 								{wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below."}});
 	wallelder->setDialogue("Always beware the temptation of BURGER.");
-	wallelder->addRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");
+	wallelder->addRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");*/
 
 	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 100, Stats(200, 80, 120, 10, 50, 10, 30));
 	/*magmelder->addConversation(magmelder, "Oh it's horrible!");
@@ -1209,7 +1211,7 @@ NPC* SetupWorld() {
 	self->addConversation(self, "You look distressed.");*/
 	
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
-	skeleseller->setDialogue("Well hello there, short individual! Could I interest you in some explosives?");
+	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", 0, 20, 20, 1, 1, 1);
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true, pdynamite);
@@ -1240,6 +1242,15 @@ NPC* SetupWorld() {
 							   {self, "Oh thanks."}});
 	Item* desertdelicacy = new HpItem("DESERT DELICACY", "A very nice desert pie, featuring rare desert fruit. (heals all HP)", limbo, 2147483647);
 	franklin->setGift(desertdelicacy);
+	franklin->addConversation({{franklin, "I don't like sand."},
+							   {franklin, "It's coarse and rough and irritating and it gets everywhere."},
+							   {franklin, "You look like you're from the forest, is that right?"},
+							   {self, "Yep that's right."},
+							   {franklin, "Well believe it or not, this here desert used to be just like your forest."},
+							   {self, "Really?"},
+							   {franklin, "Yep."},
+							   {franklin, "As I grew up, though, all the soil dried up and all the plants died."},
+							   {franklin, "Now all we have left are the plants at the oasis..."}});
 	franklin->addConversation({{self, "So like does this town have a name?"},
 							   {franklin, "..."},
 							   {franklin, "Not really."},
@@ -1265,6 +1276,7 @@ NPC* SetupWorld() {
 	valvechanges.linkedDialogue.push({cacty, {{NULL, "CACTY - *happy cactus noises*"}}});
 	valvechanges.linkedDescriptions.push({cacty, "Sharp cactus, hydrated back to health. He has a remarkable pink flower and rooty legs to move around."});
 	valvechanges.roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
+	valvechanges.recruitLinks.push(cacty);
 	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
 
 	//Create exits between rooms MARK: set exits
@@ -1281,8 +1293,6 @@ NPC* SetupWorld() {
 	tentlab->setExit(DOWNSTAIRS, tentmansion);
 	tentstore->setExit(OUTSIDE, village);
 	tentstation->setExit(OUTSIDE, village);
-	tentstation->setExit(WEST, limbo);
-	tentstation->setExit(EAST, limbo);
 	tentchurch->setExit(OUTSIDE, village);
 	docks->setExit(NORTH, village);
 	docks->setExit(IN_TENT, tenthouse);
@@ -1388,10 +1398,9 @@ NPC* SetupWorld() {
 	minespring->setExit(NORTH, mineshaft);
 	mineshaft2->setExit(SOUTH, deserttunnel);
 	mineshaft2->setExit(NORTH, mineshaft3);
-	deserttunnel->setExit(NORTHEAST, limbo);
 	deserttunnel->setExit(SOUTHWEST, desertstation);
+	deserttunnel->setExit(NORTH, mineshaft2);
 	desertstation->setExit(NORTHEAST, deserttunnel);
-	desertstation->setExit(SOUTHWEST, limbo);
 	desertstation->setExit(ABOVEGROUND, canyon);
 	mineshaft3->setExit(WEST, mineshaftside);
 	mineshaft3->setExit(SOUTH, mineshaft2);
@@ -1782,7 +1791,7 @@ NPC* SetupWorld() {
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
 	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at ", -3, 5, 0, 1, 1, 1);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", -3, 5, 0, 1, 1, 1);
 	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
 	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", 1, 12, 0, 1, 1, 1);
@@ -1822,7 +1831,7 @@ NPC* SetupWorld() {
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
-	NPC* rockbug = new NPC("", "ROCK BUG", "Sizable geometric bug who normally lives in the rock, but becomes very agressive when disturbed.", limbo, 0, Stats(15, 30, 5, 20, 0, 2, 9));
+	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(15, 30, 5, 20, 0, 2, 9));
 	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", -5, 20, 0, 1, 1, 1);
 	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5f, 1.5f, 1.5f, 1, 50.0f);
 	Attack* saltcure = new Attack("SALT CURE", "coughed up crystals of curing salt onto", 15, 5, 0, 1, 1, 1);
@@ -1873,70 +1882,71 @@ NPC* SetupWorld() {
 	tunnellobster->setBoss(true);
 
 	//MARK: Viola (enemy)
-	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", cliff2, 0, Stats(100, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
 	tkviola->setBoss(true);
-
 	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", -5, 10, 20, 1, 1, 1);
 	tkviola->setBasicAttack(wave);
-
 	Attack* smackdown = new Attack("SMACKDOWN", "lifted", 5, 20, 0, 1, 1, 1);
 	smackdown->afterdesc = " into the air and smacked them back down";
 	Effect* suspended = new Effect("SUSPENDED", 3, 0, 0);
 	smackdown->synergy = suspended; //because Viola is already holding the npc in the air so it's easier to do more damage
 	tkviola->addSpecialAttack(smackdown);
-
 	Attack* tkguard = new Attack("INVOLUNTARY GUARD", "set up a guard using a townsperson", 7, 0, 0, 0, 0, 0);
 	tkguard->guardset = 1;
 	tkviola->addSpecialAttack(tkguard);
-
-	Attack* fling = new Attack("FLING", "flung", 5, 20, 0, 1, 1, 1);
+	Attack* fling = new Attack("FLING", "flung", 5, 0, 0, 1, 1, 1);
 	fling->afterdesc = " into the stratosphere";
-	Efect* flung = new Effect("FLUNG", 1);
+	Effect* flung = new Effect("FLUNG", 1);
+	flung->remove = true;
 	flung->falldamage = 30;
 	fling->cancel = suspended; //throwing someone into the air makes them no longer frozen in place
+	fling->addEffect(flung);
 	tkviola->addSpecialAttack(fling);
-
 	Attack* suspend = new Attack("SUSPEND", "suspended", 7, 0, 0, 1, 1, 1);
 	suspend->afterdesc = " in the air";
 	suspended->freeze = true;
 	suspend->addEffect(suspended);
 	tkviola->addSpecialAttack(suspend);
-
 	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to", 12, 25, 50, 1, 1, 1, false, 11);
 	gutpunch->afterdesc = "'s gut";
 	gutpunch->addDescription("Deliver a telekinetic punch to the target's gut. (25 ATTACK, 50 PIERCE)");
 	tkviola->addSpecialAttack(gutpunch);
-
 	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", 10, 20, 30, 1, 1, 3, false, 12);
 	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (20 DAMAGE, 30 PIERCE)");
 	tkviola->addSpecialAttack(spatialpop);
-	
 	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", 15, 0, 0, 0, 0, 7, true, 15);
 	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
 	Effect* forcefielded = new Effect("FORCE FIELD", 3, 0, 0, 1, 2);
 	forcefield->addEffect(forcefielded);
 	tkviola->addSpecialAttack(forcefield);
-
 	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", 15, 0, 0, 0, 0, 7, false, 17);
 	intensegravity->addDescription("Intensify gravity around the enemy team, halving their defense.");
 	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5f);
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
-
 	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", 25, 35, 100, 1, 1, 7, false, 20);
 	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (35 DAMAGE, 100 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
 	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 10));
 	greer->setBoss(true);
-
-	//gun
-
-	//water valve (push npc away for 1 turn)
-
-	//gas leak (x2 sp use, damage) "shot a poison gas main near"
-
-	//scalding steam (high damage to three)
+	Attack* gun = new Attack("GUN", "shot", -5, 30, 50, 1, 1, 1);
+	greer->setBasicAttack(gun);
+	Attack* pressurevalve = new Attack("PRESSURIZED VALVE", "opened a pressurized valve, shooting a huge burst of water at", 5, 20, 0, 1, 1, 1);
+	Effect* runningback = new Effect("RUNNING BACK", 2);
+	runningback->remove = true;
+	pressurevalve->addEffect(runningback);
+	greer->addSpecialAttack(pressurevalve);
+	Attack* gasleak = new Attack("GAS LEAK", "shot a gas main near", 5, 0, 0, 0, 0, 3);
+	Effect* gassed = new Effect("GASSED", 3, 10, 0);
+	gassed->spusage = 2;
+	gasleak->addEffect(gassed);
+	greer->addSpecialAttack(gasleak);
+	Attack* scaldingsteam = new Attack("SCALDING STEAM", "shot a valve full of hot steam near", 5, 25, 400, 1, 1, 3);
+	Effect* scalded = new Effect("SCALDED", 3);
+	scalded->damagebuff = 2;
+	scaldingsteam->addEffect(scalded);
+	greer->addSpecialAttack(scaldingsteam);
 
 	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo, 0, Stats());
 	magman->setBasicAttack(genericattack);
@@ -2154,7 +2164,7 @@ NPC* SetupWorld() {
 	forestboss->setForceBattle();
 
 	NPC* dgraveguard = new NPC(*skeleviking);
-	dgraveguard->setLeader(true, 2);
+	dgraveguard->setLeader(true, 2, desertgrave);
 	dgraveguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEVIKING.");
 	dgraveguard->setDialogue({{NULL, "SKELEVIKING - *angry silence*"}});
 	dgraveguard->addRejectionDialogue({{NULL, "SKELEVIKING - *angry silence*"}});
@@ -2183,23 +2193,23 @@ NPC* SetupWorld() {
 	jimshady2->addRejectionDialogue("No begone.");
 
 	NPC* canyonguard = new NPC(*skeleminer);
-	canyonguard->setLeader(true, 6, canyon1);
+	canyonguard->setLeader(true, 6, canyon3);
 	canyonguard->setParty(rockbug);
-	canyonguard->blockExit(NORTHEAST, ENEMY, "blocked by the SKELEMINER.");
+	canyonguard->blockExit(UNDERGROUND, ENEMY, "blocked by the SKELEMINER.");
 	canyonguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	canyonguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
 	NPC* mineguard = new NPC(*skeleminer);
-	mineguard->setLeader(true, 6, mineshaft2);
+	mineguard->setLeader(true, 6, deserttunnel);
 	mineguard->setParty(rockbug, rockbug);
-	mineguard->blockExit(SOUTH, ENEMY, "blocked by the SKELEMINER.", true);
+	mineguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEMINER.", true);
 	mineguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	mineguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	
 	NPC* mineguard2 = new NPC(*skeleminer);
 	mineguard2->setLeader(true, 8, mineshaft2);
 	mineguard2->setParty(sandman);
-	mineguard2->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
+	//mineguard2->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
 	mineguard2->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	mineguard2->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
@@ -2258,7 +2268,7 @@ NPC* SetupWorld() {
 
 	//set up teammate viola MARK: Viola
 	NPC* viola = new NPC(*tkviola);
-	viola->setLeader(true, 15);
+	viola->setLeader(true, 10, cliff2);
 	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
 							{viola, "So what if I did?"},
 							{self, "Lady you can't just go kidnapping people."},
@@ -2294,7 +2304,7 @@ NPC* SetupWorld() {
 	viola->addLinkedDesc(viola, "Telekinetic teenager in regret of her prior actions. She is more physically grounded now.");
 	viola->addLinkedDialogue(viola, {{viola, "I can't believe I let all that power go to my head..."}});
 	viola->addDefeatRoom(viola, thatcliff);
-	viola->addDefeatRoom(merro, desertshopfixed);
+	viola->addDefeatRoom(merchant, desertshopfixed);
 	viola->addDefeatRoom(franklin, deserttown);
 	viola->addDefeatRoom(bob, oasis);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
@@ -2307,22 +2317,24 @@ NPC* SetupWorld() {
 
 	NPC* springguard = new NPC(*greer);
 	springguard->setLeader(true, 20, NULL, false);
-	/*springguard->addConversation(self, "Is that ?");
-	springguard->addConversation(self, "You don't need that much save it for everyone else!");
-	springguard->addConversation(glutton, "Ehehehehe... all da watah is all mine, pal.");
-	springguard->addConversation(glutton, "Official BOIGA MAN ordah.");
-	springguard->addConversation(self, "You can't just do that what the heck >:(");
-	springguard->addConversation(glutton, "If youse want da watah, youse gonna hafta go through me!");
-	springguard->addConversation(self, "Alright then.");
-	glutton->setDialogue("Ehehehe... da watah's all fer me!");
-	glutton->setRejectionDialogue("Now why would I wanna join youse, huh?");
-	glutton->addLinkedConvo(glutton, "Ah you gots me...");
-	glutton->addLinkedConvo(glutton, "...");
-	glutton->addLinkedConvo(glutton, "I can'ts go back to da boss with a failya like dis...");
-	glutton->addLinkedConvo(glutton, "But what else's theah to do?");
-	glutton->addLinkedConvo(glutton, "Great job lad.");
-	glutton->addLinkedConvo(NULL, "GREER disappeared into the darkness...");
-	glutton->setLinkedRoom(ceoroom, "in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.\nThere is a rotund corpse in the corner");*/
+	springguard->addConversation({{greer, "Oi kid!"},
+								  {greer, "Whaddaya doin' down here, huh?"},
+								  {self, "I want to turn that valve over there."},
+								  {greer, "Scram, kid!"},
+								  {greer, "This is official BOIGA business!"},
+								  {self, "No >:|"},
+								  {greer, "Ohhh we got a tough guy, huh?"},
+								  {greer, "Well if youse wanna turn da valve, youse gonna hafta go through me!"},
+								  {self, "Alright then."}});
+	springguard->addRejectionDialogue("Now why would I wanna join youse, huh?");
+	springguard->setDialogue("Scram, kid!");
+	springguard->addLinkedConvo(springguard, {{greer, "Youse gotta be kiddin' me..."},
+											  {greer, "Beaten by a kid?"},
+											  {greer, "I can't go back to da boss with a failya like dis!"},
+											  {greer, "I'm not looking forward to dis meetin'..."},
+											  {NULL, "GREER disappeared into the darkness..."},
+											  {NULL, "The VALVE is no longer being guarded!"}});
+	//springguard->addRoomChange(ceoroom, "something about greer being dead?");
 	springguard->setTalkOnDefeat();
 	springguard->setForceBattle();
 	springguard->setEscapable(false);
@@ -2345,10 +2357,6 @@ NPC* SetupWorld() {
 	lavaguard->setBasicAttack(genericattack);
 
 	//block exits MARK: block exits
-	tentstation->blockExit(EAST, TUNNEL, "blocked by endless rubble.");
-	tentstation->blockExit(WEST, TUNNEL, "blocked by endless rubble.");
-	desertstation->blockExit(NORTHEAST, TUNNEL, "blocked by endless rubble.");
-	desertstation->blockExit(NORTHWEST, TUNNEL, "blocked by endless rubble.");
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
 	//foresttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a steep ravine.");
@@ -2366,6 +2374,8 @@ NPC* SetupWorld() {
 	canyon->blockExit(UNDERGROUND, RUBBLE, "blocked by rocky rubble.");
 	mineshaft3->blockExit(WEST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mineshaftside->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	mineshaft2->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	mineshaft3->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	canyon2->blockExit(UP, RUBBLE, "blocked by rocky rubble.");
 	cliff1->blockExit(DOWN, RUBBLE, "blocked by rocky rubble.");
 	minelight->blockExit(UP, RUBBLE, "blocked by rocky rubble.");
@@ -2418,10 +2428,18 @@ NPC* SetupWorld() {
 
 	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
 	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
+	Item* minecart3 = new MovementItem("NORTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft2, TRACK, false);
+	Item* minecart4 = new MovementItem("SOUTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
 	minecart1->setTakable(false);
 	minecart2->setTakable(false);
+	minecart3->setTakable(false);
+	minecart4->setTakable(false);
 	minecart1->setDenial("This minecart is clamped onto the minecart tracks!");
 	minecart2->setDenial("This minecart is clamped onto the minecart tracks!");
+	minecart3->setDenial("This minecart is clamped onto the minecart tracks!");
+	minecart4->setDenial("This minecart is clamped onto the minecart tracks!");
+
+	mineguard2->guardItem(minecart3);
 
 	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
 	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", "There is nowhere to put the DOWN BUTTON! ... You shove the DOWN BUTTON into the wall. The elevator can go DOWN now!", burgsafe, elevator, DOWN, elevatorbottom);
@@ -2601,7 +2619,8 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 				cout << " ";
 			}
 			//gives the prompt to name the lobster!
-			cout <<                              "\n                                                     (type your lobster's name here!)";
+			cout << "\n" << setw(strlen((*party)[0]->getName())) << ""; //spacing
+			cout <<                                    "                                                 (type your lobster's name here!)";
 			cout << "\n" << (*party)[0]->getName() << " - \"Oh nice a pet lobster! I think I'll name you ";
 
 			//gets the player input and puts it in the name charray
@@ -2635,6 +2654,9 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			CinPause();
 			
 			CinIgnoreAll(); //clear extra text and potential error flags
+
+			npc->undefeat(); //make sure the lobster isn't defeated after the battle so you can try using it
+			npc->setLeader(false); //make it not a leader so you can't fight it and so you can use it
 		}
 	}
 	//prints the room data after battle so that the player can reorient themselves
@@ -2779,7 +2801,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		cout << "\nYou have no \"" << itemname << "\".";
 		return;
 	} else if (NPC* guard = item->getGuard()) { //can't use items being guarded
-		cout << "The " << itemname << " is being guarded by " << guard->getName() << ".";
+		cout << "\nThe " << itemname << " is being guarded by " << guard->getName() << ".";
 		return;
 	} else if (item->getTargetNeeded() && npc == NULL && strcmp(item->getType(), "key") && strcmp(item->getType(), "movement")) { //if the item needed a target but no " ON " was given we give error text
 		if (party->size() > 1) { //if the party isn't only the player

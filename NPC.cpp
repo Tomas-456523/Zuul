@@ -360,9 +360,10 @@ void NPC::addXp(int _xp) { //adds xp and checks for level up
 }
 //when an npc levels up, we add either 0 or 1 to each stat, plus a base
 void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantly set it to a certain level, for very high levels
+	int oldlevel = level;
 	Stats statsup; //how much each stat just went up
 	if (instant) { //instantly go to the given level if one was given that wasn't the default 0
-		statsup = Stats::avgLvLUp(instant-level) + scale*instant; //get the average random stat changes for how much we leveled up plus the guaranteed scale for each level up
+		statsup = Stats::avgLvLUp(instant-level) + scale*(instant-oldlevel); //get the average random stat changes for how much we leveled up plus the guaranteed scale for each level up
 		level = instant; //set the level
 	} else { //normally go up one single level
 		statsup = Stats::makeLvlStats(level, id) + scale; //deterministically determine the stats we just got from the level up, plus the baseline stat scale
@@ -375,10 +376,9 @@ void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantl
 	
 	leveledUp = trackLevelUp; //registers that we've leveled up so that we can print it later
 	for (Attack* attack : special_attacks) { //checks if we got a new attack
-		if (attack->minLevel == level) {
+		if (attack->minLevel <= level && attack->minLevel > oldlevel) {
 			if (trackLevelUp) newAttacks.push_back(attack); //save the new attack so we can print that we got it later
 			calculateWeights(); //recalculate weights to account for the new attack
-			return;
 		}
 	}
 }
@@ -647,7 +647,7 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 		}
 		hypnosis++;
 	}
-	if (effects[i].remove) {
+	if (effect.remove) {
 		away = true;
 	}
 	if (effect.guardset) {

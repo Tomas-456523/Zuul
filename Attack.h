@@ -46,7 +46,7 @@ struct Attack {
 	Effect* synergy = NULL; //if the target has this effect, the attack doubles in power
 	Effect* cancel = NULL; //attack removes this effect
 
-	Attack* recoil = NULL;
+	Attack* recoilatt = NULL;
 	float recoilchance = 0;
 
 	NPC* summon = NULL; //the npc that the attack summons

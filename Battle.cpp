@@ -195,7 +195,8 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				reciever->setEffect(attack->appliedeffect);
 			}
 			if (attack->cancel != NULL) { //removes the effect this attack cancels out
-				reciever->removeEffect(attack->cancel, false); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
+				if (Effect* canceled = reciever->getEffect(attack->cancel->name))
+				reciever->removeEffect(*canceled, false); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
 			}
 			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 				attacker->damage(attack->recoil * attacker->getAttack() * attacker->getAttMultiplier() / 10, 0, 1);
@@ -279,7 +280,7 @@ bool Battle::useItem(const char* itemname) {
 				}
 				return false;
 			} else if (npc->getAway()) { //can't use item on missing npc
-				cout << "\n" << commandExtensionP << " is not in the battlefield right now!";
+				cout << "\n" << npcName << " is not in the battlefield right now!";
 				return false;
 			}
 		} else {
@@ -609,6 +610,8 @@ void Battle::npcTurn(NPC* npc) {
 	}
 
 	//default to basic if attack->remove && target->getBoss()
+
+	//also can't hypnotize boss
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
 	size_t healchecks = 0; //heals specifically may fail
