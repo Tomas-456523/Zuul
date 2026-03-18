@@ -1952,6 +1952,7 @@ NPC* SetupWorld() {
 	magman->setBasicAttack(genericattack);
 	magman->addSpecialAttack(genericspecial);
 	magman->addSpecialAttack(genericcc);
+	//
 
 	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Armored lava man and also he has a sword.", limbo, 0, Stats());
 	lavasoldier->setBasicAttack(genericattack);
@@ -1992,6 +1993,37 @@ NPC* SetupWorld() {
 	lavadile->setBasicAttack(genericattack);
 	lavadile->addSpecialAttack(genericspecial);
 	lavadile->addSpecialAttack(genericcc);
+
+	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
+	//fire sword
+	//upslash
+	//sword explosion
+	//solar flare
+	//nova
+
+	//////////////////////////////////////////////
+
+	NPC* bigcat = new NPC("", "BIG CAT", "Huge golden lion with a silver mane. Extremely territorial.", limbo, 0, Stats());
+	bigcat->setBasicAttack(genericattack);
+	bigcat->addSpecialAttack(genericspecial);
+	bigcat->addSpecialAttack(genericcc);
+
+	NPC* realjimshady = new NPC("THE REAL", "JIM SHADY", "He's Jim Shady, yes he's the real Shady.", limbo, 0, Stats());
+	realjimshady->setBasicAttack(genericattack);
+	realjimshady->addSpecialAttack(genericspecial);
+	realjimshady->addSpecialAttack(genericcc);
+	//shrimplecomplex
+
+	NPC* thelizard = new NPC("", "BLUE EYES WHITE LIZARD", "Legendary white lizard with blue eyes. It's known to multiply very quickly.", limbo, 0, Stats());
+	thelizard->setBasicAttack(genericattack);
+	thelizard->addSpecialAttack(genericspecial);
+	thelizard->addSpecialAttack(genericcc);
+	//population bomb
+
+	NPC* hatchling = new NPC("", "HATCHLING", "Just-hatched lizard who has already developed its fighting instincts.", limbo, 0, Stats());
+	hatchling->setBasicAttack(genericattack);
+	hatchling->addSpecialAttack(genericspecial);
+	hatchling->addSpecialAttack(genericcc);
 
 	NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo, 0, Stats());
 	thief->setBasicAttack(genericattack);
@@ -2342,8 +2374,8 @@ NPC* SetupWorld() {
 	springguard->addLinkedRoom(oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to appear.");
 	springguard->guardItem(valve);
 
-	NPC* lavaguard = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
-	lavaguard->setLeader(true, 40, NULL, false);
+	NPC* lavaguard = new NPC(*lavaguardian);
+	lavaguard->setLeader(true, 40, bridge3, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("*ethereal breathing*");
 	lavaguard->addRejectionDialogue("*ethereal breathing*");
