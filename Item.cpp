@@ -35,6 +35,10 @@ const char* Item::getName() {
 const char* Item::getDescription() {
 	return description;
 }
+//returns what room the item is in
+Room* Item::getRoom() {
+	return room;
+}
 //returns the type of the item (eg. "movement" or "key")
 const char* Item::getType() {
 	return type;
@@ -71,6 +75,10 @@ bool Item::getForEnemy() {
 NPC* Item::getGuard() {
 	return guard;
 }
+//returns if we can't use this if it's in the inventory
+bool Item::getDropToUse() {
+	return droptouse;
+}
 //sets the description of why you can't take the item
 void Item::setDenial(const char* denial) {
 	denyDescription = denial;
@@ -83,6 +91,7 @@ void Item::setRoom(Room* _room) {
 	room = _room; //sets the room
 	room->setItem(this); //tells the room the item is there now
 }
+//manually sets if we can take the items, for item types that default to not takable
 void Item::setTakable(bool _takable) {
 	takable = _takable;
 }
@@ -122,6 +131,10 @@ void Item::setStock(int _stock, int _price, const char* buydesc) {
 //returns someone to guard this item
 void Item::setGuard(NPC* npc) {
 	guard = npc;
+}
+//sets if we can't use the item if it's in the inventory as opposed to it being on the ground
+void Item::setDropToUse(bool dropreq) {
+	droptouse = dropreq;
 }
 //virtual function for duplicating the item
 Item* Item::Duplicate() {

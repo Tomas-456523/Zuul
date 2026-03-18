@@ -130,7 +130,7 @@ public: //you need to set stats on creation
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char* suffix); //add suffix to end of npc name
 	void setGuard(int _guard); //set guard to block attacks
-	void setGift(Item* item); //item to give when talking
+	void setGift(Item* item, bool fightfirst = false); //item to give when talking
 	void setEffect(Effect* effect, bool battle = true); //add an effect to the npc
 	void removeEffect(Effect& effect, bool announce = true);
 	void setBoss(bool boss);
@@ -210,7 +210,8 @@ protected:
 
 	bool speakOnRecruit = false;
 
-	Item* gift; //item that the npc holds and gifts to the player after talking
+	Item* gift = NULL; //item that the npc holds and gifts to the player after talking
+	bool battleReward = false; //if the gift is a battle reward
 
 	bool recruitable = false;
 	bool recruited = false; //if the npc is in the player party

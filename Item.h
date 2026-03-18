@@ -22,6 +22,7 @@ public:
 
 	const char* getName(); //gets the name of the item
 	const char* getDescription(); //gets the description of the item
+	Room* getRoom(); //get what room the item is in
 	const char* getType(); //gets the type of the item (eg. "key")
 	bool getTakable(); //gets if you can take the item
 	const char* getDenial(); //gets description of why you can't take the item
@@ -30,7 +31,8 @@ public:
 	bool getTargetNeeded(); //gets if the item needs a target (if you have to specify who to use it on)
 	bool getConsumable(); //gets if the item gets deleted after use
 	bool getForEnemy(); //gets if it's meant to hit the opponents in battle as opposed to for your team
-	NPC* getGuard();
+	NPC* getGuard(); //get who is guarding the item
+	bool getDropToUse(); //get if we can't use it while in the inventory
 
 	void buy(int& mony, vector<Item*>* inventory); //buys a copy of the item and adds it to the inventory
 	void setDenial(const char* denial); //sets a description of why you can't take the item
@@ -39,7 +41,7 @@ public:
 
 	void setStock(int _stock, int _price, const char* buydesc = ""); //makes the item for sale
 	void setTakable(bool _takable = true); //manually sets the item to takable, for item types that default to something we don't want
-
+	void setDropToUse(bool dropreq); //set if we can't use it while in the inventory
 	void setGuard(NPC* npc); //set a guard that prevents you from using the item
 
 	virtual Item* Duplicate(); //duplicates the item, used by buy and overwritten by all buyable item subclasses in order to prevent splitting when duplicating them
@@ -62,6 +64,8 @@ protected:
 	NPC* guard = NULL; //npc that stops you from using or taking the item until defeated
 
 	Room* room = NULL; //the room that the item is in
+
+	bool droptouse = false; //if you can't use it if it's in your inventory, pretty much just for scissor lift because just imagine the order of events: you go up, you go north (with your scissor lift in your pocket), you come back, and you're floating in the air now?
 };
 
 //xp items for adding xp to an npc

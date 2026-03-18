@@ -89,6 +89,7 @@ NPC* SetupWorld() {
 	const char* TRACK = "TRACK";
 	const char* LOCK = "LOCK";
 	const char* NINJA = "NINJA";
+	const char* HIGH = "HIGH";
 	const char* SAND = "SAND";
 	const char* HEAT = "HEAT";
 	const char* LAVA = "LAVA";
@@ -121,11 +122,11 @@ NPC* SetupWorld() {
 	Room* ninjaland = new Room("underneath the ninja village. It's probably supposed to be hidden but you looked up and there it was.");
 	Room* ninjavillage = new Room("in the ninja village. There's no bridges connecting the houses, you must simply jump between them like a true ninja.");
 	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many weapons and scrolls up on the walls.");
-	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of NINJABERRIES and ninjasteak and ninjafish and the diet isn't actually that strict.");
+	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of ninjaberries and ninjasteak and ninjafish and the diet isn't actually that strict.");
 	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here.");
 	Room* foresttempleentrance = new Room("in the sunny glade, at the sealed entrance of the ancient forest temple.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
-	Room* foresttemple = new Room("in the temple of HUMILITY.");
+	Room* foresttemple = new Room("in the forest temple.");
 	//temple stuff
 	Room* flowerfield = new Room("in the aromatic flower fields. Your sister likes hanging out here.");
 	Room* flowerfield2 = new Room("deep in the flower fields. A really nice river flows over here.");
@@ -151,7 +152,7 @@ NPC* SetupWorld() {
 	desert->setWelcome("Surely there must be someone friendly around here?");
 	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
 	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
-	Room* deserttemple = new Room("in the temple of COURAGE.");
+	Room* deserttemple = new Room("in the desert temple.");
 	//temple stuff
 	Room* desertdune = new Room("at a low point in the desert. A rare shadow is present where you can rest.");
 	Room* desertplain = new Room("at a really flat area of the desert.");
@@ -1311,9 +1312,9 @@ NPC* SetupWorld() {
 	forestright->setExit(SOUTHWEST, forest);
 	ninjaland->setExit(SOUTHWEST, forestright);
 	ninjaland->setExit(UP, ninjavillage);
-	ninjavillage->setExit(IN_HOUSE_1, ninjacapitol);
-	ninjavillage->setExit(IN_HOUSE_2, ninjapantry);
-	ninjavillage->setExit(IN_HOUSE_3, ninjaforge);
+	ninjavillage->setExit(IN_HOUSE_1, ninjapantry);
+	ninjavillage->setExit(IN_HOUSE_2, ninjaforge);
+	ninjavillage->setExit(IN_HOUSE_3, ninjacapitol);
 	foresttempleentrance->setExit(SOUTHWEST, forestleft);
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
 	foresttempleentrance->setExit(NORTHWEST, flowerfield);
@@ -1730,6 +1731,32 @@ NPC* SetupWorld() {
 	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 8, 5, 1, 2, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
+	NPC* ninja = new NPC("", "NINJA", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.", limbo, 0, Stats());
+	ninja->setBasicAttack(genericattack);
+	ninja->addSpecialAttack(genericspecial);
+	ninja->addSpecialAttack(genericcc);
+	//shuriken
+	//katana
+
+	NPC* ninjachef = new NPC("", "NINJA CHEF", "An expert ninja who is also an expert in cooking. He guards the ninja pantry.", limbo, 0, Stats());
+	ninjachef->setBasicAttack(genericattack);
+	ninjachef->addSpecialAttack(genericspecial);
+	ninjachef->addSpecialAttack(genericcc);
+	//shuripans
+	//spatula
+	//ninja feast
+	//ninja smoothie
+
+	//a true ninja doesn't reveal his name
+	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief ninja of the ninja village, with the most experience and the highest rank of diamond belt.", limbo, 0, Stats());
+	ninjachief->setBasicAttack(genericattack);
+	ninjachief->addSpecialAttack(genericspecial);
+	ninjachief->addSpecialAttack(genericcc);
+	//kick (flying side kick)
+	//kiloshurikens (helicopter rotors) 2 3-wide hits
+	//pressure points
+	//deadly spinferno
+
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This Jim Shady is just imitating.", limbo, 0, Stats(50, 30, 10, 35, 15, 20, 9));
 	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
@@ -1928,7 +1955,7 @@ NPC* SetupWorld() {
 	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (35 DAMAGE, 100 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
-	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 10));
+	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 9), Stats(1, 2, 1, 0, 1, 0, 1));
 	greer->setBoss(true);
 	Attack* gun = new Attack("GUN", "shot", -5, 30, 50, 1, 1, 1);
 	greer->setBasicAttack(gun);
@@ -1994,14 +2021,26 @@ NPC* SetupWorld() {
 	lavadile->addSpecialAttack(genericspecial);
 	lavadile->addSpecialAttack(genericcc);
 
-	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", bridge3, 0, Stats(200, 50, 30, 20, 20, 10, 50));
+	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
+	lavaguardian->setBoss(true);
 	//fire sword
 	//upslash
 	//sword explosion
 	//solar flare
 	//nova
 
-	//////////////////////////////////////////////
+	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, Stats());
+	//askew
+	//barrel roll
+
+	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(), Stats());
+	browser->setBoss(true);
+	//microsoft edge (sword)
+	//google (search the target's weakness, lowering defense)
+	//new tab
+	//brave (increase attack for whole team)
+	//internet explorer (plant an effect that will do big damage in 3 turns)
+	//firefox (breathe fire)
 
 	NPC* bigcat = new NPC("", "BIG CAT", "Huge golden lion with a silver mane. Extremely territorial.", limbo, 0, Stats());
 	bigcat->setBasicAttack(genericattack);
@@ -2024,6 +2063,8 @@ NPC* SetupWorld() {
 	hatchling->setBasicAttack(genericattack);
 	hatchling->addSpecialAttack(genericspecial);
 	hatchling->addSpecialAttack(genericcc);
+
+	//////////////////////////////////////////////
 
 	NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo, 0, Stats());
 	thief->setBasicAttack(genericattack);
@@ -2075,16 +2116,6 @@ NPC* SetupWorld() {
 	burgerbutler->addSpecialAttack(genericspecial);
 	burgerbutler->addSpecialAttack(genericcc);
 
-	NPC* ninja = new NPC("", "NINJA", "A member of the ninja village who is an expert.", limbo, 0, Stats());
-	ninja->setBasicAttack(genericattack);
-	ninja->addSpecialAttack(genericspecial);
-	ninja->addSpecialAttack(genericcc);
-
-	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief of the ninja village who is very expert.", limbo, 0, Stats());
-	ninjachief->setBasicAttack(genericattack);
-	ninjachief->addSpecialAttack(genericspecial);
-	ninjachief->addSpecialAttack(genericcc);
-
 	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
 	//NPC* npc = new NPC("TITLE", "NAME", "DESCRIPTION", limbo, hp, def, att, tou, pie, spe, ski);
@@ -2109,6 +2140,42 @@ NPC* SetupWorld() {
 	ninjaguard->blockExit(NORTHEAST, ENEMY, "guarded by the NINJA SCOUT.");
 	ninjaguard->setDialogue("You will never get past me!!!!!!! >:D");
 	ninjaguard->addRejectionDialogue("No!!! I will always be a ninja!!!!!! >:D");
+
+	NPC* ninjaguard1 = new NPC(*ninja);
+	ninjaguard1->setLeader(true, 15, ninjavillage, false);
+	ninjaguard1->blockExit(IN_HOUSE_1, ENEMY, "guarded by the NINJA.");
+	ninjaguard1->setDialogue("You won't get past me, outsider.");
+	ninjaguard1->addRejectionDialogue("I will never abandon the ninja way.");
+
+	NPC* ninjaguard2 = new NPC(*ninja);
+	ninjaguard2->setLeader(true, 15, ninjavillage, false);
+	ninjaguard2->blockExit(IN_HOUSE_2, ENEMY, "guarded by the NINJA.");
+	ninjaguard2->setDialogue("Fight me if you wish to see the true power of the ninja way!");
+	ninjaguard2->addRejectionDialogue("I will never abandon the ninja way.");
+
+	NPC* ninjaguard3 = new NPC(*ninja);
+	ninjaguard3->setLeader(true, 15, ninjavillage, false);
+	ninjaguard3->blockExit(IN_HOUSE_3, ENEMY, "guarded by the NINJA.");
+	ninjaguard3->setDialogue("How could you stand before our ninja chief if you can't even beat me?");
+	ninjaguard3->addRejectionDialogue("I will never abandon the ninja way.");
+
+	NPC* pantryguard = new NPC(*ninjachef);
+	pantryguard->setLeader(true, 17, ninjapantry);
+	pantryguard->addConversation({{self, "Hi ninja man can I have that ninjaberry?"}, {ninjachef, "Only if you prove yourself in combat."}, {self, "Sounds good."}});
+	pantryguard->setDialogue("Prove yourself in combat to prove yourself worthy of the ninjaberry.");
+	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
+	pantryguard->setTalkOnDefeat();
+	pantryguard->addRejectionDialogue("I cannot abandon the ninja way; I must continue my culinary service to my ninja clan.");
+	pantryguard->guardItem(ninjaberry);
+
+	NPC* govguard = new NPC(*ninjachief);
+	govguard->setLeader(true, 19, ninjacapitol);
+	govguard->setParty(ninja, ninja);
+	govguard->setDialogue("How could you stand before our ninja chief if you can't even beat me?");
+	govguard->addRejectionDialogue("I must continue to govern the ninja village.");
+	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
+	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
+	pantryguard->setTalkOnDefeat();
 
 	/*NPC* forestrando = new NPC(*grassman);
 	forestrando->setLeader(true, 5, forestleft);
@@ -2375,18 +2442,19 @@ NPC* SetupWorld() {
 	springguard->guardItem(valve);
 
 	NPC* lavaguard = new NPC(*lavaguardian);
-	lavaguard->setLeader(true, 40, bridge3, false);
+	lavaguard->setLeader(true, 20, bridge3, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("*ethereal breathing*");
 	lavaguard->addRejectionDialogue("*ethereal breathing*");
-	/*lavaguard->setLink(magmelder, "Oh nooooo............");
-	lavaguard->addLinkedConvo(magmelder, "Amazing work! The lava has been drained!");
-	lavaguard->addLinkedConvo(magmelder, "But with the way to BURGERSBURG cleared...");
-	lavaguard->addLinkedConvo(magmelder, "People can get BURGERs again...");
-	lavaguard->addLinkedConvo(magmelder, "Oh nooooo...... We fix one problem and another one comes back......");
-	lavaguard->addLinkedConvo(self, "Hm.");*/
 	lavaguard->setEscapable(false);
-	lavaguard->setBasicAttack(genericattack);
+
+	NPC* kingbrowser = new NPC(*browser);
+	kingbrowser->setLeader(true, 25, castlethrone, false);
+	kingbrowser->setDialogue("GWAHAHAHAHAHA!");
+	kingbrowser->addRejectionDialogue({{browser, "You think I wanna join you?"}, {browser, "GWAHAHAHAHAHA!"}});
+	kingbrowser->setEscapable(false);
+	kingbrowser->addRecruitLink(plum);
+	kingbrowser->addLinkedConvo(plum, {{plum, "Thank you for saving me young knight!"}, {self, "No problemo."}});
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -2415,31 +2483,30 @@ NPC* SetupWorld() {
 	kaboomroom->blockExit(NORTHWEST, RUBBLE, "blocked by rocky rubble.");
 	minelight->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	volcanoentrance->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
-	volcanoentrance->blockExit(NORTH, HEAT, "too hot! You'd probably melt unless you got some SUNSCREEN!");
+	volcanoentrance->blockExit(NORTH, HEAT, "too hot! You'd probably melt from the radiation unless you got some SUNSCREEN!");
 	sewercenter3->blockExit(DOWN, RUBBLE, "blocked by the ground. It looks pretty fragile and rubbley, maybe don't stand on it.");
-	sewercenter4->blockExit(WEST, LOCK, "locked tight with a GREEN LOCK. You need a GREEN KEY to open it.");
-	volcano2->blockExit(NORTH, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
-	volcano4->blockExit(NORTHEAST, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
-	volcano6->blockExit(NORTHWEST, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
-	volcano7->blockExit(NORTH, LAVA, "covered up by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	sewercenter4->blockExit(WEST, LOCK, "locked with a GREEN LOCK. You need a GREEN KEY to open it.");
+	volcano2->blockExit(NORTH, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	volcano4->blockExit(NORTHEAST, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	volcano6->blockExit(NORTHWEST, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
+	volcano7->blockExit(NORTH, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
 	sewerentrance1->blockExit(DOWN, LAVA, "submerged in lava.");
 	sewerentrance2->blockExit(DOWN, LAVA, "submerged in lava.");
 	sewer2->blockExit(SOUTHWEST, LAVA, "submerged in lava."); //this is problematic
-	castleentrance->blockExit(IN_CASTLE, TUNNEL, "blocked by the door.");
 	sewerminessouth->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mineshortcut->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	factorybalcony2->blockExit(EAST, CHASM, "blocked by a lack of path over the central room.");
 	factorygarden->blockExit(WEST, CHASM, "blocked by a lack of path.");
-	factory3->blockExit(UP, NINJA, "too high up.");
+	factory3->blockExit(UP, HIGH, "too high up.");
 	factory3->blockExit(EAST, STUFF, "blocked by collapsed roof material.");
-	factorynw->blockExit(UP, NINJA, "too high up.");
-	factoryne->blockExit(UP, NINJA, "too high up.");
-	factoryse->blockExit(UP, NINJA, "too high up.");
+	factorynw->blockExit(UP, HIGH, "too high up.");
+	factoryne->blockExit(UP, HIGH, "too high up.");
+	factoryse->blockExit(UP, HIGH, "too high up.");
 	factoryse->blockExit(WEST, STUFF, "blocked by collapsed roof material.");
-	factoryroofsw->blockExit(DOWN, NINJA, "too far down to jump.");
-	factoryroofnw->blockExit(DOWN, NINJA, "too far down to jump.");
-	factoryroofne->blockExit(DOWN, NINJA, "too far down to jump.");
-	factoryroofse->blockExit(DOWN, NINJA, "too far down to jump.");
+	factoryroofsw->blockExit(DOWN, HIGH, "too far down to jump.");
+	factoryroofnw->blockExit(DOWN, HIGH, "too far down to jump.");
+	factoryroofne->blockExit(DOWN, HIGH, "too far down to jump.");
+	factoryroofse->blockExit(DOWN, HIGH, "too far down to jump.");
 	//volcanotempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology.");
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
@@ -2478,7 +2545,17 @@ NPC* SetupWorld() {
 
 	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", "used the FORKLIFT to move the collapsed ceiling material out of the way.", heavymachineryroom, STUFF, false);
 	//you can use the scissor lift to get to the ninja village I guess, I'll keep it because it technically makes sense and it's funny
-	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", heavymachineryroom, NINJA, false);
+	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", heavymachineryroom, HIGH, false);
+	scissorlift->setDropToUse(true);
+
+	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofsw, HIGH, false);
+	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofnw, HIGH, false);
+	Item* scissorliftse = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofse, HIGH, false);
+	Item* scissorliftne = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofne, HIGH, false);
+	scissorliftsw->setTakable(false);
+	scissorliftnw->setTakable(false);
+	scissorliftse->setTakable(false);
+	scissorliftne->setTakable(false);
 
 	Item* controlpanel1 = new KeyItem("CONTROL PANEL", "A huge array of buttons for controlling the factory. Thankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
 	controlpanel1->setTakable(false);
@@ -2834,6 +2911,9 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		return;
 	} else if (NPC* guard = item->getGuard()) { //can't use items being guarded
 		cout << "\nThe " << itemname << " is being guarded by " << guard->getName() << ".";
+		return;
+	} else if (item->getDropToUse() && !item->getRoom()) { //if item room is NULL that means it's in the inventory
+		cout << "\nThe " << itemname << " must be on the ground to use it!";
 		return;
 	} else if (item->getTargetNeeded() && npc == NULL && strcmp(item->getType(), "key") && strcmp(item->getType(), "movement")) { //if the item needed a target but no " ON " was given we give error text
 		if (party->size() > 1) { //if the party isn't only the player

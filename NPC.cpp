@@ -255,6 +255,7 @@ const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to t
 	return tunnelLinks[room];
 }
 Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because there's only one gift
+	if (battleReward) return NULL; //don't give gift if you have to fight first
 	Item* item = gift;
 	gift = NULL;
 	return item;
@@ -579,8 +580,9 @@ void NPC::addAttackRemoval(NPC* npc, Attack* attack) {
 void NPC::addDefeatRoom(NPC* npc, Room* room) {
 	changes.defeatRooms.push({npc, room});
 }
-void NPC::setGift(Item* item) { //set a gift to give to the player after talking
+void NPC::setGift(Item* item, bool fightfirst) { //set a gift to give to the player after talking
 	gift = item;
+	battleReward = fightfirst;
 }
 void NPC::addRedirect(Room* room1, Room* room2) { //makes room1 redirect to room2 after being defeated
 	changes.redirectRooms.push({room1, room2});
