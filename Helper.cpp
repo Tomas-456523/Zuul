@@ -316,6 +316,11 @@ namespace Helper {
 			changes.guardedItems.front()->setGuard(NULL);
 			changes.redirectRooms.pop();
 		}
+		while (!changes.exitUnblocks.empty()) { //unguard all the items
+			pair<Room*, const char*>& data = changes.exitUnblocks.front();
+			data.first->unblockExit(data.second);
+			changes.exitUnblocks.pop();
+		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;
 		}

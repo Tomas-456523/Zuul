@@ -30,6 +30,8 @@ struct WorldChange {
 	std::queue<std::pair<NPC*, Attack*>> removeAttacks; //attacks to remove from the npc
 
     std::queue<Item*> guardedItems; //remove these items' guards so they're takable/usable
+	
+	std::queue<std::pair<Room* const char*>> exitUnblocks; //unlock these exits (enemies don't use this but some world change items may need to unblock exits)
 
 	size_t worldcon = Helper::NEVER; //world condition that this affects, unless it's NEVER then it doesn't do anything
 };

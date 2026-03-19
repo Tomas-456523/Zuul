@@ -163,6 +163,7 @@ void Room::printNPCs() {
 }
 void Room::printBlocks() {
 	for (const char* direction : blockedExits) {
+		//if blocked exit is in exit: (for manhole covers)
 		cout << "\nThe " << direction << " exit is " << blockReason[direction];
 	}
 }

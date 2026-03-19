@@ -94,6 +94,7 @@ NPC* SetupWorld() {
 	const char* HEAT = "HEAT";
 	const char* LAVA = "LAVA";
 	const char* STUFF = "STUFF";
+	const char* COVER = "COVER";
 
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms (WW)
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
@@ -207,6 +208,7 @@ NPC* SetupWorld() {
 	Room* volcano7 = new Room("at the very edge of the volcanic valley. An huge white bridge forms a road to the city.");
 	//first factory, very small
 	Room* factory1 = new Room("in the factory, on a small grated bridge over a pool of lava.");
+	Room* factoryplat = new Room("on a platform overlooking the factory. The control room is just down the hall.");
 	Room* factorykitchen = new Room("in a makeshift kitchen made from a factory observation room.\nWhatever was made here before, it now only churns out slag.");
 	Room* controlroom1 = new Room("in the factory control room. The machinery is in rather good condtion.");
 	//second factory
@@ -223,7 +225,7 @@ NPC* SetupWorld() {
 	Room* factorybalcony2 = new Room("on a balcony overlooking the central area.\nYou can also see a garden room of sorts from here, though there is no path to it.");
 	Room* factorygarden = new Room("in a garden which is not wheelchair-accessible.\nThe plants look very unhealthy; they seem to have been experimenting with nuclear technology here.");
 	Room* conveyor3 = new Room("on an assembly line! This one makes a path to the control room.");
-	Room* controlroom2 = new Room("in the factory control room. The machinery looks usable depsite the lava; props to whoever made it!");
+	Room* controlroom2 = new Room("in the factory control room. The machinery looks usable depsite the lava.");
 	conveyor1->setConveyor(factorycenter, FORWARD);
 	conveyor2->setConveyor(factorystorage, FORWARD);
 	conveyor3->setConveyor(factorycenter, FORWARD);
@@ -256,12 +258,13 @@ NPC* SetupWorld() {
 	Room* sewer2 = new Room("in the sewer system below the wastelands. Lava flows through the canal; better watch your step!");
 	Room* sewercenter1 = new Room("in the huge central room of the sewers. The architecture here has green accents."); //south
 	Room* sewercenter2 = new Room("in the huge central room of the sewers. A massive lake of lava lies under your feet."); //north
-	Room* sewercenter3 = new Room("in the huge central room of the sewers. A natural stone wall and floor is exposed here."); //east
-	Room* sewercenter4 = new Room("in the huge central room of the sewers. A large, green doorway stands here."); //west
+	Room* sewercenter3 = new Room("in the huge central room of the sewers. Natural stone is exposed here."); //east
+	Room* sewercenter4 = new Room("in the huge central room of the sewers. A large green doorway stands here."); //west
 	Room* sewerplant = new Room("in the main control room of the sewers. How does one maintain this lava maintenence system?");
-	Room* sewermineswest = new Room("at the esternmost end of a long minecart track. You can't see the end.");
+	Room* sewermineswest = new Room("at the easternmost end of a long minecart track. You can't see the end.");
 	Room* sewerminessouth = new Room("in a peculiar offshoot from the sewers which someone mined out.");
 	Room* mineshortcut = new Room("in stable room, full of mining supplies and explosives.");
+	Room* sewertreasure = new Room("in a rocky cave full of bones and fancy ores.");
 	//the volcano temple
 	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple. The rock burns bright red.");
 	Room* volcanotemplestairs = new Room("on the steps that go into the ancient volcanic temple.");
@@ -1075,36 +1078,45 @@ NPC* SetupWorld() {
 	mrdeer->setDialogue({{NULL, "MR DEER - *deer noises*"}});
 	mrdeer->addRejectionDialogue({{NULL, "MR DEER - *no thank you deer noise*"}});
 
-	/*NPC* wallelder = new NPC("WALL ELDER", "WELBY", "An ancient elder whose rocky face spans the wall.\nThere may be more to him, but all you can see is his face.", mineshaft3, 25000, Stats(15000, 15000, 15000, 15000, 0, 2000, 500));
-	wallelder->addConversation({{wallelder, "Child, are you on a BURGER QUEST?"},
-								{self, "Indeed I am."},
-								{wallelder, "Do not be fooled by the allure of BURGER. Why do you crave it so?"},
-								{wallelder, "Because you've been told you do?"},
-								{wallelder, "BURGER is formed from the essence of evil. Have you seen the desert above?"},
-								{self, "Uh huh."},
-								{wallelder, "It used to be a beautiful forest, full of life like the one to the south."},
-								{wallelder, "But the BURGER MAN ordered the woods parched, and reduced it to the wastes seen today."},
-								{wallelder, "He will continue to do so until nature has been expunged from this world."},
-								{wallelder, "By destroying the means to live, he guides the people by hunger and thirst to his city, where they will be more easily tempted by the BURGER RESTAURANT."},
-								{self, "Sounds like normal corporation things."},
-								{wallelder, "If nothing else, remember this. The lies of this world are placed high UP on shining pedestals, while its truths are buried DOWN below."}});
-	wallelder->setDialogue("Always beware the temptation of BURGER.");
-	wallelder->addRejectionDialogue("I have been embedded in this hard rock for ages. I cannot move nor join you.");*/
+	NPC* factelder = new NPC("FACTORIELDER", "FELVIN", "Antique elder who overlooks the factory.\nHe's bolted to the wall and has a metallic mustache.", factory1, 100, Stats(200, 80, 120, 10, 50, 10, 30));
+	Conversation factconvo = {{factelder, "Child, Have you seen the lava sea?"},
+							  {factelder, "It's been abnormally high recently, covering up the road to BURGERSBURG."},
+							  {factelder, "But the allure of BURGER is too great!"},
+							  {factelder, "Some people try to sail across and get burnt up!"},
+							  {factelder, "Some are even so desperate they try to swim across!"},
+							  {self, "Oh dang."},
+							  {factelder, "Please! You must lower the lava again!"},
+							  {factelder, "These factories have drainage valves in their control rooms!"}};
+	factconvo->skipcondition = SWITCHUSED;
+	Conversation factconvo2 = {{factelder, "Child, Have you seen the lava sea?"},
+							   {factelder, "It's been abnormally high recently, covering up the road to BURGERSBURG."},
+							   {factelder, "But the allure of BURGER is too great!"},
+							   {factelder, "Some people try to sail across and get burnt up!"},
+							   {factelder, "Some are even so desperate they try to swim across!"},
+							   {factelder, "Please! You must lower the lava again!"},
+							   {factelder, "These factories have drainage valves in their control rooms!"},
+							   {self, "Yea I've already been doing that."},
+							   {factelder, "Oh. Well, carry on then."}};
+	factconvo->alt = factconvo2;
+	factconvo2->skipcondition = LAVADRAINED;
+	Conversation factconvo3 = {{factelder, "Child, Have you seen the lava sea?"},
+							   {self, "Yeah I already did this whole quest."},
+							   {self, "Lava sea looks pretty lowered now."},
+							   {factelder, "Oh. Well, good job!"},
+							   {self, "Thanks."}};
+	factconvo2->alt = factconvo3;
+	factelder->addConversation(factconvo);
+	factelder->addConversation({{self, "So what's it like being on a wall your whole life?"}, {factelder, "Kind of boring, but I have plenty of time to come up with a lot of stories."}, {self, "I see."}});
+	factelder->setDialogue("You must drain the lava before more lives are lost!");
+	//So you've drained the lava sea!
+	//Very good! Very good.
+	//Though I must warn you, beware BURGER.
+	//It's 
+	//It's an easy path, but know there are other paths.
+	//
+	factelder->addRejectionDialogue("I only oversee this factory; I cannot leave the wall.");
 
-	NPC* magmelder = new NPC("MAGMELDER", "MELVIN", "A molten elder who lives in the lava. Lava continuously flows down from him, but his mustache and nose have a visible outline", factory1, 100, Stats(200, 80, 120, 10, 50, 10, 30));
-	/*magmelder->addConversation(magmelder, "Oh it's horrible!");
-	magmelder->addConversation(magmelder, "The lava level around the city has been raised!");
-	magmelder->addConversation(magmelder, "But the allure of BURGER is too great! I've seen people try to sail across and get burnt up!");
-	magmelder->addConversation(magmelder, "Some are even so desperate they try to swim across!");
-	magmelder->addConversation(self, "Oh dang.");
-	magmelder->addConversation(magmelder, "Please! You must lower the lava again! These factories have drainage valves in their control rooms!");
-	magmelder->addConversation(self, "Why can't you just do it yourself?");
-	magmelder->addConversation(magmelder, "I would, but I seem to have gotten myself stuck in this pool of lava!");
-	magmelder->addConversation(self, "I see.");*/
-	magmelder->setDialogue("You must drain the lava before more lives are lost!");
-	magmelder->addRejectionDialogue("Nay! I must dwell in lava and you must dwell on land. These things conflict, do they not?");
-
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "The guy who made the game, except not really that guy because yeah.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 67));
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 67));
 	developer->setDialogue("Yo wassup.");
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
@@ -1155,9 +1167,9 @@ NPC* SetupWorld() {
 	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
 	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", 0, 1, 2, 1, 1, 1);
 	Attack* knifethrow = new Attack("KNIFE THROW", "threw a knife at", 0, 1, 1, 1, 1, 1);
-	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", 0, 180, 0, 1, 1, 1);
+	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", 0, 80, 0, 1, 1, 1);
 
-	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope and saw an orbital office building.", tentlab);
+	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope. You see an orbital office building!", tentlab);
 	
 	Item* fork = new ManholeItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork, forkthrow);
 	Item* pickaxe = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", mineshaft2, pickthrow);
@@ -1298,6 +1310,74 @@ NPC* SetupWorld() {
 	valvechanges.roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
 	valvechanges.recruitLinks.push(cacty);
 	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
+
+	Item* cloaking = new KeyItem("CLOAKING DEVICE", "Cloaking device for getting past advanced security systems.", "equipped the cloaking device. No security system can spot you now!", limbo, TEMPLE, true);
+	KeyItem* _cloaking = (KeyItem*)cloaking;
+	_cloaking->setTarget(richneighborhood1);
+	_cloaking->setTarget(richneighborhood2);
+	_cloaking->setTarget(richneighborhood3);
+
+	//make coolant attack that slows down enemies
+	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
+	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", "used the pole to go over the chasm!", desertpole, CHASM, true);
+	Item* minecart = new MovementItem("MINECART", "A spare minecart, used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
+
+	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
+	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
+	Item* minecart3 = new MovementItem("NORTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft2, TRACK, false);
+	Item* minecart4 = new MovementItem("SOUTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
+	minecart1->setTakable(false);
+	minecart2->setTakable(false);
+	minecart3->setTakable(false);
+	minecart4->setTakable(false);
+	minecart1->setDenial("This minecart is clamped onto the minecart tracks!");
+	minecart2->setDenial("This minecart is clamped onto the minecart tracks!");
+	minecart3->setDenial("This minecart is clamped onto the minecart tracks!");
+	minecart4->setDenial("This minecart is clamped onto the minecart tracks!");
+
+	mineguard2->guardItem(minecart3);
+
+	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
+	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", "There is nowhere to put the DOWN BUTTON! ... You shove the DOWN BUTTON into the wall. The elevator can go DOWN now!", burgsafe, elevator, DOWN, elevatorbottom);
+
+	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", "used the FORKLIFT to move the collapsed ceiling material out of the way.", heavymachineryroom, STUFF, false);
+	//you can use the scissor lift to get to the ninja village I guess, I'll keep it because it technically makes sense and it's funny
+	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", heavymachineryroom, HIGH, false);
+	scissorlift->setDropToUse(true);
+
+	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofsw, HIGH, false);
+	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofnw, HIGH, false);
+	Item* scissorliftse = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofse, HIGH, false);
+	Item* scissorliftne = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofne, HIGH, false);
+	scissorliftsw->setTakable(false);
+	scissorliftnw->setTakable(false);
+	scissorliftse->setTakable(false);
+	scissorliftne->setTakable(false);
+
+	Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
+	controlpanel1->setTakable(false);
+	KeyItem* controls1 = (KeyItem*)controlpanel1;
+	controls1->setTarget(volcano2);
+	//SWITCHUSED
+
+	Item* controlpanel2 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom2, LAVA, true);
+	controlpanel2->setTakable(false);
+	KeyItem* controls2 = (KeyItem*)controlpanel2;
+	controls2->setTarget(volcano4);
+	controls2->setTarget(sewerentrance1);
+	
+	Item* controlpanel3 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom3, LAVA, true);
+	controlpanel3->setTakable(false);
+	KeyItem* controls3 = (KeyItem*)controlpanel3;
+	controls3->setTarget(sewerentrance2);
+	controls3->setTarget(volcano6);
+	controls3->setTarget(sewer2);
+	
+	Item* masterswitch = new WorldChangeItem("MASTER DRAINAGE BUTTON", "Huge red button, which will fully drain the lava from the highlands.", "jumped onto the MASTER DRAINAGE BUTTON. The sewers rumble. You see the lava below fully drain! (though it's still flowing in)", sewerplant, LAVA, true);
+	masterswitch->setTakable(false);
+	KeyItem* _masterswitch = (KeyItem*)masterswitch;
+	_masterswitch->setTarget(volcano7);
+	//LAVADRAINED
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -1470,9 +1550,11 @@ NPC* SetupWorld() {
 	castlethrone->setExit(NORTH, castlehall);
 	factory1->setExit(OUTSIDE, volcano1);
 	factory1->setExit(EAST, factorykitchen);
-	factory1->setExit(UP, controlroom1);
+	factory1->setExit(UP, factoryplat);
 	factorykitchen->setExit(WEST, factory1);
-	controlroom1->setExit(DOWN, factory1);
+	factoryplat->setExit(EAST, controlroom1);
+	factoryplat->setExit(DOWN, factory1);
+	controlroom1->setExit(WEST, factoryplat);
 	volcanostation->setExit(OUTSIDE, volcano3);
 	factory2->setExit(OUTSIDE, volcano3);
 	factory2->setExit(NORTHWEST, switchroom);
@@ -1553,6 +1635,8 @@ NPC* SetupWorld() {
 	sewercenter3->setExit(NORTHWEST, sewercenter2);
 	sewercenter3->setExit(SOUTHWEST, sewercenter1);
 	sewercenter3->setExit(DOWN, volcanotempleentrance);
+	sewercenter3->setExit(EAST, sewertreasure);
+	sewertreasure->setExit(WEST, sewercenter3);
 	volcanotempleentrance->setExit(UP, sewercenter3);
 	//volcanotempleentrance->setExit(IN_TEMPLE, volcanotemplestairs);
 	volcanotemplestairs->setExit(OUTSIDE, volcanotempleentrance);
@@ -1707,14 +1791,12 @@ NPC* SetupWorld() {
 	elevatortop->setExit(OUT, BURGERRESTAURANT);
 	elevatortop->setExit(DOWN, elevator);
 	BURGERRESTAURANT->setExit(IN_ELEVATOR, elevatortop);
-
 	elevatorbottom->setExit(UP, elevator);
 	elevatorbottom->setExit(OUT, burgerbasement);
 	burgerbasement->setExit(IN_ELEVATOR, elevatorbottom);
 	burgerbasement->setExit(SOUTH, BURGERPRISON);
 	BURGERPRISON->setExit(NORTH, burgerbasement);
 	basestation->setExit(NORTH, BURGERPRISON);
-
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
 
@@ -1800,7 +1882,7 @@ NPC* SetupWorld() {
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
-	NPC* egadbot= new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener, before going rogue and trimming everything else as well.", limbo, 0, Stats(20, 30, 5, 5, 10, 20, 9));
+	NPC* egadbot= new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener,\nbefore going rogue and trimming everything else as well.", limbo, 0, Stats(20, 30, 5, 5, 10, 20, 9));
 	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
 	egadbot->setBasicAttack(snip);
 	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", 10, 20, 0, 1, 1, 1);
@@ -2118,25 +2200,37 @@ NPC* SetupWorld() {
 	naturaldisaster->addSpecialAttack(genericspecial);
 	naturaldisaster->addSpecialAttack(genericcc);
 
+	//shadow creature
+
+	//evil grandma
+
+	//ratman
+
 	NPC* businessguy = new NPC("", "BUSINESSPERSON", "Evil businessperson who is evil.", limbo, 0, Stats());
 	businessguy->setBasicAttack(genericattack);
 	businessguy->addSpecialAttack(genericspecial);
 	businessguy->addSpecialAttack(genericcc);
 
+	//businessguy 2
+
 	NPC* richguy1 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
 	richguy1->setBasicAttack(genericattack);
 	richguy1->addSpecialAttack(genericspecial);
 	richguy1->addSpecialAttack(genericcc);
+	//normal rich person
 
 	NPC* richguy2 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
 	richguy2->setBasicAttack(genericattack);
 	richguy2->addSpecialAttack(genericspecial);
 	richguy2->addSpecialAttack(genericcc);
+	//rich cyborg
 
 	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo, 0, Stats());
 	burgerbutler->setBasicAttack(genericattack);
 	burgerbutler->addSpecialAttack(genericspecial);
 	burgerbutler->addSpecialAttack(genericcc);
+	
+	//ceo
 
 	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
@@ -2234,7 +2328,7 @@ NPC* SetupWorld() {
 	NPC* jimshady1 = new NPC(*jimshady);
 	jimshady1->setLeader(true, 5, forestwall);
 	jimshady1->blockExit(EAST, ENEMY, "blocked by JIM SHADY.");
-	jimshady1->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
+	jimshady1->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY!");
 	jimshady1->addConversation({{jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!"},
 								{self, "No you aren't."},
 								{jimshady1, "Shut up."}});
@@ -2264,8 +2358,8 @@ NPC* SetupWorld() {
 
 	NPC* mimic1 = new NPC(*mimic);
 	mimic1->setLeader(true, 30, NULL);
-	mimic1->setDialogue({{NULL, "MIMIC - *unhinged roar*"}}); //you see it's funny because chests have hinges
-	mimic1->addRejectionDialogue({{NULL, "MIMIC - *unhinged roar*"}});
+	mimic1->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}}); //you see it's funny because chests have hinges
+	mimic1->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
 	mimic1->setEscapable(false);
 	mimic1->setForceBattle();
 	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
@@ -2273,7 +2367,7 @@ NPC* SetupWorld() {
 
 	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, NULL, mimic1);
 	Item* rr2 = new ReviveItem(*(ReviveItem*)(reviveroot));
-	Item* chest1 = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasurecliff, 100, rr2); //put a memory crowbar here?
+	Item* realchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasurecliff, 300, rr2); //put a memory crowbar here?
 	
 	NPC* forestboss = new NPC(*savagehog);
 	forestboss->setLeader(true, 5, bossgrove, true, true);
@@ -2307,7 +2401,7 @@ NPC* SetupWorld() {
 	NPC* jimshady2 = new NPC(*jimshady);
 	jimshady2->setLeader(true, 8, desert);
 	jimshady2->blockExit(NORTHEAST, ENEMY, "blocked by JIM SHADY.", true);
-	jimshady2->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY");
+	jimshady2->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY!");
 	jimshady2->addConversation({{jimshady2, "I'm JIM SHADY, yes I'm the REAL SHADY!"},
 								{self, "No you still aren't."},
 								{jimshady2, "Nobody asked you."}});
@@ -2463,68 +2557,173 @@ NPC* SetupWorld() {
 	springguard->addLinkedRoom(oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to appear.");
 	springguard->guardItem(valve);
 
-	//volcanoguard
-	//lavaman
+	NPC* volcanoguard = new NPC(*magman);
+	volcanoguard->setLeader(true, 10, volcano1);
+	volcanoguard->blockExit(NORTHWEST, ENEMY, "guarded by the LAVAMAN.");
+	volcanoguard->setDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
+	volcanoguard->addRejectionDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
 
-	//volcanoguard2
-	//lavaman lavizard lavizard
+	NPC* volcanoguard2 = new NPC(*magman);
+	volcanoguard2->setLeader(true, 12, volcano3);
+	volcanoguard2->setParty(lavizard, lavizard);
+	volcanoguard2->blockExit(NORTHEAST, ENEMY, "guarded by the LAVAMAN.");
+	volcanoguard2->setDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
+	volcanoguard2->addRejectionDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
 
-	//volcanoguard3
-	//large lavaman, lavaman, lavaman, lavizard
+	NPC* volcanoguard3 = new NPC(*largelavaman);
+	volcanoguard3->setLeader(true, 14, volcano5);
+	volcanoguard3->setParty(lavaman, lavaman, lavizard);
+	volcanoguard3->blockExit(NORTHEAST, ENEMY, "guarded by the LARGE LAVAMAN.");
+	volcanoguard3->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
+	volcanoguard3->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 
-	//fact1guard
-	//slagman lavaman lavaman
+	NPC* fact1guard = new NPC(*slagman);
+	fact1guard->setLeader(true, 11, factoryplat);
+	fact1guard->setParty(lavaman, lavaman);
+	fact1guard->blockExit(EAST, ENEMY, "guarded by the SLAGMAN.");
+	fact1guard->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
+	fact1guard->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
 	//fact2guard
-	//lava soldier, lavaman
+	NPC* fact2guard = new NPC(*lavasoldier);
+	fact2guard->setLeader(true, 12, factory2);
+	fact2guard->setParty(lavaman);
+	fact2guard->blockExit(NORTHEAST, ENEMY, "guarded by the LAVA SOLDIER.");
+	fact2guard->setDialogue({{NULL, "LAVA SOLDIER - *lavally challenges you to a battle*"}});
+	fact2guard->addRejectionDialogue({{NULL, "LAVA SOLDIER - *proud laval noises*"}});
 
-	//fact2guard2
-	//slagman, lava soldier, lava soldier (or switch amounts)
+	NPC* fact2guard2 = new NPC(*slagman);
+	fact2guard2->setLeader(true, 12, factorybalcony1);
+	fact2guard2->setParty(lavasoldier, lavasoldier); //reverse so it's 1 soldier 2 slagmen?
+	fact2guard2->blockExit(NORTHEAST, ENEMY, "guarded by the SLAGMAN.");
+	fact2guard2->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
+	fact2guard2->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
-	//fact2guard3
-	//slagman slagman
+	NPC* fact2guard3 = new NPC(*slagman);
+	fact2guard3->setLeader(true, 13, factorystorage);
+	fact2guard3->setParty(slagman);
+	fact2guard3->blockExit(EAST, ENEMY, "guarded by the SLAGMAN.");
+	fact2guard3->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
+	fact2guard3->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
-	//golemguard
-	//factory golem
+	NPC* golemguard = new NPC(*factgolem);
+	golemguard->setLeader(true, 15, switchroom2);
+	golemguard->blockExit(SOUTHEAST, ENEMY, "guarded by the FACTORY GOLEM.");
+	golemguard->setDialogue({{NULL, "FACTORY GOLEM - *DEEP SYNTH NOISES*"}});
+	golemguard->addRejectionDialogue({{NULL, "FACTORY GOLEM - *DEEP SYNTH REJECTION*"}});
 
-	//fact3guard
-	//lava soldier, slagman, lavizard, lavizard
+	NPC* fact3guard = new NPC(*lavasoldier);
+	fact3guard->setLeader(true, 14, factorynw);
+	fact3guard->setParty(slagman, lavizard, lavizard);
+	fact3guard->blockExit(EAST, ENEMY, "guarded by the LAVA SOLDIER.");
+	fact3guard->setDialogue({{NULL, "LAVA SOLDIER - *lavally challenges you to a battle*"}});
+	fact3guard->addRejectionDialogue({{NULL, "LAVA SOLDIER - *proud laval noises*"}});
 
-	//fact3guard2
-	//poizard, lavizard, lavizard
+	NPC* fact3guard2 = new NPC(*poizard);
+	fact3guard2->setLeader(true, 14, factoryse);
+	fact3guard2->setParty(lavizard, lavizard);
+	fact3guard2->blockExit(EAST, ENEMY, "guarded by the LAVA SOLDIER.");
+	fact3guard2->setDialogue({{NULL, "POIZARD - *squeakily threatens you*"}});
+	fact3guard2->addRejectionDialogue({{NULL, "POIZARD - *squeakily rejects you*"}});
 
-	//jimshady3
-	//jim shady
+	NPC* jimshady3 = new NPC(*jimshady);
+	jimshady3->setLeader(true, 15, factoryroofse);
+	jimshady3->blockExit(EAST, ENEMY, "blocked by JIM SHADY.");
+	jimshady3->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY!");
+	jimshady3->addConversation({{jimshady1, "I'm JIM SHADY, yes I'm the REAL SHADY!"},
+								{self, "No..."},
+								{self, "Jim you should stop trying to be someone else."},
+								{jimshady1, "Nobody asked you."},
+								{self, "Ok. T_T"}});
+	jimshady3->addRejectionDialogue("No.");
 
-	//carlosguard
-	//super slagman, lava soldier, lava soldier
+	NPC* carlosguard = new NPC(*superslagman);
+	carlosguard->setLeader(true, 14, factoryroofne);
+	carlosguard->setParty(lavasoldier, lavasoldier);
+	carlosguard->blockExit(EAST, ENEMY, "guarded by the SUPER SLAGMAN.");
+	carlosguard->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
+	carlosguard->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
 
-	//fact3guard3
-	//super slagman, slagman, poizard, poizard
+	NPC* fact3guard3 = new NPC(*poizard);
+	fact3guard3->setLeader(true, 15, factoryroofnw);
+	fact3guard3->setParty(slagman, poizard, poizard);
+	fact3guard3->blockExit(NORTH, ENEMY, "guarded by the SUPER SLAGMAN.");
+	fact3guard3->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
+	fact3guard3->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
 
-	//shortcutguard
-	//skeleminer duo!
+	NPC* shortcutguard = new NPC(*skeleminer); //skeleminer duo!
+	shortcutguard->setLeader(true, 15, sewer);
+	shortcutguard->setParty(skeleminer);
+	shortcutguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEMINER.");
+	shortcutguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
+	shortcutguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
-	//sewerguards
-	//large lavaman, lavaman
+	NPC* sewerguards = new NPC(*largelavaman);
+	sewerguards->setLeader(true, 15, sewercenter1);
+	sewerguards->setParty(lavaman);
+	sewerguards->blockExit(NORTHWEST, ENEMY, "guarded by the LARGE LAVAMAN.", true);
+	sewerguards->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
+	sewerguards->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 
-	//sewerguardn
-	//large lavaman
+	NPC* sewerguardn = new NPC(*largelavaman);
+	sewerguardn->setLeader(true, 15, sewercenter2);
+	sewerguardn->blockExit(SOUTHEAST, ENEMY, "guarded by the LARGE LAVAMAN.", true);
+	sewerguardn->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
+	sewerguardn->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 
-	//crocguards
-	//lavadile
+	NPC* crocguards = new NPC(*lavadile);
+	crocguards->setLeader(true, 15, sewercenter1);
+	crocguards->blockExit(NORTH, ENEMY, "guarded by the LAVADILE.", true);
+	crocguards->setDialogue({{NULL, "LAVADILE - *growllll*"}});
+	crocguards->addRejectionDialogue({{NULL, "LAVADILE - *growllllll*"}});
 
-	//crocguardn
-	//lavadile lavadile
+	NPC* crocguardn = new NPC(*lavadile);
+	crocguardn->setLeader(true, 15, sewercenter1);
+	crocguardn->setParty(lavadile);
+	crocguardn->blockExit(NORTH, ENEMY, "guarded by the LAVADILE.", true);
+	crocguardn->setDialogue({{NULL, "LAVADILE - *growllll*"}});
+	crocguardn->addRejectionDialogue({{NULL, "LAVADILE - *growllllll*"}});
 
-	//drainguard
-	//lavagator (lavadile lavadile?)
+	NPC* mimic2 = new NPC(*mimic);
+	mimic1->setLeader(true, 50, NULL);
+	mimic1->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic1->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic1->setEscapable(false);
+	mimic1->setForceBattle();
+	mimic1->setExtraMonies(1500); //you get lots of monies for beating the mimic
+	mimic1->setBoss(true); //mini
 
-	//triple chest room 2 mimics in sewers!
+	NPC* mimic3 = new NPC(*mimic);
+	mimic1->setLeader(true, 50, NULL);
+	mimic1->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic1->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic1->setEscapable(false);
+	mimic1->setForceBattle();
+	mimic1->setExtraMonies(1500); //you get lots of monies for beating the mimic
+	mimic1->setBoss(true); //mini
+
+	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", 25, 0, 5, 2, 2, 1);
+	scarfsmack->afterdesc = "with his scarf";
+	scarfsmack->addDescription("Smack the target with each end of your stretchy scarf. (25 ATTACK, 2 hits)");
+	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
+	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, bigscarf);
+
+	Item* fakechest1 = new TreasureItem("TREASURE CHEST 1", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, NULL, mimic2);
+	Item* fakechest2 = new TreasureItem("TREASURE CHEST 2", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, NULL, mimic3);
+	Item* rr3 = new ReviveItem(*(ReviveItem*)(reviveroot));
+	Item* realchest2 = new TreasureItem("TREASURE CHEST 3", "A big treasure chest, possibly full of treasure.", sewertreasure, 500, rr3); //put a memory crowbar here?
+
+	NPC* drainguard = new NPC(*lavagator);
+	drainguard->setLeader(true, 15, sewerplant);
+	//drainguard->setParty(lavadile, lavadile); ?
+	drainguard->setDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
+	drainguard->addRejectionDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
+	drainguard->guardItem(masterswitch);
+
 	//put a treasure chest in the mines (just monies), and guard the room to it with a rockbug or something (or put the skeleminer duo here? and make a molten miner where the duo is right now?)
 
 	NPC* lavaguard = new NPC(*lavaguardian);
-	lavaguard->setLeader(true, 20, bridge3, false);
+	lavaguard->setLeader(true, 16, bridge3, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("*ethereal breathing*");
 	lavaguard->addRejectionDialogue("*ethereal breathing*");
@@ -2576,7 +2775,10 @@ NPC* SetupWorld() {
 	volcano7->blockExit(NORTH, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
 	sewerentrance1->blockExit(DOWN, LAVA, "submerged in lava.");
 	sewerentrance2->blockExit(DOWN, LAVA, "submerged in lava.");
-	sewer2->blockExit(SOUTHWEST, LAVA, "submerged in lava."); //this is problematic
+	sewer2->blockExit(UP, COVER, "covered by a manhole cover."); //these two must be unblocked by taking the manhole cover from above (because the cover perfectly fits the hole, so logically you can't take it from below)
+	sewerentrance1->blockExit(UP, COVER, "covered by a manhole cover.");
+	volcano2->blockExit(DOWN, LAVA, "submerged in lava."); //these two wil not show until the manhole cover is removed
+	volcano6->blockExit(DOWN, LAVA, "submerged in lava.");
 	sewerminessouth->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mineshortcut->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	factorybalcony2->blockExit(EAST, CHASM, "blocked by a lack of path over the central room.");
@@ -2595,74 +2797,6 @@ NPC* SetupWorld() {
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
-
-	//make some final items for unblocking exits MARK: more items
-
-	Item* cloaking = new KeyItem("CLOAKING DEVICE", "Cloaking device for getting past advanced security systems.", "equipped the cloaking device. No security system can spot you now!", limbo, TEMPLE, true);
-	KeyItem* _cloaking = (KeyItem*)cloaking;
-	_cloaking->setTarget(richneighborhood1);
-	_cloaking->setTarget(richneighborhood2);
-	_cloaking->setTarget(richneighborhood3);
-
-	//make coolant attack that slows down enemies
-	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
-	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", "used the pole to go over the chasm!", desertpole, CHASM, true);
-	Item* minecart = new MovementItem("MINECART", "A spare minecart, used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
-
-	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
-	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
-	Item* minecart3 = new MovementItem("NORTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft2, TRACK, false);
-	Item* minecart4 = new MovementItem("SOUTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
-	minecart1->setTakable(false);
-	minecart2->setTakable(false);
-	minecart3->setTakable(false);
-	minecart4->setTakable(false);
-	minecart1->setDenial("This minecart is clamped onto the minecart tracks!");
-	minecart2->setDenial("This minecart is clamped onto the minecart tracks!");
-	minecart3->setDenial("This minecart is clamped onto the minecart tracks!");
-	minecart4->setDenial("This minecart is clamped onto the minecart tracks!");
-
-	mineguard2->guardItem(minecart3);
-
-	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
-	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", "There is nowhere to put the DOWN BUTTON! ... You shove the DOWN BUTTON into the wall. The elevator can go DOWN now!", burgsafe, elevator, DOWN, elevatorbottom);
-
-	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", "used the FORKLIFT to move the collapsed ceiling material out of the way.", heavymachineryroom, STUFF, false);
-	//you can use the scissor lift to get to the ninja village I guess, I'll keep it because it technically makes sense and it's funny
-	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", heavymachineryroom, HIGH, false);
-	scissorlift->setDropToUse(true);
-
-	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofsw, HIGH, false);
-	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofnw, HIGH, false);
-	Item* scissorliftse = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofse, HIGH, false);
-	Item* scissorliftne = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofne, HIGH, false);
-	scissorliftsw->setTakable(false);
-	scissorliftnw->setTakable(false);
-	scissorliftse->setTakable(false);
-	scissorliftne->setTakable(false);
-
-	Item* controlpanel1 = new KeyItem("CONTROL PANEL", "A huge array of buttons for controlling the factory. Thankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
-	controlpanel1->setTakable(false);
-	KeyItem* controls1 = (KeyItem*)controlpanel1;
-	controls1->setTarget(volcano2);
-
-	Item* controlpanel2 = new KeyItem("CONTROL PANEL", "A huge array of buttons for controlling the factory. Thankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom2, LAVA, true);
-	controlpanel2->setTakable(false);
-	KeyItem* controls2 = (KeyItem*)controlpanel2;
-	controls2->setTarget(volcano4);
-	controls2->setTarget(sewerentrance1);
-	
-	Item* controlpanel3 = new KeyItem("CONTROL PANEL", "A huge array of buttons for controlling the factory. Thankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom3, LAVA, true);
-	controlpanel3->setTakable(false);
-	KeyItem* controls3 = (KeyItem*)controlpanel3;
-	controls3->setTarget(sewerentrance2);
-	controls3->setTarget(volcano6);
-	controls3->setTarget(sewer2);
-	
-	Item* masterswitch = new KeyItem("MASTER DRAINAGE BUTTON", "Huge red button, which will fully drain the lava from the highlands.", "jumped onto the MASTER DRAINAGE BUTTON. The sewers rumble. You see the lava below fully drain! (though it's still flowing in)", sewerplant, LAVA, true);
-	masterswitch->setTakable(false);
-	KeyItem* _masterswitch = (KeyItem*)masterswitch;
-	_masterswitch->setTarget(volcano7);
 
 	return self; //returns the player character
 }
@@ -2900,6 +3034,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		ManholeItem* cover = (ManholeItem*)item;
 		if (cover->getRoom() != NULL) { //if there is a room to reveal, we set an exit downwards (there's no horizontal manholes in this game)
 			currentRoom->setExit(cover->getDirection(), cover->getRoom());
+			cover->getRoom()->unblockExit(ReverseDirection[cover->getDirection()]); //also unblock the exit from below
 			cout << "\nAn exit DOWNwards was revealed!";
 		}
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items enable the use of their move
