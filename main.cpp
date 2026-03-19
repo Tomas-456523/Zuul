@@ -104,7 +104,7 @@ NPC* SetupWorld() {
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
 	Room* tentmansion = new Room("in the tent mansion's living room. There are way too many clocks here.");
 	Room* tentlab = new Room("in the tent lab. There's a ton of machinery, and many generic science beakers with colored liquids.");
-	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently due to a lobster infestation.");
+	Room* tentstation = new Room("in the village train station. The tunnels were closed off recently due to the lobster infestation.");
 	tentstation->setStation();
 	Room* tentchurch = new Room("in the village church. It's a really big tent, complete with stained glass and everything.\nNobody really goes here anymore, since the priest mysteriously disappeared a long time ago.");
 	Room* docks = new Room("at the village docks. Your tent house is set up here because your dad likes fishing.");
@@ -396,7 +396,7 @@ NPC* SetupWorld() {
 	//Create attacks
 	
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "It's a me.", deserttown, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
+	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", desertstation, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
 	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -782,12 +782,30 @@ NPC* SetupWorld() {
 	cacty->addSpecialAttack(superspine);
 
 	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
+	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 1));
+	michelin->addConversation({{NULL, "MIKE is throwing dynamite at the rocky wall."},
+						   {self, "That doesn't look very safe."},
+						   {michelin, "HAHAHAHA Aren't the blasts just music to your ears?"},
+						   {self, "no it's very loud :|"}});
+	michelin->setDialogue("HAHAHAHA I love the smell of explosions in the morning!");
+	Conversation michrec1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {michelin, "Why not, kid! Blowing up rocks is getting old."}};
+	michrec1.skipcondition = TEMPLEQUEST;
+	Conversation michrec2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {michelin, "HAHAHAHA! Let's go blow up some BURGERs, kid!"}};
+	michrec1.alt = &michrec1;
+	michrec2.skipcondition = BURGERMENDEF;
+	Conversation michrec3 = {{self, "Hey wanna join my team?"}, {michelin, "Why not, kid! Blowing up rocks is getting old."}};
+	michrec2.alt = &michrec3;
+	michelin->addRecruitmentDialogue(michrec1);
+	michelin->addRecruitedDialogue("HAHAHAHAHA! So many things to explode!");
+	michelin->addDismissalDialogue("Alright Imma head back to my cave!");
+	michelin->setTalkOnRecruit(true);
+	michelin->setRecruitable(true);
 
 	//cast iron
 
 	//5 star meal
 
-	//flambé
+	//flambe
 
 	//Hot sauce
 
@@ -820,6 +838,7 @@ NPC* SetupWorld() {
 	//(null terminator?) prolly not
 
 	//Princess Plum is another support MARK: Plum
+	NPC* plum = new NPC("PRINCESS", "PLUM", "AAAAAAAAAAAAA", limbo, 0, Stats(), Stats());
 
 	//racket
 
@@ -996,7 +1015,7 @@ NPC* SetupWorld() {
 	//             """""				//             """""				//             """""			//             """""" \ 
 	//            |     |				//            |     |				//            |     |			//            |     |.`\ 
 	
-	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist from the first game who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
+	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
 	//self, "WHAT!?!?"
 	//self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"
 	//hj, "Yeah that's my name."
@@ -1732,16 +1751,10 @@ NPC* SetupWorld() {
 	ninjascout->setBasicAttack(shurikenninja);
 
 	NPC* ninja = new NPC("", "NINJA", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.", limbo, 0, Stats());
-	ninja->setBasicAttack(genericattack);
-	ninja->addSpecialAttack(genericspecial);
-	ninja->addSpecialAttack(genericcc);
 	//shuriken
 	//katana
 
 	NPC* ninjachef = new NPC("", "NINJA CHEF", "An expert ninja who is also an expert in cooking. He guards the ninja pantry.", limbo, 0, Stats());
-	ninjachef->setBasicAttack(genericattack);
-	ninjachef->addSpecialAttack(genericspecial);
-	ninjachef->addSpecialAttack(genericcc);
 	//shuripans
 	//spatula
 	//ninja feast
@@ -1749,9 +1762,6 @@ NPC* SetupWorld() {
 
 	//a true ninja doesn't reveal his name
 	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief ninja of the ninja village, with the most experience and the highest rank of diamond belt.", limbo, 0, Stats());
-	ninjachief->setBasicAttack(genericattack);
-	ninjachief->addSpecialAttack(genericspecial);
-	ninjachief->addSpecialAttack(genericcc);
 	//kick (flying side kick)
 	//kiloshurikens (helicopter rotors) 2 3-wide hits
 	//pressure points
@@ -1975,61 +1985,71 @@ NPC* SetupWorld() {
 	scaldingsteam->addEffect(scalded);
 	greer->addSpecialAttack(scaldingsteam);
 
-	NPC* magman = new NPC("", "MAGMAN", "Man made of magma.", limbo, 0, Stats());
-	magman->setBasicAttack(genericattack);
-	magman->addSpecialAttack(genericspecial);
-	magman->addSpecialAttack(genericcc);
-	//
+	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats()); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
+	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", -3, 5, 0, 1, 1, 1);
+	sandthrow->afterdesc = "'s eyes";
+	sandthrow->addEffect(sanded);
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", 1, 12, 0, 1, 1, 1);
+	sandman->setBasicAttack(sandthrow);
+	sandman->addSpecialAttack(sandpunch);
 
-	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Armored lava man and also he has a sword.", limbo, 0, Stats());
+	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats());
+	lavizard->setBasicAttack(genericattack);
+	lavizard->addSpecialAttack(genericspecial);
+	lavizard->addSpecialAttack(genericcc);
+
+	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrow from the depths of the lava sea.", limbo, 0, Stats());
 	lavasoldier->setBasicAttack(genericattack);
 	lavasoldier->addSpecialAttack(genericspecial);
 	lavasoldier->addSpecialAttack(genericcc);
+	//NPC* lavarcher = new NPC("", "LAVARCHER", "Lavaman sporting molten armor, and a homemade bow and arrows.", limbo, 0, Stats());
 
-	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "Large man made of lava, name says it all.", limbo, 0, Stats());
+	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "A really big laval humanoid who towers over his peers.", limbo, 0, Stats());
 	largelavaman->setBasicAttack(genericattack);
 	largelavaman->addSpecialAttack(genericspecial);
 	largelavaman->addSpecialAttack(genericcc);
 
-	NPC* lavarcher = new NPC("", "LAVARCHER", "Lava man who has a bow and arrow.", limbo, 0, Stats());
-	lavarcher->setBasicAttack(genericattack);
-	lavarcher->addSpecialAttack(genericspecial);
-	lavarcher->addSpecialAttack(genericcc);
+	NPC* poizard = new NPC("", "POIZARD", "Purple counterpart to the lavizard, this gecko has a habit of emmitting toxic fumes.", limbo, 0, Stats());
+	poizard->setBasicAttack(genericattack);
+	poizard->addSpecialAttack(genericspecial);
+	poizard->addSpecialAttack(genericcc);
 
-	NPC* slagman = new NPC("", "SLAGMAN", "Man made of slag from the factory.", limbo, 0, Stats());
+	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats());
 	slagman->setBasicAttack(genericattack);
 	slagman->addSpecialAttack(genericspecial);
 	slagman->addSpecialAttack(genericcc);
+	//NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "Slagman sporting armor expertly fashioned from cooled slag. They're very good blacksmiths.", limbo, 0, Stats());
 
-	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Golem who works in the factory.", limbo, 0, Stats());
+	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats());
+	superslagman->setBasicAttack(genericattack);
+	superslagman->addSpecialAttack(genericspecial);
+	superslagman->addSpecialAttack(genericcc);
+
+	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats());
 	factgolem->setBasicAttack(genericattack);
 	factgolem->addSpecialAttack(genericspecial);
 	factgolem->addSpecialAttack(genericcc);
 
-	NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "Armored humanoid made of slag.", limbo, 0, Stats());
-	slagwarrior->setBasicAttack(genericattack);
-	slagwarrior->addSpecialAttack(genericspecial);
-	slagwarrior->addSpecialAttack(genericcc);
-
-	NPC* lavagator = new NPC("", "LAVAGATOR", "Big lava alligator.", limbo, 0, Stats());
-	lavagator->setBasicAttack(genericattack);
-	lavagator->addSpecialAttack(genericspecial);
-	lavagator->addSpecialAttack(genericcc);
-
-	NPC* lavadile = new NPC("", "LAVADILE", "Small crocodile who lives in the lava.", limbo, 0, Stats());
+	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, who is still bigger than a normal alligator! He is growing and very hungry.", limbo, 0, Stats());
 	lavadile->setBasicAttack(genericattack);
 	lavadile->addSpecialAttack(genericspecial);
 	lavadile->addSpecialAttack(genericcc);
 
-	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have been swimming above the bridge when the lava was drained, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
+	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems, huge from a healthy diet of deep ores.", limbo, 0, Stats());
+	lavagator->setBasicAttack(genericattack);
+	lavagator->addSpecialAttack(genericspecial);
+	lavagator->addSpecialAttack(genericcc);
+
+	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
 	lavaguardian->setBoss(true);
 	//fire sword
 	//upslash
 	//sword explosion
 	//solar flare
-	//nova
+	//mega meteor
 
-	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, Stats());
+	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats());
 	//askew
 	//barrel roll
 
@@ -2042,7 +2062,9 @@ NPC* SetupWorld() {
 	//internet explorer (plant an effect that will do big damage in 3 turns)
 	//firefox (breathe fire)
 
-	NPC* bigcat = new NPC("", "BIG CAT", "Huge golden lion with a silver mane. Extremely territorial.", limbo, 0, Stats());
+	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
+
+	NPC* bigcat = new NPC("", "BIG CAT", "Huge golden lion with a silver mane. He is very aggressive.", limbo, 0, Stats());
 	bigcat->setBasicAttack(genericattack);
 	bigcat->addSpecialAttack(genericspecial);
 	bigcat->addSpecialAttack(genericcc);
@@ -2441,12 +2463,74 @@ NPC* SetupWorld() {
 	springguard->addLinkedRoom(oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to appear.");
 	springguard->guardItem(valve);
 
+	//volcanoguard
+	//lavaman
+
+	//volcanoguard2
+	//lavaman lavizard lavizard
+
+	//volcanoguard3
+	//large lavaman, lavaman, lavaman, lavizard
+
+	//fact1guard
+	//slagman lavaman lavaman
+
+	//fact2guard
+	//lava soldier, lavaman
+
+	//fact2guard2
+	//slagman, lava soldier, lava soldier (or switch amounts)
+
+	//fact2guard3
+	//slagman slagman
+
+	//golemguard
+	//factory golem
+
+	//fact3guard
+	//lava soldier, slagman, lavizard, lavizard
+
+	//fact3guard2
+	//poizard, lavizard, lavizard
+
+	//jimshady3
+	//jim shady
+
+	//carlosguard
+	//super slagman, lava soldier, lava soldier
+
+	//fact3guard3
+	//super slagman, slagman, poizard, poizard
+
+	//shortcutguard
+	//skeleminer duo!
+
+	//sewerguards
+	//large lavaman, lavaman
+
+	//sewerguardn
+	//large lavaman
+
+	//crocguards
+	//lavadile
+
+	//crocguardn
+	//lavadile lavadile
+
+	//drainguard
+	//lavagator (lavadile lavadile?)
+
+	//triple chest room 2 mimics in sewers!
+	//put a treasure chest in the mines (just monies), and guard the room to it with a rockbug or something (or put the skeleminer duo here? and make a molten miner where the duo is right now?)
+
 	NPC* lavaguard = new NPC(*lavaguardian);
 	lavaguard->setLeader(true, 20, bridge3, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
 	lavaguard->setDialogue("*ethereal breathing*");
 	lavaguard->addRejectionDialogue("*ethereal breathing*");
 	lavaguard->setEscapable(false);
+
+	//tabguard
 
 	NPC* kingbrowser = new NPC(*browser);
 	kingbrowser->setLeader(true, 25, castlethrone, false);
@@ -2717,16 +2801,18 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		if (npc->getRoom(true) == currentRoom) {
 			npc->setRoom(currentRoom);
 		}
+		if (npc->getTalkOnDefeat()) npc->printDialogue(); //print defeat dialogue
+		if (Item* item = npc->takeGift()) { //if the guy has a gift to give upon defeat we get the gift and add it to the inventory
+			inventory->push_back(item);
+			cout << name << " gave you the " << item->getName() << "!"; //says that you got the thing
+			CinPause();
+		}
 		//some NPCs have special fight endings after defeating them, so we do those checks here
 		if (npc->getLobster()) { //if it was the lobster
 			cout << "\nThe TUNNEL LOBSTER, now defeated, appears docile.";
 			CinPause();
 			cout << "TUNNEL LOBSTER - \"HhHhhhHHhhHhhHhHhhHhhhHHhh (docile lobster noises)\"";
 			CinPause();
-			//prints spaces based on player name length to format the instructions in the parentheses down there \/ \/ \/ \/ \/ \/ \/
-			for (int i = 0; i < strlen((*party)[0]->getName()); i++) {
-				cout << " ";
-			}
 			//gives the prompt to name the lobster!
 			cout << "\n" << setw(strlen((*party)[0]->getName())) << ""; //spacing
 			cout <<                                    "                                                 (type your lobster's name here!)";
@@ -2913,7 +2999,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		cout << "\nThe " << itemname << " is being guarded by " << guard->getName() << ".";
 		return;
 	} else if (item->getDropToUse() && !item->getRoom()) { //if item room is NULL that means it's in the inventory
-		cout << "\nThe " << itemname << " must be on the ground to use it!";
+		cout << "\nThe " << itemname << " must be on the ground to use it.";
 		return;
 	} else if (item->getTargetNeeded() && npc == NULL && strcmp(item->getType(), "key") && strcmp(item->getType(), "movement")) { //if the item needed a target but no " ON " was given we give error text
 		if (party->size() > 1) { //if the party isn't only the player
@@ -2938,7 +3024,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		cout << "It tasted alright.";
 		CinPause();
 		cout << "\n\t<<<      BURGER QUEST COMPLETE ?      >>>";
-		cout << "\n\t<<< ENDING ACHIEVED: TEST DEMO ENDING >>>";
+		cout << "\n\t<<< ENDING ACHIEVED: TEST DEMO ENDING >>>"; //isn't it a TECH demo?
 		CinPause();
 		cout << "\nThank you for playing BURGER QUEST 2: ELECTRIC BOOGALOO!";
 		if (!AOrB("Would you like to keep playing?", "YES", "NO")) {

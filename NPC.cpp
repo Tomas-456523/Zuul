@@ -766,6 +766,7 @@ void NPC::defeat() {
 		}
 		exitBlocking = NULL;
 	}
+	if (battleReward) battleReward = false; //now we can give the gift
 	applyWorldChange(changes); //apply all the world changes associated with this npc
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
