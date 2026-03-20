@@ -2065,52 +2065,83 @@ NPC* SetupWorld() {
 	scaldingsteam->addEffect(scalded);
 	greer->addSpecialAttack(scaldingsteam);
 
-	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats()); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
-	//LAVA WHACK lavally whacked
-	/*Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, -3, 5, 0, 1, 1, 1);
-	sandthrow->afterdesc = "'s eyes";
-	sandthrow->addEffect(sanded);
-	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, 1, 12, 0, 1, 1, 1);
-	sandman->setBasicAttack(sandthrow);
-	sandman->addSpecialAttack(sandpunch);*/
+	Effect* onfire = new Effect("ON FIRE", 5, 5, 0, 1, 0.8f);
+	Effect* extrafire = new Effect("EXTRA ON FIRE", 5, 10, 0, 1, 0.8f);
+	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 0, 1); //contact attacks for the lavamen
+	burn->addEffect(onfire);
+	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 0, 1);
+	reallyburn->addEffect(extrafire);
 
-	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats());
-	lavizard->setBasicAttack(genericattack);
-	lavizard->addSpecialAttack(genericspecial);
-	lavizard->addSpecialAttack(genericcc);
+	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats(20, 0, 25, 0, 25, 10, 9)); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
+	magman->setRecoilAttack(burn);
+	Attack* lavawhack = new Attack("LAVA WHACK", "lavally whacked", true, -5, 15, 5, 1, 1, 1);
+	lavawhack->addEffect(onfire);
+	Attack* meteor = new Attack("METEOR", "shot a superheated boulder at", false, -5, 25, 0, 1, 1, 3);
+	meteor->afterdesc = " from inside itself"; //I was thinking something like when iron man shoots a laser from his arc reactor except it's the lavaman using the rock inside itself
+	magman->setBasicAttack(lavawhack);
+	magman->addSpecialAttack(meteor);
+
+	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrows and spear from the depths of the lava sea.", limbo, 0, Stats(25, 15, 25, 15, 30, 5, 9));
+	Attack* lavaspear = new Attack("LAVA SPEAR", "lavally slammed down on", false, -5, 20, 5, 1, 1, 1);
+	Attack* lavarrows = new Attack("LAVARROWS", "shot explosive arrows", false, 8, 10, 20, 3, 3, 3);
+	lavarrows->focushits = false;
+	Attack* closecombat = new Attack("CLOSE COMBAT", "engaged in close combat with", true, 8, 15, 20, 1, 1, 3);
+	largelavaman->setBasicAttack(lavaslam);
+	largelavaman->addSpecialAttack(haymaker);
+
+	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "A really big laval humanoid who towers over his peers.\nThey have no finesse, preferring brutal strikes.", limbo, 0, Stats(60, 0, 35, 0, 25, 0, 9));
+	largelavaman->setRecoilAttack(burn);
+	Attack* lavaslam = new Attack("LAVA SLAM", "lavally slammed down on", true, -5, 20, 5, 1, 1, 1);
+	Attack* haymaker = new Attack("HAYMAKER", "threw a haymaker at", true, 8, 45, 5, 1, 1, 1);
+	largelavaman->setBasicAttack(lavaslam);
+	largelavaman->addSpecialAttack(haymaker);
+
+	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 30, 30, 10, 30, 9));
+	//scurry
 	//spit lava
 
-	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrow from the depths of the lava sea.", limbo, 0, Stats());
-	lavasoldier->setBasicAttack(genericattack);
-	lavasoldier->addSpecialAttack(genericspecial);
-	lavasoldier->addSpecialAttack(genericcc);
-	//NPC* lavarcher = new NPC("", "LAVARCHER", "Lavaman sporting molten armor, and a homemade bow and arrows.", limbo, 0, Stats());
-
-	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "A really big laval humanoid who towers over his peers.", limbo, 0, Stats());
-	largelavaman->setBasicAttack(genericattack);
-	largelavaman->addSpecialAttack(genericspecial);
-	largelavaman->addSpecialAttack(genericcc);
-	//LAVA SLAM
-	//HAYMAKER
-
 	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats());
+	//scurry
+	//leap
+	//fumes
+
+	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(30, 20, 35, 20, 10, 15, 9));
+	slagman->setRecoilAttack(reallyburn);
+	Attack* slagjab = new Attack("SLAG JAB", "slaggily jabbed at", true, -5, 20, 10, 1, 1, 1);
+	slagjab->addEffect(extrafire);
+	Attack* metalmeteor = new Attack("METAL METEOR", "shot a solid metal sphere at", false, 10, 40, 0, 1, 1, 1);
+	metalmeteor->afterdesc = " from inside itself"; //same commentary comment as lavamen
+	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 20, 10, 1, 1, 7);
+	slagvomit->focushits = false;
+	slagvomit->addEffect(reallyburn);
+	slagman->setBasicAttack(slagjab);
+	slagman->addSpecialAttack(metalmeteor);
+	slagman->addSpecialAttack(slagvomit);
+
+	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats(50, 25, 40, 15, 15, 50, 9));
+	superslagman->setRecoilAttack(reallyburn);
+	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 10, 10, 4, 4, 1);
+	slagjchu->addEffect(extrafire);
+	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 40, 0, 1, 1, 3);
+	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 30, 10, 1, 1, 7);
+	slagblast->addEffect(extrafire);
+	superslagman->setBasicAttack(slagjchu);
+	superslagman->addSpecialAttack(metalbeam);
+	superslagman->addSpecialAttack(slagblast);
+
+	//envelop?
+
+	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats()); //mini mini boss?
+	//swing
+	//furnace blast
+
+	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, who is still big from a healthy diet of ores.", limbo, 0, Stats());
+	//bite
 	//
 
-	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats());
-	//SLAG JAB
-
-	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats());
-	//JAB CROSS HOOK UPPERCUT
-
-	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats());
-	//
-
-	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, who is still bigger than a normal alligator! He is growing and very hungry.", limbo, 0, Stats());
-	//
-
-	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems, huge from a healthy diet of deep ores.", limbo, 0, Stats());
-	//
+	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats());
+	//snap
+	//gator gun
 
 	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
 	lavaguardian->setBoss(true);
@@ -2118,7 +2149,7 @@ NPC* SetupWorld() {
 	//upslash
 	//sword explosion
 	//solar flare
-	//mega meteor
+	//gamma ray burst
 
 	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats());
 	//askew
@@ -2137,14 +2168,10 @@ NPC* SetupWorld() {
 	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
 	opennewtab->summon = newtab;
 	opennewtab->summonamount = 3;
+	browser->addSpecialAttack(opennewtab);
 	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 10, 15, 6, 6, 1);
 	yahoo->focushits = false;
 	browser->addSpecialAttack(yahoo);
-	/*browser->addSpecialAttack(opennewtab);
-	Attack* brave = new Attack("BRAVE", "inspired the team to be brave", 15, 0, 0, 0, 0, 49, true);
-	Effect* beingbrave = new Effect("BRAVE", 3, 0, 0, 2.0f);
-	brave->addEffect(beingbrave);
-	browser->addSpecialAttack(brave);*/
 	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
 	Effect* buffering = new Effect("BUFFERING", 2);
 	buffering->falldamage = 80;
@@ -2154,6 +2181,9 @@ NPC* SetupWorld() {
 	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5f);
 	firefox->addEffect(foxfire);
 	browser->addSpecialAttack(firefox);
+	
+	/////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////
 
 	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
 
@@ -2241,13 +2271,55 @@ NPC* SetupWorld() {
 	burgerbutler->addSpecialAttack(genericspecial);
 	burgerbutler->addSpecialAttack(genericcc);
 	
-	//ceo
+	//burger ceo enzo
+
+	//burger warden
+
+	//burger scientist
+
+	//burger man
+
+	//entering temples requires having max size party
+	//temples scale to your level
+	//you can't exit until you beat the boss (or you use the give up exit which resets everything?)
+	NPC* senseofself = new NPC("", "SENSE OF SELF", "", limbo, 0, Stats(), Stats());
+	//temple of humility in the forest, gives output antenna of humility
+	//forest temple is pretty standard, with some branching paths and combat and choices that allow you to buff yourself or buff your teammates
+	//and probably a puzzle or two (prolly one)
+	//sos starts by copying your attacks but better,
+	//then tempts teammates into joining him (prize), effectiveness depends on how many times you helped yourself
+	//you can use your attack APOLAGIZE TO to ask teammates to come back
+	//near the end any remaining hypnotized teammates are sent back by sos and he tells you
+	//hey it was all just to show you you can't rely on these ppl
+	//join me and WE can defeat BURGER together!
+	//if you join him he just instakills you after you defeat your other teammates
+	//you can also REPENT if you haven't defeated them all yet
+	//then you get the antenna
+
+	NPC* thedark = new NPC("", "THE DARK", "", limbo, 0, Stats(), Stats());
+	//temple of courage in the desert, gives big red button of hope
+	//you get seperated from your teammates and you have to fight enemies that decay your stats
+	//probably some hard puzzles
+	//and you get reunited at the end
+	//the dark decays your stats with its attacks
+	//and when stats are low enough it can tempt teammates into despair
+	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
+	//after that you get the button
+
+	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "", limbo, 0, Stats(), Stats());
+	//temple of patience in the volcano area, gives plotometer of patience
+	//you do puzzles and fight fire enemies
+	//then you fight fire with fire
+	//he says stuff that tempts you and your teammates into wrath
+	//wrath gives x1.5 attack but wrath attacks also increase phase meter of fwf
+	//you can CALM DOWN but you lose the boost
+	//fwf increases in heat up to two times after getting wrathfully hit enough, and in the third phase all attacks add to his attack (so you can't just attack wrathfully with no consequences then)
+	//teammates calm down naturally after a few turns (and increase wrath meter less), but you can CALM DOWN them so they calm down faster (5 by default probably)
+	//then you get the plotometer
 
 	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", DOESCONTACT, COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
 	//NPC* npc = new NPC("TITLE", "NAME", "DESCRIPTION", limbo, hp, def, att, tou, pie, spe, ski);
-
-	//for npcs you can actually fight, make sure to set their level as 0 at construction, then set the level manually after setting the scale, otherwise stats will be off
 
 	//set up overworld enemies  MARK: enemies (world)
 	NPC* forestguard = new NPC(*grassman);
