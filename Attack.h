@@ -52,13 +52,17 @@ struct Attack {
 	NPC* summon = NULL; //the npc that the attack summons
 	int summonamount = 0; //how many of the summon to summon
 
+	bool contact; //if the attacker makes contact with the target
+	bool beneficial = false; //if you want to get hit by this
+
 	Attack() {} //default constructor so NPC doesn't throw error
 
 	//constructs the attack
 	//default stats are for testing purposes
-	Attack(const char* _name, const char* _description, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, float _lifesteal = 0) {
+	Attack(const char* _name, const char* _description, bool _contact, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, float _lifesteal = 0) {
 		name = _name;
 		description = _description;
+		contact = _contact;
 		cost = _cost;
 		power = _power;
 		pierce = _pierce;

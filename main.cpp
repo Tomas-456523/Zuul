@@ -404,7 +404,7 @@ NPC* SetupWorld() {
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
 
-	Attack* punch = new Attack("PUNCH", "punched", -5, 10, 0, 1, 1, 1);
+	Attack* punch = new Attack("PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target. (10 ATTACK)");
 	self->setBasicAttack(punch);
 
@@ -412,36 +412,36 @@ NPC* SetupWorld() {
 	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target. (12 ATTACK, 10 PIERCE)");
 	self->addSpecialAttack(energyball);
 
-	Attack* kick = new Attack("KICK", "jumped at", 6, 15, 0, 1, 1, 1, false, 3);
+	Attack* kick = new Attack("KICK", "jumped at", true, 6, 15, 0, 1, 1, 1, false, 3);
 	kick->afterdesc = " with a kick";
 	kick->addDescription("Launch a flying side kick at the target. (15 ATTACK)");
 	self->addSpecialAttack(kick);
 
-	Attack* headbutt = new Attack("HEADBUTT", "flew at", 5, 25, 0, 1, 1, 1, false, 5);
+	Attack* headbutt = new Attack("HEADBUTT", "flew at", true,  5, 25, 0, 1, 1, 1, false, 5);
 	headbutt->afterdesc = " like a missile";
 	headbutt->recoil = 5;
 	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
 	self->addSpecialAttack(headbutt);
 
-	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", 10, 20, 10, 1, 1, 1, false, 8);
+	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
 
-	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", 7, 5, 0, 6, 7, 1, false, 10);
+	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK PER HIT)");
 	self->addSpecialAttack(punchflurry);
 
-	Attack* energize = new Attack("ENERGIZE", "energized", 14, 0, 0, 1, 1, 1, true, 15);
+	Attack* energize = new Attack("ENERGIZE", "energized", false, 14, 0, 0, 1, 1, 1, true, 15);
 	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 2.0f, 0, 0, 0);
 	energize->addEffect(energized);
 	energize->addDescription("Imbue yourself or an teammate with energy, doubling your attack for one turn.");
 
-	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", 12, 35, 15, 1, 1, 1, false, 12);
+	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", false, 12, 35, 15, 1, 1, 1, false, 12);
 	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK, 15 PIERCE)");
 
-	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", 19, 50, 25, 1, 1, 1, false, 18);
+	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", false, 19, 50, 25, 1, 1, 1, false, 18);
 	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK, 25 PIERCE)");
 	
-	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", 0, 0, 0, 1, 1, 9, false, 25);
+	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", false, 0, 0, 0, 1, 1, 9, false, 25);
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
 
@@ -467,50 +467,50 @@ NPC* SetupWorld() {
 	floria->setTalkOnRecruit(true);
 	floria->setRecruitable(true);
 
-	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", -5, -5, 20, 1, 1, 1, true);
+	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", false, -5, -5, 20, 1, 1, 1, true);
 	floria->setBasicAttack(heal);
 
-	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", 2, 20, 30, 1, 1, 1, false);
+	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 2, 20, 30, 1, 1, 1, false);
 	rosethorn->addDescription("Call a rose friend to poke the target with its thorns.");
 	floria->addSpecialAttack(rosethorn);
 
-	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", 4, -20, 20, 1, 1, 1, true, 5);
+	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -20, 20, 1, 1, 1, true, 5);
 	turboheal->addDescription("Use flower power to greatly heal a teammate.");
 	floria->addSpecialAttack(turboheal);
 
-	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", 5, 0, 0, 0, 0, 0, true, 8);
+	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", false, 5, 0, 0, 0, 0, 0, true, 8);
 	enroot->addDescription("Draw power from the soil, building SP.");
 	Effect* rooted = new Effect("ROOTED", 5, 0, -5);
 	enroot->addEffect(rooted);
 	floria->addSpecialAttack(enroot);
 
-	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", 20, -20, 20, 1, 1, 1, true, 10);
+	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", false, 20, -20, 20, 1, 1, 1, true, 10);
 	recapacitate->targetFainted = true;
 	recapacitate->addDescription("Use flower power to recapacitate a teammate.");
 	floria->addSpecialAttack(recapacitate);
 
-	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", 25, 0, 0, 0, 0, 7, true, 8);
+	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 0, 0, 7, true, 8);
 	aprilshower->addDescription("Call upon the clouds to rain SP upon the team.");
 	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
 	aprilshower->addEffect(spshower);
 	floria->addSpecialAttack(aprilshower);
 
-	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", 8, -2147483647, 20, 1, 1, 1, true, 15);
+	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -2147483647, 20, 1, 1, 1, true, 15);
 	nitroheal->afterdesc = " to peak health";
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
 
-	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", 30, -2147483648, 20, 1, 1, 1, true, 20);
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 30, -2147483648, 20, 1, 1, 1, true, 20);
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
 
-	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", 40, 100, 10000, 1, 1, 1, false, 23);
+	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", false, 40, 100, 10000, 1, 1, 1, false, 23);
 	superpower->instakill = true;
 	superpower->addDescription("Unleash the power of the earth's core.");
 	floria->addSpecialAttack(superpower);
 
-	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", 30, 0, 0, 0, 0, 7, true, 25);
+	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", false, 30, 0, 0, 0, 0, 7, true, 25);
 	mayflower->addDescription("Bring about an HP bloom to heal the entire team.");
 	Effect* hpbloom = new Effect("HP BLOOM", 6, -10);
 	mayflower->addEffect(hpbloom);
@@ -550,56 +550,56 @@ NPC* SetupWorld() {
 	egadwick->addDismissalDialogue({{egadwick, "Great hanging out with you, kiddo!"},  {egadwick, "I'll be in my tent if you need me!"}});
 	
 	//egadwick attacks
-	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "blasted", -5, 10, 15, 1, 1, 1);
+	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "blasted", false, -5, 10, 15, 1, 1, 1);
 	scienceblaster->afterdesc = " with his science blaster";
 	egadwick->setBasicAttack(scienceblaster);
 
-	Attack* vitamins = new Attack("VITAMIN SUPPLEMENT", "prescribed", 4, 0, 0, 0, 0, 0, true, 3);
+	Attack* vitamins = new Attack("VITAMIN SUPPLEMENT", "prescribed", false, 4, 0, 0, 0, 0, 0, true, 3);
 	vitamins->afterdesc = " a vitamin supplement";
 	vitamins->addDescription("Prescribe a teammate vitamins, boosting their HP and SP.");
 	Effect* supplemented = new Effect("SUPPLEMENTED", 3, -10, -10);
 	vitamins->addEffect(supplemented);
 	egadwick->addSpecialAttack(vitamins);
 
-	Attack* overclock = new Attack("OVERCLOCK", "overclocked", 8, 0, 0, 0, 0, 0, true, 5);
+	Attack* overclock = new Attack("OVERCLOCK", "overclocked", false, 8, 0, 0, 0, 0, 0, true, 5);
 	overclock->addDescription("Overclock a teammate, boosting their attack and speed.");
 	Effect* overclocked = new Effect("OVERCLOCKED", 3, 0, 0, 1.5f, 1, 1, 1, 1.5f);
 	overclock->addEffect(overclocked);
 	egadwick->addSpecialAttack(overclock);
 
-	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", 4, 0, 0, 0, 0, 0, false, 8);
+	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", false, 4, 0, 0, 0, 0, 0, false, 8);
 	shieldacid->addDescription("Throw a beaker of shield-melting acid at the target.");
 	Effect* acidified = new Effect("ACIDIFIED", 3, 10, 0, 1, 0.5f, 0.5f);
 	shieldacid->addEffect(acidified);
 	egadwick->addSpecialAttack(shieldacid);
 
-	Attack* emp = new Attack("EMP", "threw an EMP at", 16, 20, 20, 1, 1, 3, false, 10, 20);
+	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 20, 20, 1, 1, 3, false, 10, 20);
 	emp->addDescription("Throw an EMP, frying some of the target's and surrounding enemies' SP.");
 	egadwick->addSpecialAttack(emp);
 
-	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", 13, 0, 0, 0, 0, 0, true, 12);
+	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 0, 0, 0, true, 12);
 	hyperclock->addDescription("Over-overclock a teammate, greatly boosting their attack and speed.");
 	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0f, 1, 1, 1, 2.0f);
 	hyperclock->addEffect(hyperclocked);
 	egadwick->addSpecialAttack(hyperclock);
 
-	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", 20, 10, 20, 4, 8, 3, false, 15);
+	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", false, 20, 10, 20, 4, 8, 3, false, 15);
 	rocketscience->addDescription("Launch a volley of rockets at the enemy team.");
 	rocketscience->focushits = false;
 	egadwick->addSpecialAttack(rocketscience);
 
-	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", 25, 0, 0, 0, 0, 7, true, 17);
+	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", false, 25, 0, 0, 0, 0, 7, true, 17);
 	weatherforecast->addDescription("Predict a shower of SP that will rain upon the team.");
 	weatherforecast->addEffect(spshower);
 	egadwick->addSpecialAttack(weatherforecast);
 
-	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", 16, 0, 0, 0, 0, 0, true, 20);
+	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", false, 16, 0, 0, 0, 0, 0, true, 20);
 	uberclock->addDescription("Over-over-overclock a teammate, very greatly boosting their attack and speed.");
 	Effect* uberclocked = new Effect("UBERCLOCKED", 3, 0, 0, 4.0f, 1, 1, 1, 4.0f);
 	uberclock->addEffect(uberclocked);
 	egadwick->addSpecialAttack(uberclock);
 
-	Attack* orbitalstrike = new Attack("ORBITAL STRIKE", "called down an orbital beam towards", 30, 70, 100, 1, 1, 7, false, 25);
+	Attack* orbitalstrike = new Attack("ORBITAL STRIKE", "called down an orbital beam towards", false, 30, 70, 100, 1, 1, 7, false, 25);
 	orbitalstrike->addDescription("Call down an orbital laser from Edgadwick's brand new satellite.");
 	egadwick->addSpecialAttack(orbitalstrike);
 	
@@ -628,38 +628,38 @@ NPC* SetupWorld() {
 	forestknight->addDismissalDialogue({{forestknight, "I shall return to defending the forest."},
 										{forestknight, "Farewell, friend!"}});
 	
-	Attack* forestslash = new Attack("FOREST SLASH", "slashed", -5, 15, 10, 1, 1, 1);
+	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 15, 10, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
 	forestknight->setBasicAttack(forestslash);
 	
-	Attack* defend = new Attack("PROTECT", "is protecting", 10, 20, 20, 1, 1, 3, true, 10);
+	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 20, 20, 1, 1, 3, true, 10);
 	forestknight->addSpecialAttack(defend);
 	defend->protect = true; //defend start protecting
 
-	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", 5, 25, 30, 1, 1, 3, false, 12);
+	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 25, 30, 1, 1, 3, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
 
-	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", 20, 0, 0, 0, 0, 7, true, 15);
+	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 7, true, 15);
 	Effect* galvanized = new Effect("GALVANIZED", 5, 0, 0, 2.0f, 2.0f);
 	warcry->addEffect(galvanized);
 	forestknight->addSpecialAttack(warcry);
 
-	Attack* enrootf = new Attack("ENROOT", "rooted into the soil", 10, 0, 0, 0, 0, 0, true, 18);
+	Attack* enrootf = new Attack("ENROOT", "rooted into the soil", false, 10, 0, 0, 0, 0, 0, true, 18);
 	Effect* rootedf = new Effect("ROOTED", 5, -10, 0, 0, 3.0f, 3.0f);
 	enrootf->addEffect(rootedf);
 	forestknight->addSpecialAttack(enrootf);
 
-	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", 18, 50, 5, 1, 1, 1, false, 20);
+	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 18, 50, 5, 1, 1, 1, false, 20);
 	sequoiasmash->afterdesc = " with the weight of a sequoia";
 	forestknight->addSpecialAttack(sequoiasmash);
 
-	Attack* splinter = new Attack("SPLINTER", "swung splinters from his sword at", 12, 0, 0, 1, 2, 3, true, 25);
+	Attack* splinter = new Attack("SPLINTER", "swung splinters from his sword at", false, 12, 0, 0, 1, 2, 3, true, 25);
 	Effect* splintered = new Effect("SPLINTERED", 5, 10);
 	splinter->addEffect(splintered);
 	forestknight->addSpecialAttack(splinter);
 
-	Attack* blitz = new Attack("BLITZ", "rushed at", 25, 5, 15, 10, 10, 1, false, 31);
+	Attack* blitz = new Attack("BLITZ", "rushed at", true, 25, 5, 15, 10, 10, 1, false, 31);
 	blitz->afterdesc = " with a rapid flurry of sword strikes";
 	orbitalstrike->addDescription("Rush at the target with a rapid flurry of strikes.");
 	forestknight->addSpecialAttack(blitz);
@@ -684,56 +684,56 @@ NPC* SetupWorld() {
 	mike->setTalkOnRecruit(true);
 	mike->setRecruitable(true);
 
-	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", -5, 20, 20, 2, 2, 1);
+	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", false, -5, 20, 20, 2, 2, 1);
 	mdynamite->focushits = false;
-	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", 0, 10, 20, 1, 1, 1);
+	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", false, 0, 10, 20, 1, 1, 1);
 	mdynamite->recoilatt = drecoil;
 	mdynamite->recoilchance = 0.3333f;
 	mike->setBasicAttack(mdynamite);
 
-	Attack* flashbang = new Attack("FLASHBANG", "threw a flashbang at", 8, 10, 20, 1, 1, 1);
+	Attack* flashbang = new Attack("FLASHBANG", "threw a flashbang at", false, 8, 10, 20, 1, 1, 1);
 	Effect* stunned = new Effect("STUNNED", 3);
 	stunned->freeze = true;
 	flashbang->addEffect(stunned);
-	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", 0, 10, 20, 1, 1, 1);
+	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", false, 0, 10, 20, 1, 1, 1);
 	frecoil->afterdesc = " as well";
 	frecoil->addEffect(stunned);
 	flashbang->recoilatt = frecoil;
 	flashbang->recoilchance = 0.3333f;
 	mike->addSpecialAttack(flashbang);
 
-	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", 13, 40, 20, 1, 1, 3);
-	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", 0, 20, 20, 1, 1, 1);
+	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", false, 13, 40, 20, 1, 1, 3);
+	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", false, 0, 20, 20, 1, 1, 1);
 	brecoil->afterdesc = " in the process";
 	bigbundle->recoilatt = brecoil;
 	bigbundle->recoilchance = 0.3333f;
 	mike->addSpecialAttack(bigbundle);
 
-	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", 11, 30, 100, 1, 1, 1, false, 8);
-	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", 0, 30, 100, 1, 1, 1);
+	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", false, 11, 30, 100, 1, 1, 1, false, 8);
+	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", false, 0, 30, 100, 1, 1, 1);
 	bunkerbuster->recoilatt = bbrecoil;
 	bunkerbuster->recoilchance = 0.3333f;
 	mike->addSpecialAttack(bunkerbuster);
 
-	Attack* dedefenser = new Attack("DEDEFENSER", "threw a heavy charge at", 15, 10, 20, 1, 1, 1, false, 12);
+	Attack* dedefenser = new Attack("DEDEFENSER", "threw a heavy charge at", false, 15, 10, 20, 1, 1, 1, false, 12);
 	Effect* dedefensed = new Effect("DEDEFENSED", 10, 0, 0, 1, 0.5f, 0.25f, 1, 0.5f);
 	dedefenser->addEffect(dedefensed);
-	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", 0, 10, 20, 1, 1, 1);
+	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", false, 0, 10, 20, 1, 1, 1);
 	ddrecoil->addEffect(dedefensed);
 	dedefenser->recoilatt = ddrecoil;
 	dedefenser->recoilchance = 0.3333f;
 	mike->addSpecialAttack(dedefenser);
 
-	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", 20, 60, 35, 1, 1, 5, false, 17);
-	Attack* dcrecoil = new Attack("LOOSE DYNAMITE", "accidentally included", 0, 30, 25, 1, 1, 1);
+	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", false, 20, 60, 35, 1, 1, 5, false, 17);
+	Attack* dcrecoil = new Attack("LOOSE DYNAMITE", "accidentally included", false, 0, 30, 25, 1, 1, 1);
 	dcrecoil->afterdesc = " in charge's radius";
 	depthcharge->recoilatt = dcrecoil;
 	depthcharge->recoilchance = 0.67f;
 	mike->addSpecialAttack(depthcharge);
 
-	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", 35, 10, 20, 12, 12, 1, false, 20);
+	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 35, 10, 20, 12, 12, 1, false, 20);
 	minesweeper->focushits = false;
-	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", 0, 10, 20, 3, 3, 1);
+	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", false, 0, 10, 20, 3, 3, 1);
 	minesweeper->recoilatt = mrecoil;
 	minesweeper->recoilchance = 1;
 	mike->addSpecialAttack(minesweeper);
@@ -746,42 +746,42 @@ NPC* SetupWorld() {
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
 	
-	Attack* loosespines = new Attack("LOOSE SPINES", "'s loose spines flew at the enemy team", 0, 8, 15, 1, 3, 1);
+	Attack* loosespines = new Attack("LOOSE SPINES", "'s loose spines flew at the enemy team", false, 0, 8, 15, 1, 3, 1);
 	cacty->setRecoilAttack(loosespines);
 
-	Attack* cactbomb = new Attack("CACTUS BOMB", "threw a cactus bomb at", -5, 3, 15, 4, 6, 1);
+	Attack* cactbomb = new Attack("CACTUS BOMB", "threw a cactus bomb at", false, -5, 3, 15, 4, 6, 1);
 	cacty->setBasicAttack(cactbomb);
 
-	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", 7, 0, 0, 0, 0, 0);
+	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", false, 7, 0, 0, 0, 0, 0);
 	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
 	plantlifeplant->summon = lifeplant;
 	plantlifeplant->summonamount = 1;
 	cacty->addSpecialAttack(plantlifeplant);
 
-	Attack* spinewave = new Attack("SPINE WAVE", "popped a wave of spines at", 7, 6, 15, 3, 3, 3);
+	Attack* spinewave = new Attack("SPINE WAVE", "popped a wave of spines at", false, 7, 6, 15, 3, 3, 3);
 	cacty->addSpecialAttack(spinewave);
 
-	Attack* cactcarpet = new Attack("CACTUS CARPET", "threw a carpet of cactus at", 8, 15, 15, 1, 1, 3, false, 14, 0, 0.34f);
+	Attack* cactcarpet = new Attack("CACTUS CARPET", "threw a carpet of cactus at", false, 8, 15, 15, 1, 1, 3, false, 14, 0, 0.34f);
 	Effect* spinyfloor = new Effect("SPINY FLOOR", 4, 15);
 	cactcarpet->addEffect(spinyfloor);
 	cactcarpet->lifesteal = 0.34f;
 	cacty->addSpecialAttack(cactcarpet);
 
-	Attack* acupuncture = new Attack("ACUPUNCTURE", "expertly healed", 7, -8, 15, 3, 3, 1, true);
+	Attack* acupuncture = new Attack("ACUPUNCTURE", "expertly healed", false, 7, -8, 15, 3, 3, 1, true);
 	acupuncture->afterdesc = " with spines";
 	cacty->addSpecialAttack(acupuncture);
 
-	Attack* prespoints = new Attack("PRESSURE POINTS", "fired precise needles at", 8, 10, 20, 1, 1, 1);
+	Attack* prespoints = new Attack("PRESSURE POINTS", "fired precise needles at", false, 8, 10, 20, 1, 1, 1);
 	prespoints->afterdesc = "'s pressure points";
 	Effect* pinned = new Effect("PINNED", 3);
 	pinned->freeze = true;
 	prespoints->addEffect(pinned);
 	cacty->addSpecialAttack(prespoints);
 
-	Attack* dualcacti = new Attack("DUAL CACTI", "threw two cactus bombs at", 12, 4, 15, 3, 4, 3, false, 16);
+	Attack* dualcacti = new Attack("DUAL CACTI", "threw two cactus bombs at", false, 12, 4, 15, 3, 4, 3, false, 16);
 	cacty->addSpecialAttack(dualcacti);
 
-	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", 15, 40, 100, 1, 1, 1, false, 18);
+	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 40, 100, 1, 1, 1, false, 18);
 	cacty->addSpecialAttack(superspine);
 
 	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
@@ -966,7 +966,7 @@ NPC* SetupWorld() {
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, Stats(2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647));
 	burgerman->setLeader(true, 0, NULL, false);
-	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", 1, 99999);
+	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
 	//burgerman->setLink(burgerman);
 	//burgerman->setLinkedRoom(BURGERRESTAURANT, "in the BURGER RESTAURANT...");
@@ -1087,7 +1087,7 @@ NPC* SetupWorld() {
 							  {self, "Oh dang."},
 							  {factelder, "Please! You must lower the lava again!"},
 							  {factelder, "These factories have drainage valves in their control rooms!"}};
-	factconvo->skipcondition = SWITCHUSED;
+	factconvo.skipcondition = SWITCHUSED;
 	Conversation factconvo2 = {{factelder, "Child, Have you seen the lava sea?"},
 							   {factelder, "It's been abnormally high recently, covering up the road to BURGERSBURG."},
 							   {factelder, "But the allure of BURGER is too great!"},
@@ -1097,23 +1097,24 @@ NPC* SetupWorld() {
 							   {factelder, "These factories have drainage valves in their control rooms!"},
 							   {self, "Yea I've already been doing that."},
 							   {factelder, "Oh. Well, carry on then."}};
-	factconvo->alt = factconvo2;
-	factconvo2->skipcondition = LAVADRAINED;
+	factconvo.alt = &factconvo2;
+	factconvo2.skipcondition = LAVADRAINED;
 	Conversation factconvo3 = {{factelder, "Child, Have you seen the lava sea?"},
 							   {self, "Yeah I already did this whole quest."},
 							   {self, "Lava sea looks pretty lowered now."},
 							   {factelder, "Oh. Well, good job!"},
 							   {self, "Thanks."}};
-	factconvo2->alt = factconvo3;
+	factconvo2.alt = &factconvo3;
 	factelder->addConversation(factconvo);
 	factelder->addConversation({{self, "So what's it like being on a wall your whole life?"}, {factelder, "Kind of boring, but I have plenty of time to come up with a lot of stories."}, {self, "I see."}});
 	factelder->setDialogue("You must drain the lava before more lives are lost!");
 	//So you've drained the lava sea!
 	//Very good! Very good.
-	//Though I must warn you, beware BURGER.
-	//It's 
-	//It's an easy path, but know there are other paths.
-	//
+	//...
+	//Hm...
+	//Don't you think their intense desire for a BURGER seems a bit strange?
+	//Unnatural even?
+	//I would advise you to be wary.
 	factelder->addRejectionDialogue("I only oversee this factory; I cannot leave the wall.");
 
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 67));
@@ -1148,11 +1149,11 @@ NPC* SetupWorld() {
 	//{{self, "Can I recruit TECH DEMO MAN?", true},
 	// {developer, "No."}}
 
-	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", 2, 7, 5, 0, 2, 3);
+	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
 	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
 	Item* shurikens = new WeaponItem("SHURIKENS", "A bundle of ninja shurikens with a note attached:\n\"Congratulations on defeating our ninja scout. Take these shurikens and train in the ninja ways,\nand maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
-	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", 10, 8, 5, 5, 6, 1);
+	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", false, 10, 8, 5, 5, 6, 1);
 	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 6 hits)");
 	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
 
@@ -1164,10 +1165,10 @@ NPC* SetupWorld() {
 	mike->addGymDialogue({{mike, "HA this place is great for practicing my throwing range!"}, {gymbro, "PSST!"}, {gymbro, "Hey, kid."}, {self, "Yeah?"}, {gymbro, "Can you please hurry and RECRUIT this guy back?"}, {gymbro, "He's freaking scary."}});
 	mike->addGymDialogue({{mike, "Check out how far I can throw this dynamite!"}});
 
-	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", 0, 1, 0, 1, 1, 1);
-	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", 0, 1, 2, 1, 1, 1);
-	Attack* knifethrow = new Attack("KNIFE THROW", "threw a knife at", 0, 1, 1, 1, 1, 1);
-	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", 0, 80, 0, 1, 1, 1);
+	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", false, 0, 1, 0, 1, 1, 1);
+	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", false, 0, 1, 2, 1, 1, 1);
+	Attack* knifethrow = new Attack("KNIFE THROW", "threw a knife at", false, 0, 1, 1, 1, 1, 1);
+	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", false, 0, 80, 0, 1, 1, 1);
 
 	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope. You see an orbital office building!", tentlab);
 	
@@ -1245,7 +1246,7 @@ NPC* SetupWorld() {
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
-	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", 0, 20, 20, 1, 1, 1);
+	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 20, 20, 1, 1, 1);
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true, pdynamite);
 	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
 
@@ -1262,7 +1263,6 @@ NPC* SetupWorld() {
 						   {bob, "Clearly there's something wrong with it because the oasis is dry!"}};
 	bobcon.skipcondition = VALVEUSED;
 	bob->addConversation(bobcon);
-	Conversation bobdial = {{bob, "..."}, {NULL, "BOB is frozen in the air."}};
 	bob->setDialogue({{bob, "Oh my poor friend Cacty!"},
 					  {bob, "He's so dehydrated!"}});
 	bob->addRejectionDialogue("No my mama says I'm too young to go adventuring.");
@@ -1335,8 +1335,6 @@ NPC* SetupWorld() {
 	minecart3->setDenial("This minecart is clamped onto the minecart tracks!");
 	minecart4->setDenial("This minecart is clamped onto the minecart tracks!");
 
-	mineguard2->guardItem(minecart3);
-
 	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
 	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", "There is nowhere to put the DOWN BUTTON! ... You shove the DOWN BUTTON into the wall. The elevator can go DOWN now!", burgsafe, elevator, DOWN, elevatorbottom);
 
@@ -1354,7 +1352,7 @@ NPC* SetupWorld() {
 	scissorliftse->setTakable(false);
 	scissorliftne->setTakable(false);
 
-	Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
+	/*Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
 	controlpanel1->setTakable(false);
 	KeyItem* controls1 = (KeyItem*)controlpanel1;
 	controls1->setTarget(volcano2);
@@ -1377,7 +1375,7 @@ NPC* SetupWorld() {
 	masterswitch->setTakable(false);
 	KeyItem* _masterswitch = (KeyItem*)masterswitch;
 	_masterswitch->setTarget(volcano7);
-	//LAVADRAINED
+	//LAVADRAINED*/
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -1802,9 +1800,9 @@ NPC* SetupWorld() {
 
 	//set up enemies enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
-	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", -5, 5, 0, 1, 1, 1);
+	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", true, -5, 5, 0, 1, 1, 1);
 	headbutt->recoil = 5;
-	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", 6, 3, 5, 2, 4, 3);
+	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", false, 6, 3, 5, 2, 4, 3);
 	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
 
@@ -1813,23 +1811,23 @@ NPC* SetupWorld() {
 	greaterhog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 9));
-	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", -5, 15, 0, 1, 1, 1);
-	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", 10, 50, 50, 1, 1, 1, false, 2);
+	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", true, -5, 15, 0, 1, 1, 1);
+	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", false, 10, 50, 50, 1, 1, 1, false, 2);
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
 
 	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 9));
 	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 2.0f, 2.0f, 2.0f);
-	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", 10, 0, 0, 1, 1, 5, true);
+	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", false, 10, 0, 0, 1, 1, 5, true);
 	buffgrassman->setBasicAttack(grassstrike);
 	buffgrassman->addSpecialAttack(benchpress);
 
 	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 0, Stats(10, 6, 10, 1, 5, 5, 9));
-	Attack* deercombo = new Attack("DEER COMBO", "beat up", 0, 5, 0, 4, 4, 1);
+	Attack* deercombo = new Attack("DEER COMBO", "beat up", true, 0, 5, 0, 4, 4, 1);
 	enemydeer->setBasicAttack(deercombo);
 
 	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 8, 0, 5, 20, 9));
-	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", 0, 8, 5, 1, 2, 3);
+	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", false, 0, 8, 5, 1, 2, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
 	NPC* ninja = new NPC("", "NINJA", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.", limbo, 0, Stats());
@@ -1850,7 +1848,7 @@ NPC* SetupWorld() {
 	//deadly spinferno
 
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This Jim Shady is just imitating.", limbo, 0, Stats(50, 30, 10, 35, 15, 20, 9));
-	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", 0, 30, 100, 1, 1, 1);
+	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 0, 30, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shrimplebeam);
 	Effect* engarde = new Effect("EN GARDE!", 2147483647);
@@ -1858,24 +1856,24 @@ NPC* SetupWorld() {
 	jimshady->setEffect(engarde, false);
 
 	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 30, 9));
-	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", 0, 0, 0, 1, 1, 1);
+	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", true, 0, 0, 0, 1, 1, 1);
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
 	Effect* flinch = new Effect("FLINCH", 1);
 	shrimpleshimmy->addEffect(flinch);
 
 	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
-	Attack* bite = new Attack("BITE", "bit", -5, 10, 5, 1, 1, 1);
-	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", 10, 10, 5, 1, 1, 1, 0.5f);
+	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
+	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", false, 10, 10, 5, 1, 1, 1, 0.5f);
 	carnplant->setBasicAttack(bite);
 	carnplant->addSpecialAttack(nutrientabsorb);*/
 
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
-	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", -6, 10, 0, 1, 1, 1);
-	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", 2, 18, 7, 1, 1, 1);
+	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -6, 10, 0, 1, 1, 1);
+	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 2, 18, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0f);
-	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", 15, 10, 5, 1, 1, 1, true, 10);
+	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", false, 15, 10, 5, 1, 1, 1, true, 10);
 	flowerempower->addEffect(flowerpower);
-	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", 18, 30, 10, 1, 1, 10, false, 10);
+	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", false, 18, 30, 10, 1, 1, 10, false, 10);
 	flowerfiend->setBasicAttack(vinewhip);
 	flowerfiend->addSpecialAttack(crunch);
 	//flowerfiend->addSpecialAttack(nutrientabsorb);
@@ -1883,26 +1881,26 @@ NPC* SetupWorld() {
 	flowerfiend->addSpecialAttack(solarbeam);
 
 	NPC* egadbot= new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener,\nbefore going rogue and trimming everything else as well.", limbo, 0, Stats(20, 30, 5, 5, 10, 20, 9));
-	Attack* snip = new Attack("SNIP", "snipped scissors at", -5, 7, 5, 1, 1, 1);
+	Attack* snip = new Attack("SNIP", "snipped scissors at", true, -5, 7, 5, 1, 1, 1);
 	egadbot->setBasicAttack(snip);
-	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", 10, 20, 0, 1, 1, 1);
+	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", false, 10, 20, 0, 1, 1, 1);
 	egadbot->addSpecialAttack(timber);
 
 	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
-	Attack* charge = new Attack("CHARGE", "charged at", -5, 10, 20, 1, 1, 1);
-	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", 5, 0, 0, 1, 1, 7);
+	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 10, 20, 1, 1, 1);
+	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 7);
 	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
 	savageroar->addEffect(intimidated);
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", 10, 1, 5, 1, 3, 7);
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 7);
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
 	savagehog->setBoss(true);
 
 	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 30, 9));
-	Attack* chomp = new Attack("CHOMP", "chomped", -5, 10, 10, 1, 1, 1);
-	Attack* stomp = new Attack("STOMP", "jumped onto", 5, 30, 0, 1, 1, 1);
-	Attack* monymeteor = new Attack("MONY METEOR", "spit a heavy mass of monies at", 10, 50, 0, 1, 1, 3);
+	Attack* chomp = new Attack("CHOMP", "chomped", true, -5, 10, 10, 1, 1, 1);
+	Attack* stomp = new Attack("STOMP", "jumped onto", true, 5, 30, 0, 1, 1, 1);
+	Attack* monymeteor = new Attack("MONY METEOR", "spit a heavy mass of monies at", false, 10, 50, 0, 1, 1, 3);
 	mimic->setBasicAttack(chomp);
 	mimic->addSpecialAttack(stomp);
 	mimic->addSpecialAttack(monymeteor);
@@ -1910,10 +1908,10 @@ NPC* SetupWorld() {
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
 	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", -3, 5, 0, 1, 1, 1);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, -3, 5, 0, 1, 1, 1);
 	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
-	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", 1, 12, 0, 1, 1, 1);
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, 1, 12, 0, 1, 1, 1);
 	sandman->setBasicAttack(sandthrow);
 	sandman->addSpecialAttack(sandpunch);
 
@@ -1923,18 +1921,18 @@ NPC* SetupWorld() {
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
 	shieldup->guardset = 5;
 	skeleviking->setEffect(shieldup, false);
-	Attack* vslash = new Attack("VIKING SLASH", "hit", -5, 5, 0, 1, 1, 1);
+	Attack* vslash = new Attack("VIKING SLASH", "hit", true, -5, 5, 0, 1, 1, 1);
 	vslash->afterdesc = " with his sword";
 	skeleviking->setBasicAttack(vslash);
-	Attack* vbonecone = new Attack("BONE CONE", "launched his helmet's bone cones at", 5, 1, 0, 4, 4, 1);
+	Attack* vbonecone = new Attack("BONE CONE", "launched his helmet's bone cones at", false, 5, 1, 0, 4, 4, 1);
 	skeleviking->addSpecialAttack(vbonecone);
-	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", 10, 8, 0, 3, 4, 3);
+	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", true, 10, 8, 0, 3, 4, 3);
 	skeleviking->setBasicAttack(vtornado);
 
 	//most of the enemies have these placeholder attacks and also placeholder stats due to time constraints, so I'll add those in the full version
-	Attack* genericattack = new Attack("ATTACK", "attacked", -5);
-	Attack* genericspecial = new Attack("STRONG ATTACK", "did a strong attack at", 2, 30);
-	Attack* genericcc = new Attack("CRASH OUT", "crashed out near", 5, 20, 20, 1, 1, 3);
+	Attack* genericattack = new Attack("ATTACK", "attacked", true, -5);
+	Attack* genericspecial = new Attack("STRONG ATTACK", "did a strong attack at", true, 2, 30);
+	Attack* genericcc = new Attack("CRASH OUT", "crashed out near", false, 5, 20, 20, 1, 1, 3);
 	//template
 	/*NPC* npc = new NPC("", "NAME", "generic description :(", limbo);
 	npc->setBasicAttack(genericattack);
@@ -1943,17 +1941,17 @@ NPC* SetupWorld() {
 	*/
 
 	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(10, 2, 20, 1, 15, 30, 9));
-	Attack* tumble = new Attack("TUMBLE", "rolled into", -5, 10, 10, 1, 1, 1);
+	Attack* tumble = new Attack("TUMBLE", "rolled into", true, -5, 10, 10, 1, 1, 1);
 	Effect* brambled = new Effect("BRAMBLED", 3, 5);
 	tumble->addEffect(brambled);
-	Attack* rumble = new Attack("RUMBLE", "shook the ground under", 2, 5, 0, 3, 3, 7);
+	Attack* rumble = new Attack("RUMBLE", "shook the ground under", false, 2, 5, 0, 3, 3, 7);
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
 	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(15, 30, 5, 20, 0, 2, 9));
-	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", -5, 20, 0, 1, 1, 1);
+	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 20, 0, 1, 1, 1);
 	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5f, 1.5f, 1.5f, 1, 50.0f);
-	Attack* saltcure = new Attack("SALT CURE", "coughed up crystals of curing salt onto", 15, 5, 0, 1, 1, 1);
+	Attack* saltcure = new Attack("SALT CURE", "coughed up crystals of curing salt onto", false, 15, 5, 0, 1, 1, 1);
 	Effect* saltcured = new Effect("SALT CURED", 2147483647);
 	saltcured->spusage = 2.0f; //salt cured means you take double damage and use double sp
 	saltcured->damagebuff = 2.0f;
@@ -1968,18 +1966,18 @@ NPC* SetupWorld() {
 	rascal->addSpecialAttack(genericcc);*/
 
 	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 13, 9));
-	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe at", -5, 10, 15, 1, 1, 7);
-	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", 3, 20, 20, 1, 1, 1);
-	Attack* pickstrike = new Attack("MINE", "struck", 6, 25, 40, 1, 1, 1);
+	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe at", false, -5, 10, 15, 1, 1, 7);
+	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 3, 20, 20, 1, 1, 1);
+	Attack* pickstrike = new Attack("MINE", "struck", true, 6, 25, 40, 1, 1, 1);
 	pickstrike->afterdesc = " with his pickaxe";
 	skeleminer->setBasicAttack(pickaxerang);
 	skeleminer->addSpecialAttack(sdynamite);
 	skeleminer->addSpecialAttack(pickstrike);
 
 	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(100, 30, 20, 30, 20, 5, 9));
-	Attack* dpincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
-	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", 5, 1, 100, 15, 15, 1);
-	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", 10, 30, 20, 1, 1, 3);
+	Attack* dpincer = new Attack("PINCER", "pinced", true, -5, 10, 10, 1, 1, 1);
+	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", false, 5, 1, 100, 15, 15, 1);
+	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", false, 10, 30, 20, 1, 1, 3);
 	dreadnaut->setBasicAttack(dpincer);
 	dreadnaut->addSpecialAttack(rapidfire);
 	dreadnaut->addSpecialAttack(tankshell);
@@ -1987,12 +1985,12 @@ NPC* SetupWorld() {
 
 	//MARK: Tunnel Lobster (enemy)
 	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", limbo, 0, Stats(200, 20, 15, 20, 15, 50, 9));
-	Attack* lpincer = new Attack("PINCER", "pinced", -5, 10, 10, 1, 1, 1);
-	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", 6, 25, 0, 1, 1, 3);
+	Attack* lpincer = new Attack("PINCER", "pinced", true, -5, 10, 10, 1, 1, 1);
+	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", true, 6, 25, 0, 1, 1, 3);
 	tailsmack->afterdesc = " with its tail";
-	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking loose chunks of the ceiling", 8, 20, 0, 5, 5, 1);
+	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking loose chunks of the ceiling", false, 8, 20, 0, 5, 5, 1);
 	lobroar->focushits = false;
-	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", 13, 40, 0, 1, 1, 1);
+	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", true, 13, 40, 0, 1, 1, 1);
 	trainrush->afterdesc = "like a train";
 	tunnellobster->setBasicAttack(lpincer);
 	tunnellobster->addSpecialAttack(tailsmack);
@@ -2003,17 +2001,17 @@ NPC* SetupWorld() {
 	//MARK: Viola (enemy)
 	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
 	tkviola->setBoss(true);
-	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", -5, 10, 20, 1, 1, 1);
+	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", false, -5, 10, 20, 1, 1, 1);
 	tkviola->setBasicAttack(wave);
-	Attack* smackdown = new Attack("SMACKDOWN", "lifted", 5, 20, 0, 1, 1, 1);
+	Attack* smackdown = new Attack("SMACKDOWN", "lifted", false, 5, 20, 0, 1, 1, 1);
 	smackdown->afterdesc = " into the air and smacked them back down";
 	Effect* suspended = new Effect("SUSPENDED", 3, 0, 0);
 	smackdown->synergy = suspended; //because Viola is already holding the npc in the air so it's easier to do more damage
 	tkviola->addSpecialAttack(smackdown);
-	Attack* tkguard = new Attack("INVOLUNTARY GUARD", "set up a guard using a townsperson", 7, 0, 0, 0, 0, 0);
+	Attack* tkguard = new Attack("INVOLUNTARY GUARD", "set up a guard using a townsperson", false, 7, 0, 0, 0, 0, 0);
 	tkguard->guardset = 1;
 	tkviola->addSpecialAttack(tkguard);
-	Attack* fling = new Attack("FLING", "flung", 5, 0, 0, 1, 1, 1);
+	Attack* fling = new Attack("FLING", "flung", false, 5, 0, 0, 1, 1, 1);
 	fling->afterdesc = " into the stratosphere";
 	Effect* flung = new Effect("FLUNG", 1);
 	flung->remove = true;
@@ -2021,65 +2019,67 @@ NPC* SetupWorld() {
 	fling->cancel = suspended; //throwing someone into the air makes them no longer frozen in place
 	fling->addEffect(flung);
 	tkviola->addSpecialAttack(fling);
-	Attack* suspend = new Attack("SUSPEND", "suspended", 7, 0, 0, 1, 1, 1);
+	Attack* suspend = new Attack("SUSPEND", "suspended", false, 7, 0, 0, 1, 1, 1);
 	suspend->afterdesc = " in the air";
 	suspended->freeze = true;
 	suspend->addEffect(suspended);
 	tkviola->addSpecialAttack(suspend);
-	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to", 12, 25, 50, 1, 1, 1, false, 11);
+	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to",false,  12, 25, 50, 1, 1, 1, false, 11);
 	gutpunch->afterdesc = "'s gut";
 	gutpunch->addDescription("Deliver a telekinetic punch to the target's gut. (25 ATTACK, 50 PIERCE)");
 	tkviola->addSpecialAttack(gutpunch);
-	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", 10, 20, 30, 1, 1, 3, false, 12);
+	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", false, 10, 20, 30, 1, 1, 3, false, 12);
 	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (20 DAMAGE, 30 PIERCE)");
 	tkviola->addSpecialAttack(spatialpop);
-	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", 15, 0, 0, 0, 0, 7, true, 15);
+	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 0, 0, 7, true, 15);
 	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
 	Effect* forcefielded = new Effect("FORCE FIELD", 3, 0, 0, 1, 2);
 	forcefield->addEffect(forcefielded);
 	tkviola->addSpecialAttack(forcefield);
-	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", 15, 0, 0, 0, 0, 7, false, 17);
+	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", false, 15, 0, 0, 0, 0, 7, false, 17);
 	intensegravity->addDescription("Intensify gravity around the enemy team, halving their defense.");
 	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5f);
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
-	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", 25, 35, 100, 1, 1, 7, false, 20);
+	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 35, 100, 1, 1, 7, false, 20);
 	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (35 DAMAGE, 100 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
 	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 9), Stats(1, 2, 1, 0, 1, 0, 1));
 	greer->setBoss(true);
-	Attack* gun = new Attack("GUN", "shot", -5, 30, 50, 1, 1, 1);
+	Attack* gun = new Attack("GUN", "shot", false, -5, 30, 50, 1, 1, 1);
 	greer->setBasicAttack(gun);
-	Attack* pressurevalve = new Attack("PRESSURIZED VALVE", "opened a pressurized valve, shooting a huge burst of water at", 5, 20, 0, 1, 1, 1);
+	Attack* pressurevalve = new Attack("PRESSURIZED VALVE", "opened a pressurized valve, shooting a huge burst of water at", false, 5, 20, 0, 1, 1, 1);
 	Effect* runningback = new Effect("RUNNING BACK", 2);
 	runningback->remove = true;
 	pressurevalve->addEffect(runningback);
 	greer->addSpecialAttack(pressurevalve);
-	Attack* gasleak = new Attack("GAS LEAK", "shot a gas main near", 5, 0, 0, 0, 0, 3);
+	Attack* gasleak = new Attack("GAS LEAK", "shot a gas main near", false, 5, 0, 0, 0, 0, 3);
 	Effect* gassed = new Effect("GASSED", 3, 10, 0);
 	gassed->spusage = 2;
 	gasleak->addEffect(gassed);
 	greer->addSpecialAttack(gasleak);
-	Attack* scaldingsteam = new Attack("SCALDING STEAM", "shot a valve full of hot steam near", 5, 25, 400, 1, 1, 3);
+	Attack* scaldingsteam = new Attack("SCALDING STEAM", "shot a valve full of hot steam near", false, 5, 25, 400, 1, 1, 3);
 	Effect* scalded = new Effect("SCALDED", 3);
 	scalded->damagebuff = 2;
 	scaldingsteam->addEffect(scalded);
 	greer->addSpecialAttack(scaldingsteam);
 
 	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats()); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
-	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", -3, 5, 0, 1, 1, 1);
+	//LAVA WHACK lavally whacked
+	/*Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, -3, 5, 0, 1, 1, 1);
 	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
-	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", 1, 12, 0, 1, 1, 1);
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, 1, 12, 0, 1, 1, 1);
 	sandman->setBasicAttack(sandthrow);
-	sandman->addSpecialAttack(sandpunch);
+	sandman->addSpecialAttack(sandpunch);*/
 
 	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats());
 	lavizard->setBasicAttack(genericattack);
 	lavizard->addSpecialAttack(genericspecial);
 	lavizard->addSpecialAttack(genericcc);
+	//spit lava
 
 	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrow from the depths of the lava sea.", limbo, 0, Stats());
 	lavasoldier->setBasicAttack(genericattack);
@@ -2091,37 +2091,26 @@ NPC* SetupWorld() {
 	largelavaman->setBasicAttack(genericattack);
 	largelavaman->addSpecialAttack(genericspecial);
 	largelavaman->addSpecialAttack(genericcc);
+	//LAVA SLAM
+	//HAYMAKER
 
-	NPC* poizard = new NPC("", "POIZARD", "Purple counterpart to the lavizard, this gecko has a habit of emmitting toxic fumes.", limbo, 0, Stats());
-	poizard->setBasicAttack(genericattack);
-	poizard->addSpecialAttack(genericspecial);
-	poizard->addSpecialAttack(genericcc);
+	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats());
+	//
 
 	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats());
-	slagman->setBasicAttack(genericattack);
-	slagman->addSpecialAttack(genericspecial);
-	slagman->addSpecialAttack(genericcc);
-	//NPC* slagwarrior = new NPC("", "SLAG WARRIOR", "Slagman sporting armor expertly fashioned from cooled slag. They're very good blacksmiths.", limbo, 0, Stats());
+	//SLAG JAB
 
 	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats());
-	superslagman->setBasicAttack(genericattack);
-	superslagman->addSpecialAttack(genericspecial);
-	superslagman->addSpecialAttack(genericcc);
+	//JAB CROSS HOOK UPPERCUT
 
 	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats());
-	factgolem->setBasicAttack(genericattack);
-	factgolem->addSpecialAttack(genericspecial);
-	factgolem->addSpecialAttack(genericcc);
+	//
 
 	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, who is still bigger than a normal alligator! He is growing and very hungry.", limbo, 0, Stats());
-	lavadile->setBasicAttack(genericattack);
-	lavadile->addSpecialAttack(genericspecial);
-	lavadile->addSpecialAttack(genericcc);
+	//
 
 	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems, huge from a healthy diet of deep ores.", limbo, 0, Stats());
-	lavagator->setBasicAttack(genericattack);
-	lavagator->addSpecialAttack(genericspecial);
-	lavagator->addSpecialAttack(genericcc);
+	//
 
 	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
 	lavaguardian->setBoss(true);
@@ -2135,16 +2124,38 @@ NPC* SetupWorld() {
 	//askew
 	//barrel roll
 
-	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(), Stats());
+	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
 	browser->setBoss(true);
-	//microsoft edge (sword)
-	//google (search the target's weakness, lowering defense)
-	//new tab
-	//brave (increase attack for whole team)
-	//internet explorer (plant an effect that will do big damage in 3 turns)
-	//firefox (breathe fire)
+	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 10, 20, 1, 1, 1); //made of fine chromium
+	medge->afterdesc = " with his MICROSOFT EDGE";
+	browser->setBasicAttack(medge);
+	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
+	gsearch->afterdesc = "'s weaknesses";
+	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5f);
+	gsearch->addEffect(searched);
+	browser->addSpecialAttack(gsearch);
+	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
+	opennewtab->summon = newtab;
+	opennewtab->summonamount = 3;
+	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 10, 15, 6, 6, 1);
+	yahoo->focushits = false;
+	browser->addSpecialAttack(yahoo);
+	/*browser->addSpecialAttack(opennewtab);
+	Attack* brave = new Attack("BRAVE", "inspired the team to be brave", 15, 0, 0, 0, 0, 49, true);
+	Effect* beingbrave = new Effect("BRAVE", 3, 0, 0, 2.0f);
+	brave->addEffect(beingbrave);
+	browser->addSpecialAttack(brave);*/
+	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
+	Effect* buffering = new Effect("BUFFERING", 2);
+	buffering->falldamage = 80;
+	iexplorer->addEffect(buffering);
+	browser->addSpecialAttack(iexplorer);
+	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
+	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5f);
+	firefox->addEffect(foxfire);
+	browser->addSpecialAttack(firefox);
 
-	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
+	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
 
 	NPC* bigcat = new NPC("", "BIG CAT", "Huge golden lion with a silver mane. He is very aggressive.", limbo, 0, Stats());
 	bigcat->setBasicAttack(genericattack);
@@ -2232,7 +2243,7 @@ NPC* SetupWorld() {
 	
 	//ceo
 
-	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
+	//Attack* ATTACK = new Attack("NAME", "DESCRIPTION", DOESCONTACT, COST, POWER, PIERCE, MINHITS, MAXHITS, TARGETS);
 	//Effect EFFECT = new Effect("NAME", duration, damage, spleak, attack, defense, tough, pierce);
 	//NPC* npc = new NPC("TITLE", "NAME", "DESCRIPTION", limbo, hp, def, att, tou, pie, spe, ski);
 
@@ -2427,6 +2438,7 @@ NPC* SetupWorld() {
 	//mineguard2->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
 	mineguard2->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	mineguard2->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
+	mineguard2->guardItem(minecart3);
 
 	NPC* boomguard = new NPC(*dreadnaut);
 	boomguard->setLeader(true, 8, mineshaftside);
@@ -2572,14 +2584,14 @@ NPC* SetupWorld() {
 
 	NPC* volcanoguard3 = new NPC(*largelavaman);
 	volcanoguard3->setLeader(true, 14, volcano5);
-	volcanoguard3->setParty(lavaman, lavaman, lavizard);
+	volcanoguard3->setParty(magman, magman, lavizard);
 	volcanoguard3->blockExit(NORTHEAST, ENEMY, "guarded by the LARGE LAVAMAN.");
 	volcanoguard3->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 	volcanoguard3->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 
 	NPC* fact1guard = new NPC(*slagman);
 	fact1guard->setLeader(true, 11, factoryplat);
-	fact1guard->setParty(lavaman, lavaman);
+	fact1guard->setParty(magman, magman);
 	fact1guard->blockExit(EAST, ENEMY, "guarded by the SLAGMAN.");
 	fact1guard->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
 	fact1guard->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
@@ -2587,7 +2599,7 @@ NPC* SetupWorld() {
 	//fact2guard
 	NPC* fact2guard = new NPC(*lavasoldier);
 	fact2guard->setLeader(true, 12, factory2);
-	fact2guard->setParty(lavaman);
+	fact2guard->setParty(magman);
 	fact2guard->blockExit(NORTHEAST, ENEMY, "guarded by the LAVA SOLDIER.");
 	fact2guard->setDialogue({{NULL, "LAVA SOLDIER - *lavally challenges you to a battle*"}});
 	fact2guard->addRejectionDialogue({{NULL, "LAVA SOLDIER - *proud laval noises*"}});
@@ -2660,7 +2672,7 @@ NPC* SetupWorld() {
 
 	NPC* sewerguards = new NPC(*largelavaman);
 	sewerguards->setLeader(true, 15, sewercenter1);
-	sewerguards->setParty(lavaman);
+	sewerguards->setParty(magman);
 	sewerguards->blockExit(NORTHWEST, ENEMY, "guarded by the LARGE LAVAMAN.", true);
 	sewerguards->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 	sewerguards->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
@@ -2702,7 +2714,7 @@ NPC* SetupWorld() {
 	mimic1->setExtraMonies(1500); //you get lots of monies for beating the mimic
 	mimic1->setBoss(true); //mini
 
-	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", 25, 0, 5, 2, 2, 1);
+	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", false, 25, 0, 5, 2, 2, 1); //no contact because the scarf stretches far from Bernard
 	scarfsmack->afterdesc = "with his scarf";
 	scarfsmack->addDescription("Smack the target with each end of your stretchy scarf. (25 ATTACK, 2 hits)");
 	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
@@ -2718,8 +2730,46 @@ NPC* SetupWorld() {
 	//drainguard->setParty(lavadile, lavadile); ?
 	drainguard->setDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
 	drainguard->addRejectionDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
-	drainguard->guardItem(masterswitch);
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
 
+
+	
+
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
+
+
+
+	
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
+
+
+
+	
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
+
+
+
+	
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
+
+
+	
+
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
+
+
+
+	
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
+
+
+
+	
+	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
+
+	
+
+	
 	//put a treasure chest in the mines (just monies), and guard the room to it with a rockbug or something (or put the skeleminer duo here? and make a molten miner where the duo is right now?)
 
 	NPC* lavaguard = new NPC(*lavaguardian);
