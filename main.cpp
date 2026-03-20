@@ -145,7 +145,7 @@ NPC* SetupWorld() {
 	Room* fdintermission2 = new Room("on the path between the woodlands and the wastelands. The foliage is sparse here. BURGERSBURG can be seen faintly in the distance.");
 	Room* fdintermission3 = new Room("on the path between the woodlands and the wastelands. Dead trees surround you. The BURGER RESTAURANT is just barely visible from here.");
 	//Create all DESOLATE DESERT rooms MARK: DD
-	Room* desert = new Room("in the wastelands. There is no sign of life anywhere (except you! and those two guys I guess).");
+	Room* desert = new Room("in the wastelands. There is no sign of the color green anywhere.");
 	desert->setWelcome("Welcome to DESOLATE DESERT!");
 	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
 	desert->setWelcome("The world beyond your forest, where the life has been sucked out of the dirt.");
@@ -785,40 +785,110 @@ NPC* SetupWorld() {
 	cacty->addSpecialAttack(superspine);
 
 	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
-	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 1));
-	michelin->addConversation({{NULL, "MIKE is throwing dynamite at the rocky wall."},
-						   {self, "That doesn't look very safe."},
-						   {michelin, "HAHAHAHA Aren't the blasts just music to your ears?"},
-						   {self, "no it's very loud :|"}});
-	michelin->setDialogue("HAHAHAHA I love the smell of explosions in the morning!");
-	Conversation michrec1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {michelin, "Why not, kid! Blowing up rocks is getting old."}};
+	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", factorykitchen, 10, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 1));
+	michelin->addConversation({{michelin, "Oh hi."},
+							   {self, "hi"},
+							   {michelin, "Hey can you help me with something?"},
+							   {self, "Sure."},
+							   {michelin, "My whole life I've made all the same recipes."},
+							   {michelin, "Everything's grown bland to me."},
+							   {michelin, "But recently I've gotten word of the SUPERSMOOTHIE,"},
+							   {michelin, "Formed from blending three special berries."},
+							   {michelin, "Doesn't that sound new and exciting!?"},
+							   {self, "Sounds pretty cool."},
+							   {michelin, "Well anyway I've traveled here 'cause I've learned of three berries that can be found in this region."},
+							   {michelin, "The CACTIBERRY from the desert,"},
+							   {michelin, "the RADIBERRY growing somewhere here in the factories,"},
+							   {michelin, "and the NINJABERRY from some ninja village somewhere."},
+							   {self, "Woah the ninja village?"},
+							   {self, "You need ninja abilities to get there."},
+							   {self, "I don't think I can help you actually sorry."},
+							   {michelin, "Ah no worries I got this guide to being a ninja."},
+							   {michelin, "I couldn't understand it myself, but you look like a mini-ninja of sorts so-"},
+							   {self, "I what?"},
+							   {michelin, "Well if you want the guide I have it here."},
+							   {self, "Yeah sure I'll take it thanks."},
+							   {michelin, "Well when you get all three berries just USE blender over there."},
+							   {self, "Sounds good."}});
+	Item* ninjaguide = new KeyItem("GUIDE TO BEING A NINJA", "A book detailing the ninja techniques that will help you get into the ninja village.", "open the guide. The next day... You have mastered the ninja abilities and can now enter the ninja village!", limbo, NINJA);
+	((KeyItem*)ninjaguide)->setTarget(ninjaland);
+	michelin->setGift(ninjaguide);
+	michelin->setDialogue({{michelin, "When you get all three berries just USE that blender over there."}, {michelin, "You got this!"}, {NULL, "MICHELIN - *two thumbs up* :D"}});
+	michelin->addRejectionDialogue({ {michelin, "Can't sorry I gotta focus on the task at hand."}, {michelin, "Maybe once we're done with this."}});
+	Conversation michrec1 = {{self, "Well..."}, {self, "Wanna join my BURGER QUEST?"}, {michelin, "why not. :("}};
 	michrec1.skipcondition = TEMPLEQUEST;
-	Conversation michrec2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {michelin, "HAHAHAHA! Let's go blow up some BURGERs, kid!"}};
+	Conversation michrec2 = {{self, "Well..."}, {self, "Wanna help me destroy BURGERs?"}, {michelin, "why not. :("}};
 	michrec1.alt = &michrec1;
 	michrec2.skipcondition = BURGERMENDEF;
-	Conversation michrec3 = {{self, "Hey wanna join my team?"}, {michelin, "Why not, kid! Blowing up rocks is getting old."}};
+	Conversation michrec3 = {{self, "Well..."}, {self, "Wanna join my team?"}, {michelin, "why not. :("}};
 	michrec2.alt = &michrec3;
 	michelin->addRecruitmentDialogue(michrec1);
-	michelin->addRecruitedDialogue("HAHAHAHAHA! So many things to explode!");
-	michelin->addDismissalDialogue("Alright Imma head back to my cave!");
-	michelin->setTalkOnRecruit(true);
-	michelin->setRecruitable(true);
+	michelin->addRecruitedDialogue("You know, maybe there's more to life than finding recipies.");
+	michelin->addDismissalDialogue({{michelin, "Well, I guess I'll go back to my little kitchen area."}, {michelin, "Gotta start packing my bags to head home."}});
+	michelin->setRecruitDialogueChange({{michelin, "Hey what's up"}, {michelin, "Just packing my bags."}, {michelin, "Might take a while cause I've set up a whole freaking kitchen here."}});
 
-	//cast iron
+	//YOO you got the berries?
+	//Yep.
+	//Alright! Let's see what the deal is with this SUPERSMOOTHIE!
+	//You put the berries in the blender.
+	//The berries start blending.
+	//...
+	//Ding!
+	//You got the SUPERSMOOTHIE!
+	//*gasp*
+	//IT'S BEAUTIFUL!
+	//You gave the SUPERSMOOTHIE to MICHELIN.
+	//MICHELIN takes a sip of the SUPERSMOOTHIE.
+	//EW BRO THIS THING IS ATROCIOUS
+	//AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+	//self, :|
+	//HIYNGIEINFGFUGFIBFIU
+	//QWBDNIbjed
+	//wkjhgfh
+	//...
+	//Well this was a waste of time...
+	//:(
+	//Well you worked for this.
+	//You want it?
+	//self, Sure.
+	
+	//Dialogue:
+	//Man what a waste of time :(
 
-	//5 star meal
+	Attack* castiron = new Attack("CAST IRON", "bonked", true, -5, 15, 0, 1, 1, 1);
+	castiron->afterdesc = " with his cast iron pan";
+	michelin->setBasicAttack(castiron);
 
-	//flambe
+	Attack* qualitymeal = new Attack("5 STAR MEAL", "prepared a 5-star meal for", false, 5, -25, 0, 1, 1, 1, true);
+	michelin->addSpecialAttack(qualitymeal);
 
-	//Hot sauce
+	Attack* flambe = new Attack("FLAMBE'", "bonked", true, 7, 20, 5, 1, 1, 1);
+	flambe->afterdesc = " with a flaming pan";
+	Effect* flambed = new Effect("FLAMBE'D", 5, 5, 0, 1, 0.8f);
+	flambe->addEffect(flambed);
+	michelin->setBasicAttack(castiron);
 
-	//feast
+	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 20, 5, 1, 1, 1, true, 11);
+	Effect* hotsauced = new Effect("HOT SAUCED", 5, 5, 0, 1.25f, 0.75f);
+	hotsauce->addEffect(hotsauced);
+	michelin->setBasicAttack(hotsauce);
+	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
+
+	Attack* feast = new Attack("FEAST", "prepared a feast for", false, 15, -30, 0, 1, 1, 7, true, 13);
+	michelin->addSpecialAttack(feast);
+	feast->addDescription("Prepare a feast for the whole team, for much healing. (30 POWER)");
 
 	//some attack
 	
-	//Michenlin star meal
+	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 12, -55, 0, 1, 1, 1, true, 15);
+	michelin->addSpecialAttack(michmeal);
+	michmeal->addDescription("Prepare a teammate a super high-quality meal, for much healing. (55 POWER)");
 
-	//CONGRATULATION
+	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 40, 100, 10000, 1, 1, 1, false, 20);
+	congratulation->afterdesc = " congratulation";
+	congratulation->instakill = true;
+	supercongratulationpower->addDescription("Cook the target not just well done, but CONGRATULATION.");
+	michelin->addSpecialAttack(congratulation);
 
 	//Hackerman Carlos is a support MARK: Carlos
 
@@ -2066,7 +2136,7 @@ NPC* SetupWorld() {
 	greer->addSpecialAttack(scaldingsteam);
 
 	Effect* onfire = new Effect("ON FIRE", 5, 5, 0, 1, 0.8f);
-	Effect* extrafire = new Effect("EXTRA ON FIRE", 5, 10, 0, 1, 0.8f);
+	Effect* extrafire = new Effect("EXTRA ON FIRE", 5, 10, 0, 1, 0.65f);
 	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 0, 1); //contact attacks for the lavamen
 	burn->addEffect(onfire);
 	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 0, 1);

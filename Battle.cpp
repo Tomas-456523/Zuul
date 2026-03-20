@@ -210,6 +210,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				attacker->setGuarding(reciever);
 			}
 			//MARK: IF THE TARGET HAS A RECOIL ATTACK AND THE ATTACK WAS PHYSICAL, (AND IT WASNT DUE TO SPREAD), UNLEASH THE RECOIL ATTACK TARGETED AT THE ATTACKER
+			//and do recoil and set RECOILED to true and make the attacker say Oops if it's the first time recoiling
 		}
 	}
 }
