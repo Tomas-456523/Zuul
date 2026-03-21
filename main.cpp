@@ -793,10 +793,10 @@ NPC* SetupWorld() {
 							   {michelin, "My whole life I've made all the same recipes."},
 							   {michelin, "Everything's grown bland to me."},
 							   {michelin, "But recently I've gotten word of the SUPERSMOOTHIE,"},
-							   {michelin, "Formed from blending three special berries."},
+							   {michelin, "formed from blending three special berries."},
 							   {michelin, "Doesn't that sound new and exciting!?"},
-							   {self, "Sounds pretty cool."},
-							   {michelin, "Well anyway I've traveled here 'cause I've learned of three berries that can be found in this region."},
+							   {self, "It does sound pretty cool."},
+							   {michelin, "Well anyway I've traveled here 'cause I've learned of three special berries that can be found in this region."},
 							   {michelin, "The CACTIBERRY from the desert,"},
 							   {michelin, "the RADIBERRY growing somewhere here in the factories,"},
 							   {michelin, "and the NINJABERRY from some ninja village somewhere."},
@@ -818,7 +818,7 @@ NPC* SetupWorld() {
 	Conversation michrec1 = {{self, "Well..."}, {self, "Wanna join my BURGER QUEST?"}, {michelin, "why not. :("}};
 	michrec1.skipcondition = TEMPLEQUEST;
 	Conversation michrec2 = {{self, "Well..."}, {self, "Wanna help me destroy BURGERs?"}, {michelin, "why not. :("}};
-	michrec1.alt = &michrec1;
+	michrec1.alt = &michrec2;
 	michrec2.skipcondition = BURGERMENDEF;
 	Conversation michrec3 = {{self, "Well..."}, {self, "Wanna join my team?"}, {michelin, "why not. :("}};
 	michrec2.alt = &michrec3;
@@ -844,7 +844,7 @@ NPC* SetupWorld() {
 	//self, :|
 	//HIYNGIEINFGFUGFIBFIU
 	//QWBDNIbjed
-	//wkjhgfh
+	//WHY WOULD ANYBODY WANT TO MAKE THIS
 	//...
 	//Well this was a waste of time...
 	//:(
@@ -861,33 +861,41 @@ NPC* SetupWorld() {
 
 	Attack* qualitymeal = new Attack("5 STAR MEAL", "prepared a 5-star meal for", false, 5, -25, 0, 1, 1, 1, true);
 	michelin->addSpecialAttack(qualitymeal);
-
+	
+	Effect* marinated = new Effect("MARINATED", 5, 0, 0, 1, 0.5f);
 	Attack* flambe = new Attack("FLAMBE'", "bonked", true, 7, 20, 5, 1, 1, 1);
 	flambe->afterdesc = " with a flaming pan";
 	Effect* flambed = new Effect("FLAMBE'D", 5, 5, 0, 1, 0.8f);
 	flambe->addEffect(flambed);
-	michelin->setBasicAttack(castiron);
-
+	flambe->synergy = marinated;
+	flambe->cancel = marinated;
+	michelin->addSpecialAttack(flambe);
+	
 	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 20, 5, 1, 1, 1, true, 11);
 	Effect* hotsauced = new Effect("HOT SAUCED", 5, 5, 0, 1.25f, 0.75f);
 	hotsauce->addEffect(hotsauced);
-	michelin->setBasicAttack(hotsauce);
+	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
+	michelin->addSpecialAttack(hotsauce);
 
 	Attack* feast = new Attack("FEAST", "prepared a feast for", false, 15, -30, 0, 1, 1, 7, true, 13);
-	michelin->addSpecialAttack(feast);
 	feast->addDescription("Prepare a feast for the whole team, for much healing. (30 POWER)");
+	michelin->addSpecialAttack(feast);
 
-	//some attack
+	Attack* marinate = new Attack("MARINATE", "doused", false, 10, 0, 0, 1, 1, 1, false, 12);
+	marinate->afterdesc = " with alcohol";
+	marinate->addEffect(marinated);
+	michelin->addSpecialAttack(marinate);
+	feast->addDescription("Douse the target with alcohol, halving their defense and doubling damage taken from FLAMBE'.");
 	
 	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 12, -55, 0, 1, 1, 1, true, 15);
-	michelin->addSpecialAttack(michmeal);
 	michmeal->addDescription("Prepare a teammate a super high-quality meal, for much healing. (55 POWER)");
+	michelin->addSpecialAttack(michmeal);
 
 	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 40, 100, 10000, 1, 1, 1, false, 20);
 	congratulation->afterdesc = " congratulation";
 	congratulation->instakill = true;
-	supercongratulationpower->addDescription("Cook the target not just well done, but CONGRATULATION.");
+	congratulation->addDescription("Cook the target not just well done, but CONGRATULATION.");
 	michelin->addSpecialAttack(congratulation);
 
 	//Hackerman Carlos is a support MARK: Carlos
@@ -1105,7 +1113,7 @@ NPC* SetupWorld() {
 	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 2.0f, 2.0f, 2.0f, 2.0f);
 	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5f, 2.5f, 2.5f, 2.5f);
 
-	//Effect* smoothiebuff = new Effect("MULTIPOSITION", 999999, -30, 10, 70, 70, 70, 70);
+	//Effect* multiposition = new Effect("MULTIPOSITION", 999999, -30, 10, 2, 70, 70, 70);
 	
 	
 	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 2147483647); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
@@ -2152,17 +2160,22 @@ NPC* SetupWorld() {
 	magman->addSpecialAttack(meteor);
 
 	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrows and spear from the depths of the lava sea.", limbo, 0, Stats(25, 15, 25, 15, 30, 5, 9));
-	Attack* lavaspear = new Attack("LAVA SPEAR", "lavally slammed down on", false, -5, 20, 5, 1, 1, 1);
-	Attack* lavarrows = new Attack("LAVARROWS", "shot explosive arrows", false, 8, 10, 20, 3, 3, 3);
+	Attack* lavaspear = new Attack("LAVA SPEAR", "speared", false, -5, 20, 5, 1, 1, 1);
+	lavaspear->afterdesc = " with a lava spear";
+	lavaspear->addEffect(onfire);
+	Attack* lavarrows = new Attack("LAVARROWS", "shot explosive arrows", false, 8, 10, 20, 3, 3, 3); //no fire because they just explode
 	lavarrows->focushits = false;
 	Attack* closecombat = new Attack("CLOSE COMBAT", "engaged in close combat with", true, 8, 15, 20, 1, 1, 3);
-	largelavaman->setBasicAttack(lavaslam);
-	largelavaman->addSpecialAttack(haymaker);
+	lavasoldier->setBasicAttack(lavaspear);
+	lavasoldier->addSpecialAttack(lavarrows);
+	lavasoldier->addSpecialAttack(closecombat);
 
 	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "A really big laval humanoid who towers over his peers.\nThey have no finesse, preferring brutal strikes.", limbo, 0, Stats(60, 0, 35, 0, 25, 0, 9));
 	largelavaman->setRecoilAttack(burn);
 	Attack* lavaslam = new Attack("LAVA SLAM", "lavally slammed down on", true, -5, 20, 5, 1, 1, 1);
+	lavaslam->addEffect(onfire);
 	Attack* haymaker = new Attack("HAYMAKER", "threw a haymaker at", true, 8, 45, 5, 1, 1, 1);
+	haymaker->addEffect(onfire);
 	largelavaman->setBasicAttack(lavaslam);
 	largelavaman->addSpecialAttack(haymaker);
 
@@ -2183,7 +2196,7 @@ NPC* SetupWorld() {
 	metalmeteor->afterdesc = " from inside itself"; //same commentary comment as lavamen
 	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 20, 10, 1, 1, 7);
 	slagvomit->focushits = false;
-	slagvomit->addEffect(reallyburn);
+	slagvomit->addEffect(extrafire);
 	slagman->setBasicAttack(slagjab);
 	slagman->addSpecialAttack(metalmeteor);
 	slagman->addSpecialAttack(slagvomit);
@@ -2204,14 +2217,16 @@ NPC* SetupWorld() {
 	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats()); //mini mini boss?
 	//swing
 	//furnace blast
+	//exhaust
 
-	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, who is still big from a healthy diet of ores.", limbo, 0, Stats());
+	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, big from a healthy diet of ores.", limbo, 0, Stats());
 	//bite
-	//
+	//lavomit
 
 	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats());
-	//snap
-	//gator gun
+	//crunch (causes crunched (-defense))
+	//deathroll (synergize with crunched)
+	//gator gun (laser that catches on fire)
 
 	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
 	lavaguardian->setBoss(true);
@@ -2224,6 +2239,7 @@ NPC* SetupWorld() {
 	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats());
 	//askew
 	//barrel roll
+	//adblock
 
 	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
 	browser->setBoss(true);

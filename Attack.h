@@ -55,6 +55,8 @@ struct Attack {
 	bool contact; //if the attacker makes contact with the target
 	bool beneficial = false; //if you want to get hit by this
 
+	bool risky = false; //if we shouldn't do this move to a teammate below half health
+
 	Attack() {} //default constructor so NPC doesn't throw error
 
 	//constructs the attack

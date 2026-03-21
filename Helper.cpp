@@ -1,6 +1,8 @@
 //the implementation file for my Helper namespace, has a bunch of helpful functions that I might use in multiple files
 
 #include "Helper.h"
+#include "NPC.h"
+#include "Item.h"
 #include <cstring>
 #include <iostream>
 #include <limits>

@@ -614,6 +614,8 @@ void Battle::npcTurn(NPC* npc) {
 	//default to basic if attack->remove && target->getBoss()
 
 	//also can't hypnotize boss
+
+	//if guarding move but target is already guarded then no need to guard them
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
 	size_t healchecks = 0; //heals specifically may fail

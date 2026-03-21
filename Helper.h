@@ -3,12 +3,17 @@
 #ifndef HELPER
 #define HELPER
 
-#include "NPC.h"
-#include "Item.h"
 #include "WorldState.h"
 #include <vector>
 #include <map>
+
+class Room;
+class NPC;
+class Item;
+struct Attack;
+struct Effect;
 struct Conversation;
+struct WorldChange;
 
 namespace Helper {
 	void CinIgnoreAll(); //clears extra or faulty input
@@ -16,16 +21,16 @@ namespace Helper {
 	void AllCaps(char* text); //capitalizes the given text
 	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP, int skipSpaces = 0); //takes commandP, puts the first word in commandWordP, and the rest in commandExtensionP
 	void ParseWithON(const char* commandExtensionP, char* itemNameP, char* npcNameP); //takes commandExtensionP, puts everything before " ON " in itemNameP, and everything after in npcNameP
-	NPC* getNPCInVector(vector<NPC*>& the_vector, const char* npcname); //returns the npc in the given vector that has the given name
-	Item* getItemInVector(vector<Item*>& the_vector, const char* itemname); //returns the item in the given vector that has the given name
+	NPC* getNPCInVector(std::vector<NPC*>& the_vector, const char* npcname); //returns the npc in the given vector that has the given name
+	Item* getItemInVector(std::vector<Item*>& the_vector, const char* itemname); //returns the item in the given vector that has the given name
 	void printNPCData(NPC* npc); //prints the data of the npc
 	void printItemData(Item* item); //prints the data of the item
 	void printAttacks(NPC* npc); //prints the attacks that the given npc has
-	void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item); //deletes the item and removes it from the inventory or current room based on where it was
+	void deleteItem(Room* currentRoom, std::vector<Item*>* inventory, Item* item); //deletes the item and removes it from the inventory or current room based on where it was
 	int Clamp(int num, int min, int max); //returns num with a minimum return value of min and a maximum of max
 	float ClampF(float num, float min, float max); //same as Clamp but for floats instead of ints
-	void sortBySpeed(vector<NPC*>& team); //sorts the vector of npcs by speed
-	int aliveCount(vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
+	void sortBySpeed(std::vector<NPC*>& team); //sorts the vector of npcs by speed
+	int aliveCount(std::vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
 	void printConversation(Conversation* _convo); //print a conversation in conversation order
 	void printLvlUpData(NPC* npc); //print the level up data of the given npc
