@@ -55,6 +55,7 @@ public: //you need to set stats on creation
 	bool getEnemy(); //if npc is enemy
 	Attack* getBasicAttack();
 	Attack* getRecoilAttack();
+	Attack* getOpener();
 	vector<Attack*> getSpecialAttacks();
 	map<Attack*, int> getWeights();
 	bool getLevelUp(); //if we leveled up recently
@@ -65,6 +66,7 @@ public: //you need to set stats on creation
 	vector<Effect>& getEffects();
 	int getHypnotized(); //hypnosis amount
 	int getFrozen(); //freeze amount
+	int getRecovering(); //recovery amount
 	int getConvoSize(); //how many conversations are left to say
 	bool getRespawn(); //if they respawn
 	bool getBoss();
@@ -120,6 +122,7 @@ public: //you need to set stats on creation
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void setRecoilAttack(Attack* attack);
+	void setOpener(Attack* attack); //set opening attack for when the battle starts
 	void addSpecialAttack(Attack* attack);
 	void removeSpecialAttack(Attack* attack);
 	void blockExit(const char* _exitBlocking, const char* type, const char* reason, bool bothsides = false);
@@ -193,6 +196,7 @@ protected:
 	vector<Attack*> special_attacks; //the npc's special attacks that cost sp
 
 	Attack* recoilattack = NULL; //the attack that happens when this npc is hit
+	Attack* opener = NULL; //the attack that happens when this npc goes into battle
 
 	vector<Effect> effects; //the effects affecting this npc
 	map<Attack*, int> attackWeight; //the weight of the npc's attacks
@@ -248,7 +252,8 @@ protected:
 
 	int hypnosis = 0; //how hypnotized the npc is
 	int freeze = 0; //how frozen the npc is
-	bool away = false; //if the npc is away from the battle
+	bool away = false; //if the npc is away from the battle (bool because the npc can't get hit by another awaying attack because away means can't get hit, unlike freeze and stuff)
+	int recovering = 0; //if the npc is recovering from some attack and can't move
 	bool defeated = false; //if the npc is defeated (appears in the room)
 	bool respawns = true; //if the npc appears again after battle
 

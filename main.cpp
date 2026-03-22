@@ -173,7 +173,8 @@ NPC* SetupWorld() {
 	Room* canyon1 = new Room("in a long, shaded canyon, forming a fork in the road. You know, these would actually be really annoying forks if you think about it.");
 	Room* canyon2 = new Room("at the end of the canyon, though a path seems to have been made upwards.");
 	Room* canyon3 = new Room("at the end of the canyon. There's much evidence of mining here, and a mineshaft entrance here leads underground.");
-	Room* cliff1 = new Room("very high up on a cliff; the temperature almost feels normal!");
+	Room* cliff0 = new Room("very high up on a cliff; the temperature almost feels normal!");
+	Room* cliff1 = new Room("on a trail leading up to the top of the cliffside. You can see the desert town from here.");
 	Room* cliff2 = new Room("on the highest cliff. The desert townsfolk are suspended in the air around a girl with a purple dress.");
 	Room* mineshaft = new Room("underground in the mineshaft. It was too hot outside, but now it's very cold :(");
 	Room* mineshaft2 = new Room("at a pickaxe in the road. That's not a utensil...");
@@ -281,11 +282,12 @@ NPC* SetupWorld() {
 	mountain->setWelcome("Frigid winds blast your face and dark clouds cover both land and sky.");
 	mountain->setWelcome("Ok have fun!");
 	Room* mountainmine = new Room("far away from the start of the track. A barrage of snow blows in from the exit.");
-	Room* mountain2 = new Room("on a little clearing on the mountain. The upwards path has a ski lift!");
+	Room* mountain2 = new Room("on a little clearing on the mountain. The UPwards path has a ski lift!");
+	Room* mountainside = new Room("along a side path of the mountain. The snow is snowier than before.");
 	Room* mountainlake = new Room("at a lake full of baby shrimp. The shrimple aura keeps the water from freezing.");
 	Room* mountain3 = new Room("at a sheer cliff. Whoever's in charge of this place should really invest in guardrails.");
-	Room* mountainpeak = new Room("at the peak of the mountain, watching over a sea of clouds. You can't even see the BURGER RESTAURANT from here; it really is so far away.\nThere's a tent here in the style of your home village.");
-	Room* tenthome = new Room("in the developer's house.");
+	Room* mountainpeak = new Room("at the peak of the mountain, watching over a sea of clouds.\nYou can't even see the BURGER RESTAURANT from here; it really is so far away.\nThere's a tent here in the style of your home village.");
+	Room* tenthome = new Room("in the developer's house. He is working on BURGER QUEST 2 DLC.");
 
 	//Create all BURGERSBURG rooms MARK: BB
 	Room* BURGERSBURG = new Room("at the gate of BURGERSBURG. The BURGER RESTAURANT is just down main street.");
@@ -399,7 +401,7 @@ NPC* SetupWorld() {
 	//Create attacks
 	
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", desertstation, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
+	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", mountainmine, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
 	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -495,7 +497,7 @@ NPC* SetupWorld() {
 	aprilshower->addEffect(spshower);
 	floria->addSpecialAttack(aprilshower);
 
-	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -2147483647, 20, 1, 1, 1, true, 15);
+	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -2147483648, 20, 1, 1, 1, true, 15);
 	nitroheal->afterdesc = " to peak health";
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
@@ -632,7 +634,7 @@ NPC* SetupWorld() {
 	forestslash->afterdesc = " with his forest sword";
 	forestknight->setBasicAttack(forestslash);
 	
-	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 20, 20, 1, 1, 3, true, 10);
+	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 0, 0, 1, 1, 3, true, 10);
 	forestknight->addSpecialAttack(defend);
 	defend->protect = true; //defend start protecting
 
@@ -1195,7 +1197,7 @@ NPC* SetupWorld() {
 	//I would advise you to be wary.
 	factelder->addRejectionDialogue("I only oversee this factory; I cannot leave the wall.");
 
-	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 67));
+	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 0));
 	developer->setDialogue("Yo wassup.");
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
@@ -1235,7 +1237,12 @@ NPC* SetupWorld() {
 	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 6 hits)");
 	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
 
-	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.", desertgymfixed, 25);
+	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
+	pshrimplebeam->instakill = true;
+	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (100 ATTACK, 100 PIERCE)");
+	Item* shrimplegun = new WeaponItem("SHRIMPLE GUN", "An advanced red water gun granting non-shrimp wielders the ability to use the SHRIMPLE BEAM.", mountainlake, pshrimplebeam);
+
+	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
 	gymbro->addRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
 	gymbro->setGymStart(1); //he will always catch up to your level
@@ -1398,7 +1405,7 @@ NPC* SetupWorld() {
 	//make coolant attack that slows down enemies
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
 	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", "used the pole to go over the chasm!", desertpole, CHASM, true);
-	Item* minecart = new MovementItem("MINECART", "A spare minecart, used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
+	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
 
 	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
 	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
@@ -1429,6 +1436,11 @@ NPC* SetupWorld() {
 	scissorliftnw->setTakable(false);
 	scissorliftse->setTakable(false);
 	scissorliftne->setTakable(false);
+
+	Item* rbtree = new InfoItem("RED-BLACK TREE", "A very cool tree with red and black fruits, rebalancing itself as it grows.", "You tried to grab one of the fruits but the tree rebalanced itself and you fell.", mountainpeak);
+	rbtree->setDenial("And how do you plan to TAKE an entire tree, exactly?");
+
+
 
 	/*Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
 	controlpanel1->setTakable(false);
@@ -1589,9 +1601,11 @@ NPC* SetupWorld() {
 	minelight->setExit(UP, mineexit);
 	minelight->setExit(SOUTH, mineshaft3);
 	minelight->setExit(NORTH, volcanoentrance);
-	mineexit->setExit(ABOVEGROUND, cliff1);
+	mineexit->setExit(ABOVEGROUND, cliff0);
 	mineexit->setExit(DOWN, minelight);
-	cliff1->setExit(UNDERGROUND, mineexit);
+	cliff0->setExit(UNDERGROUND, mineexit);
+	cliff0->setExit(EAST, cliff1);
+	cliff1->setExit(WEST, cliff0);
 	cliff1->setExit(DOWN, canyon2);
 	cliff1->setExit(UP, cliff2);
 	cliff2->setExit(DOWN, cliff1);
@@ -1729,10 +1743,12 @@ NPC* SetupWorld() {
 	mountainmine->setExit(ABOVEGROUND, mountain);
 	mountain->setExit(UNDERGROUND, mountainmine);
 	mountain->setExit(UP, mountain2);
-	mountain2->setExit(WEST, mountainlake);
+	mountain2->setExit(WEST, mountainside);
 	mountain2->setExit(UP, mountain3);
 	mountain2->setExit(DOWN, mountain);
-	mountainlake->setExit(EAST, mountain2);
+	mountainside->setExit(WEST, mountainlake);
+	mountainside->setExit(EAST, mountain2);
+	mountainlake->setExit(EAST, mountainside);
 	mountain3->setExit(UP, mountainpeak);
 	mountain3->setExit(DOWN, mountain2);
 	mountainpeak->setExit(IN_TENT, tenthome);
@@ -1920,24 +1936,25 @@ NPC* SetupWorld() {
 
 	//a true ninja doesn't reveal his name
 	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief ninja of the ninja village, with the most experience and the highest rank of diamond belt.", limbo, 0, Stats());
+	ninjachef->setBoss(true);
 	//kick (flying side kick)
 	//kiloshurikens (helicopter rotors) 2 3-wide hits
 	//pressure points
 	//deadly spinferno
 
-	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This Jim Shady is just imitating.", limbo, 0, Stats(50, 30, 10, 35, 15, 20, 9));
-	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 0, 30, 100, 1, 1, 1);
+	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This Jim Shady is just imitating.", limbo, 0, Stats(50, 10, 10, 35, 15, 10, 9));
+	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 0, 100, 100, 1, 1, 1);
 	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shrimplebeam);
 	Effect* engarde = new Effect("EN GARDE!", 2147483647);
 	engarde->guardset = 1;
 	jimshady->setEffect(engarde, false);
 
-	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 30, 9));
-	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied over to", true, 0, 0, 0, 1, 1, 1);
+	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 15, 9));
+	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied all over", true, 0, 5, 0, 3, 4, 1);
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
-	Effect* flinch = new Effect("FLINCH", 1);
-	shrimpleshimmy->addEffect(flinch);
+	/*Effect* flinch = new Effect("FLINCH", 1);
+	shrimpleshimmy->addEffect(flinch);*/
 
 	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
 	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
@@ -2005,7 +2022,7 @@ NPC* SetupWorld() {
 	Attack* vbonecone = new Attack("BONE CONE", "launched his helmet's bone cones at", false, 5, 1, 0, 4, 4, 1);
 	skeleviking->addSpecialAttack(vbonecone);
 	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", true, 10, 8, 0, 3, 4, 3);
-	skeleviking->setBasicAttack(vtornado);
+	skeleviking->addSpecialAttack(vtornado);
 
 	//most of the enemies have these placeholder attacks and also placeholder stats due to time constraints, so I'll add those in the full version
 	Attack* genericattack = new Attack("ATTACK", "attacked", true, -5);
@@ -2029,14 +2046,14 @@ NPC* SetupWorld() {
 	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(15, 30, 5, 20, 0, 2, 9));
 	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 20, 0, 1, 1, 1);
 	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5f, 1.5f, 1.5f, 1, 50.0f);
+	rocknroll->selfeffect = jamming;
 	Attack* saltcure = new Attack("SALT CURE", "coughed up crystals of curing salt onto", false, 15, 5, 0, 1, 1, 1);
 	Effect* saltcured = new Effect("SALT CURED", 2147483647);
 	saltcured->spusage = 2.0f; //salt cured means you take double damage and use double sp
 	saltcured->damagebuff = 2.0f;
 	saltcure->addEffect(saltcured);
 	rockbug->setBasicAttack(rocknroll);
-	rockbug->addSpecialAttack(genericspecial);
-	rockbug->addSpecialAttack(genericcc);
+	rockbug->addSpecialAttack(saltcure);
 
 	/*NPC* rascal = new NPC("", "MINE RASCAL", "Little thingy who lives in the mines.", limbo, 0, Stats());
 	rascal->setBasicAttack(genericattack);
@@ -2137,7 +2154,7 @@ NPC* SetupWorld() {
 	gassed->spusage = 2;
 	gasleak->addEffect(gassed);
 	greer->addSpecialAttack(gasleak);
-	Attack* scaldingsteam = new Attack("SCALDING STEAM", "shot a valve full of hot steam near", false, 5, 25, 400, 1, 1, 3);
+	Attack* scaldingsteam = new Attack("SCALDING STEAM", "shot a valve full of hot steam near", false, 5, 25, 50, 1, 1, 3);
 	Effect* scalded = new Effect("SCALDED", 3);
 	scalded->damagebuff = 2;
 	scaldingsteam->addEffect(scalded);
@@ -2179,14 +2196,24 @@ NPC* SetupWorld() {
 	largelavaman->setBasicAttack(lavaslam);
 	largelavaman->addSpecialAttack(haymaker);
 
-	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 30, 30, 10, 30, 9));
-	//scurry
-	//spit lava
+	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 30, 5, 10, 30, 9));
+	Attack* scurry = new Attack("SCURRY", "scurried all around the team", true, -5, 10, 0, 4, 5, 1);
+	scurry->focushits = false;
+	Attack* lavomit = new Attack("LAVOMIT", "coughed up a ball of lava at", false, 1, 20, 20, 1, 1, 1);
+	lavomit->addEffect(onfire);
+	lavizard->setBasicAttack(scurry);
+	lavizard->addSpecialAttack(lavomit);
 
-	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats());
-	//scurry
-	//leap
-	//fumes
+	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats(15, 10, 30, 10, 10, 20, 9));
+	Attack* poiscurry = new Attack("SCURRY", "poisonously scurried all around the team", true, -5, 10, 0, 2, 3, 1);
+	Effect* poisoned = new Effect("POISONED", 5, 10, 0, 1, 0.75f);
+	poiscurry->addEffect(poisoned);
+	poiscurry->focushits = false;
+	Attack* poisomit = new Attack("POISOMIT", "coughed up a ball of sticky corrosive sludge at", false, 2, 15, 30, 1, 1, 1);
+	Effect* sludged = new Effect("SLUDGED", 10, 5, 0, 1, 0.75f, 0.5f, 1, 0.25f);
+	poisomit->addEffect(sludged);
+	poizard->setBasicAttack(poiscurry);
+	poizard->addSpecialAttack(poisomit);
 
 	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(30, 20, 35, 20, 10, 15, 9));
 	slagman->setRecoilAttack(reallyburn);
@@ -2212,8 +2239,6 @@ NPC* SetupWorld() {
 	superslagman->addSpecialAttack(metalbeam);
 	superslagman->addSpecialAttack(slagblast);
 
-	//envelop?
-
 	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats()); //mini mini boss?
 	//swing
 	//furnace blast
@@ -2224,22 +2249,47 @@ NPC* SetupWorld() {
 	//lavomit
 
 	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats());
+	lavagator->setBoss(true); //miniboss
 	//crunch (causes crunched (-defense))
 	//deathroll (synergize with crunched)
 	//gator gun (laser that catches on fire)
 
 	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
 	lavaguardian->setBoss(true);
-	//fire sword
-	//upslash
-	//sword explosion
-	//solar flare
-	//gamma ray burst
+	Attack* firesword = new Attack("FIRE SWORD", "slashed", true, -5, 20, 20, 1, 1, 1);
+	firesword->afterdesc = " with its flaming sword";
+	firesword->addEffect(onfire);
+	lavaguardian->setBasicAttack(firesword);
+	Attack* uplash = new Attack("UPSLASH", "slashed", true, 5, 20, 20, 1, 1, 1);
+	uplash->afterdesc = " upwards into the air";
+	Effect* uplashed = new Effect("UPSLASHED", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
+	uplashed->remove = true;
+	uplashed->falldamage = 30;
+	uplash->addEffect(uplashed);
+	lavaguardian->addSpecialAttack(uplash);
+	Attack* eruption = new Attack("ERUPTION", "explosively crashed its sword down on", true, 8, 30, 20, 1, 1, 3);
+	lavaguardian->addSpecialAttack(eruption);
+	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 10, 20, 1, 1, 7);
+	solarflare->focushits = false;
+	Effect* blinded = new Effect("BLINDED", 2, 0, 0);
+	blinded->freeze = true;
+	solarflare->addEffect(blinded);
+	lavaguardian->addSpecialAttack(solarflare);
+	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation upon", false, 20, 40, 100, 1, 1, 3);
+	lavaguardian->addSpecialAttack(gammarayburst);
 
-	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats());
-	//askew
-	//barrel roll
-	//adblock
+	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
+	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
+	medge->afterdesc = " askew";
+	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8f);
+	askew->addEffect(offbalance);
+	newtab->setBasicAttack(askew);
+	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 10, 0, 4, 5, 1);
+	newtab->addSpecialAttack(doabarrelroll);
+	Attack* adblock = new Attack("ADBLOCK", "is blocking attacks thrown at", false, 10, 0, 0, 1, 1, 1, true, 10);
+	adblock->protect = true;
+	adblock->prioritizeleader = true;
+	newtab->addSpecialAttack(adblock);
 
 	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
 	browser->setBoss(true);
@@ -2268,64 +2318,69 @@ NPC* SetupWorld() {
 	firefox->addEffect(foxfire);
 	browser->addSpecialAttack(firefox);
 	
-	/////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////
-
 	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
+	Attack* oopsy = new Attack("SNOW BASH", "tripped", 50, 15, 0, 1, 1, 1, true);
+	oopsy->focushits = false;
+	Attack* snowbash = new Attack("SNOW BASH", "socked", 1, 300, 0, 1, 1, 1); //if he's high level enough he doesn't die instantly! so maybe he can be interesting in the simulator
+	snowbash->afterdesc = "snowily";
+	Effect* frozed = new Effect("FROZEN", 5);
+	snowbash->addEffect(frozed);
+	snowman->setOpener(oopsy);
+	snowman->setBasicAttack(oopsy);
+	snowman->addSpecialAttack(snowbash);
 
-	NPC* bigcat = new NPC("", "BIG CAT", "Huge golden lion with a silver mane. He is very aggressive.", limbo, 0, Stats());
-	bigcat->setBasicAttack(genericattack);
-	bigcat->addSpecialAttack(genericspecial);
-	bigcat->addSpecialAttack(genericcc);
+	NPC* realjimshady = new NPC("", "THE REAL JIM SHADY", "He's Jim Shady, yes he's the real Shady.", limbo, 0, Stats(500, 20, 20, 35, 30, 5, 9));
+	realjimshady->setBoss(true);
+	Attack* shrimplecomplex = new Attack("SHRIMPLE COMPLEX", "rushed the team with the speed of a true rap shrimp", true, 0, 1, 500, 100, 100, 1);
+	shrimplecomplex->focushits = false;
+	Effect* tired = new Effect("RECOVERING", 1);
+	shrimplecomplex->selfeffect = tired;
+	tired->tiring = true;
+	realjimshady->setOpener(shrimplecomplex);
+	realjimshady->setBasicAttack(shrimplebeam);
 
-	NPC* realjimshady = new NPC("THE REAL", "JIM SHADY", "He's Jim Shady, yes he's the real Shady.", limbo, 0, Stats());
-	realjimshady->setBasicAttack(genericattack);
-	realjimshady->addSpecialAttack(genericspecial);
-	realjimshady->addSpecialAttack(genericcc);
-	//shrimplecomplex
+	NPC* hatchling = new NPC("", "HATCHLING", "Just-hatched lizard with an instant parental bond and fighting instincts.", limbo, 0, Stats(10, 0, 7, 0, 1, 17, 4));
+	Attack* filialinstinct = new Attack("FILIAL INSTINCT", "instinctually aided", false, 0, 0, 0, 1, 1, 1, true, 10);
+	Effect* mcbond = new Effect("MOTHER-CHILD BOND", 2147483647, 0, 0, 1.125f); //MARK: we need to make sure this goes away when the hatchling is incapacitated
+	filialinstinct->addEffect(mcbond);
+	filialinstinct->prioritizeleader = true;
+	filialinstinct->stacks = true;
+	hatchling->setOpener(filialinstinct);
+	Attack* nip = new Attack("NIP", "tried its best to bite", true, 0, 7, 1, 1, 1, 1); //1 pierce cause tiny baby teeth
+	hatchling->setBasicAttack(nip);
 
-	NPC* thelizard = new NPC("", "BLUE EYES WHITE LIZARD", "Legendary white lizard with blue eyes. It's known to multiply very quickly.", limbo, 0, Stats());
-	thelizard->setBasicAttack(genericattack);
-	thelizard->addSpecialAttack(genericspecial);
-	thelizard->addSpecialAttack(genericcc);
-	//population bomb
-
-	NPC* hatchling = new NPC("", "HATCHLING", "Just-hatched lizard who has already developed its fighting instincts.", limbo, 0, Stats());
-	hatchling->setBasicAttack(genericattack);
-	hatchling->addSpecialAttack(genericspecial);
-	hatchling->addSpecialAttack(genericcc);
+	NPC* bewlizard = new NPC("", "BLUE EYES WHITE LIZARD", "Legendary white lizard with blue eyes. It's known to multiply very quickly.", limbo, 0, Stats(400, 17, 24, 10, 14, 24, 24));
+	bewlizard->setBoss(true);
+	Attack* popbomb = new Attack("POPULATION BOMB", "pooped some eggs at the team", false, -5, 20, 0, 2, 2, 1);
+	popbomb->focushits = false;
+	popbomb->summon = hatchling;
+	popbomb->summonamount = 1;
+	bewlizard->setBasicAttack(popbomb);
+	Attack* bsod = new Attack("BURST STREAM OF DESTRUCTION", "fired a stream of destruction at", 25, 30, 50, 1, 1, 3);
+	bsod->afterdesc = " from its mouth";
+	bewlizard->addSpecialAttack(bsod);
 
 	//////////////////////////////////////////////
 
-	NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo, 0, Stats());
-	thief->setBasicAttack(genericattack);
-	thief->addSpecialAttack(genericspecial);
-	thief->addSpecialAttack(genericcc);
+	/*NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo, 0, Stats());
+	//
+
+	//disease amalgamation
 
 	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Floating brain guy who is a criminal and very smart.", limbo, 0, Stats());
-	crimmind->setBasicAttack(genericattack);
-	crimmind->addSpecialAttack(genericspecial);
-	crimmind->addSpecialAttack(genericcc);
+	//
 
 	NPC* minipanzer = new NPC("", "MINIPANZER", "Tiny tank thing.", limbo, 0, Stats());
-	minipanzer->setBasicAttack(genericattack);
-	minipanzer->addSpecialAttack(genericspecial);
-	minipanzer->addSpecialAttack(genericcc);
+	//
 
 	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Big guy who will fenagle your bagels.", limbo, 0, Stats());
-	bagelfenagler->setBasicAttack(genericattack);
-	bagelfenagler->addSpecialAttack(genericspecial);
-	bagelfenagler->addSpecialAttack(genericcc);
+	//
 
 	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Shark that goes through the road so scary ahhh.", limbo, 0, Stats());
-	paveshark->setBasicAttack(genericattack);
-	paveshark->addSpecialAttack(genericspecial);
-	paveshark->addSpecialAttack(genericcc);
+	//
 
 	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Tornado thing with orbiting things.", limbo, 0, Stats());
-	naturaldisaster->setBasicAttack(genericattack);
-	naturaldisaster->addSpecialAttack(genericspecial);
-	naturaldisaster->addSpecialAttack(genericcc);
+	//thing fling
 
 	//shadow creature
 
@@ -2355,7 +2410,7 @@ NPC* SetupWorld() {
 	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo, 0, Stats());
 	burgerbutler->setBasicAttack(genericattack);
 	burgerbutler->addSpecialAttack(genericspecial);
-	burgerbutler->addSpecialAttack(genericcc);
+	burgerbutler->addSpecialAttack(genericcc);*/
 	
 	//burger ceo enzo
 
@@ -2383,7 +2438,7 @@ NPC* SetupWorld() {
 	//then you get the antenna
 
 	NPC* thedark = new NPC("", "THE DARK", "", limbo, 0, Stats(), Stats());
-	//temple of courage in the desert, gives big red button of hope
+	//temple of hope in the desert, gives big red button of hope
 	//you get seperated from your teammates and you have to fight enemies that decay your stats
 	//probably some hard puzzles
 	//and you get reunited at the end
@@ -2456,10 +2511,11 @@ NPC* SetupWorld() {
 	NPC* govguard = new NPC(*ninjachief);
 	govguard->setLeader(true, 19, ninjacapitol);
 	govguard->setParty(ninja, ninja);
-	govguard->setDialogue("How could you stand before our ninja chief if you can't even beat me?");
+	govguard->setDialogue({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Now, fight me as your final test."}});
+	govguard->addConversation({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Most impressive."}, {ninjachief, "Now, fight me as your final test."}}); //just so he says that before the fight
 	govguard->addRejectionDialogue("I must continue to govern the ninja village.");
 	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
-	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
+	pantryguard->addLinkedConvo(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
 	pantryguard->setTalkOnDefeat();
 
 	/*NPC* forestrando = new NPC(*grassman);
@@ -2488,7 +2544,7 @@ NPC* SetupWorld() {
 	hogguard2->addRejectionDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
 
 	NPC* forestguard3 = new NPC(*buffgrassman);
-	forestguard3->setLeader(true, 5, forestnice);
+	forestguard3->setLeader(true, 4, forestnice);
 	forestguard3->setParty(grassman, grassman);
 	forestguard3->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard3->setDialogue({{NULL, "BUFF GRASSMAN - *burly bush noises*"}});
@@ -2693,7 +2749,7 @@ NPC* SetupWorld() {
 	viola->addDefeatRoom(franklin, deserttown);
 	viola->addDefeatRoom(bob, oasis);
 	viola->setRecruitDialogueChange("I think I'm doing a good job protecting the town so far.");
-	viola->addLinkedRoom(cliff2, "You have a good view of the volcanic, even wastier wastelands beyond the desert");
+	viola->addLinkedRoom(cliff2, "on the highest cliff, with a good view of the volcanic, even wastier wastelands beyond the desert");
 	viola->addAttackRemoval(viola, tkguard);
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
@@ -2702,6 +2758,7 @@ NPC* SetupWorld() {
 
 	NPC* springguard = new NPC(*greer);
 	springguard->setLeader(true, 20, NULL, false);
+	springguard->alterSp(-100); //so greer has to start by using gun so it's funnier
 	springguard->addConversation({{greer, "Oi kid!"},
 								  {greer, "Whaddaya doin' down here, huh?"},
 								  {self, "I want to turn that valve over there."},
@@ -2723,7 +2780,6 @@ NPC* SetupWorld() {
 	springguard->setTalkOnDefeat();
 	springguard->setForceBattle();
 	springguard->setEscapable(false);
-	springguard->setBasicAttack(genericattack);
 	springguard->addLinkedRoom(oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to appear.");
 	springguard->guardItem(valve);
 
@@ -2743,7 +2799,7 @@ NPC* SetupWorld() {
 	NPC* volcanoguard3 = new NPC(*largelavaman);
 	volcanoguard3->setLeader(true, 14, volcano5);
 	volcanoguard3->setParty(magman, magman, lavizard);
-	volcanoguard3->blockExit(NORTHEAST, ENEMY, "guarded by the LARGE LAVAMAN.");
+	volcanoguard3->blockExit(NORTH, ENEMY, "guarded by the LARGE LAVAMAN.");
 	volcanoguard3->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 	volcanoguard3->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 
@@ -2932,20 +2988,48 @@ NPC* SetupWorld() {
 
 	NPC* lavaguard = new NPC(*lavaguardian);
 	lavaguard->setLeader(true, 16, bridge3, false);
-	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN");
+	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN.");
 	lavaguard->setDialogue("*ethereal breathing*");
 	lavaguard->addRejectionDialogue("*ethereal breathing*");
 	lavaguard->setEscapable(false);
 
-	//tabguard
+	NPC* tabguard = new NPC(*browser);
+	tabguard->setLeader(true, 12, castlehall, false);
+	tabguard->setParty(newtab, newtab);
+	tabguard->blockExit(SOUTH, ENEMY, "blocked by the NEW TAB");
+	tabguard->setDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
+	tabguard->addRejectionDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
 
 	NPC* kingbrowser = new NPC(*browser);
-	kingbrowser->setLeader(true, 25, castlethrone, false);
+	kingbrowser->setLeader(true, 18, castlethrone, false);
 	kingbrowser->setDialogue("GWAHAHAHAHAHA!");
 	kingbrowser->addRejectionDialogue({{browser, "You think I wanna join you?"}, {browser, "GWAHAHAHAHAHA!"}});
 	kingbrowser->setEscapable(false);
 	kingbrowser->addRecruitLink(plum);
-	kingbrowser->addLinkedConvo(plum, {{plum, "Thank you for saving me young knight!"}, {self, "No problemo."}});
+	kingbrowser->addLinkedConvo(plum, {{plum, "Thank you for saving me, young knight!"}, {self, "No problemo."}});
+
+	NPC* mountainguard = new NPC(*snowman);
+	mountainguard->setLeader(true, 15, mountain, false);
+	mountainguard->blockExit(UP, ENEMY, "blocked by the SNOWMAN.");
+	mountainguard->setDialogue({{NULL, "SNOWMAN - *angry snow crunching noises*"}});
+	mountainguard->addRejectionDialogue({{NULL, "SNOWMAN - *angry snow crunching noises*"}});
+
+	NPC* mountainguard2 = new NPC(*bewlizard);
+	mountainguard2->setLeader(true, 25, mountain3);
+	mountainguard2->alterSp(-100); //the lizard starts at 0 sp
+	mountainguard2->blockExit(UP, ENEMY, "blocked by the BLUE EYES WHITE LIZARD.");
+	mountainguard2->setDialogue({{NULL, "BLUE EYES WHITE LIZARD - *warning chirp growls*"}});
+	mountainguard2->addRejectionDialogue({{NULL, "BLUE EYES WHITE LIZARD - *warning chirp growls*"}});
+
+	NPC* jimshady0 = new NPC(*realjimshady);
+	jimshady0->setLeader(true, 25, mountainside);
+	jimshady0->setParty(jimmyshimmy, jimmyshimmy);
+	jimshady0->blockExit(WEST, ENEMY, "blocked by THE REAL JIM SHADY.");
+	jimshady0->addConversation({{realjimshady, "Hi."}, {realjimshady, "My name is-"}, {NULL, "What?"}, {realjimshady, "My name is-"}, {NULL, "Who?"}, {realjimshady, "My name is"}, {NULL, "*chka chka*"}, {realjimshady, "JIM SHADY."}});
+	jimshady0->addRejectionDialogue("No.");
+	jimshady0->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY.");
+	jimshady0->setForceBattle(true);
+	jimshady0->addLinkedConvo(jimshady0, {{self, "So what's it like being the real Jim Shady?"}, {jimshady0, "Pretty real."}});
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -3001,6 +3085,8 @@ NPC* SetupWorld() {
 	factoryroofnw->blockExit(DOWN, HIGH, "too far down to jump.");
 	factoryroofne->blockExit(DOWN, HIGH, "too far down to jump.");
 	factoryroofse->blockExit(DOWN, HIGH, "too far down to jump.");
+	sewermineswest->blockExit(WEST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	mountainmine->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	//volcanotempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology.");
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
@@ -3852,7 +3938,7 @@ int main() {
 			printHelp(validCommands, flavorText);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game
 			continuing = false;
-		} else if (strcmp(commandWord, "")) { //prints an error message if the player typed something that isn't an actual command, unless it was just nothing because that happens sometimes
+		} else { //prints an error message if the player typed something that isn't an actual command //if (strcmp(commandWord, "")) 
 			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
 		}
 

@@ -32,6 +32,7 @@ struct Effect {
 	bool freeze = false; //if the effect causes the target to get frozen
 	bool hypnotize = false; //if the effect causes the target to get hypnotized (attack own party)
 	bool remove = false; //if the attack removes the target from the fight temporarily
+	bool tiring = false; //if the effect makes the affected tired and not be able to move (to differentiate from frozen pretty much)
 	int falldamage = 0; //if remove == true, how much damage the affected npc takes on return
 
 	int guardset = 0; //if this effect sets guard on the target
@@ -41,6 +42,9 @@ struct Effect {
 	float lifesteal = 0; //what % of damage taken is given to the attacker
 	float spsteal = 0; //what % of sp taken is given to the attacker
 	NPC* absorber = NULL; //who takes the lifestolen hp
+	bool turntick = false; //if we tick after the npc turn as opposed to at the start of each round
+
+	bool stacks = false; //if the effect stacks instead of just being extended when reapplied
 
 	Effect() {} //default constructor to avoid random errors
 

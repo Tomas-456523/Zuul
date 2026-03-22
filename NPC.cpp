@@ -154,6 +154,9 @@ Attack* NPC::getBasicAttack() {
 Attack* NPC::getRecoilAttack() {
 	return recoilattack;
 }
+Attack* NPC::getOpener() {
+	return opener;
+}
 vector<Attack*> NPC::getSpecialAttacks() {
 	return special_attacks;
 }
@@ -187,6 +190,9 @@ int NPC::getHypnotized() {
 }
 int NPC::getFrozen() {
 	return freeze;
+}
+int NPC::getRecovering() {
+	return recovering;
 }
 bool NPC::getTalkOnDefeat() {
 	return talkOnDefeat;
@@ -538,6 +544,9 @@ void NPC::setBasicAttack(Attack* attack) {
 void NPC::setRecoilAttack(Attack* attack) {
 	recoilattack = attack;
 }
+void NPC::setOpener(Attack* attack) {
+	opener = attack;
+}
 void NPC::addSpecialAttack(Attack* attack) {
 	special_attacks.push_back(attack);
 }
@@ -649,6 +658,12 @@ void NPC::setEffect(Effect* _effect, bool battle) { //sets an effect on the npc
 		}
 		hypnosis++;
 	}
+	if (effect.tiring) { //adds recovering to the npc
+		if (!recovering) { //if the npc wasn't already recovering
+			cout << "\n" << name << " is recovering from the attack!";
+		}
+		recovering++;
+	}
 	if (effect.remove) {
 		away = true;
 	}
@@ -677,6 +692,12 @@ void NPC::removeEffect(Effect& effect, bool announce) { //removes an effect from
 				hypnosis--;
 				if (!hypnosis && announce) { //prints if we're no longer hypnotized
 					cout << "\n" << name << " snapped out of it!";
+				}
+			}
+			if (effect.tiring) { //decrements hypnosis if applicable
+				recovering--;
+				if (!recovering && announce) { //prints if we're no longer recovering
+					cout << "\n" << name << " has recovered!";
 				}
 			}
 			if (effects[i].defensebuff != 1 && announce) { //prints the stat changes
@@ -766,6 +787,7 @@ void NPC::defeat() {
 		}
 		exitBlocking = NULL;
 	}
+	forcebattle = false; //don't force battles after dialogue anymore if we did that (for example, viola so you can't just fight her again)
 	if (battleReward) battleReward = false; //now we can give the gift
 	applyWorldChange(changes); //apply all the world changes associated with this npc
 }

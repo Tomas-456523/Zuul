@@ -54,6 +54,7 @@ struct Attack {
 
 	bool contact; //if the attacker makes contact with the target
 	bool beneficial = false; //if you want to get hit by this
+	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated
 
 	bool risky = false; //if we shouldn't do this move to a teammate below half health
 
