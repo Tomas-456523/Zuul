@@ -35,6 +35,7 @@ struct Attack {
 
 	bool spbomb = false;
 	bool protect = false; //if this is the move that makes the mover start defending the target
+	bool parry = false; //if this is the parry move and we have to tell the attacker to start parrying the target
 
 	int minLevel; //must be at least this level to use the attack
 
@@ -43,7 +44,7 @@ struct Attack {
 
 	Effect* appliedeffect = NULL; //targets get affected by this effect when hit
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
-	Effect* synergy = NULL; //if the target has this effect, the attack doubles in power
+	vector<Effect*> synergies = NULL; //if the target has these effects effect, the attack power goes up by 1.5x
 	Effect* cancel = NULL; //attack removes this effect
 
 	Attack* recoilatt = NULL;

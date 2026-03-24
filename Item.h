@@ -293,12 +293,14 @@ private:
 //world change items, for changing the world
 class WorldChangeItem : public Item {
 public:
-	WorldChangeItem(const char* _name, const char* _description, Room* _room, const char* _useText);
+	WorldChangeItem(const char* _name, const char* _description, Room* _room, const char* _useText, bool taketouse = false);
 
 	WorldChange& getChanges(); //returns the world changes, as a reference so it's easier to edit
 	const char* getUseText(); //gets the text printed by using it
+	bool getTakeToUse(); //get if we need to take it instead of use it to make it do the thing
 private:
 	WorldChange changes; //the changes to do
 	const char* useText;
+	bool takeToUse; //if we need to take it instead of use it to make it do the thing
 };
 #endif

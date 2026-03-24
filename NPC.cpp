@@ -154,6 +154,9 @@ Attack* NPC::getBasicAttack() {
 Attack* NPC::getRecoilAttack() {
 	return recoilattack;
 }
+Attack* NPC::getGuardAttack() {
+	return guardattack;
+}
 Attack* NPC::getOpener() {
 	return opener;
 }
@@ -235,6 +238,12 @@ NPC* NPC::getGuardian() {
 }
 NPC* NPC::getGuarding() {
 	return guarding;
+}
+NPC* NPC::getParrying() {
+	return parrying;
+}
+bool NPC::getInvincible() {
+	return invincible;
 }
 time_t NPC::getGymStart() {
 	return gymStart;
@@ -428,6 +437,12 @@ void NPC::setGuardian(NPC* npc) {
 void NPC::setGuarding(NPC* npc) {
 	guarding = npc;
 }
+void NPC::setParrying(NPC* _parrying) {
+	parrying = _parrying;
+}
+void NPC::setInvincible(bool _invincible) {
+	invincible = _invincible;
+}
 void NPC::setGymStart(time_t start) {
 	gymStart = start;
 }
@@ -543,6 +558,9 @@ void NPC::setBasicAttack(Attack* attack) {
 }
 void NPC::setRecoilAttack(Attack* attack) {
 	recoilattack = attack;
+}
+void NPC::setGuardAttack(Attack* attack) {
+	guardattack = attack;
 }
 void NPC::setOpener(Attack* attack) {
 	opener = attack;

@@ -55,6 +55,7 @@ public: //you need to set stats on creation
 	bool getEnemy(); //if npc is enemy
 	Attack* getBasicAttack();
 	Attack* getRecoilAttack();
+	Attack* getGuardAttack();
 	Attack* getOpener();
 	vector<Attack*> getSpecialAttacks();
 	map<Attack*, int> getWeights();
@@ -83,6 +84,8 @@ public: //you need to set stats on creation
 
 	NPC* getGuardian();
 	NPC* getGuarding();
+	NPC* getParrying();
+	bool getInvincible();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -122,6 +125,7 @@ public: //you need to set stats on creation
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void setRecoilAttack(Attack* attack);
+	void setGuardAttack(Attack* attack);
 	void setOpener(Attack* attack); //set opening attack for when the battle starts
 	void addSpecialAttack(Attack* attack);
 	void removeSpecialAttack(Attack* attack);
@@ -142,6 +146,8 @@ public: //you need to set stats on creation
 	void setTalkOnRecruit(bool talk);
 	void setGuardian(NPC* npc);
 	void setGuarding(NPC* npc);
+	void setParrying(NPC* _parrying);
+	void setInvincible(bool _invincible);
 	void setGymStart(time_t start);
 	void setWorldCondition(size_t cond); //set a world condition for this npc to edit on defeat
 
@@ -224,11 +230,12 @@ protected:
 	bool isEnemy = false;
 	bool isBoss = false; //bosses cannot be instakilled
 
-	NPC* guardian = NULL; //what npc is guarding this one
+	vector<NPC*> guardians = NULL; //what npcs are guarding this one
 	NPC* guarding = NULL; //what npc this npc is guarding
+	Atack* guardattack = NULL; //what attack the npc might use instead of just taking the hit
 
 	bool isLobster = false; //if it's the lobster
-	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels  if it's the lobster
+	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
 
 	//npc stats
 	Stats basestats; //base stats
@@ -242,6 +249,9 @@ protected:
 	float toughMultiplier = 1;
 	float spUseMultiplier = 1; //multiplies sp cost
 	float damageMultiplier = 1; //multiplies damage taken
+
+	bool invincible = false;
+	NPC* parrying = NULL; //who we parrying
 	
 	int level = 0;
 	int xp = 0; //how much xp the npc has stored up
@@ -256,6 +266,9 @@ protected:
 	int recovering = 0; //if the npc is recovering from some attack and can't move
 	bool defeated = false; //if the npc is defeated (appears in the room)
 	bool respawns = true; //if the npc appears again after battle
+	
+	NPC* respawnreq = NULL; //who needs to be present (and not recruited) in order to respawn
+	WorldChange respawnchanges; //what changes when this guy respawns
 
 	bool forcebattle = false; //if we force the player to battle after talking
 	bool talkOnDefeat = false; //if the npc talks when defeated

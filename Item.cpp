@@ -412,9 +412,10 @@ vector<Room*> ConveyorSwitch::getConveyors() {
 }
 
 //world change items, for changing the world
-WorldChangeItem::WorldChangeItem(const char* _name, const char* _description, Room* _room, const char* _useText) : Item(_name, _description, _room, false, true) {
+WorldChangeItem::WorldChangeItem(const char* _name, const char* _description, Room* _room, const char* _useText, bool taketouse) : Item(_name, _description, _room, taketouse, true) {
 	type = "worldchange"; //sets the type
 	useText = _useText;
+	takeToUse = taketouse;
 }
 //returns the world changes, as a reference so it's easier to edit
 WorldChange& WorldChangeItem::getChanges() {
@@ -423,4 +424,7 @@ WorldChange& WorldChangeItem::getChanges() {
 //gets the text that is printed when using the item
 const char* WorldChangeItem::getUseText() {
 	return useText;
+}
+bool getTakeToUse() {
+	return takeToUse;
 }

@@ -243,7 +243,7 @@ NPC* SetupWorld() {
 	Room* controlroom3 = new Room("in the factory control room. This one's machinery is very rusty. Very icky.");
 	Room* factoryroofne = new Room("high up in the factory. You see a short hallway. It's a really nice hallway.");
 	Room* factoryhallway = new Room("at the end of the hallway. A ladder leads high upwards.");
-	Room* factorytower = new Room("at the top of the factory tower. It's full of computers and it smells like energy drink.");
+	Room* factorytower = new Room("at the top of the factory tower. It has a very big computer setup with many monitors and smells like energy drink.");
 	Room* factoryroofse = new Room("high up in the factory. You see a corridor full of employee of the month awards.");
 	Room* factorytreasure = new Room("at the end of the corridor. JIM SHADY is the employee of the year.");
 	//the castle
@@ -396,12 +396,8 @@ NPC* SetupWorld() {
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
 
-	//Create effects
-	
-	//Create attacks
-	
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", mountainmine, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
+	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", limbo, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
 	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -409,40 +405,58 @@ NPC* SetupWorld() {
 	Attack* punch = new Attack("PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target. (10 ATTACK)");
 	self->setBasicAttack(punch);
-
 	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
 	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target. (12 ATTACK, 10 PIERCE)");
 	self->addSpecialAttack(energyball);
-
 	Attack* kick = new Attack("KICK", "jumped at", true, 6, 15, 0, 1, 1, 1, false, 3);
 	kick->afterdesc = " with a kick";
 	kick->addDescription("Launch a flying side kick at the target. (15 ATTACK)");
 	self->addSpecialAttack(kick);
-
 	Attack* headbutt = new Attack("HEADBUTT", "flew at", true,  5, 25, 0, 1, 1, 1, false, 5);
 	headbutt->afterdesc = " like a missile";
 	headbutt->recoil = 5;
 	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
 	self->addSpecialAttack(headbutt);
-
 	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
-
 	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK PER HIT)");
 	self->addSpecialAttack(punchflurry);
-
+	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
+	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
+	Item* shurikens = new WeaponItem("SHURIKENS", "A bundle of ninja shurikens with a note attached:\n\"Congratulations on defeating our ninja scout. Take these shurikens and train in the ninja ways,\nand maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
+	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", false, 10, 8, 5, 5, 6, 1);
+	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 6 hits)");
+	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
+	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", false, 15, 25, 0, 2, 2, 1); //no contact because the scarf stretches far from Bernard
+	scarfsmack->afterdesc = "with his scarf";
+	scarfsmack->addDescription("Smack the target with each end of your stretchy scarf. (25 ATTACK, 2 hits)");
+	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
+	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, bigscarf);
 	Attack* energize = new Attack("ENERGIZE", "energized", false, 14, 0, 0, 1, 1, 1, true, 15);
-	Effect* energized = new Effect("ENERGIZED", 2, 0, 0, 2.0f, 0, 0, 0);
+	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 2.0f, 0, 0, 0);
 	energize->addEffect(energized);
-	energize->addDescription("Imbue yourself or an teammate with energy, doubling your attack for one turn.");
-
+	energize->addDescription("Imbue yourself or an teammate with energy, doubling attack for one turn.");
+	Attack* smokebomb = new Attack("SMOKE BOMB", "threw two smoke bombs, bringing SMOKEMEN into the battle", false, 13, 0, 0, 0, 0, 0);
+	NPC* smokeman = new NPC("", "SMOKEMAN", "A really smoky humanoid who is just vibing.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
+	smokebomb->summon = smokeman;
+	plantlifeplant->summonamount = 2;
+	smokebomb->addDescription("Throw two smoke bombs containing smokemen, distracting the enemies.");
+	Attack* pacupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 12, 2, 15, 4, 4, 1);
+	acupunctuken->afterdesc = " with precise shurikens";
+	Effect* pinned = new Effect("PINNED", 3);
+	pinned->freeze = true;
+	pacupunctuken->addEffect(pinned);
+	pacupunctuken->addDescription("Throw precise shurikens at the target's pressure points, rendering them immobile for three turns. (2 ATTACK, 15 PIERCE, 4 hits)");
+	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 15, 10, 20, 5, 5, 3);
+	pdeadlyspinferno->afterdesc = " in a flaming inferno";
+	Effect* onfire = new Effect("ON FIRE", 3, 5, 0, 1, 0.8f);
+	pdeadlyspinferno->addEffect(onfire);
+	pdeadlyspinferno->addDescription("Fly at the target and their surroundings in a deadly flaming tornado, also leaving them on fire. (10 ATTACK, 20 PIERCE, 5 hits)");
 	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", false, 12, 35, 15, 1, 1, 1, false, 12);
 	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK, 15 PIERCE)");
-
 	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", false, 19, 50, 25, 1, 1, 1, false, 18);
 	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK, 25 PIERCE)");
-	
 	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", false, 0, 0, 0, 1, 1, 9, false, 25);
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
@@ -471,48 +485,39 @@ NPC* SetupWorld() {
 
 	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", false, -5, -5, 20, 1, 1, 1, true);
 	floria->setBasicAttack(heal);
-
 	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 2, 20, 30, 1, 1, 1, false);
-	rosethorn->addDescription("Call a rose friend to poke the target with its thorns.");
+	rosethorn->addDescription("Call a rose friend to poke the target with its thorns. (20 ATTACK, 30 PIERCE)");
 	floria->addSpecialAttack(rosethorn);
-
-	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -20, 20, 1, 1, 1, true, 5);
-	turboheal->addDescription("Use flower power to greatly heal a teammate.");
+	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -20, 20, 1, 1, 1, true, 6);
+	turboheal->addDescription("Use flower power to greatly heal a teammate. (20 POWER)");
 	floria->addSpecialAttack(turboheal);
-
 	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", false, 5, 0, 0, 0, 0, 0, true, 8);
 	enroot->addDescription("Draw power from the soil, building SP.");
 	Effect* rooted = new Effect("ROOTED", 5, 0, -5);
 	enroot->addEffect(rooted);
 	floria->addSpecialAttack(enroot);
-
 	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", false, 20, -20, 20, 1, 1, 1, true, 10);
 	recapacitate->targetFainted = true;
-	recapacitate->addDescription("Use flower power to recapacitate a teammate.");
+	recapacitate->addDescription("Use flower power to recapacitate a teammate. (20 POWER)");
 	floria->addSpecialAttack(recapacitate);
-
 	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 0, 0, 7, true, 8);
 	aprilshower->addDescription("Call upon the clouds to rain SP upon the team.");
 	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
 	aprilshower->addEffect(spshower);
 	floria->addSpecialAttack(aprilshower);
-
-	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -2147483648, 20, 1, 1, 1, true, 15);
+	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -2147483648, 20, 1, 1, 1, true, 12);
 	nitroheal->afterdesc = " to peak health";
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
-
-	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 30, -2147483648, 20, 1, 1, 1, true, 20);
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 25, -2147483648, 20, 1, 1, 1, true, 15);
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
-
-	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", false, 40, 100, 10000, 1, 1, 1, false, 23);
+	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", false, 20, 100, 100, 1, 1, 1, false, 17);
 	superpower->instakill = true;
 	superpower->addDescription("Unleash the power of the earth's core.");
 	floria->addSpecialAttack(superpower);
-
-	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", false, 30, 0, 0, 0, 0, 7, true, 25);
+	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", false, 25, 0, 0, 0, 0, 7, true, 20);
 	mayflower->addDescription("Bring about an HP bloom to heal the entire team.");
 	Effect* hpbloom = new Effect("HP BLOOM", 6, -10);
 	mayflower->addEffect(hpbloom);
@@ -555,52 +560,43 @@ NPC* SetupWorld() {
 	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "blasted", false, -5, 10, 15, 1, 1, 1);
 	scienceblaster->afterdesc = " with his science blaster";
 	egadwick->setBasicAttack(scienceblaster);
-
 	Attack* vitamins = new Attack("VITAMIN SUPPLEMENT", "prescribed", false, 4, 0, 0, 0, 0, 0, true, 3);
 	vitamins->afterdesc = " a vitamin supplement";
 	vitamins->addDescription("Prescribe a teammate vitamins, boosting their HP and SP.");
 	Effect* supplemented = new Effect("SUPPLEMENTED", 3, -10, -10);
 	vitamins->addEffect(supplemented);
 	egadwick->addSpecialAttack(vitamins);
-
 	Attack* overclock = new Attack("OVERCLOCK", "overclocked", false, 8, 0, 0, 0, 0, 0, true, 5);
 	overclock->addDescription("Overclock a teammate, boosting their attack and speed.");
 	Effect* overclocked = new Effect("OVERCLOCKED", 3, 0, 0, 1.5f, 1, 1, 1, 1.5f);
 	overclock->addEffect(overclocked);
 	egadwick->addSpecialAttack(overclock);
-
 	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", false, 4, 0, 0, 0, 0, 0, false, 8);
 	shieldacid->addDescription("Throw a beaker of shield-melting acid at the target.");
 	Effect* acidified = new Effect("ACIDIFIED", 3, 10, 0, 1, 0.5f, 0.5f);
 	shieldacid->addEffect(acidified);
 	egadwick->addSpecialAttack(shieldacid);
-
 	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 20, 20, 1, 1, 3, false, 10, 20);
 	emp->addDescription("Throw an EMP, frying some of the target's and surrounding enemies' SP.");
 	egadwick->addSpecialAttack(emp);
-
 	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 0, 0, 0, true, 12);
 	hyperclock->addDescription("Over-overclock a teammate, greatly boosting their attack and speed.");
 	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0f, 1, 1, 1, 2.0f);
 	hyperclock->addEffect(hyperclocked);
 	egadwick->addSpecialAttack(hyperclock);
-
 	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", false, 20, 10, 20, 4, 8, 3, false, 15);
 	rocketscience->addDescription("Launch a volley of rockets at the enemy team.");
 	rocketscience->focushits = false;
 	egadwick->addSpecialAttack(rocketscience);
-
 	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", false, 25, 0, 0, 0, 0, 7, true, 17);
 	weatherforecast->addDescription("Predict a shower of SP that will rain upon the team.");
 	weatherforecast->addEffect(spshower);
 	egadwick->addSpecialAttack(weatherforecast);
-
 	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", false, 16, 0, 0, 0, 0, 0, true, 20);
 	uberclock->addDescription("Over-over-overclock a teammate, very greatly boosting their attack and speed.");
 	Effect* uberclocked = new Effect("UBERCLOCKED", 3, 0, 0, 4.0f, 1, 1, 1, 4.0f);
 	uberclock->addEffect(uberclocked);
 	egadwick->addSpecialAttack(uberclock);
-
 	Attack* orbitalstrike = new Attack("ORBITAL STRIKE", "called down an orbital beam towards", false, 30, 70, 100, 1, 1, 7, false, 25);
 	orbitalstrike->addDescription("Call down an orbital laser from Edgadwick's brand new satellite.");
 	egadwick->addSpecialAttack(orbitalstrike);
@@ -633,34 +629,27 @@ NPC* SetupWorld() {
 	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 15, 10, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
 	forestknight->setBasicAttack(forestslash);
-	
 	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 0, 0, 1, 1, 3, true, 10);
 	forestknight->addSpecialAttack(defend);
 	defend->protect = true; //defend start protecting
-
 	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 25, 30, 1, 1, 3, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
-
 	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 7, true, 15);
 	Effect* galvanized = new Effect("GALVANIZED", 5, 0, 0, 2.0f, 2.0f);
 	warcry->addEffect(galvanized);
 	forestknight->addSpecialAttack(warcry);
-
 	Attack* enrootf = new Attack("ENROOT", "rooted into the soil", false, 10, 0, 0, 0, 0, 0, true, 18);
 	Effect* rootedf = new Effect("ROOTED", 5, -10, 0, 0, 3.0f, 3.0f);
 	enrootf->addEffect(rootedf);
 	forestknight->addSpecialAttack(enrootf);
-
 	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 18, 50, 5, 1, 1, 1, false, 20);
 	sequoiasmash->afterdesc = " with the weight of a sequoia";
 	forestknight->addSpecialAttack(sequoiasmash);
-
 	Attack* splinter = new Attack("SPLINTER", "swung splinters from his sword at", false, 12, 0, 0, 1, 2, 3, true, 25);
 	Effect* splintered = new Effect("SPLINTERED", 5, 10);
 	splinter->addEffect(splintered);
 	forestknight->addSpecialAttack(splinter);
-
 	Attack* blitz = new Attack("BLITZ", "rushed at", true, 25, 5, 15, 10, 10, 1, false, 31);
 	blitz->afterdesc = " with a rapid flurry of sword strikes";
 	orbitalstrike->addDescription("Rush at the target with a rapid flurry of strikes.");
@@ -692,7 +681,6 @@ NPC* SetupWorld() {
 	mdynamite->recoilatt = drecoil;
 	mdynamite->recoilchance = 0.3333f;
 	mike->setBasicAttack(mdynamite);
-
 	Attack* flashbang = new Attack("FLASHBANG", "threw a flashbang at", false, 8, 10, 20, 1, 1, 1);
 	Effect* stunned = new Effect("STUNNED", 3);
 	stunned->freeze = true;
@@ -703,20 +691,17 @@ NPC* SetupWorld() {
 	flashbang->recoilatt = frecoil;
 	flashbang->recoilchance = 0.3333f;
 	mike->addSpecialAttack(flashbang);
-
 	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", false, 13, 40, 20, 1, 1, 3);
 	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", false, 0, 20, 20, 1, 1, 1);
 	brecoil->afterdesc = " in the process";
 	bigbundle->recoilatt = brecoil;
 	bigbundle->recoilchance = 0.3333f;
 	mike->addSpecialAttack(bigbundle);
-
 	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", false, 11, 30, 100, 1, 1, 1, false, 8);
 	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", false, 0, 30, 100, 1, 1, 1);
 	bunkerbuster->recoilatt = bbrecoil;
 	bunkerbuster->recoilchance = 0.3333f;
 	mike->addSpecialAttack(bunkerbuster);
-
 	Attack* dedefenser = new Attack("DEDEFENSER", "threw a heavy charge at", false, 15, 10, 20, 1, 1, 1, false, 12);
 	Effect* dedefensed = new Effect("DEDEFENSED", 10, 0, 0, 1, 0.5f, 0.25f, 1, 0.5f);
 	dedefenser->addEffect(dedefensed);
@@ -725,14 +710,12 @@ NPC* SetupWorld() {
 	dedefenser->recoilatt = ddrecoil;
 	dedefenser->recoilchance = 0.3333f;
 	mike->addSpecialAttack(dedefenser);
-
 	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", false, 20, 60, 35, 1, 1, 5, false, 17);
 	Attack* dcrecoil = new Attack("LOOSE DYNAMITE", "accidentally included", false, 0, 30, 25, 1, 1, 1);
 	dcrecoil->afterdesc = " in charge's radius";
 	depthcharge->recoilatt = dcrecoil;
 	depthcharge->recoilchance = 0.67f;
 	mike->addSpecialAttack(depthcharge);
-
 	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 35, 10, 20, 12, 12, 1, false, 20);
 	minesweeper->focushits = false;
 	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", false, 0, 10, 20, 3, 3, 1);
@@ -747,42 +730,32 @@ NPC* SetupWorld() {
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
-	
+
 	Attack* loosespines = new Attack("LOOSE SPINES", "'s loose spines flew at the enemy team", false, 0, 8, 15, 1, 3, 1);
 	cacty->setRecoilAttack(loosespines);
-
 	Attack* cactbomb = new Attack("CACTUS BOMB", "threw a cactus bomb at", false, -5, 3, 15, 4, 6, 1);
 	cacty->setBasicAttack(cactbomb);
-
 	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", false, 7, 0, 0, 0, 0, 0);
 	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
 	plantlifeplant->summon = lifeplant;
 	plantlifeplant->summonamount = 1;
 	cacty->addSpecialAttack(plantlifeplant);
-
 	Attack* spinewave = new Attack("SPINE WAVE", "popped a wave of spines at", false, 7, 6, 15, 3, 3, 3);
 	cacty->addSpecialAttack(spinewave);
-
 	Attack* cactcarpet = new Attack("CACTUS CARPET", "threw a carpet of cactus at", false, 8, 15, 15, 1, 1, 3, false, 14, 0, 0.34f);
 	Effect* spinyfloor = new Effect("SPINY FLOOR", 4, 15);
 	cactcarpet->addEffect(spinyfloor);
 	cactcarpet->lifesteal = 0.34f;
 	cacty->addSpecialAttack(cactcarpet);
-
 	Attack* acupuncture = new Attack("ACUPUNCTURE", "expertly healed", false, 7, -8, 15, 3, 3, 1, true);
 	acupuncture->afterdesc = " with spines";
 	cacty->addSpecialAttack(acupuncture);
-
 	Attack* prespoints = new Attack("PRESSURE POINTS", "fired precise needles at", false, 8, 10, 20, 1, 1, 1);
 	prespoints->afterdesc = "'s pressure points";
-	Effect* pinned = new Effect("PINNED", 3);
-	pinned->freeze = true;
 	prespoints->addEffect(pinned);
 	cacty->addSpecialAttack(prespoints);
-
 	Attack* dualcacti = new Attack("DUAL CACTI", "threw two cactus bombs at", false, 12, 4, 15, 3, 4, 3, false, 16);
 	cacty->addSpecialAttack(dualcacti);
-
 	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 40, 100, 1, 1, 1, false, 18);
 	cacty->addSpecialAttack(superspine);
 
@@ -806,9 +779,7 @@ NPC* SetupWorld() {
 							   {self, "You need ninja abilities to get there."},
 							   {self, "I don't think I can help you actually sorry."},
 							   {michelin, "Ah no worries I got this guide to being a ninja."},
-							   {michelin, "I couldn't understand it myself, but you look like a mini-ninja of sorts so-"},
-							   {self, "I what?"},
-							   {michelin, "Well if you want the guide I have it here."},
+							   {michelin, "I couldn't understand it myself, but you can try if you want."},
 							   {self, "Yeah sure I'll take it thanks."},
 							   {michelin, "Well when you get all three berries just USE blender over there."},
 							   {self, "Sounds good."}});
@@ -817,12 +788,12 @@ NPC* SetupWorld() {
 	michelin->setGift(ninjaguide);
 	michelin->setDialogue({{michelin, "When you get all three berries just USE that blender over there."}, {michelin, "You got this!"}, {NULL, "MICHELIN - *two thumbs up* :D"}});
 	michelin->addRejectionDialogue({ {michelin, "Can't sorry I gotta focus on the task at hand."}, {michelin, "Maybe once we're done with this."}});
-	Conversation michrec1 = {{self, "Well..."}, {self, "Wanna join my BURGER QUEST?"}, {michelin, "why not. :("}};
+	Conversation michrec1 = {{self, "Well..."}, {self, "Wanna join my BURGER QUEST?"}, {michelin, "sure why not. :("}};
 	michrec1.skipcondition = TEMPLEQUEST;
-	Conversation michrec2 = {{self, "Well..."}, {self, "Wanna help me destroy BURGERs?"}, {michelin, "why not. :("}};
+	Conversation michrec2 = {{self, "Well..."}, {self, "Wanna help me destroy BURGERs?"}, {michelin, "sure why not. :("}};
 	michrec1.alt = &michrec2;
 	michrec2.skipcondition = BURGERMENDEF;
-	Conversation michrec3 = {{self, "Well..."}, {self, "Wanna join my team?"}, {michelin, "why not. :("}};
+	Conversation michrec3 = {{self, "Well..."}, {self, "Wanna join my team?"}, {michelin, "sure why not. :("}};
 	michrec2.alt = &michrec3;
 	michelin->addRecruitmentDialogue(michrec1);
 	michelin->addRecruitedDialogue("You know, maybe there's more to life than finding recipies.");
@@ -860,68 +831,109 @@ NPC* SetupWorld() {
 	Attack* castiron = new Attack("CAST IRON", "bonked", true, -5, 15, 0, 1, 1, 1);
 	castiron->afterdesc = " with his cast iron pan";
 	michelin->setBasicAttack(castiron);
-
 	Attack* qualitymeal = new Attack("5 STAR MEAL", "prepared a 5-star meal for", false, 5, -25, 0, 1, 1, 1, true);
 	michelin->addSpecialAttack(qualitymeal);
-	
 	Effect* marinated = new Effect("MARINATED", 5, 0, 0, 1, 0.5f);
 	Attack* flambe = new Attack("FLAMBE'", "bonked", true, 7, 20, 5, 1, 1, 1);
 	flambe->afterdesc = " with a flaming pan";
 	Effect* flambed = new Effect("FLAMBE'D", 5, 5, 0, 1, 0.8f);
 	flambe->addEffect(flambed);
-	flambe->synergy = marinated;
+	flambe->synergies.push_back(marinated);
 	flambe->cancel = marinated;
 	michelin->addSpecialAttack(flambe);
-	
-	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 20, 5, 1, 1, 1, true, 11);
-	Effect* hotsauced = new Effect("HOT SAUCED", 5, 5, 0, 1.25f, 0.75f);
+	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 0, 0, 1, 1, 1, true, 11);
+	Effect* hotsauced = new Effect("HOT SAUCED", 5, 0, 0, 1.25f, 0.75f);
 	hotsauce->addEffect(hotsauced);
 	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
 	michelin->addSpecialAttack(hotsauce);
-
-	Attack* feast = new Attack("FEAST", "prepared a feast for", false, 15, -30, 0, 1, 1, 7, true, 13);
+	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 15, -30, 0, 1, 1, 7, true, 13);
+	feast->focushits = false;
 	feast->addDescription("Prepare a feast for the whole team, for much healing. (30 POWER)");
 	michelin->addSpecialAttack(feast);
-
 	Attack* marinate = new Attack("MARINATE", "doused", false, 10, 0, 0, 1, 1, 1, false, 12);
 	marinate->afterdesc = " with alcohol";
 	marinate->addEffect(marinated);
 	michelin->addSpecialAttack(marinate);
-	feast->addDescription("Douse the target with alcohol, halving their defense and doubling damage taken from FLAMBE'.");
-	
+	marinate->addDescription("Douse the target with alcohol, halving their defense and increasing damage taken from FLAMBE'.");
 	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 12, -55, 0, 1, 1, 1, true, 15);
 	michmeal->addDescription("Prepare a teammate a super high-quality meal, for much healing. (55 POWER)");
 	michelin->addSpecialAttack(michmeal);
-
-	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 40, 100, 10000, 1, 1, 1, false, 20);
+	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 40, 100, 100, 1, 1, 1, false, 20);
 	congratulation->afterdesc = " congratulation";
 	congratulation->instakill = true;
 	congratulation->addDescription("Cook the target not just well done, but CONGRATULATION.");
 	michelin->addSpecialAttack(congratulation);
 
-	//Hackerman Carlos is a support MARK: Carlos
+	//Hackerman Carlos is a disruptor MARK: Carlos
+	NPC* carlos = new NPC("HACKERMAN", "CARLOS", "Black hat hacker with no hat and no vitamin D. He has a space invaders hoodie.", factorytower, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
+	carlos->setDialogue({{carlos, "get out i cant focus with you here"}, {carlos, "im so close to hacking into microsofts mony supply"}});
+	carlos->addRejectionDialogue({{carlos, "what"}, {carlos, "get outta my room im tryna focus"}});
+	carlos->addRecruitmentDialogue({{self, "Hey wanna join my team?"}, {carlos, "no"}, {self, "Come on you gotta get some vitamin D."}, {carlos, "no i gotta start over stealing microsofts monies >:("}, {self, "If you want monies we get a lot just by fighting random enemies."}, {carlos, "..."}, {carlos, "fine ill join you"}});
+	carlos->addRecruitedDialogue("...");
+	carlos->addRecruitedDialogue({{carlos, "woah what is this stuff"}, {self, "That's grass."}});
+	carlos->setRecruitDialogueChange("gaming");
+	carlos->addDismissalDialogue({{carlos, "i dont feel like hacking microsoft all over again"}, {carlos, "guess ill just play fortnite or something"}});
 
-	//hack
+	Item* carlosplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", factorytower, "All the monitors in the room turn off.\nCARLOS - BRO WHAT THE HECK\nSELF - Oh my bad.\nSELF - I didn't realize it would do that.\nCARLOS - I WAS LIKE SECONDS FROM STEALING ALL OF MICROSOFTS MONIES\nCARLOS - THAT WAS LIKE A MONTH LONG PROCESS\nSELF - You shouldn't steal monies.\nCARLOS - SHUT UP\nCARLOS - GIMME BACK THAT PLUG\nSELF - Alright.\nYou returned the PLUG to CARLOS.", true);
+	WorldChange& carlosplugchanges = ((WorldChangeItem*)carlosplug)->getChanges();
+	carlosplugchanges.recruitLinks.push(carlos);
+	carlosplugchanges.linkedDescriptions.push({carlos, "Black hat hacker with no hat and no vitamin D, whose attempt to hack Microsoft's monies you foiled."});
+	carlosplugchanges.linkedDialogue.push({carlos, "broooooo i was so close... >:("});
+	
+	Effect* infected = new Effect("INFECTED", 5, 10, 10);
+	Attack* backtrack = new Attack("BACKTRACK", " sent malware to the attacker's traced location", false, 0, 0, 0, 1, 1, 1);
+	backtrack->addEffect(infected);
+	carlos->setRecoilAttack(backtrack);
+	Attack* hack = new Attack("HACK", "hacked into", true, -5, 0, 0, 1, 1, 1, false, 0, 5); //no damage but steals sp which I think is pretty interesting
+	hack->afterdesc = "'s SP supply";
+	carlos->setBasicAttack(hack);
+	Attack* trojan = new Attack("TROJAN", "sent a trojan to", false, 7, 10, 20, 1, 1, 1);
+	trojan->addEffect(infected);
+	carlos->addSpecialAttack(trojan);
+	Attack* stacksmash = new Attack("STACK SMASH", "stack smashed", false, 14, 25, 30, 1, 1, 1);
+	Effect* overflow = new Effect("OVERFLOW", 4, 0, 0, 1, 0.5f);
+	stacksmash->addEffect(overflow);
+	carlos->addSpecialAttack(stacksmash);
+	Attack* socialengineering = new Attack("SOCIAL ENGINEERING", "socially engineered", false, 14, 0, 0, 1, 1, 1, false, 12);
+	socialengineering->afterdesc = " into fighting for him";
+	Effect* compromised = new Effect("COMPROMISED", 2);
+	compromised->hypnotize = true;
+	socialengineering->addEffect(compromised);
+	carlos->addSpecialAttack(socialengineering);
+	socialengineering->addDescription("Socially engineer an enemy into fighting for your team.");
+	Attack* ddos = new Attack("DDOS", "directed his botnet's traffic towards", false, 12, 8, 40, 3, 3, 1, false, 14);
+	Effect* overloaded = new Effect("OVERLOADED", 3);
+	overloaded->freeze = true;
+	ddos->addEffect(overloaded);
+	carlos->addSpecialAttack(ddos);
+	ddos->addDescription("Direct all of Carlos's botnet's traffic, freezing them in place. (8 ATACK, 40 PIERCE, 3 hits)");
+	Attack* forkbomb = new Attack("FORK BOMB", "sent a forking bomb towards the enemy team", true, 14, 25, 40, 1, 1, 7, false, 15);
+	forkbomb->focushits = false;
+	carlos->addSpecialAttack(forkbomb);
+	forkbomb->addDescription("Send a forking bomb, covering the entire enemy team. (25 ATTACK, 40 PIERCE)");
+	Attack* cryptojack = new Attack("CRYPTOJACK", "set up an SP and HP mine in", false, 15, 0, 0, 1, 1, 1, false, 17);
+	Effect* cryptojacked = new Effect("CRYPTOJACKED", 5, 5, 5);
+	cryptojacked->lifesteal = cryptojacked->spsteal = 1;
+	cryptojack->addEffect(cryptojacked);
+	carlos->addSpecialAttack(cryptojack);
+	cryptojack->addDescription("Set up a bitcoin mine in the target, stealing their HP and SP for 5 turns.");
+	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", true, 20, 20, 40, 1, 1, 7, false, 20);
+	cascadingfailure->focushits = false;
+	cascadingfailure->synergies.push_back(infected);
+	cascadingfailure->synergies.push_back(overflow);
+	cascadingfailure->synergies.push_back(compromised);
+	cascadingfailure->synergies.push_back(overloaded);
+	cascadingfailure->synergies.push_back(cryptojacked);
+	carlos->addSpecialAttack(cascadingfailure);
+	cascadingfailure->addDescription("Trigger a cascading failure in the enemy team, with the attack's effectiveness multiplied for every one of Carlos's statuses present. (20 ATTACK, 40 PIERCE)");
 
-	//trojan
+	//Princess Plum is support MARK: Plum
+	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", limbo, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 9));
+	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {NULL, "BROWSER - \"GWAHAHAHAHAHA!\""}});
 
-	//social engineering
-
-	//stack smash
-
-	//ssh trap
-
-	//ddos
-
-	//fork bomb
-
-	//bitcoin mine
-
-	//(null terminator?) prolly not
-
-	//Princess Plum is another support MARK: Plum
-	NPC* plum = new NPC("PRINCESS", "PLUM", "AAAAAAAAAAAAA", limbo, 0, Stats(), Stats());
+	//{{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {NULL, "BROWSER - \"GWAHAHAHAHAHA!\""}, {self, "What? Again?"}, {self, "How?"}, {plum, "Well you know."}, {plum, "Browser just came in his airship and kidnapped me."}, {self, "I see."}}
+	//{{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {NULL, "BROWSER - \"GWAHAHAHAHAHA!\""}, {self, "T_T"}}
 
 	//racket
 
@@ -943,13 +955,31 @@ NPC* SetupWorld() {
 
 	//life mushroom (gives extra life)
 
+
+
 	//Gambler Graham is the rng guy MARK: Graham
 
 	//Ratman is Ratman MARK: Ratman
 
 	//ratarang
 
+	//prep time
+
 	//Rich Guy Richie is the summoner MARK: Richie
+	//rejection: No, everyone in this city is either rich and trying to get me to join some cult,
+	//or not rich and trying to rob me.
+	//No offense but I don't really trust you.
+
+	//conversation: Hey I saw you walk into that building and then the top floor exploded?
+	//Oh yeah that was the BURGER CEO.
+	//We fought him normally but he kind of just blew up on his own.
+	
+	//recruitment: Hey you wanna join my team / help me destroy BURGERs
+	//Well you seem to be pretty capable if you could take down Enzo.
+	//Uhhh...
+	//Yeah sure / Yeah I want this BURGER cult gone, I'll help you.
+
+	//dismissal: Welp, Imma head back to my house
 
 	//
 
@@ -1048,55 +1078,6 @@ NPC* SetupWorld() {
 	burgerman->setLeader(true, 0, NULL, false);
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
-	//burgerman->setLink(burgerman);
-	//burgerman->setLinkedRoom(BURGERRESTAURANT, "in the BURGER RESTAURANT...");
-	//burgerman->addLinkedConvo(NULL, "The BURGER MAN .");
-	/*burgerman->addLinkedConvo(developer, "Hey what's up?");
-	burgerman->addLinkedConvo(self, "So I was wondering,");
-	burgerman->addLinkedConvo(self, "what's up with all the parallel universes in the first game?");
-	burgerman->addLinkedConvo(self, "Also who was the other BURGER MAN?");
-	burgerman->addLinkedConvo(developer, "Oh uhhhhh... honestly idk maybe I'll just retcon that.");
-	burgerman->addLinkedConvo(developer, "Wait no I got this.");
-	burgerman->addLinkedConvo(developer, "So the parallel universes are just the same universe but going through them increments the number.");
-	burgerman->addLinkedConvo(developer, "Wait that makes no sense because of the news.");
-	burgerman->addLinkedConvo(developer, "Uhhhhhhhhhhhh...");
-	burgerman->addLinkedConvo(developer, "No clue but maybe I'll come up with something later and edit this conversation.");
-	burgerman->addLinkedConvo(developer, "Anyway about the other BURGER MAN,");
-	burgerman->addLinkedConvo(developer, "You know how HENRY JERRY's company invented time travel?");
-	burgerman->addLinkedConvo(self, "Uh huh.");*/
-	
-	/*{{developer, "Ayy BERNARD how's it going?"},
-	{self, "Pretty good I think but they actually named me that."},
-	{NULL, "\n^"
-		   "\n|"
-		   "\n|"
-		   "\n|"},
-	{NULL, "\n   (\\"
-		   "\n   /(\\                .,"
-		   "\n   \\_/               / |"
-		   "\n        \\-._  ^ ___ /  |"
-		   "\n    _____\\, `  _____   `-\"\"\"/"
-		   "\n    \"\"---___ /___ ___\\__--\"\""
-		   "\n            |  |   |  |"
-		   "\n             \\   -   /"
-		   "\n               \"\"\"\"\""
-		   "\n              |     |"},
-	{developer, "Well that's pretty unfortunate."},
-	{developer, "That do be how life be sometimes."},
-	{developer, "Well good job getting here."},
-	{developer, "Here have this cool amazing new move."},
-	{self, "Yoooo nice thanks.\n\n\n"}};*/
-
-	// (\               				// (\               				// (\               			// (\               
-	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,
-	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |
-	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  /\___/  |
-	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//    ___\, `' _____  `-"""/
-	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//    "--___ /___ ___\__--"
-	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//          |  |   |  |
-	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /
-	//             """""				//             """""				//             """""			//             """""" \ 
-	//            |     |				//            |     |				//            |     |			//            |     |.`\ 
 	
 	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
 	//self, "WHAT!?!?"
@@ -1199,13 +1180,52 @@ NPC* SetupWorld() {
 
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 0));
 	developer->setDialogue("Yo wassup.");
+	Conversation devconvo = {{developer, "Ayy BERNARD how's it going?"},
+							{self, "Pretty good I think but the player actually named me that."},
+							{NULL, "\n^"
+								"\n|"
+								"\n|"
+								"\n|"},
+	// (\               				// (\               				// (\               			// (\               
+	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,
+	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |
+	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  /\___/  |
+	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//    ___\, `' _____  `-"""/
+	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//    "--___ /___ ___\__--"
+	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//          |  |   |  |
+	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /
+	//             """""				//             """""				//             """""			//             """""" \ 
+	//            |     |				//            |     |				//            |     |			//            |     |.`\ 
+							{developer, "Well that's pretty unfortunate."},
+							{self, "Why did you let them name me. T_T"}, //this is annoyed face not crying
+							{developer, "Sorry I came up with your name after the naming feature."},
+							{developer, "Don't worry you will always truly be BERNARD."},
+							{developer, "Well good job getting here."},
+							{developer, "Here have this cool amazing new move."},
+							{self, "Yoooo nice thanks.\n\n\n"}};
+	devconvo->skipcondition = ISBERNARD;
+	Conversation devconvo2 = {{developer, "Ayy BERNARD how's it going?"},
+							{self, "Pretty good!"},
+							{self, "The player actually named me the correct name!"},
+							{developer, "Yo nice."},
+							{developer, "Well good job getting here."},
+							{developer, "Here have this cool amazing new move."},
+							{self, "Yoooo nice thanks.\n\n\n"}};
+	devconvo->alt = &devconvo;
+	developer->addConversation(devconvo);
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
 								{self, "Why is everything text?"},
 								{developer, "Because the camera man is on vacation."},
 								{developer, "Only the narrator could cover his shift."},
 								{self, "Oh I see."}});
+	developer->addConversation({{self, "Can I recruit TECH DEMO MAN?"},
+								{developer, "No."}});
 	developer->addRejectionDialogue("No I don't think that would make sense.");
+	Attack* parry = new Attack("PARRY", "is preparing to parry", 7, 0, 0, 1, 1, 1);
+	parry->parry = true;
+	Item* parryguide = new EducationItem("PARRYING GUIDE", "An in depth guide on how to PARRY enemy attacks.", limbo, parry);
+	developer->setGift(parryguide);
 	/*burgerman->setLink(developer);
 	burgerman->addLinkedConvo(self, "Yo developer man.");
 	burgerman->addLinkedConvo(developer, "Hey what's up?");
@@ -1224,18 +1244,31 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(developer, "Yeah so the BURGER MAN used the time machine.");
 	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
 	burgerman->addLinkedConvo(self, "Dang that's crazy.");*/
-
-	//Dialogue for after I finish making the game:
-	//{{self, "Can I recruit TECH DEMO MAN?", true},
-	// {developer, "No."}}
-
-	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
-	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
-	Item* shurikens = new WeaponItem("SHURIKENS", "A bundle of ninja shurikens with a note attached:\n\"Congratulations on defeating our ninja scout. Take these shurikens and train in the ninja ways,\nand maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	
-	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", false, 10, 8, 5, 5, 6, 1);
-	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 6 hits)");
-	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
+	//talk about the game after beating final boss
+	//and dlc plans, crowbars
+	//jim shady commentary?
+	//favorite character
+	//least favorite character
+	//what are monies
+	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
+	//have you fought greer yet
+	//can you give me feedback (and say link to form)
+	//the funny thing with defend
+	//save system stuff
+	//commentary about the world
+	//commentary about character designs nobody will ever see cause it's text based (link to see picture?)
+	//scope creep
+	//future projects
+	//saying dancing
+	//favorite game
+	//talk about the mountain
+	//big cat
+	//limbo
+	//burger quest 2 ideation
+	//talk about bosses
+	//zuul
+	//burger all caps lore
 
 	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
 	pshrimplebeam->instakill = true;
@@ -1924,23 +1957,44 @@ NPC* SetupWorld() {
 	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", false, 0, 8, 5, 1, 2, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
-	NPC* ninja = new NPC("", "NINJA", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.", limbo, 0, Stats());
-	//shuriken
-	//katana
+	NPC* ninja = new NPC("", "NINJA", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.", limbo, 0, Stats(40, 10, 25, 0, 25, 30, 9));
+	Attack* shurikenninja2 = new Attack("SHURIKEN", "expertly threw shurikens at", false, -5, 10, 15, 1, 2, 3);
+	ninja->setBasicAttack(shurikenninja2);
+	Attack* katana = new Attack("KATANA", "sliced", true, 5, 25, 30, 1, 1, 1);
 
-	NPC* ninjachef = new NPC("", "NINJA CHEF", "An expert ninja who is also an expert in cooking. He guards the ninja pantry.", limbo, 0, Stats());
-	//shuripans
-	//spatula
-	//ninja feast
-	//ninja smoothie
+	NPC* ninjachef = new NPC("", "NINJA CHEF", "An expert ninja who is also an expert in cooking. He guards the ninja pantry.", limbo, 0, Stats(80, 20, 20, 20, 20, 25, 9));
+	Attack* shuripan = new Attack("SHURIPAN", "threw spinning pans at", false, -5, 15, 0, 1, 2, 3);
+	shuripan->afterdesc = " like shurikens";
+	Attack* spatula = new Attack("UPSLASH", "flipped", true, 6, 10, 0, 1, 1, 1);
+	spatula->afterdesc = " into the air with a spatula";
+	Effect* spatulad = new Effect("UPSLASHED", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
+	spatula->remove = true;
+	spatulad->falldamage = 20;
+	spatula->addEffect(spatulad);
+	ninjachef->addSpecialAttack(spatula);
+	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -30, 0, 1, 1, 7, true);
+	ninjachef->addSpecialAttack(ninjafeast);
+	Attack* ninjasmoothie = new Attack("NINJA SMOOTHIE", "prepared a ninja smoothie for", false, 3, 20, 5, 1, 1, 1, true, 11);
+	Effect* smoothied = new Effect("SMOOTHIED", 3, 0, 0, 1.5f, 1, 1, 1.5f);
+	ninjasmoothie->addEffect(smoothied);
+	ninjachef->addSpecialAttack(ninjasmoothie);
 
-	//a true ninja doesn't reveal his name
-	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief ninja of the ninja village, with the most experience and the highest rank of diamond belt.", limbo, 0, Stats());
-	ninjachef->setBoss(true);
-	//kick (flying side kick)
-	//kiloshurikens (helicopter rotors) 2 3-wide hits
-	//pressure points
-	//deadly spinferno
+	//a true ninja doesn't reveal his name despite being a unique character
+	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief ninja of the ninja village, with the most experience and the highest rank of diamond belt.", limbo, 0, Stats(120, 40, 35, 20, 25, 60, 9));
+	ninjachief->setBoss(true);
+	Attack* ninjakick = new Attack("NINJA KICK", "jumped at", true, -5, 20, 0, 1, 1, 1);
+	ninjakick->afterdesc = " with a flying side kick";
+	ninjachief->setBasicAttack(ninjachief);
+	Attack* kiloshuriken = new Attack("KILOSHURIKEN", "threw dual helicopter rotors at the team", false, 6, 30, 20, 2, 2, 3);
+	ninjachief->addSpecialAttack(kiloshuriken);
+	Attack* acupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 8, 2, 15, 4, 4, 1);
+	acupunctuken->afterdesc = " with precise shurikens";
+	acupunctuken->addEffect(pinned);
+	ninjachief->addSpecialAttack(acupunctuken);
+	Attack* deadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", false, 15, 10, 20, 5, 5, 3);
+	deadlyspinferno->afterdesc = " in a flaming inferno";
+	deadlyspinferno->addEffect(onfire);
+	ninjachief->addSpecialAttack(deadlyspinferno);
 
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This Jim Shady is just imitating.", limbo, 0, Stats(50, 10, 10, 35, 15, 10, 9));
 	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 0, 100, 100, 1, 1, 1);
@@ -1968,7 +2022,7 @@ NPC* SetupWorld() {
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0f);
 	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", false, 15, 10, 5, 1, 1, 1, true, 10);
 	flowerempower->addEffect(flowerpower);
-	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light onto", false, 18, 30, 10, 1, 1, 10, false, 10);
+	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light towards", false, 18, 30, 10, 1, 1, 10, false, 10);
 	flowerfiend->setBasicAttack(vinewhip);
 	flowerfiend->addSpecialAttack(crunch);
 	//flowerfiend->addSpecialAttack(nutrientabsorb);
@@ -2023,17 +2077,6 @@ NPC* SetupWorld() {
 	skeleviking->addSpecialAttack(vbonecone);
 	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", true, 10, 8, 0, 3, 4, 3);
 	skeleviking->addSpecialAttack(vtornado);
-
-	//most of the enemies have these placeholder attacks and also placeholder stats due to time constraints, so I'll add those in the full version
-	Attack* genericattack = new Attack("ATTACK", "attacked", true, -5);
-	Attack* genericspecial = new Attack("STRONG ATTACK", "did a strong attack at", true, 2, 30);
-	Attack* genericcc = new Attack("CRASH OUT", "crashed out near", false, 5, 20, 20, 1, 1, 3);
-	//template
-	/*NPC* npc = new NPC("", "NAME", "generic description :(", limbo);
-	npc->setBasicAttack(genericattack);
-	npc->addSpecialAttack(genericspecial);
-	npc->addSpecialAttack(genericcc);
-	*/
 
 	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(10, 2, 20, 1, 15, 30, 9));
 	Attack* tumble = new Attack("TUMBLE", "rolled into", true, -5, 10, 10, 1, 1, 1);
@@ -2101,7 +2144,7 @@ NPC* SetupWorld() {
 	Attack* smackdown = new Attack("SMACKDOWN", "lifted", false, 5, 20, 0, 1, 1, 1);
 	smackdown->afterdesc = " into the air and smacked them back down";
 	Effect* suspended = new Effect("SUSPENDED", 3, 0, 0);
-	smackdown->synergy = suspended; //because Viola is already holding the npc in the air so it's easier to do more damage
+	smackdown->synergies.push_back(suspended); //because Viola is already holding the npc in the air so it's easier to do more damage
 	tkviola->addSpecialAttack(smackdown);
 	Attack* tkguard = new Attack("INVOLUNTARY GUARD", "set up a guard using a townsperson", false, 7, 0, 0, 0, 0, 0);
 	tkguard->guardset = 1;
@@ -2160,8 +2203,7 @@ NPC* SetupWorld() {
 	scaldingsteam->addEffect(scalded);
 	greer->addSpecialAttack(scaldingsteam);
 
-	Effect* onfire = new Effect("ON FIRE", 5, 5, 0, 1, 0.8f);
-	Effect* extrafire = new Effect("EXTRA ON FIRE", 5, 10, 0, 1, 0.65f);
+	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 10, 0, 1, 0.65f);
 	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 0, 1); //contact attacks for the lavamen
 	burn->addEffect(onfire);
 	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 0, 1);
@@ -2239,20 +2281,44 @@ NPC* SetupWorld() {
 	superslagman->addSpecialAttack(metalbeam);
 	superslagman->addSpecialAttack(slagblast);
 
-	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats()); //mini mini boss?
-	//swing
-	//furnace blast
-	//exhaust
+	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats(140, 30, 30, 40, 10, 3, 9)); //mini mini boss?
+	Attack* swing = new Attack("HEAVY HAYMAKER", "swung a heavy haymaker at", true, -5, 40, 0, 1, 1, 1);
+	Attack* fistcannon = new Attack("FIST CANNON", "fired its fists like missiles", false, 3, 30, 0, 2, 2, 1); //I was gonna say heat-seeking fists but that doens't really make sense given the area it's in
+	fistcannon->focushits = false;
+	Attack* furnaceblast = new Attack("FURNACE BLAST", "blasted flames at", false, 6, 40, 20, 1, 1, 3);
+	furnaceblast->afterdesc = " from its furnace core";
+	furnaceblast->addEffect(onfire);
+	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 30, 30, 1, 1, 7);
+	exhaust->focushits = false;
+	Effect* smogged = new Effect("SMOGGED", 5, 8, 0, 0.75f, 0.75f);
+	exhaust->addEffect(smogged);
+	factgolem->setBasicAttack(swing);
+	factgolem->addSpecialAttack(fistcannon);
+	factgolem->addSpecialAttack(furnaceblast);
+	factgolem->addSpecialAttack(exhaust);
 
-	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, big from a healthy diet of ores.", limbo, 0, Stats());
-	//bite
-	//lavomit
+	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, big from a healthy diet of ores.", limbo, 0, Stats(40, 20, 25, 30, 25, 15, 9));
+	Effect* ouchie = new Effect("OUCHIE", 2, 0, 0, 1, 0.8f);
+	Attack* cbite = new Attack("BITE", "bit down on", true, -5, 15, 15, 1, 1, 1);
+	cbite->addEffect(ouchie);
+	lavadile->setBasicAttack(cbite);
+	Attack* clavomit = new Attack("LAVOMIT", "coughed up lava at", false, 5, 30, 20, 1, 1, 1);
+	clavomit->addEffect(onfire);
+	lavadile->addSpecialAttack(clavomit);
 
-	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats());
+	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats(150, 25, 35, 35, 35, 20, 9));
 	lavagator->setBoss(true); //miniboss
-	//crunch (causes crunched (-defense))
-	//deathroll (synergize with crunched)
-	//gator gun (laser that catches on fire)
+	Effect* gcrunched = new Effect("CRUNCHED", 3, 0, 0, 1, 0.6f);
+	Attack* gcrunch = new Attack("CRUNCH", "crunched down on", true, -5, 20, 20, 1, 1, 1);
+	gcrunch->addEffect(gcrunched);
+	lavagator->setBasicAttack(gcrunch);
+	Attack* deathroll = new Attack("DEATH ROLL", "rotated", true, 5, 8, 20, 4, 4, 1);
+	deathroll->synergies.push_back(gcrunched);
+	lavagator->addSpecialAttack(deathroll);
+	Attack* gatorgun = new Attack("GATOR GUN", "fired a flaming beam at", true, 15, 30, 40, 1, 1, 3);
+	gatorgun->afterdesc = " from its gatory core";
+	gatorgun->addEffect(extrafire);
+	lavagator->addSpecialAttack(gatorgun);
 
 	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
 	lavaguardian->setBoss(true);
@@ -2280,7 +2346,7 @@ NPC* SetupWorld() {
 
 	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
 	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
-	medge->afterdesc = " askew";
+	askew->afterdesc = " askew";
 	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8f);
 	askew->addEffect(offbalance);
 	newtab->setBasicAttack(askew);
@@ -2344,7 +2410,7 @@ NPC* SetupWorld() {
 	Effect* mcbond = new Effect("MOTHER-CHILD BOND", 2147483647, 0, 0, 1.125f); //MARK: we need to make sure this goes away when the hatchling is incapacitated
 	filialinstinct->addEffect(mcbond);
 	filialinstinct->prioritizeleader = true;
-	filialinstinct->stacks = true;
+	mcbond->stacks = true;
 	hatchling->setOpener(filialinstinct);
 	Attack* nip = new Attack("NIP", "tried its best to bite", true, 0, 7, 1, 1, 1, 1); //1 pierce cause tiny baby teeth
 	hatchling->setBasicAttack(nip);
@@ -2503,7 +2569,7 @@ NPC* SetupWorld() {
 	pantryguard->setLeader(true, 17, ninjapantry);
 	pantryguard->addConversation({{self, "Hi ninja man can I have that ninjaberry?"}, {ninjachef, "Only if you prove yourself in combat."}, {self, "Sounds good."}});
 	pantryguard->setDialogue("Prove yourself in combat to prove yourself worthy of the ninjaberry.");
-	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
+	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}, {self, "Thanks."}});
 	pantryguard->setTalkOnDefeat();
 	pantryguard->addRejectionDialogue("I cannot abandon the ninja way; I must continue my culinary service to my ninja clan.");
 	pantryguard->guardItem(ninjaberry);
@@ -2514,9 +2580,14 @@ NPC* SetupWorld() {
 	govguard->setDialogue({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Now, fight me as your final test."}});
 	govguard->addConversation({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Most impressive."}, {ninjachief, "Now, fight me as your final test."}}); //just so he says that before the fight
 	govguard->addRejectionDialogue("I must continue to govern the ninja village.");
-	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
-	pantryguard->addLinkedConvo(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}});
-	pantryguard->setTalkOnDefeat();
+	govguard->addLinkedDialogue(govguard, {{govguard, "Well done, young one."}, {govguard, "You are a most impressive ninja."}});
+	govguard->addLinkedConvo(govguard, {{govguard, "Well done, young one."}, {govguard, "You are a most impressive ninja."}, {govguard, "You've earned yourself access to our most secret ninja scroll."}, {self, "Oh thanks. :D"}});
+	govguard->setTalkOnDefeat();
+	Item* ninjascroll = new EducationItem("ADVANCED NINJA SCROLL", "An old golden scroll detailing advanced ninja techniques. Most ninjas never even see this scroll their whole lives.", limbo, smokebomb);
+	EducationItem* _ninjascroll = (EducationItem*)ninjascroll;
+	_ninjascroll->setAttack(pacupunctuken);
+	_ninjascroll->setAttack(pdeadlyspinferno);
+	govguard->setGift(ninjascroll, true);
 
 	/*NPC* forestrando = new NPC(*grassman);
 	forestrando->setLeader(true, 5, forestleft);
@@ -2776,7 +2847,6 @@ NPC* SetupWorld() {
 											  {greer, "I'm not looking forward to dis meetin'..."},
 											  {NULL, "GREER disappeared into the darkness..."},
 											  {NULL, "The VALVE is no longer being guarded!"}});
-	//springguard->addRoomChange(ceoroom, "something about greer being dead?");
 	springguard->setTalkOnDefeat();
 	springguard->setForceBattle();
 	springguard->setEscapable(false);
@@ -2810,7 +2880,6 @@ NPC* SetupWorld() {
 	fact1guard->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
 	fact1guard->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
-	//fact2guard
 	NPC* fact2guard = new NPC(*lavasoldier);
 	fact2guard->setLeader(true, 12, factory2);
 	fact2guard->setParty(magman);
@@ -2821,20 +2890,20 @@ NPC* SetupWorld() {
 	NPC* fact2guard2 = new NPC(*slagman);
 	fact2guard2->setLeader(true, 12, factorybalcony1);
 	fact2guard2->setParty(lavasoldier, lavasoldier); //reverse so it's 1 soldier 2 slagmen?
-	fact2guard2->blockExit(NORTHEAST, ENEMY, "guarded by the SLAGMAN.");
+	fact2guard2->blockExit(NORTHEAST, ENEMY, "guarded by the SLAGMAN.", true);
 	fact2guard2->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
 	fact2guard2->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
 	NPC* fact2guard3 = new NPC(*slagman);
 	fact2guard3->setLeader(true, 13, factorystorage);
 	fact2guard3->setParty(slagman);
-	fact2guard3->blockExit(EAST, ENEMY, "guarded by the SLAGMAN.");
+	fact2guard3->blockExit(EAST, ENEMY, "guarded by the SLAGMAN.", true);
 	fact2guard3->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
 	fact2guard3->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
 	NPC* golemguard = new NPC(*factgolem);
 	golemguard->setLeader(true, 15, switchroom2);
-	golemguard->blockExit(SOUTHEAST, ENEMY, "guarded by the FACTORY GOLEM.");
+	golemguard->blockExit(SOUTHEAST, ENEMY, "guarded by the FACTORY GOLEM.", true);
 	golemguard->setDialogue({{NULL, "FACTORY GOLEM - *DEEP SYNTH NOISES*"}});
 	golemguard->addRejectionDialogue({{NULL, "FACTORY GOLEM - *DEEP SYNTH REJECTION*"}});
 
@@ -2928,12 +2997,6 @@ NPC* SetupWorld() {
 	mimic1->setExtraMonies(1500); //you get lots of monies for beating the mimic
 	mimic1->setBoss(true); //mini
 
-	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", false, 25, 0, 5, 2, 2, 1); //no contact because the scarf stretches far from Bernard
-	scarfsmack->afterdesc = "with his scarf";
-	scarfsmack->addDescription("Smack the target with each end of your stretchy scarf. (25 ATTACK, 2 hits)");
-	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
-	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, bigscarf);
-
 	Item* fakechest1 = new TreasureItem("TREASURE CHEST 1", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, NULL, mimic2);
 	Item* fakechest2 = new TreasureItem("TREASURE CHEST 2", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, NULL, mimic3);
 	Item* rr3 = new ReviveItem(*(ReviveItem*)(reviveroot));
@@ -2941,7 +3004,6 @@ NPC* SetupWorld() {
 
 	NPC* drainguard = new NPC(*lavagator);
 	drainguard->setLeader(true, 15, sewerplant);
-	//drainguard->setParty(lavadile, lavadile); ?
 	drainguard->setDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
 	drainguard->addRejectionDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
 	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
@@ -3033,15 +3095,12 @@ NPC* SetupWorld() {
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
-	//foresttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. No matter what anyone has tried, nobody has ever made it in.");
 	treasuregrove->blockExit(NORTH, CHASM, "blocked by a steep ravine.");
 	treasurecliff->blockExit(SOUTH, CHASM, "blocked by a steep ravine.");
-	ninjaland->blockExit(UP, NINJA, "too high. You need ninja abilities to scale the trees.");
-	ninjavillage->blockExit(DOWN, NINJA, "too far down. You need ninja abilities to safely land.");
+	ninjaland->blockExit(UP, NINJA, "too high. You need NINJA ABILITIES to scale the trees.");
 	desert->blockExit(EAST, SAND, "blocked by scorching sands.");
 	desertplain->blockExit(WEST, SAND, "blocked by scorching sands.");
 	deserttempleentrance->blockExit(EAST, SAND, "blocked by scorching sands.");
-	//deserttempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology. I'm sure nobody's ever been in this one, either.");
 	desertdune->blockExit(WEST, SAND, "blocked by scorching sands.");
 	mineshaft->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	minespring->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
@@ -3087,7 +3146,6 @@ NPC* SetupWorld() {
 	factoryroofse->blockExit(DOWN, HIGH, "too far down to jump.");
 	sewermineswest->blockExit(WEST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mountainmine->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
-	//volcanotempleentrance->blockExit(IN_TEMPLE, TEMPLE, "sealed shut by ancient technology.");
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
@@ -3338,6 +3396,12 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		player->addSpecialAttack(attack);
 		cout << player->getName() << " can now use " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
 		CinPause();
+	} else if (!strcmp(item->getType(), "worldchange")) {
+		WorldChangeItem* changer = (WorldChangeItem*)item;
+		if (!changer->getTakeToUse()) return;
+		applyWorldChange(changer->getChanges()); //do the changes
+		cout changer->getUseText(); //prints what the player did and what it accomplished
+		deleteItem(currentRoom, inventory, item); //we shouldn't keep world change items because the taking was the using and they're consumables
 	}
 }
 
@@ -3478,7 +3542,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			}
 		}
 		if (!learned) { //prints motivational message if none of these attacks are usable yet
-			cout << "You're not LEVELED UP enough to use any of these new attacks. Keep training and you'll get there eventually!";
+			cout << "You're not LEVELED UP enough to use any of these new attacks.\nKeep training and you'll get there eventually!";
 		}
 	//summons the tunnel lobster to the current train station
 	} else if (!strcmp(item->getType(), "caller")) {
@@ -3604,6 +3668,10 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	//world change items do changes to the world, just like when npcs get defeated and do all that stuff
 	} else if (!strcmp(item->getType(), "worldchange")) {
 		WorldChangeItem* changer = (WorldChangeItem*)item;
+		if (changer->getTakeToUse) { //you can't use takeToUse world change items normally
+			cout << "\nYou can't use the " << itemname << "!";
+			return;
+		}
 		applyWorldChange(changer->getChanges()); //do the changes
 		cout << "\nYou " << changer->getUseText(); //prints what the player did and what it accomplished
 	//you can't use materials; they get a unique error message
@@ -3875,6 +3943,7 @@ int main() {
 	} 
 	if (!strcmp(name, "BERNARD")) { //Bernard is the character's canonical name
 		cout << "\nBERNARD - \"Oh wow that's my actual name!\"";
+		ISBERNARD = true;
 		CinPause();
 	} else if (!strcmp(name, "HELP")) { //Help complains if you followed the previous instructions and typed HELP (for help)
 		cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
@@ -3882,6 +3951,9 @@ int main() {
 	//if the player typed anything by following the instructions too literally, the main character remarks on that
 	} else if (!strcmp(name, "HELP FOR HELP") || !strcmp(name, "YOUR NAME") || !strcmp(name, "YOUR NAME HERE") || !strcmp(name, "YOUR NAME HERE!")) {
 		cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
+		CinPause();
+	} else if (!strcmp(name, "YOUR NAME HERE!)")) {
+		cout << "\n" << name << " - \"You don't include the parenthesis cause it's closing the one from before...\"";
 		CinPause();
 	}
 
