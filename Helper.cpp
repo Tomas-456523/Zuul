@@ -209,20 +209,20 @@ namespace Helper {
 		}
 	}
 	//prints a conversation, must be here because having this as Conversation's function was causing a plethora of compiler errors
-	void printConversation(Conversation* _convo) {
+	void printConversation(const Conversation* _convo, bool finalpause) { //pass a pointer so it's easier to do all the alt stuff
 		cout << "\n";
-		Conversation* current = _convo;
+		const Conversation* current = _convo;
 		while (WorldState[current->skipcondition]) {
 			current = current->alt;
 		}
-		const vector<pair<NPC*, const char*>> convo = current->lines;
+		const vector<pair<NPC*, const char*>>& convo = current->lines;
 		for (int i = 0; i < convo.size(); i++) { //prints all the dialogue in the conversation
 			if (convo[i].first != NULL) {
 				cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
 			} else {
 				cout << convo[i].second;
 			}
-			if (i + 1 < convo.size()) { //if it's not the last one we do a pause, so the last one lets the player type
+			if (finalpause || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards) we do a pause, so the last one lets the player type
 				CinPause();
 			}
 		}

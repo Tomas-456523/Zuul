@@ -173,11 +173,7 @@ void Room::printWelcome() {
 	if (!welcome) {
 		return;
 	}
-	cout << "\n";
-	for (const char* text : welcomeText) {
-		cout << text;
-		CinPause();
-	}
+	printConversation(&welcomeText, true);
 	welcome = false; //we only do the welcome once
 }
 void Room::setItem(Item* item) {
@@ -223,11 +219,11 @@ void Room::setConveyor(Room* altroom, const char* conveyorexit) {
 	altRoom = altroom;
 	conveyorExit = conveyorexit;
 }
-void Room::setDescription(const char _description[255]) {
+void Room::setDescription(const char* _description) {
 	description = _description;
 }
-void Room::setWelcome(const char text[255]) {
-	welcomeText.push_back(text);
+void Room::setWelcome(Conversation text) {
+	welcomeText = text;
 	welcome = true;
 }
 void Room::setStock(Item* item, int amount, int price, const char* buydesc) {
@@ -274,8 +270,7 @@ void Room::scaleNPCs(int cap) { //levels up every npc in the gym depending on th
 }
 void Room::undefeatEnemies() {
 	for (NPC* npc : npcs) {
-		//probbaly do a check if you should undefeat them
-		if (npc->getDefeated() && npc->getRespawn()) {
+		if (npc->getDefeated() && npc->getRespawn()) { //get respawn also checks if it should respawn based on respawn req (npc that must be in the same room and not recruited)
 			npc->undefeat();
 		}
 	}

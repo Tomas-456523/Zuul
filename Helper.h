@@ -32,7 +32,7 @@ namespace Helper {
 	void sortBySpeed(std::vector<NPC*>& team); //sorts the vector of npcs by speed
 	int aliveCount(std::vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
-	void printConversation(Conversation* _convo); //print a conversation in conversation order
+	void printConversation(const Conversation* _convo, bool finalpause); //print a conversation in conversation order
 	void printLvlUpData(NPC* npc); //print the level up data of the given npc
 	void applyWorldChange(WorldChange& changes); //apply the changes to the world which are in the given stuff to change
 	

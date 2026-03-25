@@ -268,7 +268,7 @@ NPC* CallerItem::getCalledNPC() {
 }
 
 //key items, for unlocking and unblocking blocked exits
-KeyItem::KeyItem(const char* _name, const char* _description, const char* _useText, Room* _room, const char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true, true) {
+KeyItem::KeyItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true, true) {
 	unlockType = _unlockType;
 	useText = _useText;
 	type = "key"; //sets the type
@@ -287,7 +287,7 @@ const char* KeyItem::getUnlockType() {
 	return unlockType;
 }
 //returns the text for using the key
-const char* KeyItem::getUseText() {
+const Conversation& KeyItem::getUseText() const {
 	return useText;
 }
 //sets a remote location for the key to unblock
@@ -299,7 +299,7 @@ Item* KeyItem::Duplicate() { //returns a new key item as an Item*
 }
 
 //movement items, for moving through blocked exits
-MovementItem::MovementItem(const char* _name, const char* _description, const char* _useText, Room* _room, const char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true, true) {
+MovementItem::MovementItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true, true) {
 	unlockType = _unlockType;
 	useText = _useText;
 	type = "movement"; //sets the type
@@ -314,7 +314,7 @@ const char* MovementItem::getUnlockType() {
 	return unlockType;
 }
 //gets the text printed after using this item
-const char* MovementItem::getUseText() {
+const Conversation& MovementItem::getUseText() const {
 	return useText;
 }
 Item* MovementItem::Duplicate() { //returns a new movement item as an Item*
@@ -322,7 +322,7 @@ Item* MovementItem::Duplicate() { //returns a new movement item as an Item*
 }
 
 //paver exits, for paving new exits in a room
-PaverItem::PaverItem(const char* _name, const char* _description, const char* _useText, Room* _room, Room* _usableRoom, const char* _direction, Room* _destination) : Item(_name, _description, _room, false, true, true) {
+PaverItem::PaverItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, Room* _usableRoom, const char* _direction, Room* _destination) : Item(_name, _description, _room, false, true, true) {
 	destination = _destination;
 	direction = _direction;
 	usableRoom = _usableRoom;
@@ -342,7 +342,7 @@ bool PaverItem::getUsable(Room* _room) {
 	return room == usableRoom;
 }
 //gets the text that is printed when using the paver
-const char* PaverItem::getUseText() {
+const Conversation& PaverItem::getUseText() const {
 	return useText;
 }
 
@@ -412,7 +412,7 @@ vector<Room*> ConveyorSwitch::getConveyors() {
 }
 
 //world change items, for changing the world
-WorldChangeItem::WorldChangeItem(const char* _name, const char* _description, Room* _room, const char* _useText, bool taketouse) : Item(_name, _description, _room, taketouse, true) {
+WorldChangeItem::WorldChangeItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, bool taketouse) : Item(_name, _description, _room, taketouse, true) {
 	type = "worldchange"; //sets the type
 	useText = _useText;
 	takeToUse = taketouse;
@@ -422,9 +422,33 @@ WorldChange& WorldChangeItem::getChanges() {
 	return changes;
 }
 //gets the text that is printed when using the item
-const char* WorldChangeItem::getUseText() {
+const Conversation& WorldChangeItem::getUseText() const {
 	return useText;
 }
-bool getTakeToUse() {
+bool WorldChangeItem::getTakeToUse() {
 	return takeToUse;
+}
+
+//blender items, for taking ingredients and combining them into one thing
+BlenderItem::BlenderItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, initializer_list<const char*> _ingredients, Item* _product) : Item(_name, _description, _room, false, false) {
+	type = "blender"; //sets the type
+	useText = _useText;
+	ingredients = _ingredients;
+	product = _product;
+}
+//returns the world changes, as a reference so it's easier to edit
+WorldChange& BlenderItem::getChanges() {
+	return changes;
+}
+//gets the text printed by using it
+const Conversation& BlenderItem::getUseText() const {
+	return useText;
+}
+//get if we need to take it instead of use it to make it do the thing
+const vector<const char*>& BlenderItem::getIngredients() {
+	return ingredients;
+}
+//get the product of the blender item
+Item* BlenderItem::getProduct() {
+	return product;
 }

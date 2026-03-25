@@ -162,18 +162,18 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				cout << "\n" << reciever->getName() << " is incapacitated and was not affected.";
 				continue;
 			}
-			if (NPC* guardian = reciever->getGuardian()) { //MARK: AND THE MOVE ISN'T POSITIVE
+			/*if (NPC* guardian = reciever->getGuardian()) { //MARK: AND THE MOVE ISN'T POSITIVE
 				cout << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
 				reciever = guardian;
 				CinPause();
-			}
+			}*/
 			int effectiveAttack = 0;
 			int effectivePierce = 0;
 			if (attack->spbomb) { //sp bombs don't get multipliers
 				effectiveAttack = attack->power;
 			} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
 				effectiveAttack = effectivePierce = 2147483647; //just send as much damage as possible
-			} else if (attack->synergy && reciever->getEffect(attack->synergy->name)) { //double attack power if the attack synergizes with the effect
+			} else if (/*attack->synergy && reciever->getEffect(attack->synergy->name)*/ false) { //double attack power if the attack synergizes with the effect
 				effectiveAttack *= 2;
 			} else {
 				effectiveAttack = attack->power * attacker->getAttack() * attacker->getAttMultiplier() / 10;

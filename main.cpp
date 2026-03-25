@@ -112,11 +112,11 @@ NPC* SetupWorld() {
 	Room* tenthouse = new Room("in your family's house, in what could be considered the multiuse bed/dining/living room.");
 	Room* forestentrance = new Room("at the entrance of the woodlands.");
 	Room* forest = new Room("deep in the woodlands. Smells like pine trees along the way.");
-	forest->setWelcome("Welcome to WANING WOODLANDS!");
-	forest->setWelcome("<<< THE FINAL FOREST >>>");
-	forest->setWelcome("The slowly decaying corner of the world, where you have lived your whole life.");
-	forest->setWelcome("The grass is green and the chirds are birping.");
-	forest->setWelcome("Now, your BURGER QUEST begins!");
+	forest->setWelcome({{NULL, "Welcome to WANING WOODLANDS!"},
+						{NULL, "<<< THE FINAL FOREST >>>"},
+						{NULL, "The slowly decaying corner of the world, where you have lived your whole life."},
+						{NULL, "The grass is green and the chirds are birping."},
+						{NULL, "Now, your BURGER QUEST begins!"}});
 	Room* forestleft = new Room("walking down the left path of the woodlands. It feels like a deer is watching you.");
 	Room* forestright = new Room("walking down the right path of the woodlands. It feels like a ninja is watching you.");
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather."); //talk to the deer to get the key
@@ -146,11 +146,11 @@ NPC* SetupWorld() {
 	Room* fdintermission3 = new Room("on the path between the woodlands and the wastelands. Dead trees surround you. The BURGER RESTAURANT is just barely visible from here.");
 	//Create all DESOLATE DESERT rooms MARK: DD
 	Room* desert = new Room("in the wastelands. There is no sign of the color green anywhere.");
-	desert->setWelcome("Welcome to DESOLATE DESERT!");
-	desert->setWelcome("<<< THE WASTELANDS BEYOND >>>");
-	desert->setWelcome("The world beyond your forest, where the life has been sucked out of the dirt.");
-	desert->setWelcome("The sun beats down with no clouds in sight.");
-	desert->setWelcome("Surely there must be someone friendly around here?");
+	desert->setWelcome({{NULL, "Welcome to DESOLATE DESERT!"},
+						{NULL, "<<< THE WASTELANDS BEYOND >>>"},
+						{NULL, "The world beyond your forest, where the life has been sucked out of the dirt."},
+						{NULL, "The sun beats down with no clouds in sight."},
+						{NULL, "Surely there must be someone friendly around here?"}});
 	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
 	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
 	Room* deserttemple = new Room("in the desert temple.");
@@ -193,15 +193,15 @@ NPC* SetupWorld() {
 
 	//Create all HELLISH HIGHLANDS rooms MARK: HH
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
-	volcano->setWelcome("WELCOME TO HELLISH HIGHLANDS!");
-	volcano->setWelcome("<<< THE END OF THE ROAD >>>");
-	volcano->setWelcome("Radiation from the lava burns against your skin."); //The air burns your skin and ash fills your lungs
-	volcano->setWelcome("The BURGER RESTAURANT can be seen clearly, its image heavily distorted by the heat.");
-	volcano->setWelcome("You're almost there.");
+	volcano->setWelcome({{NULL, "WELCOME TO HELLISH HIGHLANDS!"},
+						 {NULL, "<<< THE END OF THE ROAD >>>"},
+						 {NULL, "Radiation from the lava burns against your skin."}, //The air burns your skin and ash fills your lungs
+						 {NULL, "The BURGER RESTAURANT can be seen clearly, its image heavily distorted by the heat."},
+						 {NULL, "You're almost there."}});
 	Room* volcano1 = new Room("in the volcanic highlands. An old, abandoned factory stands to the EAST.");
 	Room* volcano2 = new Room("in a volcanic plain. The ashen remains of some plants can be seen here.");
 	Room* volcano3 = new Room("in the scorched remains of an old factory town.\nThere's stairs leading down to a train station.");
-	Room* volcanostation = new Room("in the factory town train station. Some lava has settled here, but the tunnels are probably still usable?");
+	Room* volcanostation = new Room("in the factory town train station. Some lava has settled here, but the tunnels are probably still usable.");
 	volcanostation->setStation();
 	Room* volcano4 = new Room("on a scorched path. It reminds you of pepperoni pizza.");
 	Room* volcano5 = new Room("at a... knife in the road.");
@@ -250,8 +250,6 @@ NPC* SetupWorld() {
 	Room* castleentrance = new Room("at the entrance of a large, crystaline castle. It has a very angular design.");
 	Room* castlehall = new Room("in the main hall of the castle. Ornate pillars and paintings of internet browsers pave the way towards the throne room.");
 	Room* castlethrone = new Room("in the throne room of the castle. The ceiling is reeeeeeally high up, and the throne almost reaches the top!");
-	castlethrone->setWelcome("PLUM - AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!");
-	castlethrone->setWelcome("BROWSER - GWAHAHAHAHAHA!");
 	//the sewers
 	Room* sewerentrance1 = new Room("on a ladder leading down to the sewer system.");
 	Room* sewerentrance2 = new Room("deep down on the ladder to the sewer system.");
@@ -277,10 +275,10 @@ NPC* SetupWorld() {
 
 	//Create MOUNT MINBUS rooms. This place is basically just a small boss arena MARK: MM
 	Room* mountain = new Room("on a mountain, far, far away from anywhere you know. Dark clouds block view of both the sky and land.");
-	mountain->setWelcome("WELCOME TO MOUNT MINBUS!");
-	mountain->setWelcome("<<< THE EDGE OF THE WORLD >>>");
-	mountain->setWelcome("Frigid winds blast your face and dark clouds cover both land and sky.");
-	mountain->setWelcome("Ok have fun!");
+	mountain->setWelcome({{NULL, "WELCOME TO MOUNT MINBUS!"},
+						  {NULL, "<<< THE EDGE OF THE WORLD >>>"},
+						  {NULL, "Frigid winds blast your face and dark clouds cover both land and sky."},
+						  {NULL, "Ok have fun!"}});
 	Room* mountainmine = new Room("far away from the start of the track. A barrage of snow blows in from the exit.");
 	Room* mountain2 = new Room("on a little clearing on the mountain. The UPwards path has a ski lift!");
 	Room* mountainside = new Room("along a side path of the mountain. The snow is snowier than before.");
@@ -291,12 +289,12 @@ NPC* SetupWorld() {
 
 	//Create all BURGERSBURG rooms MARK: BB
 	Room* BURGERSBURG = new Room("at the gate of BURGERSBURG. The BURGER RESTAURANT is just down main street.");
-	BURGERSBURG->setWelcome("Welcome to BURGERSBURG!");
-	BURGERSBURG->setWelcome("<<< THE CAPITAL OF SIN >>>");
-	BURGERSBURG->setWelcome("Massive skyscrapers blot out the sun, and the BURGER RESTAURANT towers above them all.");
-	BURGERSBURG->setWelcome("All but a few buildings are boarded up.");
-	BURGERSBURG->setWelcome("You don't want this city knowing where you live.");
-	BURGERSBURG->setWelcome("We are not responsible for theft or damage to vehicles or contents!");
+	BURGERSBURG->setWelcome({{NULL, "Welcome to BURGERSBURG!"},
+							 {NULL, "<<< THE CAPITAL OF SIN >>>"},
+							 {NULL, "Massive skyscrapers blot out the sun, and the BURGER RESTAURANT towers above them all."},
+							 {NULL, "All but a few buildings are boarded up."},
+							 {NULL, "You don't want this city knowing where you live."},
+							 {NULL, "We are not responsible for theft or damage to vehicles or contents!"}});
 	Room* leftstreet1 = new Room("in the poor side of the city. It's relatively tranquil here since everything's already been stolen.");
 	Room* leftstreet2 = new Room("next to a building with a fish sign. There is an uncharacteristic sense of calm here.");
 	Room* leftstreet3 = new Room("on the sidewalk, avoiding a burning crack in the road.");
@@ -349,45 +347,44 @@ NPC* SetupWorld() {
 	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies, BURGERs, and company documents are piled up here.");
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
 	Room* elevatortop = new Room("in the elevator, elevated all the way to the tippity top."); //Once you go through the door, there is no going back. (for full version)
-	elevatortop->setWelcome("You ventured beyond your forest home,");
-	elevatortop->setWelcome("endured through desolate sands,");
-	elevatortop->setWelcome("journeyed through volcanic highlands,");
-	elevatortop->setWelcome("and braved the crime of the city.");
-	elevatortop->setWelcome("It was a long journey, but you're just barely away from your the end..."); //from your destination?
-	elevatortop->setWelcome("The elevator shoots upwards.");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("Neon BURGER billboards attached to the elevator shaft pass by.");
-	elevatortop->setWelcome("You pass the highest peaks of the BURGERSBURG skyline.");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("You pass the cloud level, leaving behind the gloom of BURGERSBURG.");
-	elevatortop->setWelcome("The sun is shining over the horizon.");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("...");
-	elevatortop->setWelcome("The elevator dings.");
-	elevatortop->setWelcome("You have arrived at your destination.");
+	elevatortop->setWelcome({{NULL, "You ventured beyond your forest home,"},
+							 {NULL, "endured through desolate sands,"},
+							 {NULL, "journeyed through volcanic highlands,"},
+							 {NULL, "and braved the crime of the city."},
+							 {NULL, "It was a long journey, but you're just barely away from the end..."}, //from your destination?
+							 {NULL, "The elevator shoots upwards."},
+							 {NULL, "..."},
+							 {NULL, "..."},
+							 {NULL, "..."},
+							 {NULL, "Neon BURGER billboards attached to the elevator shaft pass by."},
+							 {NULL, "You pass the highest peaks of the BURGERSBURG skyline."},
+							 {NULL, "..."},
+							 {NULL, "..."},
+							 {NULL, "..."},
+							 {NULL, "You pass the cloud level, leaving behind the gloom of BURGERSBURG."},
+							 {NULL, "The sun is shining over the horizon."},
+							 {NULL, "..."},
+							 {NULL, "..."},
+							 {NULL, "..."},
+							 {NULL, "The elevator dings."},
+							 {NULL, "You have arrived at your destination."}});
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
-	BURGERRESTAURANT->setWelcome("BURGER MAN - \"HELLO VALUED CUSTOMER.\"");
-	BURGERRESTAURANT->setWelcome("BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT.\"");
+	BURGERRESTAURANT->setWelcome({{NULL, "BURGER MAN - \"HELLO VALUED CUSTOMER.\""}, {NULL, "BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT.\""}});
 	Room* elevatorbottom = new Room("in the elevator, deep down in the restricted level of the BURGER RESTAURANT.");
-	elevatorbottom->setWelcome("The elevator shoots downwards.");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("Hard rock speeds by.");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("It's so far down; the temperature starts rising.");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("...");
-	elevatorbottom->setWelcome("Temperatures have risen above volcanic levels...");
-	elevatorbottom->setWelcome("The elevator dings.");
+	elevatorbottom->setWelcome({{NULL, "The elevator shoots downwards."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "Hard rock speeds by."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "It's so far down; the temperature starts rising."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "Temperatures have risen above volcanic levels..."},
+								{NULL, "The elevator dings."}});
 	Room* burgerbasement = new Room("in the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
@@ -440,10 +437,10 @@ NPC* SetupWorld() {
 	Attack* smokebomb = new Attack("SMOKE BOMB", "threw two smoke bombs, bringing SMOKEMEN into the battle", false, 13, 0, 0, 0, 0, 0);
 	NPC* smokeman = new NPC("", "SMOKEMAN", "A really smoky humanoid who is just vibing.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
 	smokebomb->summon = smokeman;
-	plantlifeplant->summonamount = 2;
+	smokebomb->summonamount = 2;
 	smokebomb->addDescription("Throw two smoke bombs containing smokemen, distracting the enemies.");
 	Attack* pacupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 12, 2, 15, 4, 4, 1);
-	acupunctuken->afterdesc = " with precise shurikens";
+	pacupunctuken->afterdesc = " with precise shurikens";
 	Effect* pinned = new Effect("PINNED", 3);
 	pinned->freeze = true;
 	pacupunctuken->addEffect(pinned);
@@ -783,7 +780,7 @@ NPC* SetupWorld() {
 							   {self, "Yeah sure I'll take it thanks."},
 							   {michelin, "Well when you get all three berries just USE blender over there."},
 							   {self, "Sounds good."}});
-	Item* ninjaguide = new KeyItem("GUIDE TO BEING A NINJA", "A book detailing the ninja techniques that will help you get into the ninja village.", "open the guide. The next day... You have mastered the ninja abilities and can now enter the ninja village!", limbo, NINJA);
+	Item* ninjaguide = new KeyItem("GUIDE TO BEING A NINJA", "A book detailing the ninja techniques that will help you get into the ninja village.", {{NULL, "You open the guide."}, {self, "Chapter 1: The Ninja Way"}, {self, "Ninjahood was invented by..."}, {self, "..."}, {self, "I ain't reading allat."}, {self, "Ok... Table of Contents..."}, {self, "Aha!"}, {self, "Chapter 84: Ninja Movement"}, {NULL, "The next day..."}, {self, "Alright! Now I can do ninja mevement!"}, {NULL, "You have mastered the ninja abilities and can now enter the ninja village!"}}, limbo, NINJA);
 	((KeyItem*)ninjaguide)->setTarget(ninjaland);
 	michelin->setGift(ninjaguide);
 	michelin->setDialogue({{michelin, "When you get all three berries just USE that blender over there."}, {michelin, "You got this!"}, {NULL, "MICHELIN - *two thumbs up* :D"}});
@@ -800,33 +797,43 @@ NPC* SetupWorld() {
 	michelin->addDismissalDialogue({{michelin, "Well, I guess I'll go back to my little kitchen area."}, {michelin, "Gotta start packing my bags to head home."}});
 	michelin->setRecruitDialogueChange({{michelin, "Hey what's up"}, {michelin, "Just packing my bags."}, {michelin, "Might take a while cause I've set up a whole freaking kitchen here."}});
 
-	//YOO you got the berries?
-	//Yep.
-	//Alright! Let's see what the deal is with this SUPERSMOOTHIE!
-	//You put the berries in the blender.
-	//The berries start blending.
-	//...
-	//Ding!
-	//You got the SUPERSMOOTHIE!
-	//*gasp*
-	//IT'S BEAUTIFUL!
-	//You gave the SUPERSMOOTHIE to MICHELIN.
-	//MICHELIN takes a sip of the SUPERSMOOTHIE.
-	//EW BRO THIS THING IS ATROCIOUS
-	//AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-	//self, :|
-	//HIYNGIEINFGFUGFIBFIU
-	//QWBDNIbjed
-	//WHY WOULD ANYBODY WANT TO MAKE THIS
-	//...
-	//Well this was a waste of time...
-	//:(
-	//Well you worked for this.
-	//You want it?
-	//self, Sure.
-	
-	//Dialogue:
-	//Man what a waste of time :(
+	Item* cactiberry = new MaterialItem("CACTIBERRY", "Special berry that is pale green and prickly, adorned with a pink flower.", berryroom);
+	Item* radiberry = new MaterialItem("RADIBERRY", "Special radioactive berry that glows neon green. Might wanna handle this one quickly.", factorygarden);
+	Item* ninjaberry = new MaterialItem("NINJABERRY", "Special black berry pertaining to the ninjas, complete with a natural belt.", berryroom);
+
+	Effect* multiposition = new Effect("MULTIPOSITION", 2147483647, 0, 0, 2.0f, 0.5f, 0.5f, 2.0f, 7.0f);
+	multiposition->multipositioning = 3;
+	Item* SUPERSMOOTHIE = new EffectItem("SUPERSMOOTHIE", "Prismatic smoothie blended from three special berries. Not really meant for consumption, it might have some multipositional effects.", limbo, multiposition);
+
+	Item* blender = new BlenderItem("BLENDER", "High quality high torque blender for blending stuff into smoothies.", factorykitchen, 
+		{{michelin, "YOO you got the berries?"},
+		 {self, "Yep."},
+		 {michelin, "Alright! Let's see what the deal is with this SUPERSMOOTHIE!"},
+		 {NULL, "You put the berries in the blender."},
+		 {NULL, "The berries start blending."},
+		 {NULL, "..."},
+		 {NULL, "Ding!"},
+		 {NULL, "You got the SUPERSMOOTHIE!"},
+		 {NULL, "MICHELIN - *gasp*"},
+		 {michelin, "IT'S BEAUTIFUL!"},
+		 {NULL, "You gave the SUPERSMOOTHIE to MICHELIN."},
+		 {NULL, "MICHELIN takes a sip of the SUPERSMOOTHIE."},
+		 {michelin, "EW BRO THIS THING IS ATROCIOUS"},
+		 {michelin, "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"},
+		 {self, ":|"},
+		 {michelin, "HIYNGIEINFGFUGFIBFIU"},
+		 {michelin, "QWBDNIbjed"},
+		 {michelin, "WHY WOULD ANYBODY WANT TO MAKE THIS"},
+		 {michelin, "..."},
+		 {michelin, "Well this was a waste of time..."},
+		 {michelin, ":("},
+		 {michelin, "Well you worked for this."},
+		 {michelin, "You want it?"},
+		 {self, "Sure."}},
+		{"CACTIBERRY", "RADIBERRY", "NINJABERRY"}, SUPERSMOOTHIE);
+	WorldChange& blenderchanges = ((BlenderItem*)blender)->getChanges();
+	blenderchanges.recruitLinks.push(michelin);
+	blenderchanges.linkedDialogue.push({michelin, {{michelin, "Man what a waste of time :("}}});
 
 	Attack* castiron = new Attack("CAST IRON", "bonked", true, -5, 15, 0, 1, 1, 1);
 	castiron->afterdesc = " with his cast iron pan";
@@ -875,17 +882,17 @@ NPC* SetupWorld() {
 	carlos->setRecruitDialogueChange("gaming");
 	carlos->addDismissalDialogue({{carlos, "i dont feel like hacking microsoft all over again"}, {carlos, "guess ill just play fortnite or something"}});
 
-	Item* carlosplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", factorytower, "All the monitors in the room turn off.\nCARLOS - BRO WHAT THE HECK\nSELF - Oh my bad.\nSELF - I didn't realize it would do that.\nCARLOS - I WAS LIKE SECONDS FROM STEALING ALL OF MICROSOFTS MONIES\nCARLOS - THAT WAS LIKE A MONTH LONG PROCESS\nSELF - You shouldn't steal monies.\nCARLOS - SHUT UP\nCARLOS - GIMME BACK THAT PLUG\nSELF - Alright.\nYou returned the PLUG to CARLOS.", true);
+	Item* carlosplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", factorytower, {{NULL, "All the monitors in the room turn off."}, {carlos, "BRO WHAT THE HECK"}, {self, "Oh my bad."}, {self, "I didn't realize it would do that."}, {carlos, "I WAS LIKE SECONDS FROM STEALING ALL OF MICROSOFTS MONIES"}, {carlos, "THAT WAS LIKE A MONTH LONG PROCESS"}, {self, "You shouldn't steal monies."}, {carlos, "SHUT UP"}, {carlos, "GIMME BACK THAT PLUG"}, {self, "Alright."}, {NULL, "You returned the PLUG to CARLOS."}}, true);
 	WorldChange& carlosplugchanges = ((WorldChangeItem*)carlosplug)->getChanges();
 	carlosplugchanges.recruitLinks.push(carlos);
 	carlosplugchanges.linkedDescriptions.push({carlos, "Black hat hacker with no hat and no vitamin D, whose attempt to hack Microsoft's monies you foiled."});
-	carlosplugchanges.linkedDialogue.push({carlos, "broooooo i was so close... >:("});
+	carlosplugchanges.linkedDialogue.push({carlos, {{carlos, "broooooo i was so close... >:("}}});
 	
 	Effect* infected = new Effect("INFECTED", 5, 10, 10);
 	Attack* backtrack = new Attack("BACKTRACK", " sent malware to the attacker's traced location", false, 0, 0, 0, 1, 1, 1);
 	backtrack->addEffect(infected);
 	carlos->setRecoilAttack(backtrack);
-	Attack* hack = new Attack("HACK", "hacked into", true, -5, 0, 0, 1, 1, 1, false, 0, 5); //no damage but steals sp which I think is pretty interesting
+	Attack* hack = new Attack("HACK", "hacked into", false, -5, 0, 0, 1, 1, 1, false, 0, 5); //no damage but steals sp which I think is pretty interesting
 	hack->afterdesc = "'s SP supply";
 	carlos->setBasicAttack(hack);
 	Attack* trojan = new Attack("TROJAN", "sent a trojan to", false, 7, 10, 20, 1, 1, 1);
@@ -908,7 +915,7 @@ NPC* SetupWorld() {
 	ddos->addEffect(overloaded);
 	carlos->addSpecialAttack(ddos);
 	ddos->addDescription("Direct all of Carlos's botnet's traffic, freezing them in place. (8 ATACK, 40 PIERCE, 3 hits)");
-	Attack* forkbomb = new Attack("FORK BOMB", "sent a forking bomb towards the enemy team", true, 14, 25, 40, 1, 1, 7, false, 15);
+	Attack* forkbomb = new Attack("FORK BOMB", "sent a forking bomb towards the enemy team", false, 14, 25, 40, 1, 1, 7, false, 15);
 	forkbomb->focushits = false;
 	carlos->addSpecialAttack(forkbomb);
 	forkbomb->addDescription("Send a forking bomb, covering the entire enemy team. (25 ATTACK, 40 PIERCE)");
@@ -918,7 +925,7 @@ NPC* SetupWorld() {
 	cryptojack->addEffect(cryptojacked);
 	carlos->addSpecialAttack(cryptojack);
 	cryptojack->addDescription("Set up a bitcoin mine in the target, stealing their HP and SP for 5 turns.");
-	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", true, 20, 20, 40, 1, 1, 7, false, 20);
+	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 20, 20, 40, 1, 1, 7, false, 20);
 	cascadingfailure->focushits = false;
 	cascadingfailure->synergies.push_back(infected);
 	cascadingfailure->synergies.push_back(overflow);
@@ -930,32 +937,108 @@ NPC* SetupWorld() {
 
 	//Princess Plum is support MARK: Plum
 	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", limbo, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 9));
-	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {NULL, "BROWSER - \"GWAHAHAHAHAHA!\""}});
+	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
+	plum->addDismissalDialogue({{plum, "Well, I'll be heading back to my kingdom!"}, {plum, "Bye bye!"}});
+	plum->addRecruitedDialogue({{plum, "Ahh, sure beats a diet of pure fungus!"}});
+	plum->addRecruitmentDialogue({{self, "Hey before you head back to your kingdom, wanna join my team?"}, {plum, "It would be my pleasure!"}});
 
-	//{{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {NULL, "BROWSER - \"GWAHAHAHAHAHA!\""}, {self, "What? Again?"}, {self, "How?"}, {plum, "Well you know."}, {plum, "Browser just came in his airship and kidnapped me."}, {self, "I see."}}
-	//{{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {NULL, "BROWSER - \"GWAHAHAHAHAHA!\""}, {self, "T_T"}}
+	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
+	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
+	askew->afterdesc = " askew";
+	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8f);
+	askew->addEffect(offbalance);
+	newtab->setBasicAttack(askew);
+	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 10, 0, 4, 5, 1);
+	newtab->addSpecialAttack(doabarrelroll);
+	Attack* adblock = new Attack("ADBLOCK", "is blocking attacks thrown at", false, 10, 0, 0, 1, 1, 1, true, 10);
+	adblock->protect = true;
+	adblock->prioritizeleader = true;
+	newtab->addSpecialAttack(adblock);
 
-	//racket
+	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
+	browser->setBoss(true);
+	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 10, 20, 1, 1, 1); //made of fine chromium
+	medge->afterdesc = " with his MICROSOFT EDGE";
+	browser->setBasicAttack(medge);
+	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
+	gsearch->afterdesc = "'s weaknesses";
+	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5f);
+	gsearch->addEffect(searched);
+	browser->addSpecialAttack(gsearch);
+	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
+	opennewtab->summon = newtab;
+	opennewtab->summonamount = 3;
+	browser->addSpecialAttack(opennewtab);
+	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 10, 15, 6, 6, 1);
+	yahoo->focushits = false;
+	browser->addSpecialAttack(yahoo);
+	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
+	Effect* buffering = new Effect("BUFFERING", 2);
+	buffering->falldamage = 80;
+	iexplorer->addEffect(buffering);
+	browser->addSpecialAttack(iexplorer);
+	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
+	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5f);
+	firefox->addEffect(foxfire);
+	browser->addSpecialAttack(firefox);
 
-	//big mushroom
+	//MARK: MAKE THIS A QUEUE
+	//like make a queue of respawn changes which stops popping at 1 item
+	//and a queue of defeat changes which pops normally
 
-	//burny blossom
+	NPC* kingbrowser = new NPC(*browser);
+	kingbrowser->setLeader(true, 18, castlethrone, true);
+	kingbrowser->setRespawnReq(plum); //respawns only when plum is there and not recruited
+	kingbrowser->setDialogue("GWAHAHAHAHAHA!");
+	kingbrowser->addRejectionDialogue({{browser, "You think I wanna join you?"}, {browser, "GWAHAHAHAHAHA!"}});
+	kingbrowser->setEscapable(false);
+	kingbrowser->addRecruitLink(plum);
+	kingbrowser->addLinkedConvo(kingbrowser, {{plum, "Thank you for saving me, young knight!"}, {self, "No problemo."}}); //only say the first time
+	kingbrowser->setTalkOnDefeat();
+	kingbrowser->addLinkedConvo(plum, {{plum, "I need to invest in better security."}, {plum, "All I have right now is some plumber."}}); //only say the first time
+	kingbrowser->addLinkedDialogue(plum, {{plum, "This Browser..."}, {plum, "I need to invest in better security..."}}); //add every time
+	WorldChange& kbrespawnchanges = kingbrowser->editRespawnChanges();
+	kbrespawnchanges.decruitLinks.push(plum);
+	kbrespawnchanges.linkedWelcomes.push({castlethrone, {{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}, {self, "What? Again?"}, {self, "How?"}, {plum, "Well you know."}, {plum, "Browser just came in his airship and kidnapped me."}, {self, "I see."}}}); //only add the first respawn
+	kbrespawnchanges.linkedDialogue.push({plum, {{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}, {self, "T_T"}}}); //add on every respawn
+	
+	castlethrone->setWelcome({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 
-	//turtle shell
-
-	//metal hat
-
-	//bobby bomb
-
-	//superstar
-
-	//lightning
-
-	//blue turtle shell
-
-	//life mushroom (gives extra life)
-
-
+	Attack* racket = new Attack("RACKET", "whacked", true, -5, 10, 0, 1, 1, 1);
+	racket->afterdesc = " with her tennis racket";
+	plum->setBasicAttack(racket);
+	Attack* bigmushroom = new Attack("BIG MUSHROOM", "gave a red embiggening mushroom to", false, 8, 0, 0, 0, 0, 0, true);
+	Effect* supermushroom = new Effect("SUPER", 3, 0, 0, 2.0f, 2.0f);
+	bigmushroom->addEffect(supermushroom);
+	plum->addSpecialAttack(bigmushroom);
+	Attack* turtleshell = new Attack("TURTLE SHELL", "kicked a green turtle shell towards", false, 6, 30, 0, 1, 1, 1);
+	plum->addSpecialAttack(turtleshell);
+	Attack* burnyblossom = new Attack("BURNY BLOSSOM", "gave a burny blossom to", false, 12, 0, 0, 0, 0, 0, true, 5);
+	Effect* fireing = new Effect("FIRE", 4);
+	fireing->attackeffect = onfire;
+	burnyblossom->addEffect(fireing);
+	plum->addSpecialAttack(burnyblossom);
+	Attack* bobbybomb = new Attack("BOBBY BOMB", "threw a Bobby Bomb at", false, 10, 40, 20, 1, 1, 3, false, 7);
+	plum->addSpecialAttack(bobbybomb);
+	Attack* metalhat = new Attack("METAL HAT", "gave a metal hat to", false, 14, 0, 0, 0, 0, 0, true, 10);
+	Effect* metallic = new Effect("METAL", 3, 0, 0, 5.0f, 2.5f);
+	metalhat->addEffect(metallic);
+	plum->addSpecialAttack(metalhat);
+	Attack* lightning = new Attack("LIGHTNING", "used a lightning bolt to shock the enemy team", false, 22, 30, 30, 1, 1, 7, 14);
+	lightning->focushits = false;
+	Effect* mini = new Effect("MINI", 3, 0, 0, 0.5f, 0.5f);
+	lightning->addEffect(mini);
+	plum->addSpecialAttack(lightning);
+	Attack* blueshell = new Attack("BLUE TURTLE SHELL", "threw a winged blue turtle shell, which went flying at", false, 20, 80, 40, 1, 1, 3, false, 16);
+	plum->addSpecialAttack(blueshell);
+	Attack* superstar = new Attack("SUPER STAR", "gave a super star to", false, 25, 0, 0, 0, 0, 0, true, 18);
+	Effect* invincible = new Effect("INVINCIBLE", 3, 0, 0, 1, 2.0f);
+	invincible->invincible = true;
+	superstar->addEffect(invincible);
+	plum->addSpecialAttack(superstar);
+	Attack* lifemushroom = new Attack("LIFE MUSHROOM", "gave a green life mushroom to", false, 30, 0, 0, 0, 0, 0, true, 20);
+	lifemushroom->extralives = 1;
+	plum->addSpecialAttack(lifemushroom);
 
 	//Gambler Graham is the rng guy MARK: Graham
 
@@ -1095,9 +1178,6 @@ NPC* SetupWorld() {
 	Effect* buff = new Effect("BUFF", 4, 0, 0, 1.5f, 1.5f, 1.5f, 1.5f);
 	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 2.0f, 2.0f, 2.0f, 2.0f);
 	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5f, 2.5f, 2.5f, 2.5f);
-
-	//Effect* multiposition = new Effect("MULTIPOSITION", 999999, -30, 10, 2, 70, 70, 70);
-	
 	
 	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 2147483647); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
 
@@ -1124,7 +1204,7 @@ NPC* SetupWorld() {
 	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - I don't understand that book. But if it interests you then great! Oh, and thank you for your patronage!");	
 
 	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5);
-	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", "put the DEER KEY in the keyhole. The gate has been unlocked!", limbo, LOCK);
+	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", {{NULL, "You put the DEER KEY in the keyhole."}, {NULL, "The forest gate has been unlocked!"}}, limbo, LOCK);
 	mrdeer->setGift(deerkey);
 	mrdeer->addConversation({{self, "Hello Mr. Deer!"},
 							 {NULL, "MR DEER - *salutatory deer noises*"}, //we have to use this weird fake name printing so we can have the * without the "
@@ -1139,7 +1219,7 @@ NPC* SetupWorld() {
 	mrdeer->setDialogue({{NULL, "MR DEER - *deer noises*"}});
 	mrdeer->addRejectionDialogue({{NULL, "MR DEER - *no thank you deer noise*"}});
 
-	NPC* factelder = new NPC("FACTORIELDER", "FELVIN", "Antique elder who overlooks the factory.\nHe's bolted to the wall and has a metallic mustache.", factory1, 100, Stats(200, 80, 120, 10, 50, 10, 30));
+	NPC* factelder = new NPC("FACTORY ELDER", "FELVIN", "Antique mechanical elder who overlooks the factory.\nHe's bolted to the wall and has a metallic mustache.", factory1, 100, Stats(200, 80, 120, 10, 50, 10, 30));
 	Conversation factconvo = {{factelder, "Child, Have you seen the lava sea?"},
 							  {factelder, "It's been abnormally high recently, covering up the road to BURGERSBURG."},
 							  {factelder, "But the allure of BURGER is too great!"},
@@ -1169,13 +1249,6 @@ NPC* SetupWorld() {
 	factelder->addConversation(factconvo);
 	factelder->addConversation({{self, "So what's it like being on a wall your whole life?"}, {factelder, "Kind of boring, but I have plenty of time to come up with a lot of stories."}, {self, "I see."}});
 	factelder->setDialogue("You must drain the lava before more lives are lost!");
-	//So you've drained the lava sea!
-	//Very good! Very good.
-	//...
-	//Hm...
-	//Don't you think their intense desire for a BURGER seems a bit strange?
-	//Unnatural even?
-	//I would advise you to be wary.
 	factelder->addRejectionDialogue("I only oversee this factory; I cannot leave the wall.");
 
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 0));
@@ -1203,7 +1276,7 @@ NPC* SetupWorld() {
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
 							{self, "Yoooo nice thanks.\n\n\n"}};
-	devconvo->skipcondition = ISBERNARD;
+	devconvo.skipcondition = ISBERNARD;
 	Conversation devconvo2 = {{developer, "Ayy BERNARD how's it going?"},
 							{self, "Pretty good!"},
 							{self, "The player actually named me the correct name!"},
@@ -1211,7 +1284,7 @@ NPC* SetupWorld() {
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
 							{self, "Yoooo nice thanks.\n\n\n"}};
-	devconvo->alt = &devconvo;
+	devconvo.alt = &devconvo2;
 	developer->addConversation(devconvo);
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
@@ -1269,6 +1342,8 @@ NPC* SetupWorld() {
 	//talk about bosses
 	//zuul
 	//burger all caps lore
+	//keep thinking michelin is named jim
+	//viola after fire fight
 
 	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
 	pshrimplebeam->instakill = true;
@@ -1319,7 +1394,7 @@ NPC* SetupWorld() {
 	skateboard->setTakable();
 	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
 
-	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", "applied the sunscreen. No amount of heat should bother you now!", limbo, HEAT, true);
+	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", {{NULL, "You applied the sunscreen."}, {NULL, "No amount of radiation should bother you now!"}}, limbo, HEAT, true);
 	KeyItem* _sunscreen = (KeyItem*)sunscreen;
 	_sunscreen->setTarget(volcanoentrance);
 	desertshopfixed->setStock(sunscreen, 1, 20, "MERRO - \"Thank you for your monies.\"");
@@ -1365,12 +1440,8 @@ NPC* SetupWorld() {
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 20, 20, 1, 1, 1);
-	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", "threw the dynamite at the the rubble. You hear a loud KABOOM! The exit has been unblocked!", limbo, RUBBLE, true, pdynamite);
+	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
 	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
-
-	Item* cactiberry = new MaterialItem("CACTIBERRY", "Special berry that is pale green and prickly, adorned with a pink flower.", berryroom);
-	Item* radiberry = new MaterialItem("RADIBERRY", "Special radioactive berry that glows neon green. Might wanna handle this one quickly.", factorygarden);
-	Item* ninjaberry = new MaterialItem("NINJABERRY", "Special black berry pertaining to the ninjas, complete with a natural belt.", berryroom);
 
 	NPC* bob = new NPC("", "BOB", "A small child wearing a newsboy cap. He has a hard time making human friends and prefers plants.", limbo, 0);
 	Conversation bobcon = {{bob, "Oh my poor friend Cacty!"},
@@ -1406,6 +1477,8 @@ NPC* SetupWorld() {
 							   {franklin, "Not really."},
 							   {self, "How about Practical Pueblo?"},
 							   {franklin, "I'll bring it up with the HOA."}});
+	franklin->addRejectionDialogue("I must watch over the town, I'm afraid I haven't got time for adventuring.");
+	franklin->setDialogue("I'm happy to see this town back in its lively state!");
 
 	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant and owner of the desert store. He really wants your monies.", limbo, 12);
 	merchant->setDialogue("Welcome, my friend, to my store.");
@@ -1417,7 +1490,7 @@ NPC* SetupWorld() {
 	//*...*
 	//____ is frozen in the air.
 
-	Item* valve = new WorldChangeItem("WATER VALVE", "A valve on the pipe managing the spring's water. It's currently redirecting the water away from the oasis.", minespring, "turn the valve counterclockwise. The spring's water is now flowing to the oasis!");
+	Item* valve = new WorldChangeItem("WATER VALVE", "A valve on the pipe managing the spring's water. It's currently redirecting the water away from the oasis.", minespring, {{NULL, "You turn the valve counterclockwise."}, {NULL, "The spring's water is now flowing to the oasis!"}});
 	WorldChange& valvechanges = ((WorldChangeItem*)valve)->getChanges();
 	valvechanges.worldcon = VALVEUSED;
 	valvechanges.linkedConversations.push({bob, {{bob, "The oasis has filled up with water!"}, {bob, "Do you know how this is?"}, {self, "Yeah I just turned some valve underground."}, {bob, "Remarkable!"}}});
@@ -1429,21 +1502,21 @@ NPC* SetupWorld() {
 	valvechanges.recruitLinks.push(cacty);
 	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
 
-	Item* cloaking = new KeyItem("CLOAKING DEVICE", "Cloaking device for getting past advanced security systems.", "equipped the cloaking device. No security system can spot you now!", limbo, TEMPLE, true);
+	Item* cloaking = new KeyItem("CLOAKING DEVICE", "Cloaking device for getting past advanced security systems.", {{NULL, "You equipped the cloaking device."}, {NULL, "No security system can spot you now!"}}, limbo, TEMPLE, true);
 	KeyItem* _cloaking = (KeyItem*)cloaking;
 	_cloaking->setTarget(richneighborhood1);
 	_cloaking->setTarget(richneighborhood2);
 	_cloaking->setTarget(richneighborhood3);
 
 	//make coolant attack that slows down enemies
-	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", "dumped some coolant onto the scorching sands. The sands cooled down!", deserttempleentrance, SAND, false);
-	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", "used the pole to go over the chasm!", desertpole, CHASM, true);
-	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
+	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", {{NULL, "You poured some sand coolant onto the scorching sands."}, {NULL, "The sands cooled down!"}}, deserttempleentrance, SAND, false);
+	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", {{NULL, "You used the pole to go over the chasm!"}}, desertpole, CHASM, true);
+	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", {{NULL, "You hopped into the SPARE MINECART and went to the other side of the track."}}, mineshaftside, TRACK, false);
 
-	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
-	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaftside, TRACK, false);
-	Item* minecart3 = new MovementItem("NORTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft2, TRACK, false);
-	Item* minecart4 = new MovementItem("SOUTH MINECART", "Cart used in mining and going over tracks.", "hopped into the MINECART and went to the other side of the track.", mineshaft3, TRACK, false);
+	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the WEST MINECART and went to the other side of the track."}}, mineshaft3, TRACK, false);
+	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the EAST MINECART and went to the other side of the track."}}, mineshaftside, TRACK, false);
+	Item* minecart3 = new MovementItem("NORTH MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the NORTH MINECART and went to the other side of the track."}}, mineshaft2, TRACK, false);
+	Item* minecart4 = new MovementItem("SOUTH MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the SOUTH MINECART and went to the other side of the track."}}, mineshaft3, TRACK, false);
 	minecart1->setTakable(false);
 	minecart2->setTakable(false);
 	minecart3->setTakable(false);
@@ -1453,18 +1526,18 @@ NPC* SetupWorld() {
 	minecart3->setDenial("This minecart is clamped onto the minecart tracks!");
 	minecart4->setDenial("This minecart is clamped onto the minecart tracks!");
 
-	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", "pushed down onto the DETONATOR lever. You hear a loud KABOOM! An exit SOUTH has been opened!", mineshortcut, mineshortcut, SOUTH, mineshaftside);
-	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", "There is nowhere to put the DOWN BUTTON! ... You shove the DOWN BUTTON into the wall. The elevator can go DOWN now!", burgsafe, elevator, DOWN, elevatorbottom);
+	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", {{NULL, "You pushed down onto the DETONATOR lever."}, {NULL, "*KABOOM!*"}, {NULL, "An exit SOUTH has been opened!"}}, mineshortcut, mineshortcut, SOUTH, mineshaftside);
+	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go DOWN now!"}}, burgsafe, elevator, DOWN, elevatorbottom);
 
-	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", "used the FORKLIFT to move the collapsed ceiling material out of the way.", heavymachineryroom, STUFF, false);
+	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", {{NULL, "You used the FORKLIFT to move the collapsed ceiling material out of the way."}}, heavymachineryroom, STUFF, false);
 	//you can use the scissor lift to get to the ninja village I guess, I'll keep it because it technically makes sense and it's funny
-	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", heavymachineryroom, HIGH, false);
+	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, heavymachineryroom, HIGH, false);
 	scissorlift->setDropToUse(true);
 
-	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofsw, HIGH, false);
-	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofnw, HIGH, false);
-	Item* scissorliftse = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofse, HIGH, false);
-	Item* scissorliftne = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", "toggled the extension of the SCISSOR LIFT.", factoryroofne, HIGH, false);
+	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofsw, HIGH, false);
+	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofnw, HIGH, false);
+	Item* scissorliftse = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofse, HIGH, false);
+	Item* scissorliftne = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofne, HIGH, false);
 	scissorliftsw->setTakable(false);
 	scissorliftnw->setTakable(false);
 	scissorliftse->setTakable(false);
@@ -1473,32 +1546,29 @@ NPC* SetupWorld() {
 	Item* rbtree = new InfoItem("RED-BLACK TREE", "A very cool tree with red and black fruits, rebalancing itself as it grows.", "You tried to grab one of the fruits but the tree rebalanced itself and you fell.", mountainpeak);
 	rbtree->setDenial("And how do you plan to TAKE an entire tree, exactly?");
 
+	Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", controlroom1, {{NULL, "You pull the drainage lever."}, {NULL, "You see the lava level lowering outside!"}});
+	WorldChange& panelchanges1 = ((WorldChangeItem*)controlpanel1)->getChanges();
+	panelchanges1.exitUnblocks.push({volcano2, NORTH});
+	panelchanges1.exitUnblocks.push({volcano2, DOWN});
+	panelchanges1.worldcon = SWITCHUSED;
 
-
-	/*Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom1, LAVA, true);
-	controlpanel1->setTakable(false);
-	KeyItem* controls1 = (KeyItem*)controlpanel1;
-	controls1->setTarget(volcano2);
-	//SWITCHUSED
-
-	Item* controlpanel2 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom2, LAVA, true);
-	controlpanel2->setTakable(false);
-	KeyItem* controls2 = (KeyItem*)controlpanel2;
-	controls2->setTarget(volcano4);
-	controls2->setTarget(sewerentrance1);
+	Item* controlpanel2 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", controlroom2, {{NULL, "You pull the drainage lever."}, {NULL, "You see the lava level lowering outside!"}});
+	WorldChange& panelchanges2 = ((WorldChangeItem*)controlpanel2)->getChanges();
+	panelchanges2.exitUnblocks.push({sewerentrance1, DOWN});
+	panelchanges2.exitUnblocks.push({volcano4, NORTHEAST});
 	
-	Item* controlpanel3 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", "pulled the drainage lever. You see the lava level lowering outside!", controlroom3, LAVA, true);
-	controlpanel3->setTakable(false);
-	KeyItem* controls3 = (KeyItem*)controlpanel3;
-	controls3->setTarget(sewerentrance2);
-	controls3->setTarget(volcano6);
-	controls3->setTarget(sewer2);
+	Item* controlpanel3 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", controlroom3, {{NULL, "You pull the drainage lever."}, {NULL, "You see the lava level lowering outside!"}});
+	WorldChange& panelchanges3 = ((WorldChangeItem*)controlpanel3)->getChanges();
+	panelchanges3.exitUnblocks.push({sewerentrance2, DOWN});
+	panelchanges3.exitUnblocks.push({volcano6, NORTHWEST});
+	panelchanges3.exitUnblocks.push({volcano6, DOWN});
 	
-	Item* masterswitch = new WorldChangeItem("MASTER DRAINAGE BUTTON", "Huge red button, which will fully drain the lava from the highlands.", "jumped onto the MASTER DRAINAGE BUTTON. The sewers rumble. You see the lava below fully drain! (though it's still flowing in)", sewerplant, LAVA, true);
-	masterswitch->setTakable(false);
-	KeyItem* _masterswitch = (KeyItem*)masterswitch;
-	_masterswitch->setTarget(volcano7);
-	//LAVADRAINED*/
+	Item* masterswitch = new WorldChangeItem("MASTER DRAINAGE BUTTON", "Huge red button, which will fully drain the lava from the highlands.", sewerplant, {{NULL, "You jump onto the MASTER DRAINAGE BUTTON."}, {NULL, "The sewers rumble."}, {NULL, "*sewer rumbling noises*"}, {NULL, "The lava below has become unstuck!"}, {NULL, "The lava is flowing properly now; the lava sea is at its natural level."}});
+	WorldChange& masterschanges = ((WorldChangeItem*)masterswitch)->getChanges();
+	masterschanges.exitUnblocks.push({volcano7, NORTH});
+	masterschanges.linkedConversations.push({factelder, {{factelder, "So you've drained the lava sea!"}, {self, "Yep."}, {factelder, "Very good! Very good."}, {factelder, "..."}, {factelder, "Hm..."}, {factelder, "Don't you think their intense desire for a BURGER seems a bit strange?"}, {factelder, "Unnatural even?"}, {factelder, "I would advise you to be wary."}}});
+	masterschanges.linkedDialogue.push({factelder, {{factelder, "Well done with the lava!"}, {factelder, "Stay safe, child."}}});
+	masterschanges.worldcon = LAVADRAINED;
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -1968,7 +2038,7 @@ NPC* SetupWorld() {
 	Attack* spatula = new Attack("UPSLASH", "flipped", true, 6, 10, 0, 1, 1, 1);
 	spatula->afterdesc = " into the air with a spatula";
 	Effect* spatulad = new Effect("UPSLASHED", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
-	spatula->remove = true;
+	spatulad->remove = true;
 	spatulad->falldamage = 20;
 	spatula->addEffect(spatulad);
 	ninjachef->addSpecialAttack(spatula);
@@ -1984,7 +2054,7 @@ NPC* SetupWorld() {
 	ninjachief->setBoss(true);
 	Attack* ninjakick = new Attack("NINJA KICK", "jumped at", true, -5, 20, 0, 1, 1, 1);
 	ninjakick->afterdesc = " with a flying side kick";
-	ninjachief->setBasicAttack(ninjachief);
+	ninjachief->setBasicAttack(ninjakick);
 	Attack* kiloshuriken = new Attack("KILOSHURIKEN", "threw dual helicopter rotors at the team", false, 6, 30, 20, 2, 2, 3);
 	ninjachief->addSpecialAttack(kiloshuriken);
 	Attack* acupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 8, 2, 15, 4, 4, 1);
@@ -2344,45 +2414,7 @@ NPC* SetupWorld() {
 	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation upon", false, 20, 40, 100, 1, 1, 3);
 	lavaguardian->addSpecialAttack(gammarayburst);
 
-	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
-	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
-	askew->afterdesc = " askew";
-	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8f);
-	askew->addEffect(offbalance);
-	newtab->setBasicAttack(askew);
-	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 10, 0, 4, 5, 1);
-	newtab->addSpecialAttack(doabarrelroll);
-	Attack* adblock = new Attack("ADBLOCK", "is blocking attacks thrown at", false, 10, 0, 0, 1, 1, 1, true, 10);
-	adblock->protect = true;
-	adblock->prioritizeleader = true;
-	newtab->addSpecialAttack(adblock);
-
-	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
-	browser->setBoss(true);
-	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 10, 20, 1, 1, 1); //made of fine chromium
-	medge->afterdesc = " with his MICROSOFT EDGE";
-	browser->setBasicAttack(medge);
-	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
-	gsearch->afterdesc = "'s weaknesses";
-	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5f);
-	gsearch->addEffect(searched);
-	browser->addSpecialAttack(gsearch);
-	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
-	opennewtab->summon = newtab;
-	opennewtab->summonamount = 3;
-	browser->addSpecialAttack(opennewtab);
-	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 10, 15, 6, 6, 1);
-	yahoo->focushits = false;
-	browser->addSpecialAttack(yahoo);
-	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
-	Effect* buffering = new Effect("BUFFERING", 2);
-	buffering->falldamage = 80;
-	iexplorer->addEffect(buffering);
-	browser->addSpecialAttack(iexplorer);
-	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
-	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5f);
-	firefox->addEffect(foxfire);
-	browser->addSpecialAttack(firefox);
+	//MARK: browser goes here
 	
 	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
 	Attack* oopsy = new Attack("SNOW BASH", "tripped", 50, 15, 0, 1, 1, 1, true);
@@ -2701,7 +2733,7 @@ NPC* SetupWorld() {
 	jimshady2->addConversation({{jimshady2, "I'm JIM SHADY, yes I'm the REAL SHADY!"},
 								{self, "No you still aren't."},
 								{jimshady2, "Nobody asked you."}});
-	jimshady2->addRejectionDialogue("No begone.");
+	jimshady2->addRejectionDialogue("No. Begone.");
 
 	NPC* canyonguard = new NPC(*skeleminer);
 	canyonguard->setLeader(true, 6, canyon3);
@@ -3006,45 +3038,7 @@ NPC* SetupWorld() {
 	drainguard->setLeader(true, 15, sewerplant);
 	drainguard->setDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
 	drainguard->addRejectionDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-
-	
-
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-
-
-	
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-
-
-	
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-
-
-	
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-
-	
-
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-
-
-	
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-
-
-	
-	//drainguard->guardItem(masterswitch); MARK: UNCOMMENT THIS PLEEEEEEEEEAAAAAAAAAAAAAASSSSSSSSSSEEEE    PLSPLS
-
-	
-
+	drainguard->guardItem(masterswitch);
 	
 	//put a treasure chest in the mines (just monies), and guard the room to it with a rockbug or something (or put the skeleminer duo here? and make a molten miner where the duo is right now?)
 
@@ -3055,20 +3049,14 @@ NPC* SetupWorld() {
 	lavaguard->addRejectionDialogue("*ethereal breathing*");
 	lavaguard->setEscapable(false);
 
-	NPC* tabguard = new NPC(*browser);
+	NPC* tabguard = new NPC(*newtab);
 	tabguard->setLeader(true, 12, castlehall, false);
 	tabguard->setParty(newtab, newtab);
 	tabguard->blockExit(SOUTH, ENEMY, "blocked by the NEW TAB");
 	tabguard->setDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
 	tabguard->addRejectionDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
-
-	NPC* kingbrowser = new NPC(*browser);
-	kingbrowser->setLeader(true, 18, castlethrone, false);
-	kingbrowser->setDialogue("GWAHAHAHAHAHA!");
-	kingbrowser->addRejectionDialogue({{browser, "You think I wanna join you?"}, {browser, "GWAHAHAHAHAHA!"}});
-	kingbrowser->setEscapable(false);
-	kingbrowser->addRecruitLink(plum);
-	kingbrowser->addLinkedConvo(plum, {{plum, "Thank you for saving me, young knight!"}, {self, "No problemo."}});
+	
+	//MARK: BROWSER GOES HERE
 
 	NPC* mountainguard = new NPC(*snowman);
 	mountainguard->setLeader(true, 15, mountain, false);
@@ -3320,7 +3308,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			if (!strcmp(name, "FLORIAN")) {
 				cout << "\n" << (*party)[0]->getName() << " - \"Yeah that's what I was thinking too!\"";
 				CinPause();	//      \/ \/ \/ reference to the initial naming help joke
-			} else if (!strcmp(name, "HELP") || !strcmp(name, "YOUR LOBSTER'S NAME") || !strcmp(name, "YOUR LOBSTER'S NAME HERE") || !strcmp(name, "YOUR LOBSTER'S NAME HERE!")) { //if the player followed the instructions too literally
+			} else if (!strcmp(name, "HELP") || !strncmp(name, "YOUR LOBSTER'S NAME", 19)|| !strncmp(name, "YOUR LOBSTERS NAME", 18)) { //if the player followed the instructions too literally
 				cout << "\n" << (*party)[0]->getName() << " - \"...\"";
 				CinPause();
 			}
@@ -3400,7 +3388,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		WorldChangeItem* changer = (WorldChangeItem*)item;
 		if (!changer->getTakeToUse()) return;
 		applyWorldChange(changer->getChanges()); //do the changes
-		cout changer->getUseText(); //prints what the player did and what it accomplished
+		printConversation(&changer->getUseText(), false); //prints what the player did and what it accomplished
 		deleteItem(currentRoom, inventory, item); //we shouldn't keep world change items because the taking was the using and they're consumables
 	}
 }
@@ -3603,14 +3591,13 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			cout << "\nThere is nothing to use the " << itemname << " on here.";
 			return;
 		} //prints a description of what the key item did (because it's not only literal keys)
-		cout << "\nYou " << key->getUseText();
+		printConversation(&key->getUseText(), false);
 	//movement items are used to go through a blocked exit despite the fact that it's blocked, for example a boat over a river
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
 		for (const char* exit : currentRoom->getBlocks()) { //tries to find a blocked exit that matches the movement item's block type
 			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
-				cout << "\nYou " << mover->getUseText(); //prints what exactly the movement item did
-				CinPause();
+				printConversation(&mover->getUseText(), true); //prints what exactly the movement item did
 				travel(currentRoom, exit, party, inventory, true); //force travels to the found room
 				return; //returns so we don't teleport to another room (and movement items don't get used up anyway, so no need for the deletion check)
 			}
@@ -3629,7 +3616,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		//sets the exit back to the current room in the reverse of the given direction
 		paver->getDestination()->setExit(const_cast<char*>(ReverseDirection[paver->getDirection()]), currentRoom);
 		//prints what exactly the paver item did
-		cout << "\nYou " << paver->getUseText();
+		printConversation(&paver->getUseText(), false);
 	//info items print some info
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
@@ -3668,12 +3655,49 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	//world change items do changes to the world, just like when npcs get defeated and do all that stuff
 	} else if (!strcmp(item->getType(), "worldchange")) {
 		WorldChangeItem* changer = (WorldChangeItem*)item;
-		if (changer->getTakeToUse) { //you can't use takeToUse world change items normally
+		if (changer->getTakeToUse()) { //you can't use takeToUse world change items normally
 			cout << "\nYou can't use the " << itemname << "!";
 			return;
 		}
 		applyWorldChange(changer->getChanges()); //do the changes
-		cout << "\nYou " << changer->getUseText(); //prints what the player did and what it accomplished
+		printConversation(&changer->getUseText(), false); //prints what the player did and what it accomplished
+	//blender items blend a group of items into a new item
+	} else if (!strcmp(item->getType(), "blender")) {
+		BlenderItem* blender = (BlenderItem*)item;
+		vector<const char*> missingingredients;
+		vector<Item*> foundingredients;
+		for (const char* ingredient : blender->getIngredients()) { //check if weave all the ingredients by sorting them into have and not have
+			bool wegotit = false;
+			for (Item* item : *inventory) {
+				if (!strcmp(item->getName(), ingredient)) {
+					foundingredients.push_back(item);
+					wegotit = true;
+					break;
+				}
+			}
+			if (!wegotit) missingingredients.push_back(ingredient);
+		}
+		if (!missingingredients.empty()) { //print which ingredients we still need
+			cout << "\nYou don't have the required ingredients to use the " << itemname << "!\nMissing ingredients: " << missingingredients[0];
+			int len = missingingredients.size();
+			if (len > 2) cout << ",";
+			cout << " ";
+			for (int i = 1; i < len - 1; i++) { //print the rest of the items minus the last one if there are 3+ items
+				cout << missingingredients[i] << ", "; //seperate with comma
+			}
+			if (len > 1) { //print the final item with "and" included (if >1 items)
+				cout << "and " << missingingredients[len - 1];
+			}
+			return; //return so we don't give anything
+		}
+		for (Item* item : foundingredients) { //delete all the items being used up
+			deleteItem(currentRoom, inventory, item);
+		}
+		Item* product = blender->getProduct();
+		product->unRoom(); //removes the item from the room
+		inventory->push_back(product); //adds it to the inventory
+		printConversation(&blender->getUseText(), true); //prints the blender's use text
+		cout << "\nYou got the " << product->getName() << "!";
 	//you can't use materials; they get a unique error message
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
@@ -3943,17 +3967,17 @@ int main() {
 	} 
 	if (!strcmp(name, "BERNARD")) { //Bernard is the character's canonical name
 		cout << "\nBERNARD - \"Oh wow that's my actual name!\"";
-		ISBERNARD = true;
+		WorldState[ISBERNARD] = true;
 		CinPause();
 	} else if (!strcmp(name, "HELP")) { //Help complains if you followed the previous instructions and typed HELP (for help)
 		cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
 		CinPause();
 	//if the player typed anything by following the instructions too literally, the main character remarks on that
-	} else if (!strcmp(name, "HELP FOR HELP") || !strcmp(name, "YOUR NAME") || !strcmp(name, "YOUR NAME HERE") || !strcmp(name, "YOUR NAME HERE!")) {
-		cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
-		CinPause();
 	} else if (!strcmp(name, "YOUR NAME HERE!)")) {
 		cout << "\n" << name << " - \"You don't include the parenthesis cause it's closing the one from before...\"";
+		CinPause();
+	} else if (!strncmp(name, "HELP FOR HELP", 13) || !strncmp(name, "YOUR NAME", 9)) {
+		cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
 		CinPause();
 	}
 

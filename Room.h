@@ -57,7 +57,7 @@ public:
 	void setGym(bool _gym = true); //sets if this room is a gym
 	void setConveyor(Room* altroom, const char* conveyorexit); //sets if this room is a conveyor + references the FORWARD exit in conveyor rooms
 	void setDescription(const char* _description); //reset the description, used by items that change things
-	void setWelcome(const char* text); //set welcome text for the area
+	void setWelcome(Conversation text); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char* buydesc = ""); //adds an item for sale
 	void removeStock(Item* item); //removes an item from sale
 	void setBackup(Item* item); //sets a backup item for the room
@@ -74,7 +74,7 @@ public:
 private:
 	const char* description; //describes the player's surroundings in this room (eg. (You are ) "in an amazingly incredible room full of stuff.")
 	
-	vector<const char*> welcomeText; //message that is played when the player first gets here
+	Conversation welcomeText; //message that is played when the player first gets here
 
 	bool welcome = false; //if this room has a welcome message for an area
 
@@ -95,6 +95,7 @@ private:
 
 	bool station; //if it's a train station
 	bool gym; //if it's the gym
+	bool faraway; //if you can't dismiss teammates here
 
 	Item* backup; //item that is placed here only if the player doesn't have one already
 };

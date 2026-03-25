@@ -69,7 +69,7 @@ public: //you need to set stats on creation
 	int getFrozen(); //freeze amount
 	int getRecovering(); //recovery amount
 	int getConvoSize(); //how many conversations are left to say
-	bool getRespawn(); //if they respawn
+	bool getRespawn(); //if they should respawn
 	bool getBoss();
 	float getAttMultiplier();
 	float getDefMultiplier();
@@ -81,11 +81,13 @@ public: //you need to set stats on creation
 	int getGuard();
 	bool getAway();
 	Effect* getEffect(const char* effect); //find the effect with that name in the npc
-
-	NPC* getGuardian();
+	vector<NPC*> getGuardians();
 	NPC* getGuarding();
 	NPC* getParrying();
 	bool getInvincible();
+	int popExtraLives();
+	Effect* getAttackEffect();
+	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -145,9 +147,12 @@ public: //you need to set stats on creation
 	void setExtraMonies(int monies);
 	void setTalkOnRecruit(bool talk);
 	void setGuardian(NPC* npc);
+	void removeGuardian(NPC* npc);
 	void setGuarding(NPC* npc);
 	void setParrying(NPC* _parrying);
 	void setInvincible(bool _invincible);
+	void addExtraLives(int howmany);
+	void setAttackEffect(Effect* effect);
 	void setGymStart(time_t start);
 	void setWorldCondition(size_t cond); //set a world condition for this npc to edit on defeat
 
@@ -204,6 +209,8 @@ protected:
 	Attack* recoilattack = NULL; //the attack that happens when this npc is hit
 	Attack* opener = NULL; //the attack that happens when this npc goes into battle
 
+	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack
+
 	vector<Effect> effects; //the effects affecting this npc
 	map<Attack*, int> attackWeight; //the weight of the npc's attacks
 
@@ -230,9 +237,9 @@ protected:
 	bool isEnemy = false;
 	bool isBoss = false; //bosses cannot be instakilled
 
-	vector<NPC*> guardians = NULL; //what npcs are guarding this one
+	vector<NPC*> guardians; //what npcs are guarding this one
 	NPC* guarding = NULL; //what npc this npc is guarding
-	Atack* guardattack = NULL; //what attack the npc might use instead of just taking the hit
+	Attack* guardattack = NULL; //what attack the npc might use instead of just taking the hit
 
 	bool isLobster = false; //if it's the lobster
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
@@ -252,6 +259,8 @@ protected:
 
 	bool invincible = false;
 	NPC* parrying = NULL; //who we parrying
+
+	int extralives = 0; //how many extra lives this npc has
 	
 	int level = 0;
 	int xp = 0; //how much xp the npc has stored up
@@ -268,7 +277,8 @@ protected:
 	bool respawns = true; //if the npc appears again after battle
 	
 	NPC* respawnreq = NULL; //who needs to be present (and not recruited) in order to respawn
-	WorldChange respawnchanges; //what changes when this guy respawns
+	WorldChange respawnchanges; //what changes when this guy respawns (repeats, like it does the same changes on every respawn)
+	bool gotRespawnChanges = false;
 
 	bool forcebattle = false; //if we force the player to battle after talking
 	bool talkOnDefeat = false; //if the npc talks when defeated

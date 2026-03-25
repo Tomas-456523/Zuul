@@ -44,7 +44,7 @@ struct Attack {
 
 	Effect* appliedeffect = NULL; //targets get affected by this effect when hit
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
-	vector<Effect*> synergies = NULL; //if the target has these effects effect, the attack power goes up by 1.5x
+	vector<Effect*> synergies; //if the target has these effects effect, the attack power goes up by 1.5x each
 	Effect* cancel = NULL; //attack removes this effect
 
 	Attack* recoilatt = NULL;
@@ -56,6 +56,8 @@ struct Attack {
 	bool contact; //if the attacker makes contact with the target
 	bool beneficial = false; //if you want to get hit by this
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated
+
+	int extralives = 0; //how many extra lives to give to the target
 
 	bool risky = false; //if we shouldn't do this move to a teammate below half health
 

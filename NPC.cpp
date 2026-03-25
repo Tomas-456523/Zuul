@@ -210,6 +210,9 @@ bool NPC::getLobster() {
 	return isLobster;
 }
 bool NPC::getRespawn() {
+	if (respawnreq) { //if we have a respawn requirement, we only respawn if the req npc is not recruited, and they are in the same room as this npc
+		return !respawnreq->getRecruited() && getNPCInVector(currentRoom->getNpcs(), respawnreq->getName());
+	}
 	return respawns;
 }
 bool NPC::getBoss() {
@@ -233,8 +236,8 @@ float NPC::getSPUseMultiplier() {
 float NPC::getDamageMultiplier() {
 	return damageMultiplier;
 }
-NPC* NPC::getGuardian() {
-	return guardian;
+vector<NPC*> NPC::getGuardians() {
+	return guardians;
 }
 NPC* NPC::getGuarding() {
 	return guarding;
@@ -244,6 +247,17 @@ NPC* NPC::getParrying() {
 }
 bool NPC::getInvincible() {
 	return invincible;
+}
+int NPC::popExtraLives() { //return the extra lives then decrement the amount if we have some
+	if (extralives) return extralives--;
+	return 0; //otherwise return 0 extra lives and don't decrement into the negatives
+}
+Effect* NPC::getAttackEffect() {
+	return attackeffect;
+}
+WorldChange& NPC::editRespawnChanges() { //gets respawn changes for editing
+	gotRespawnChanges = true; //we only get the changes if we want to add some changes, so set got respawn changes to true
+	return respawnchanges;
 }
 time_t NPC::getGymStart() {
 	return gymStart;
@@ -432,7 +446,10 @@ void NPC::setTalkOnRecruit(bool talk) {
 	speakOnRecruit = talk;
 }
 void NPC::setGuardian(NPC* npc) {
-	guardian = npc;
+	guardians.push_back(npc);
+}
+void NPC::removeGuardian(NPC* npc) {
+	guardians.erase(remove(guardians.begin(), guardians.end(), npc), guardians.end());
 }
 void NPC::setGuarding(NPC* npc) {
 	guarding = npc;
@@ -442,6 +459,15 @@ void NPC::setParrying(NPC* _parrying) {
 }
 void NPC::setInvincible(bool _invincible) {
 	invincible = _invincible;
+}
+void NPC::addExtraLives(int howmany) {
+	extralives += howmany;
+}
+void NPC::setAttackEffect(Effect* effect) {
+	attackeffect = effect;
+}
+void NPC::setRespawnReq(NPC* req) {
+	respawnreq = req;
 }
 void NPC::setGymStart(time_t start) {
 	gymStart = start;
@@ -811,6 +837,10 @@ void NPC::defeat() {
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;
+	if (gotRespawnChanges) { //if we have respawn changes
+		WorldChange changes = respawnchanges; //use copy so the respawn changes don't get reset
+		applyWorldChange(changes);
+	}
 }
 void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc's name
 	strcat(name, suffix);
@@ -839,7 +869,7 @@ void NPC::printDialogue(Conversation* thisone) {
 	} else { //regular dialogue
 		conversation = dialogue;
 	}
-	printConversation(&conversation); //courtesy of Helper
+	printConversation(&conversation, false); //courtesy of Helper
 }
 NPC::~NPC() { //removes self from npcs vector when destroyed
 	npcsH.erase(remove(npcsH.begin(), npcsH.end(), this), npcsH.end());

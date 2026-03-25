@@ -44,7 +44,13 @@ struct Effect {
 	NPC* absorber = NULL; //who takes the lifestolen hp
 	bool turntick = false; //if we tick after the npc turn as opposed to at the start of each round
 
+	bool invincible = false; //if this effect makes the affected npc invincible
+
 	bool stacks = false; //if the effect stacks instead of just being extended when reapplied
+
+	int multipositioning = 0; //how many shallow copies of the affected npc to make in battle, used by the SUPERSMOOTHIE
+
+	Effect* attackeffect = NULL; //what attack effect to give to the target
 
 	Effect() {} //default constructor to avoid random errors
 

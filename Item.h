@@ -190,12 +190,12 @@ public:
 //key items for unlocking locked exits
 class KeyItem : public Item {
 public:
-	KeyItem(const char* _name, const char* _description, const char* _useText, Room* _room, const char* _unlockType, bool _consumable = true, Attack* _attack = NULL);
+	KeyItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _consumable = true, Attack* _attack = NULL);
 
 	vector<Room*>& getTargets(); //gets this item's remote unlock rooms if it has one
 	Attack* getAttack(); //gets this item's attack in battle
 	const char* getUnlockType(); //gets the type of blockage this item clears
-	const char* getUseText(); //gets the text printed by using it
+	const Conversation& getUseText() const; //gets the text printed by using it
 
 	void setTarget(Room* target); //sets a remote location to unlock
 
@@ -205,40 +205,40 @@ private:
 	Attack* attack; //this item's attack in battle
 
 	vector<Room*> targetRooms; //keys can be targeted keys, so no matter where you are, using them will remotely unblock the exit. So this has those exits
-	const char* useText; //the text printed by using it
+	Conversation useText; //the text printed by using it
 };
 
 //movement items for moving through locked exits
 class MovementItem : public Item {
 public:
-	MovementItem(const char* _name, const char* _description, const char* _useText, Room* _room, const char* _unlockType, bool _takable = true, Attack* _attack = NULL);
+	MovementItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _takable = true, Attack* _attack = NULL);
 
 	Attack* getAttack(); //gets the attack it does in battle
 	const char* getUnlockType(); //gets the block type the thing moves through
-	const char* getUseText(); //gets the text printed by using it
+	const Conversation& getUseText() const; //gets the text printed by using it
 
 	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	const char* unlockType; //what block type the thing moves through
 	Attack* attack; //the attack by using it in battle
 
-	const char* useText; //the text printed by using it
+	Conversation useText; //the text printed by using it
 };
 
 //paver items for paving new exits
 class PaverItem : public Item {
 public:
-	PaverItem(const char* _name, const char* _description, const char* _useText, Room* _room, Room* _usableRoom, const char* _direction, Room* _destination);
+	PaverItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, Room* _usableRoom, const char* _direction, Room* _destination);
 
 	Room* getDestination(); //gets the room that it leads to
 	const char* getDirection(); //gets the direction it leads to
 	bool getUsable(Room* _room); //gets if it's usable in the given room
-	const char* getUseText(); //gets the text printed after using the item
+	const Conversation& getUseText() const; //gets the text printed after using the item
 private:
 	Room* usableRoom; //the room it's usable in
 	const char* direction; //the direction that it creates the new exit in
 	Room* destination; //the room that the new exit leads to
-	const char* useText; //the text printed by using the item
+	Conversation useText; //the text printed by using the item
 };
 
 //manhole items, for revealing exits and throwing at enemies
@@ -293,14 +293,30 @@ private:
 //world change items, for changing the world
 class WorldChangeItem : public Item {
 public:
-	WorldChangeItem(const char* _name, const char* _description, Room* _room, const char* _useText, bool taketouse = false);
+	WorldChangeItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, bool taketouse = false);
 
 	WorldChange& getChanges(); //returns the world changes, as a reference so it's easier to edit
-	const char* getUseText(); //gets the text printed by using it
+	const Conversation& getUseText() const; //gets the text printed by using it
 	bool getTakeToUse(); //get if we need to take it instead of use it to make it do the thing
 private:
 	WorldChange changes; //the changes to do
-	const char* useText;
+	Conversation useText;
 	bool takeToUse; //if we need to take it instead of use it to make it do the thing
+};
+
+//blender items, for taking ingredients and combining them into one thing
+class BlenderItem : public Item {
+public:
+	BlenderItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, initializer_list<const char*> _ingredients, Item* _product);
+
+	WorldChange& getChanges(); //returns the world changes, as a reference so it's easier to edit
+	const Conversation& getUseText() const; //gets the text printed by using it
+	const vector<const char*>& getIngredients(); //get the ingredients needed to make the thing
+	Item* getProduct(); //get the product of the blender item
+private:
+	WorldChange changes; //the changes that happen when this item is used
+	Conversation useText;
+	vector<const char*> ingredients; //what is used to make the product
+	Item* product; //what the blender item makes
 };
 #endif
