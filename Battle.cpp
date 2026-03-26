@@ -24,6 +24,10 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	for (NPC* npc : *_enemyTeam) {
 		enemyTeam.push_back(new NPC(*npc));
 	}
+	if (enemyTeam[0]->getMasked()) { //set to hidden values if the enemy leader was masked
+		enemyTeam[0]->setTitle(enemyTeam[0]->getHiddenTitle());
+		enemyTeam[0]->setDescription(enemyTeam[0]->getHiddenDescription());
+	}
 	//add everyone to a list of everyone for convenience
 	everyone.insert(everyone.begin(), playerTeam.begin(), playerTeam.end());
 	everyone.insert(everyone.end(), enemyTeam.begin(), enemyTeam.end());

@@ -42,6 +42,8 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	if (_level > 100) { //instead we just manually set it
 		level = _level;
 	}
+
+	changes.push(WorldChange()); //make sure we have a changes object available to edit
 }
 NPC::NPC(const NPC& other) { //copy constructor, we do not need to set the stats because we only copy during battle when stats should be the same and during setup world where all the templates are level 0 anyway
 	*this = other;
@@ -76,6 +78,11 @@ void NPC::printDismissalDialogue() {
 	if (dismissalDialogue.empty()) return;
 	printDialogue(&dismissalDialogue.front());
 	dismissalDialogue.pop();
+}
+void NPC::printOpeningDialogue() {
+	if (openingDialogue.empty()) return;
+	printDialogue(&openingDialogue.front());
+	openingDialogue.pop();
 }
 bool NPC::getRecruited() { //returns if in the player team
 	return recruited;
@@ -255,9 +262,35 @@ int NPC::popExtraLives() { //return the extra lives then decrement the amount if
 Effect* NPC::getAttackEffect() {
 	return attackeffect;
 }
+bool NPC::getMasked() {
+	return masked;
+}
+const char* NPC::getHiddenTitle() {
+	return hiddentitle;
+}
+const char* NPC::getHiddenDescription() {
+	return hiddendesc;
+}
+const char* NPC::popRevealDialogue() {
+	const char* dialogue = revealdialogue;
+	revealdialogue = NULL; //we only print the reveal dialogue once
+	return dialogue;
+}
 WorldChange& NPC::editRespawnChanges() { //gets respawn changes for editing
 	gotRespawnChanges = true; //we only get the changes if we want to add some changes, so set got respawn changes to true
-	return respawnchanges;
+	respawnchanges.push(WorldChange()); //start a new changes
+	return respawnchanges.back(); //return the new changes
+}
+void NPC::startNewChanges(bool looplast) { //make a new world changes object to start editing, so we can have different changes per defeat
+	changes.push(WorldChange());
+	loopLastChange = looplast;
+}
+void NPC::setMask(const char* _title, const char* _desc) {
+	masked = true;
+	hiddentitle = title; //store the true title and description
+	hiddendesc = description;
+	title = _title; //set the visible stuff to the fake stuff
+	description = _desc;
 }
 time_t NPC::getGymStart() {
 	return gymStart;
@@ -278,7 +311,7 @@ Effect* NPC::getEffect(const char* effect) {
 	return NULL;
 }
 void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc to edit on defeat
-	changes.worldcon = cond;
+	changes.back().worldcon = cond;
 }
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
@@ -308,6 +341,9 @@ void NPC::addRecruitedDialogue(const Conversation& _dialogue) {
 void NPC::addDismissalDialogue(const Conversation& _dialogue) {
 	dismissalDialogue.push(_dialogue);
 }
+void NPC::addOpeningDialogue(const Conversation& _dialogue) {
+	openingDialogue.push(_dialogue);
+}
 void NPC::addConversation(const Conversation& _dialogue) { //add a conversation to the npc's dialogue
 	conversations.push(_dialogue); //create a pair of speaker-dialogue in the conversations queue
 }
@@ -332,6 +368,9 @@ void NPC::addRecruitedDialogue(const char* _dialogue) {
 }
 void NPC::addDismissalDialogue(const char* _dialogue) {
 	dismissalDialogue.push(Conversation({{this, _dialogue}}));
+}
+void NPC::addOpeningDialogue(const char* _dialogue) {
+	openingDialogue.push(Conversation({{this, _dialogue}}));
 }
 void NPC::addConversation(const char* _dialogue) { //add a conversation to the npc's dialogue
 	conversations.push(Conversation({{this, _dialogue}})); //create a pair of speaker-dialogue in the conversations queue
@@ -606,43 +645,44 @@ void NPC::setLevelUp(bool _leveledUp) { //set if we leveled up
 void NPC::setGuard(int _guard) {
 	guard = _guard;
 }
+//all the changes editors edit the most recently added changes object and should only be called on world setup lest we segfault due to a lack of thing in queue
 void NPC::addRecruitLink(NPC* npc) { //links this npc to be set to recuritable later
-	changes.recruitLinks.push(npc);
+	changes.back().recruitLinks.push(npc);
 }
 void NPC::addLinkedRoom(Room* room, const char* desc) { //room's description gets changed to this after this npc is defeated
-	changes.roomChanges.push({room, desc});
+	changes.back().roomChanges.push({room, desc});
 }
 void NPC::addLinkedDialogue(NPC* speaker, const Conversation& dialogue) {
-	changes.linkedDialogue.push({speaker, dialogue});
+	changes.back().linkedDialogue.push({speaker, dialogue});
 }
 void NPC::addLinkedTitle(NPC* npc, const char* title) {
-	changes.linkedTitles.push({npc, title});
+	changes.back().linkedTitles.push({npc, title});
 }
 void NPC::addLinkedDesc(NPC* npc, const char* desc) {
-	changes.linkedDescriptions.push({npc, desc});
+	changes.back().linkedDescriptions.push({npc, desc});
 }
 void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a conversation to add to the linked npc
-	changes.linkedConversations.push({speaker, dialogue});
+	changes.back().linkedConversations.push({speaker, dialogue});
 }
 void NPC::addLinkedStats(NPC* npc, Stats stats) {
-	changes.linkedStats.push({npc, stats});
+	changes.back().linkedStats.push({npc, stats});
 }
 void NPC::addAttackRemoval(NPC* npc, Attack* attack) {
-	changes.removeAttacks.push({npc, attack});
+	changes.back().removeAttacks.push({npc, attack});
 }
 void NPC::addDefeatRoom(NPC* npc, Room* room) {
-	changes.defeatRooms.push({npc, room});
+	changes.back().defeatRooms.push({npc, room});
 }
 void NPC::setGift(Item* item, bool fightfirst) { //set a gift to give to the player after talking
 	gift = item;
 	battleReward = fightfirst;
 }
 void NPC::addRedirect(Room* room1, Room* room2) { //makes room1 redirect to room2 after being defeated
-	changes.redirectRooms.push({room1, room2});
+	changes.back().redirectRooms.push({room1, room2});
 }
 void NPC::guardItem(Item* item) { //guard the given item until defeat
 	item->setGuard(this);
-	changes.guardedItems.push(item);
+	changes.back().guardedItems.push(item);
 }
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
@@ -833,13 +873,17 @@ void NPC::defeat() {
 	}
 	forcebattle = false; //don't force battles after dialogue anymore if we did that (for example, viola so you can't just fight her again)
 	if (battleReward) battleReward = false; //now we can give the gift
-	applyWorldChange(changes); //apply all the world changes associated with this npc
+	if (!changes.empty()) {
+		applyWorldChange(changes.front()); //apply all the world changes associated with this npc
+		if (!loopLastChange || changes.size() > 1) changes.pop(); //pop the changes if we don't need them anymore (not the last one OR it's the last one and we don't loop it)
+	}
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;
 	if (gotRespawnChanges) { //if we have respawn changes
-		WorldChange changes = respawnchanges; //use copy so the respawn changes don't get reset
+		WorldChange changes = respawnchanges.front(); //use copy so the respawn changes don't get reset in case it's the last one which is supposed to be usable forever
 		applyWorldChange(changes);
+		if (respawnchanges.size() > 1) respawnchanges.pop(); //go to the next one, unless it's the last one which loops forever
 	}
 }
 void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc's name

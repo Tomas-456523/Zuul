@@ -87,7 +87,9 @@ public: //you need to set stats on creation
 	bool getInvincible();
 	int popExtraLives();
 	Effect* getAttackEffect();
-	WorldChange& editRespawnChanges(); //gets respawn changes for editing
+	bool getMasked();
+	const char* getHiddenTitle();
+	const char* getHiddenDescription();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -98,6 +100,7 @@ public: //you need to set stats on creation
 	void addRecruitedDialogue(const Conversation& _dialogue); //sets the recruited dialogue for the npc
 	void setRecruitDialogueChange(const Conversation& _dialogue); //sets new recruitment and normal dialogue after recruiting
 	void addDismissalDialogue(const Conversation& _dialogue); //sets the dismissal dialogue for the npc
+	void addOpeningDialogue(const Conversation& _dialogue); //sets the opening dialogue for the npc
 	//same stuff but they accept just one line for simplicity
 	void setDialogue(const char* _dialogue);
 	void addConversation(const char* _dialogue);
@@ -107,6 +110,7 @@ public: //you need to set stats on creation
 	void addRecruitedDialogue(const char* _dialogue);
 	void setRecruitDialogueChange(const char* _dialogue);
 	void addDismissalDialogue(const char* _dialogue);
+	void addOpeningDialogue(const char* _dialogue); //sets the opening dialogue for the npc
 
 	void setRecruitable(bool _recruitable); //set if you can recruit them
 	void Recruit(); //set recurited to true
@@ -167,11 +171,16 @@ public: //you need to set stats on creation
 	void addLinkedStats(NPC* npc, Stats stats);
 	void addAttackRemoval(NPC* npc, Attack* attack);
 	void guardItem(Item* item); //start guarding the item
+
+	WorldChange& editRespawnChanges(); //gets respawn changes for editing
+	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
+	void setMask(const char* _title, const char* _desc); //make fake identity for the npc outside battle
 	
 	void printDialogue(Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
 	void printRejectionDialogue(); //prints the rejection dialogue for the npc
 	void printRecruitmentDialogue(); //prints the recruitment dialogue for the npc
 	void printDismissalDialogue(); //prints the dismissal dialogue for the npc
+	void printOpeningDialogue(); //print battle start dialogue for the npc
 
 	void printDamage(int damage, const char* status = NULL);
 	void printEffects();
@@ -196,6 +205,10 @@ protected:
 	char name[255]; //the name, must not be const because we add suffixes sometimes
 	const char* description; //npc's description when analyzed
 
+	bool masked = false; //if this npc looks different in battle compared to outside battle
+	const char* hiddentitle; //store the masked title and descriptions outside of battle
+	const char* hiddendesc;
+	
 	Room* home; //where the npc goes after being dismissed
 	Room* currentRoom;
 
@@ -222,6 +235,7 @@ protected:
 	queue<Conversation> recruitmentDialogue; //dialogue that the npc says when recruited
 	queue<Conversation> dismissalDialogue; //dialogue that the npc says when dismissed
 	queue<Conversation> gymDialogue; //dialogue the character says when at the gym
+	queue<Conversation> openingDialogue; //dialogue when starting battle
 
 	Conversation newDialogue; //regular dialogue after having been recruited
 
@@ -277,7 +291,7 @@ protected:
 	bool respawns = true; //if the npc appears again after battle
 	
 	NPC* respawnreq = NULL; //who needs to be present (and not recruited) in order to respawn
-	WorldChange respawnchanges; //what changes when this guy respawns (repeats, like it does the same changes on every respawn)
+	queue<WorldChange> respawnchanges; //what changes when this guy respawns (repeats, like it does the same changes on every respawn)
 	bool gotRespawnChanges = false;
 
 	bool forcebattle = false; //if we force the player to battle after talking
@@ -286,7 +300,8 @@ protected:
 	const char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated
 	Room* altRoom = NULL; //enemies block exits from both sides, so they have to be in two rooms at the same time, unfortunately
 	
-	WorldChange changes; //stuff this npc does when defeated
+	queue<WorldChange> changes; //stuff this npc does when defeated
+	bool loopLastChange = false; //if we should loop the last change every single defeat for respawning enemies, as opposed to only do the changes once
 
 	time_t gymStart = 0; //what time the npc was left at the gym (0 means is not at the gym, bad news for anybody hoping to drop their teammate off at the gym on the first second of 1970)
 

@@ -937,72 +937,10 @@ NPC* SetupWorld() {
 
 	//Princess Plum is support MARK: Plum
 	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", limbo, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 9));
-	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 	plum->addDismissalDialogue({{plum, "Well, I'll be heading back to my kingdom!"}, {plum, "Bye bye!"}});
 	plum->addRecruitedDialogue({{plum, "Ahh, sure beats a diet of pure fungus!"}});
 	plum->addRecruitmentDialogue({{self, "Hey before you head back to your kingdom, wanna join my team?"}, {plum, "It would be my pleasure!"}});
-
-	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
-	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
-	askew->afterdesc = " askew";
-	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8f);
-	askew->addEffect(offbalance);
-	newtab->setBasicAttack(askew);
-	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 10, 0, 4, 5, 1);
-	newtab->addSpecialAttack(doabarrelroll);
-	Attack* adblock = new Attack("ADBLOCK", "is blocking attacks thrown at", false, 10, 0, 0, 1, 1, 1, true, 10);
-	adblock->protect = true;
-	adblock->prioritizeleader = true;
-	newtab->addSpecialAttack(adblock);
-
-	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
-	browser->setBoss(true);
-	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 10, 20, 1, 1, 1); //made of fine chromium
-	medge->afterdesc = " with his MICROSOFT EDGE";
-	browser->setBasicAttack(medge);
-	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
-	gsearch->afterdesc = "'s weaknesses";
-	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5f);
-	gsearch->addEffect(searched);
-	browser->addSpecialAttack(gsearch);
-	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
-	opennewtab->summon = newtab;
-	opennewtab->summonamount = 3;
-	browser->addSpecialAttack(opennewtab);
-	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 10, 15, 6, 6, 1);
-	yahoo->focushits = false;
-	browser->addSpecialAttack(yahoo);
-	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
-	Effect* buffering = new Effect("BUFFERING", 2);
-	buffering->falldamage = 80;
-	iexplorer->addEffect(buffering);
-	browser->addSpecialAttack(iexplorer);
-	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
-	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5f);
-	firefox->addEffect(foxfire);
-	browser->addSpecialAttack(firefox);
-
-	//MARK: MAKE THIS A QUEUE
-	//like make a queue of respawn changes which stops popping at 1 item
-	//and a queue of defeat changes which pops normally
-
-	NPC* kingbrowser = new NPC(*browser);
-	kingbrowser->setLeader(true, 18, castlethrone, true);
-	kingbrowser->setRespawnReq(plum); //respawns only when plum is there and not recruited
-	kingbrowser->setDialogue("GWAHAHAHAHAHA!");
-	kingbrowser->addRejectionDialogue({{browser, "You think I wanna join you?"}, {browser, "GWAHAHAHAHAHA!"}});
-	kingbrowser->setEscapable(false);
-	kingbrowser->addRecruitLink(plum);
-	kingbrowser->addLinkedConvo(kingbrowser, {{plum, "Thank you for saving me, young knight!"}, {self, "No problemo."}}); //only say the first time
-	kingbrowser->setTalkOnDefeat();
-	kingbrowser->addLinkedConvo(plum, {{plum, "I need to invest in better security."}, {plum, "All I have right now is some plumber."}}); //only say the first time
-	kingbrowser->addLinkedDialogue(plum, {{plum, "This Browser..."}, {plum, "I need to invest in better security..."}}); //add every time
-	WorldChange& kbrespawnchanges = kingbrowser->editRespawnChanges();
-	kbrespawnchanges.decruitLinks.push(plum);
-	kbrespawnchanges.linkedWelcomes.push({castlethrone, {{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}, {self, "What? Again?"}, {self, "How?"}, {plum, "Well you know."}, {plum, "Browser just came in his airship and kidnapped me."}, {self, "I see."}}}); //only add the first respawn
-	kbrespawnchanges.linkedDialogue.push({plum, {{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}, {self, "T_T"}}}); //add on every respawn
-	
-	castlethrone->setWelcome({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
+	//some of plum's dialogue logic is tied to Browser below in the enemies section
 
 	Attack* racket = new Attack("RACKET", "whacked", true, -5, 10, 0, 1, 1, 1);
 	racket->afterdesc = " with her tennis racket";
@@ -1041,14 +979,64 @@ NPC* SetupWorld() {
 	plum->addSpecialAttack(lifemushroom);
 
 	//Gambler Graham is the rng guy MARK: Graham
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(), Stats());
+	Conversation gramconvo = {{self, "You should stop gambling."}, {graham, "What?"}, {graham, "Haven't you heard that 99% of gamblers quit right before hitting it big?"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}};
+	gramconvo->skipcondition = NOGAMBLING;
+	graham->addConversation(gramconvo);
+	graham->addRejectionDialogue({{self, "Hey wana join my team?"}, {graham, "Sure man, as soon as I win the jackpot."}, {graham, "I'm just about to win it. I can feel it!"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}});
+	graham->addRecruitmentDialogue({{self, "Well now that you can't gamble anymore you wanna join my team?"}, {graham, "Eh..."}, {graham, "Sure, but I'm coming back once they fix this place."}});
+	graham->addDismissalDialogue({{graham, "I'm just gonna go check if they've fixed the casino yet."}});
+	graham->setRecruitDialogueChange({});
 
-	//Ratman is Ratman MARK: Ratman
+	Item* gramplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", casino, {});
+	WorldChange& gramplugchanges = ((WorldChangeItem*)gramplug)->getChanges();
+	gramplugchanges.recruitLinks.push(graham);
+	gramplugchanges.linkedDescriptions.push({graham, "Gambling addict whose access to gambling you destroyed."});
+	gramplugchanges.linkedDialogue.push({graham, {{graham, "Aggghhhh I was JUST about to winnnn....."}}});
 
-	//ratarang
+	//1 blows up
 
-	//prep time
+	//2
+
+	//3
+
+	//4
+
+	//5
+
+	//6
+
+	//7
+
+	//8
+
+	//9
+
+	//10 nothing
+
+	//11
+
+	//12
+
+	//13
+
+	//14
+
+	//15 summon guard for team
+
+	///16
+
+	//17
+
+	//18
+
+	//19 big bomb
+
+	//20 instakill target
 
 	//Rich Guy Richie is the summoner MARK: Richie
+	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(), Stats());
+
 	//rejection: No, everyone in this city is either rich and trying to get me to join some cult,
 	//or not rich and trying to rob me.
 	//No offense but I don't really trust you.
@@ -1064,17 +1052,27 @@ NPC* SetupWorld() {
 
 	//dismissal: Welp, Imma head back to my house
 
-	//
+	Attack* throwmoney = new Attack("THROW MONEY AT THE PROBLEM", "threw a heavy gold bar at", -5, 20, 0, 1, 1, 1);
+	richie->setBasicAttack(throwmoney);
+
+	//drone
 
 	//
+
+	//marine mech
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
+	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(), Stats());
 
 	//
 
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
+	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER.\nHe wears a formal business suit and a traumatized expression.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
+	//self, "WHAT!?!?"
+	//self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"
+	//hj, "Yeah that's my name."
 
-	//
+	//briefbase
 	
 	//MARK: other npcs
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
@@ -1128,7 +1126,7 @@ NPC* SetupWorld() {
 	Item* fish = new HpItem("HEALTHY FISH", "A fish given by your dad to support your BURGER QUEST. (heals 15 HP)", limbo, 15);
 	fisho->setGift(fish);
 
-	NPC* mango = new NPC("", "MANGOLIA", "Your mom, a fisherman who frequently fishes at the village docks.", tenthouse, 10);
+	NPC* mango = new NPC("", "MANGOLIA", "Your mom, not really a fan of fish.", tenthouse, 10);
 	mango->setDialogue("The fish do be fishing today.");
 	Conversation mangorej1 = {{self, "Hey wanna join me on my BURGER QUEST?"},
 							  {mango, "Sorry sweetie I can't be going on quests anymore."},
@@ -1153,19 +1151,11 @@ NPC* SetupWorld() {
 	Item* cake = new HpItem("HEALTHY CAKE", "A cake your mom made to commemorate your BURGER QUEST. (heals 100 HP)", limbo, 100);
 	mango->setGift(cake);
 
-	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt. He'll pay it off as soon as he wins; any day now.", casino, 2, Stats(30, 10, 5, 0, 2, 20, 0));
-	graham->setDialogue("What's that? I should quit gambling? Haven't you heard that 99% of gamblers quit right before hitting it big?\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
-	graham->addRejectionDialogue("Nah, sorry man. I'm just about to win the jackpot. I can feel it!\"\nGAMBLING MACHINE - \"You lose 1000000 monies.\"\nGRAHAM - \"Aw dang it.");
-
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, Stats(2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647));
 	burgerman->setLeader(true, 0, NULL, false);
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
 	
-	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER. He wears a formal suit and seems traumatized.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
-	//self, "WHAT!?!?"
-	//self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"
-	//hj, "Yeah that's my name."
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
 	burgerprisoner->setDialogue("Hi how are you doing?");
 	burgerprisoner->addRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
@@ -1342,8 +1332,12 @@ NPC* SetupWorld() {
 	//talk about bosses
 	//zuul
 	//burger all caps lore
-	//keep thinking michelin is named jim
+	//kept thinking michelin is named jim
 	//viola after fire fight
+	//development time
+	//so nice seeing game systems evolve
+	//ascii art time
+	//npcs saying generic player names
 
 	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
 	pshrimplebeam->instakill = true;
@@ -1428,13 +1422,56 @@ NPC* SetupWorld() {
 	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 0, Stats(200000, 200000, 20, 20000, 10, 15, 20));
 	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
 	techdemoman->addRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
+
+	Item* cloakingdevice = new KeyItem("CLOAKING DEVICE", "Specialized cloaking device for getting past advanced security systems.", {{NULL, "You equipped the CLOAKING DEVICE."}, {NULL, "No security system can spot you now!"}}, limbo, TEMPLE, true);
+	KeyItem* _cloaking = (KeyItem*)cloakingdevice;
+	_cloaking->setTarget(richneighborhood1);
+	_cloaking->setTarget(richneighborhood2);
+	_cloaking->setTarget(richneighborhood3);
 	
-	/*NPC* child = new NPC("CHILD", "JILLY", "A small child, daughter of MATILDA.", limbo);
-	NPC* worriedmother = new NPC("", "MATILDA", "A frequent churchgoer.", burgchurch);
-	worriedmother->addConversation(self, "You look distressed.");
-	self->addConversation(self, "My daughter,");
-	self->addConversation(self, "You look distressed.");
-	self->addConversation(self, "You look distressed.");*/
+	NPC* child = new NPC("CHILD", "JILLY", "The daughter of MATILDA who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3);
+
+	NPC* matilda = new NPC("WORRIED MOTHER", "MATILDA", "A frequent churchgoer with distress very visible on her face.", burgchurch, 10);
+	matilda->addConversation({{self, "You look distressed."},
+							  {matilda, "My daughter Jilly..."},
+							  {matilda, "She was kidnapped."},
+							  {self, "I can help!"},
+							  {self, "Just direct me towards the kidnappers!"},
+							  {NULL, "MATILDA - *faintly smiles*"},
+							  {matilda, "That's sweet of you."},
+							  {NULL, "..."},
+							  {self, "No like I'm serious."},
+							  {self, "We beat up this big lava knight thing on the way here."},
+							  {self, "He was like at least triple the height of this building."},
+							  {matilda, "I appreciate your humor, but..."},
+							  {self, "Look I can manipulate energy!"},
+							  {NULL, "You make an ENERGY BALL above your hand."},
+							  {matilda, "Oh."},
+							  {matilda, "..."},
+							  {matilda, "Well..."},
+							  {matilda, "You really think you can help?"},
+							  {self, "Yep! :D"},
+							  {matilda, "You might just be the answer to my prayers!"},
+							  {matilda, "..."},
+							  {matilda, "The kidnappers were headed towards the BURGER headquarters to the NORTH."},
+							  {matilda, "You'll need this to get past their security systems."},
+							  {matilda, "I was holding on to it in hopes of finding someone who could help."},
+							  {self, "Oh thanks."},
+							  {self, "I will get your kid back!"}});
+	matilda->setGift(cloakingdevice);
+
+	//jilly is surprisingly good at fighting and when you USE the bag she jumps out of it and kicks Bernard in the gut
+	//"OW"
+	//"Take that you meanie!"
+	//"BRO WHAT THE HECK I'M TRYING TO SAVE YOU"
+	//"Oh okay!"
+	//"Thank you mister!"
+
+	//I have just finished fighting the CEO
+	//I should be getting close!
+	//Oh.
+
+	//
 	
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
@@ -1501,12 +1538,6 @@ NPC* SetupWorld() {
 	valvechanges.roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
 	valvechanges.recruitLinks.push(cacty);
 	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
-
-	Item* cloaking = new KeyItem("CLOAKING DEVICE", "Cloaking device for getting past advanced security systems.", {{NULL, "You equipped the cloaking device."}, {NULL, "No security system can spot you now!"}}, limbo, TEMPLE, true);
-	KeyItem* _cloaking = (KeyItem*)cloaking;
-	_cloaking->setTarget(richneighborhood1);
-	_cloaking->setTarget(richneighborhood2);
-	_cloaking->setTarget(richneighborhood3);
 
 	//make coolant attack that slows down enemies
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", {{NULL, "You poured some sand coolant onto the scorching sands."}, {NULL, "The sands cooled down!"}}, deserttempleentrance, SAND, false);
@@ -2191,7 +2222,7 @@ NPC* SetupWorld() {
 	dreadnaut->addSpecialAttack(tankshell);
 	dreadnaut->setBoss(true); //more of a miniboss
 
-	//MARK: Tunnel Lobster (enemy)
+	//the lobster is your pet and fast travel MARK: Tunnel Lobster (enemy)
 	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", limbo, 0, Stats(200, 20, 15, 20, 15, 50, 9));
 	Attack* lpincer = new Attack("PINCER", "pinced", true, -5, 10, 10, 1, 1, 1);
 	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", true, 6, 25, 0, 1, 1, 3);
@@ -2206,7 +2237,7 @@ NPC* SetupWorld() {
 	tunnellobster->addSpecialAttack(trainrush);
 	tunnellobster->setBoss(true);
 
-	//MARK: Viola (enemy)
+	//Gravity Girl Viola is mostly attack with some support but a boss fight first MARK: Viola (enemy)
 	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
 	tkviola->setBoss(true);
 	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", false, -5, 10, 20, 1, 1, 1);
@@ -2414,7 +2445,47 @@ NPC* SetupWorld() {
 	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation upon", false, 20, 40, 100, 1, 1, 3);
 	lavaguardian->addSpecialAttack(gammarayburst);
 
-	//MARK: browser goes here
+	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
+	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
+	askew->afterdesc = " askew";
+	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8f);
+	askew->addEffect(offbalance);
+	newtab->setBasicAttack(askew);
+	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 10, 0, 4, 5, 1);
+	newtab->addSpecialAttack(doabarrelroll);
+	Attack* adblock = new Attack("ADBLOCK", "is blocking attacks thrown at", false, 10, 0, 0, 1, 1, 1, true, 10);
+	adblock->protect = true;
+	adblock->prioritizeleader = true;
+	newtab->addSpecialAttack(adblock);
+
+	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
+	browser->setBoss(true);
+	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 10, 20, 1, 1, 1); //made of fine chromium
+	medge->afterdesc = " with his MICROSOFT EDGE";
+	browser->setBasicAttack(medge);
+	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
+	gsearch->afterdesc = "'s weaknesses";
+	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5f);
+	gsearch->addEffect(searched);
+	browser->addSpecialAttack(gsearch);
+	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
+	opennewtab->summon = newtab;
+	opennewtab->summonamount = 3;
+	browser->addSpecialAttack(opennewtab);
+	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 10, 15, 6, 6, 1);
+	yahoo->focushits = false;
+	browser->addSpecialAttack(yahoo);
+	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
+	Effect* buffering = new Effect("BUFFERING", 2);
+	buffering->falldamage = 80;
+	iexplorer->addEffect(buffering);
+	browser->addSpecialAttack(iexplorer);
+	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
+	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5f);
+	firefox->addEffect(foxfire);
+	browser->addSpecialAttack(firefox);
+	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
+	castlethrone->setWelcome({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 	
 	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
 	Attack* oopsy = new Attack("SNOW BASH", "tripped", 50, 15, 0, 1, 1, 1, true);
@@ -2458,59 +2529,63 @@ NPC* SetupWorld() {
 	bsod->afterdesc = " from its mouth";
 	bewlizard->addSpecialAttack(bsod);
 
-	//////////////////////////////////////////////
-
-	/*NPC* thief = new NPC("", "THIEF", "Person driven to desperation and turned to thievery.", limbo, 0, Stats());
+	NPC* thief = new NPC("", "THIEF", "Citizen of BURGERSBURG turned to thievery due to desperate times.", limbo, 0, Stats(10, 0, 20, 0, 20, 25, 9));
+	//stab
 	//
 
-	//disease amalgamation
-
-	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Floating brain guy who is a criminal and very smart.", limbo, 0, Stats());
+	NPC* disamalg = new NPC("", "DISEASE AMALGAMATION", "Writhing mass of pathogens featuring many colors.", limbo, 0, Stats(100, 40, 5, 5, 30, 0, 9));
+	//disease
 	//
 
-	NPC* minipanzer = new NPC("", "MINIPANZER", "Tiny tank thing.", limbo, 0, Stats());
+	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Criminal genius with a brain bigger than his skull and psychic powers.", limbo, 0, Stats());
 	//
 
-	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Big guy who will fenagle your bagels.", limbo, 0, Stats());
+	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats());
+	//shell
+	//roll over
+	//supershell
+
+	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Hulking brute franknsteined into existence who will fenagle your bagels.\nIt wears a suit, and a sack over its head with a painted smiley face.", limbo, 0, Stats());
+	//fenagle
+
+	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough shark who swims through the streets of BURGERSBURG.", limbo, 0, Stats());
 	//
 
-	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Shark that goes through the road so scary ahhh.", limbo, 0, Stats());
-	//
-
-	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Tornado thing with orbiting things.", limbo, 0, Stats());
+	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Twister with an abnormally long lifespan and a collection of junk from all across BURGERSBURG.", limbo, 0, Stats());
 	//thing fling
 
-	//shadow creature
+	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Pitch black humanoid who stalks the shadows of BURGERSBURG's citizens.", limbo, 0, Stats());
 
-	//evil grandma
+	NPC* grandma = new NPC("GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats());
+	//She looks like a poor grandma getting beat up by Ratman.
 
-	//ratman
+	//axe
+	//purse pow
+	//slipper
+
+	//Ratman is Batman MARK: Ratman (enemy)
+	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(), Stats());
+	//He's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.
+
+	//ratarang
+
+	//prep time
 
 	NPC* businessguy = new NPC("", "BUSINESSPERSON", "Evil businessperson who is evil.", limbo, 0, Stats());
-	businessguy->setBasicAttack(genericattack);
-	businessguy->addSpecialAttack(genericspecial);
-	businessguy->addSpecialAttack(genericcc);
 
 	//businessguy 2
 
 	NPC* richguy1 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
-	richguy1->setBasicAttack(genericattack);
-	richguy1->addSpecialAttack(genericspecial);
-	richguy1->addSpecialAttack(genericcc);
 	//normal rich person
 
 	NPC* richguy2 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
-	richguy2->setBasicAttack(genericattack);
-	richguy2->addSpecialAttack(genericspecial);
-	richguy2->addSpecialAttack(genericcc);
 	//rich cyborg
 
 	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo, 0, Stats());
-	burgerbutler->setBasicAttack(genericattack);
-	burgerbutler->addSpecialAttack(genericspecial);
-	burgerbutler->addSpecialAttack(genericcc);*/
 	
-	//burger ceo enzo
+	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(), Stats());
+	//The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.
+	ceo->setBoss(true);
 
 	//burger warden
 
@@ -3056,7 +3131,27 @@ NPC* SetupWorld() {
 	tabguard->setDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
 	tabguard->addRejectionDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
 	
-	//MARK: BROWSER GOES HERE
+	NPC* kingbrowser = new NPC(*browser);
+	kingbrowser->setLeader(true, 18, castlethrone, true);
+	kingbrowser->setRespawnReq(plum); //respawns only when plum is there and not recruited
+	kingbrowser->setDialogue("GWAHAHAHAHAHA!");
+	kingbrowser->addRejectionDialogue({{browser, "You think I wanna join you?"}, {browser, "GWAHAHAHAHAHA!"}});
+	kingbrowser->setEscapable(false);
+	kingbrowser->addRecruitLink(plum);
+	kingbrowser->addLinkedConvo(kingbrowser, {{plum, "Thank you for saving me, young knight!"}, {self, "No problemo."}}); //only say the first time
+	kingbrowser->setTalkOnDefeat();
+	kingbrowser->addLinkedConvo(plum, {{plum, "I need to invest in better security."}, {plum, "All I have right now is some plumber."}}); //only say the first time
+	kingbrowser->addLinkedDialogue(plum, {{plum, "This Browser..."}, {plum, "I need to invest in better security..."}}); //add every time
+	kingbrowser->startNewChanges(true); //do these next ones every single defeat
+	kingbrowser->addLinkedDialogue(plum, {{plum, "This Browser..."}, {plum, "I need to invest in better security..."}});
+	kingbrowser->addRecruitLink(plum);
+	WorldChange& kbrespawnchanges = kingbrowser->editRespawnChanges(); //add these only the first respawn
+	kbrespawnchanges.decruitLinks.push(plum);
+	kbrespawnchanges.linkedWelcomes.push({castlethrone, {{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}, {self, "What? Again?"}, {self, "How?"}, {plum, "Well you know."}, {plum, "Browser just came in his airship and kidnapped me."}, {self, "I see."}}}); //only add the first respawn
+	kbrespawnchanges.linkedDialogue.push({plum, {{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}, {self, "T_T"}}}); //add on every respawn
+	WorldChange& kbrespawnchanges2 = kingbrowser->editRespawnChanges(); //add these every time
+	kbrespawnchanges.decruitLinks.push(plum);
+	kbrespawnchanges2.linkedDialogue.push({plum, {{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}, {self, "T_T"}}});
 
 	NPC* mountainguard = new NPC(*snowman);
 	mountainguard->setLeader(true, 15, mountain, false);
@@ -3080,6 +3175,13 @@ NPC* SetupWorld() {
 	jimshady0->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY.");
 	jimshady0->setForceBattle(true);
 	jimshady0->addLinkedConvo(jimshady0, {{self, "So what's it like being the real Jim Shady?"}, {jimshady0, "Pretty real."}});
+	
+	NPC* evilgrandma = new NPC(*grandma);
+	evilgrandma->setLeader(true, 22, rightstreet3, false);
+
+	NPC* theratman = new NPC(*ratman);
+	theratman->setLeader(true, 22, rightstreet3);
+
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -3231,7 +3333,9 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	if (npc->getConvoSize()) { //I want the player to hear all the dialogue instead of blindly fighting everyone, so we make sure if the npc has dialogue that it is said
 		npc->printDialogue();
 		cout << "\n";
-	} //creates the Battle! 
+	} //print any dialogue that is specifically printed right before battle
+	npc->printOpeningDialogue();
+	//creates the Battle! 
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
 	//initiates the battle and returns an int that represents the outcome of the battle
 	int battlestatus = battle.FIGHT();
