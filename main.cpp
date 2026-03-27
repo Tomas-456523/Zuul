@@ -309,7 +309,7 @@ NPC* SetupWorld() {
 	Room* mainstreet2 = new Room("on main street. A lopsided helicopter struggles to spin its rotors.");
 	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting.");
 	Room* mainstreet4 = new Room("on main street. There's a stairway here leading down to the BURGERSBURG train station.");
-	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you. BURGER TENDRILS wrap around its base.");
+	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you, welcoming you into the elevator.");
 	Room* coolstreet1 = new Room("near the entrance of the city. The top of a building is sliced clean off.");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
 	Room* coolstreet3 = new Room("at a functional hot dog stand.");
@@ -331,7 +331,7 @@ NPC* SetupWorld() {
 	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses.\nYou should really leave before you develop a gambling addiction.");
 	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
 	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
-	Room* shrimpartment2 = new Room("on the second floor. The flowery wallpaper is peeling off.");
+	Room* shrimpartment2 = new Room("on the second floor. The wallpaper has a shrimp pattern.");
 	Room* shrimpartment3 = new Room("on the third floor. There is a cat poster here.");
 	Room* shrimproof = new Room("on the apartment rooftop. You have a nice view of the city lights.");
 	Room* firedepartment = new Room("in the fire department. The fire alarm is sadly whimpering.");
@@ -608,17 +608,25 @@ NPC* SetupWorld() {
 								   {forestknight, "No matter what I tried, he specifically countered my every technique."},
 								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's grasp."},
 								   {self, "Yeah no problem."}});
-	Conversation absrecruit1 = {{self, "Hey knight man wanna help me annihilate BURGERs from existence?"},
+	Conversation absrecruit1 = {{self, "Hey knight man wanna help me save this kid?"},
+							    {forestknight, "Why of course!"},
+							    {forestknight, "From what will we be saving them?"},
+							    {self, "From the BURGER coropration, they kidnapped them."},
+							    {forestknight, "Of course, the fiendish stewards of BURGER."},
+							    {forestknight, "I shall assist you in saving this child!"}};
+	absrecruit1.skipcondition = TEMPLEQUEST;
+	Conversation absrecruit2 = {{self, "Hey knight man wanna help me annihilate BURGERs from existence?"},
 							    {forestknight, "Ah, what a splendid goal for a quest!"},
 							    {forestknight, "But how do you propose to accomplish this?"},
 							    {self, "With this thing I learned about called THE PLOT DEVICE."},
 							    {forestknight, "THE PLOT DEVICE? I cannot say I have heard of it,"},
 							    {forestknight, "but I believe you when you say it can solve the BURGER problem."},
 							    {forestknight, "I shall join you on this quest!"}};
-	absrecruit1.skipcondition = BURGERMENDEF;
-	Conversation absrecruit2 = {{self, "Hey knight man wanna join me?"},
+	absrecruit2.skipcondition = BURGERMENDEF;
+	Conversation absrecruit3 = {{self, "Hey knight man wanna join me?"},
 							    {forestknight, "I do not see why not."}};
 	absrecruit1.alt = &absrecruit2;
+	absrecruit2.alt = &absrecruit3;
 	forestknight->addRecruitmentDialogue(absrecruit1);
 	forestknight->addDismissalDialogue({{forestknight, "I shall return to defending the forest."},
 										{forestknight, "Farewell, friend!"}});
@@ -1037,20 +1045,59 @@ NPC* SetupWorld() {
 	//Rich Guy Richie is the summoner MARK: Richie
 	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(), Stats());
 
-	//rejection: No, everyone in this city is either rich and trying to get me to join some cult,
+	//rejection: No, everyone in this city is either rich and trying to get me to join some BURGER cult,
 	//or not rich and trying to rob me.
 	//No offense but I don't really trust you.
 
-	//conversation: Hey I saw you walk into that building and then the top floor exploded?
-	//Oh yeah that was the BURGER CEO.
-	//We fought him normally but he kind of just blew up on his own.
-	
-	//recruitment: Hey you wanna join my team / help me destroy BURGERs
-	//Well you seem to be pretty capable if you could take down Enzo.
-	//Uhhh...
-	//Yeah sure / Yeah I want this BURGER cult gone, I'll help you.
+	//Hey you wanna help me fight these BURGER guys?
+	//In that building over there?
+	//Yea.
+	//You know we have like these advanced security systems right?
+	//You're gonna get blown up as soon as you walk onto their doorstep.
+	//Nah check it out I got this cloaking device.
+	//You turn invisible and visible again.
+	//Huh.
+	//So I'm going there to save this kid they kidnapped.
+	//Oh.
+	//Yeah I really want these BURGER guys gone.
+	//Like their whole cult thing is one thing.
+	//But you just said they kidnapped someone?
+	//Yeah.
+	//Yeah, lets go gettem.
 
-	//dismissal: Welp, Imma head back to my house
+	//Did you just blow up the BURGER building?
+	//I saw you walk in there and the top floor just blew up.
+	//Oh that was the CEO.
+	//We fought him normally but he kind of just blew up on his own.
+	//Huh.
+	//Hey you wanna help me find this kid they kidnapped?
+	//They what?
+	//Well I always wanted these BURGER guys gone.
+	//But you just said they kidnapped someone?
+	//That's way too far.
+	//Yeah, lets go gettem.
+
+	//Hey you wanna help me destroy BURGERs from existence?
+	//...
+	//What?
+	//Yeah, using this THE PLOT DEVICE.
+	//...
+	//You were the one who blew up the CEO right?
+	//Cause I saw you walk in their building and that happened.
+	//Well we fought him normaly but he kind of just blew up on his own.
+	//You sound like you're making everything up...
+	//But you also clearly know what you're doing if you beat Enzo...
+	//Yeah why not, I don't have anything better to do.
+	//Plus I really want this BURGER cult gone.
+
+	//Hey you wanna join my team?
+	//You were the one who blew up the CEO right?
+	//Cause I saw you walk in their building and that happened.
+	//Well we fought him normaly but he kind of just blew up on his own.
+	//Well if you beat Enzo you seem pretty qualified...
+	//Why not, I don't have anything better to do.
+
+	//dismissal: Welp, Imma head back to my house.
 
 	Attack* throwmoney = new Attack("THROW MONEY AT THE PROBLEM", "threw a heavy gold bar at", -5, 20, 0, 1, 1, 1);
 	richie->setBasicAttack(throwmoney);
@@ -1408,7 +1455,7 @@ NPC* SetupWorld() {
 	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
 	coolstreet3->setStock(hotdog, 2147483647, 2, "HARRY - \"Ayy thanks for the purchase enjoy your hot dog!\"");
 
-	NPC* hotdogguy = new NPC("HOT DOG VENDOR", "HARRY", "Manager of the lucrative BURGERSBURG hot dog stand.\nEveryone likes him too much to rob him.", coolstreet3, 14);
+	NPC* hotdogguy = new NPC("HOT DOG VENDOR", "HARRY", "Manager of the lucrative BURGERSBURG hot dog stand.", coolstreet3, 14);
 	hotdogguy->addConversation({{self, "Hey!"},
 								{self, "Got any grapes?"},
 								{hotdogguy, "No, I just sell hot dogs."},
@@ -1423,11 +1470,14 @@ NPC* SetupWorld() {
 	techdemoman->setDialogue("HELLO THERE THIS IS MY DIALOGUE!");
 	techdemoman->addRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
 
-	Item* cloakingdevice = new KeyItem("CLOAKING DEVICE", "Specialized cloaking device for getting past advanced security systems.", {{NULL, "You equipped the CLOAKING DEVICE."}, {NULL, "No security system can spot you now!"}}, limbo, TEMPLE, true);
-	KeyItem* _cloaking = (KeyItem*)cloakingdevice;
-	_cloaking->setTarget(richneighborhood1);
-	_cloaking->setTarget(richneighborhood2);
-	_cloaking->setTarget(richneighborhood3);
+	Item* cloakingdevice = new WorldChangeItem("CLOAKING DEVICE", "Specialized cloaking device for getting past advanced security systems.", limbo, {{NULL, "You equipped the CLOAKING DEVICE."}, {NULL, "No security system can spot you now!"}});
+	cloakingdevice->setTakable(true);
+	WorldChange& cloakingchange = ((WorldChangeItem*)cloakingdevice)->getChanges();
+	cloakingchange.exitUnblocks.push({richneighborhood1, NORTHEAST});
+	cloakingchange.exitUnblocks.push({richneighborhood2, NORTH});
+	cloakingchange.exitUnblocks.push({richneighborhood3, NORTHWEST});
+	cloakingchange.recruitLinks.push(richie);
+	cloakingchange.recruitLinks.push(forestknight);
 	
 	NPC* child = new NPC("CHILD", "JILLY", "The daughter of MATILDA who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3);
 
@@ -1459,6 +1509,8 @@ NPC* SetupWorld() {
 							  {self, "Oh thanks."},
 							  {self, "I will get your kid back!"}});
 	matilda->setGift(cloakingdevice);
+	//rejection
+	//dialogue
 
 	//jilly is surprisingly good at fighting and when you USE the bag she jumps out of it and kicks Bernard in the gut
 	//"OW"
@@ -1472,6 +1524,25 @@ NPC* SetupWorld() {
 	//Oh.
 
 	//
+	
+	Item* greenkey = new KeyItem("GREEN KEY", "A big key in a similar shade of green to the volcanic sewers' accents.", {{NULL, "You put the GREEN KEY in the keyhole."}, {NULL, "The doorway has been unlocked!"}}, limbo, LOCK);
+	NPC* jim = new NPC("", "JIM", "A self-aware shrimp wearing a dark hood, tired of his shrimple brother's shenanigans.", shrimproof, 0, Stats(50, 10, 10, 35, 15, 10, 9));
+	jim->addConversation({{jim, "I am the self-aware Jim."},
+						  {jim, "I wish my shrimple brothers would be self-aware as well."},
+						  {jim, "Have you encountered them?"},
+						  {self, "A few times."},
+						  {jim, "Well I apolagize on their behalf if they've been a nusicence."},
+						  {jim, "I guard the key to our place of origin."},
+						  {jim, "I was told to wait for someone with blond anime hair and a scarf,"},
+						  {jim, "and you seem to match the description."},
+						  {jim, "Here you go."},
+						  {self, "Oh thanks."}});
+	jim->addConversation({{self, "So, you live here?"},
+						  {jim, "Yeah."},
+						  {self, "Cool."}});
+	jim->setDialogue({{jim, "..."}, {self, "..."}});
+	jim->addRejectionDialogue("I have to manage my apartment.");
+	jim->setGift(greenkey);
 	
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
@@ -1600,6 +1671,10 @@ NPC* SetupWorld() {
 	masterschanges.linkedConversations.push({factelder, {{factelder, "So you've drained the lava sea!"}, {self, "Yep."}, {factelder, "Very good! Very good."}, {factelder, "..."}, {factelder, "Hm..."}, {factelder, "Don't you think their intense desire for a BURGER seems a bit strange?"}, {factelder, "Unnatural even?"}, {factelder, "I would advise you to be wary."}}});
 	masterschanges.linkedDialogue.push({factelder, {{factelder, "Well done with the lava!"}, {factelder, "Stay safe, child."}}});
 	masterschanges.worldcon = LAVADRAINED;
+
+	//firefighter
+
+	//
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -2533,11 +2608,14 @@ NPC* SetupWorld() {
 	//stab
 	//
 
+	NPC* axeman = new NPC("", "AXEMAN", "A really deranged human whose head was exchanged for the head of an axe.", limbo, 0, Stats(40, 15, 35, 18, 50, 30, 9));
+	//chop
+
 	NPC* disamalg = new NPC("", "DISEASE AMALGAMATION", "Writhing mass of pathogens featuring many colors.", limbo, 0, Stats(100, 40, 5, 5, 30, 0, 9));
 	//disease
 	//
 
-	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Criminal genius with a brain bigger than his skull and psychic powers.", limbo, 0, Stats());
+	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats());
 	//
 
 	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats());
@@ -2548,11 +2626,15 @@ NPC* SetupWorld() {
 	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Hulking brute franknsteined into existence who will fenagle your bagels.\nIt wears a suit, and a sack over its head with a painted smiley face.", limbo, 0, Stats());
 	//fenagle
 
-	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough shark who swims through the streets of BURGERSBURG.", limbo, 0, Stats());
+	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats());
 	//
 
 	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Twister with an abnormally long lifespan and a collection of junk from all across BURGERSBURG.", limbo, 0, Stats());
+	//opening: tailwind
 	//thing fling
+	//twister
+	//rumble
+	//split
 
 	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Pitch black humanoid who stalks the shadows of BURGERSBURG's citizens.", limbo, 0, Stats());
 
@@ -2571,20 +2653,18 @@ NPC* SetupWorld() {
 
 	//prep time
 
-	NPC* businessguy = new NPC("", "BUSINESSPERSON", "Evil businessperson who is evil.", limbo, 0, Stats());
 
-	//businessguy 2
+	//rich person
 
-	NPC* richguy1 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
-	//normal rich person
-
-	NPC* richguy2 = new NPC("", "RICH PERSON", "Evil rich person who is evil and stuff.", limbo, 0, Stats());
 	//rich cyborg
+
+	//burger lawyer
+	
+	//burger agent
 
 	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo, 0, Stats());
 	
-	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(), Stats());
-	//The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.
+	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 50, 50, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
 	ceo->setBoss(true);
 
 	//burger warden
@@ -3182,6 +3262,70 @@ NPC* SetupWorld() {
 	NPC* theratman = new NPC(*ratman);
 	theratman->setLeader(true, 22, rightstreet3);
 
+	//RICH PEOPLE GAUNTLET!
+	//rich person x3
+	//rich person x2 + rich cyborg
+	//rich cyborg + burger lawyer
+	//burger agent + rich person x2
+	//burger butler
+	//burger lawyer x2 + rich cyborg
+	//burger agent x2
+	//burger lawyer x3
+	//rich cyborg + burger agent + burger lawyer
+	//rich person x8
+	//burger butler x2
+
+	NPC* enzo = new NPC(*ceo);
+	enzo->setMask("BURGER CEO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
+	enzo->setLeader(true, 30, ceoroom, false);
+	ceo->blockExit(IN_SAFE, ENEMY, "guarded by the BURGER CEO.");
+	enzo->addConversation({{self, "Why did you guys kidnap that kid? >:("},
+						   {ceo, "So that's what you were storming through this joint for?"},
+						   {ceo, "Over some kid? Hah hah hah hah!"},
+						   {self, "Answer my question! >:("},
+						   {ceo, "Eh, don't even remember that."},
+						   {ceo, "I must've sent one of my lackeys to do that some time ago."},
+						   {ceo, "I just do whatever the BURGER MAN tells me to do."},
+						   {ceo, "Never ask questions."},
+						   {ceo, "It's the least I could do, with all the fame and riches he's given us."},
+						   {ceo, "All for the low low price of our souls!"},
+						   {self, "That deal kinda sucks. :|"},
+						   {ceo, "Well, I beg to differ."},
+						   {ceo, "Anyway, ya did quite the number on the personnel."},
+						   {ceo, "That kinda threat ain't good for business."},
+						   {NULL, "Mechanical noises start to whirr from within Enzo..."},
+						   {ceo, "Guess I gotta take care of ya myself."},
+						   {NULL, "The metal plates forming Enzo's skin start to shift..."},
+						   {NULL, "Enzo bursts into a metallic mass of heavy weaponry!"},
+						   {ceo, "Let's see how much that humanity of yours'll help ya out now!"},
+						   {ceo, "HAH HAH HAH HAH!"}});
+	enzo->addLinkedConvo({enzo, {{NULL, "Enzo breaks down into pieces."},
+								{NULL, "You walk up to his core."},
+								{enzo, "WHAT?"},
+								{enzo, "WHAT?"},
+								{enzo, "YOU?"},
+								{enzo, "HOW DID YOU?"},
+								{self, "Well clearly all this robot stuff wasn't worth it."},
+								{self, "So can you tell me where that kid is?"},
+								{enzo, "YOU THINK I'M JUST GONNA BE ALL BUDDY BUDDY WITH YA?"},
+								{enzo, "CAUSE YA BEAT ME UP, I'M GONNA SEE THE ERROR IN MY WAYS?"},
+								{self, "Well like..."},
+								{self, "It did work once \\_(:|)_/"},
+								{enzo, "GO HOME, KID."},
+								{enzo, "You don't know what yer messing with."},
+								{NULL, "Enzo's core starts to beep."},
+								{self, "O_O"},
+								{NULL, "You jump away from Enzo."},
+								{NULL, "Enzo self-destructed!"},
+								{NULL, "The top of the BURGER BUILDING went flying in pieces!"},
+								{NULL, "The fire alarm starts blaring."},
+								{self, "O_O"}}});
+	enzo->setTalkOnDefeat();
+	ceo->setDialogue({{ceo, "You got a screw loose if ya think you can beat me!"}, {ceo, "HAH HAH HAH HAH!"}});
+	ceo->setRejectionDialogue("You're asking me to join ya? Are ya crazy?");
+	ceo->setForceBattle();
+	ceo->setEscapable(false);
+	ceo->setWorldCondition(BEATCEO);
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -3209,7 +3353,7 @@ NPC* SetupWorld() {
 	volcanoentrance->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	volcanoentrance->blockExit(NORTH, HEAT, "too hot! You'd probably melt from the radiation unless you got some SUNSCREEN!");
 	sewercenter3->blockExit(DOWN, RUBBLE, "blocked by the ground. It looks pretty fragile and rubbley, maybe don't stand on it.");
-	sewercenter4->blockExit(WEST, LOCK, "locked with a GREEN LOCK. You need a GREEN KEY to open it.");
+	sewercenter4->blockExit(WEST, LOCK, "locked with a GREEN LOCK.");
 	volcano2->blockExit(NORTH, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
 	volcano4->blockExit(NORTHEAST, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
 	volcano6->blockExit(NORTHWEST, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
