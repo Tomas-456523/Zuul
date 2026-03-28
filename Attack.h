@@ -46,6 +46,9 @@ struct Attack {
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
 	vector<Effect*> synergies; //if the target has these effects effect, the attack power goes up by 1.5x each
 	Effect* cancel = NULL; //attack removes this effect
+	Effect* selfcancel = NULL; //attack removes this effect from self
+
+	bool affectselfbeforeattack = false; //if we should apply self stat changes before the attack as opposed to as a result of it afterwards
 
 	Attack* recoilatt = NULL;
 	float recoilchance = 0;

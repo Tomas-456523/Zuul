@@ -343,7 +343,7 @@ NPC* SetupWorld() {
 	burgstation->setStation();
 	Room* ceolobby = new Room("in the ornate lobby of the building, featuring both an elevator and fancy stairs.\nThe yearly RICH PEOPLE reunion is ongoing.");
 	Room* ceolobby2 = new Room("on the second floor of the building, still the lobby! There's some huge doors here.");
-	Room* ballroom = new Room("in the BURGER ballroom, surrounded by a sea of rich people."); //in the BURGER ballroom, full of incapacitated rich people. //in the BURGER ballroom. The action has died down and the room is pretty quiet.
+	Room* ballroom = new Room("in the BURGER ballroom, surrounded by a sea of rich people.");
 	Room* ceoelevator1 = new Room("in the elevator, at ground level.");
 	Room* ceoelevator2 = new Room("in the elevator, on the second floor.");
 	Room* ceoelevator3 = new Room("in the elevator, at the top level with the CEO's office.");
@@ -2509,6 +2509,9 @@ NPC* SetupWorld() {
 
 	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
 	lavaguardian->setBoss(true);
+	Attack* contactexplosion = new Attack("EXPLOSION", "blew up in", false, 0, 15, 20, 1, 1, 1);
+	contactexplosion->afterdesc = "'s face";
+	lavaguardian->setRecoilAttack(contactexplosion);
 	Attack* firesword = new Attack("FIRE SWORD", "slashed", true, -5, 20, 20, 1, 1, 1);
 	firesword->afterdesc = " with its flaming sword";
 	firesword->addEffect(onfire);
@@ -2574,9 +2577,9 @@ NPC* SetupWorld() {
 	castlethrone->setWelcome({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 	
 	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
-	Attack* oopsy = new Attack("SNOW BASH", "tripped", 50, 15, 0, 1, 1, 1, true);
+	Attack* oopsy = new Attack("SNOW BASH", "tripped", false, 50, 15, 0, 1, 1, 1, true);
 	oopsy->focushits = false;
-	Attack* snowbash = new Attack("SNOW BASH", "socked", 1, 300, 0, 1, 1, 1); //if he's high level enough he doesn't die instantly! so maybe he can be interesting in the simulator
+	Attack* snowbash = new Attack("SNOW BASH", "socked", true, 1, 300, 0, 1, 1, 1); //if he's high level enough he doesn't die instantly! so maybe he can be interesting in the simulator
 	snowbash->afterdesc = "snowily";
 	Effect* frozed = new Effect("FROZEN", 5);
 	snowbash->addEffect(frozed);
@@ -2611,7 +2614,7 @@ NPC* SetupWorld() {
 	popbomb->summon = hatchling;
 	popbomb->summonamount = 1;
 	bewlizard->setBasicAttack(popbomb);
-	Attack* bsod = new Attack("BURST STREAM OF DESTRUCTION", "fired a stream of destruction at", 25, 30, 50, 1, 1, 3);
+	Attack* bsod = new Attack("BURST STREAM OF DESTRUCTION", "fired a stream of destruction at", false, 25, 30, 50, 1, 1, 3);
 	bsod->afterdesc = " from its mouth";
 	bewlizard->addSpecialAttack(bsod);
 
@@ -2668,37 +2671,37 @@ NPC* SetupWorld() {
 
 
 	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his money.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
-	Attack brassknuckles = new Attack("BRASS KNUCKLES", "swung at", -5, 20, 0, 1, 1, 1);
+	Attack* brassknuckles = new Attack("BRASS KNUCKLES", "swung at", true, -5, 20, 0, 1, 1, 1);
 	brassknuckles->afterdesc = " with brass knuckles";
-	Attack chairthrow = new Attack("CHAIR", "threw a nearby chair at", 6, 40, 0, 1, 1, 1);
+	Attack* chairthrow = new Attack("CHAIR", "threw a nearby chair at", false, 6, 40, 0, 1, 1, 1);
 	Effect* ouchknees = new Effect("OUCH MY KNEES", 2, 0, 0, 1, 0.9f);
-	Attack* canecrunch = new Attack("CANE CRUNCH", "hit", 15, 30, 0, 1, 1, 1);
+	Attack* canecrunch = new Attack("CANE CRUNCH", "hit", true, 15, 30, 0, 1, 1, 1);
 	canecrunch->afterdesc = "'s knees with his rich person cane";
 	richperson->setBasicAttack(brassknuckles);
 	richperson->addSpecialAttack(chairthrow);
 	richperson->addSpecialAttack(canecrunch);
 
 	NPC* richcyborg = new NPC("", "RICH CYBORG", "A really rich BURGER shareholder who has traded some of his weak human flesh for metal.", limbo, 0, Stats(30, 30, 20, 25, 15, 18, 9));
-	Attack metalknuckles = new Attack("METALS KNUCKLES", "struck", -5, 20, 0, 1, 1, 1);
+	Attack* metalknuckles = new Attack("METAL KNUCKLES", "struck", true, -5, 20, 0, 1, 1, 1);
 	metalknuckles->afterdesc = " with metallic fists";
-	Attack fingergun = new Attack("FINGER GUN", "shot at", 5, 15, 40, 2, 2, 1);
-	fingergun->afterdesc = "with his integrated weaponry"
-	Attack* runover = new Attack("RUN OVER", "flew into", 12, 35, 0, 1, 1, 1);
+	Attack* fingergun = new Attack("FINGER GUN", "shot at", false, 5, 15, 40, 2, 2, 1);
+	fingergun->afterdesc = "with his integrated weaponry";
+	Attack* runover = new Attack("RUN OVER", "flew into", true, 12, 35, 0, 1, 1, 1);
 	runover->afterdesc = " with his integrated jet pack";
 	richcyborg->setBasicAttack(metalknuckles);
 	richcyborg->addSpecialAttack(fingergun);
 	richcyborg->addSpecialAttack(runover);
 
 	NPC* burgerlawyer = new NPC("", "BURGER LAWYER", "A really corrupt lawyer, rich from covering up the BURGER corporation's crimes.", limbo, 0, Stats(20, 15, 10, 5, 0, 5, 9));
-	Attack* briefcasebash = new Attack("BRIEFCASE BASH", "bashed", -5, 25, 0, 1, 1, 1);
+	Attack* briefcasebash = new Attack("BRIEFCASE BASH", "bashed", true, -5, 25, 0, 1, 1, 1);
 	briefcasebash->afterdesc = " with his briefcase";
 	Effect* legalimmunity = new Effect("LEGAL IMMUNITY", 2);
 	legalimmunity->invincible = true;
-	Attack* legaldefense = new Attack("LEGAL DEFENSE", "legally defended", 7, 0, 0, 1, 1, 1, true);
+	Attack* legaldefense = new Attack("LEGAL DEFENSE", "legally defended", false, 7, 0, 0, 1, 1, 1, true);
 	legaldefense->addEffect(legalimmunity);
 	Effect* enjoined = new Effect("ENJOINED", 1);
 	enjoined->freeze = true;
-	Attack* injunction = new Attack("INJUNCTION", "injuncted", 7, 0, 0, 1, 1, 1);
+	Attack* injunction = new Attack("INJUNCTION", "injuncted", false, 7, 0, 0, 1, 1, 1);
 	injunction->afterdesc = "'s right to battle";
 	injunction->addEffect(enjoined);
 	burgerlawyer->setBasicAttack(briefcasebash);
@@ -2706,7 +2709,7 @@ NPC* SetupWorld() {
 	burgerlawyer->addSpecialAttack(injunction);
 	
 	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats());
-	//beat up
+	//beatdown
 	//
 	//
 
@@ -2717,13 +2720,44 @@ NPC* SetupWorld() {
 	//
 	//
 	
-	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 50, 50, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
+	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 25, 25, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
 	ceo->setBoss(true);
-	//minigun
-	//flamethrower
-	//lock on
-	//bombard
-	//megagun
+	Effect* lockedon = new Effect("LOCKED ON", 4); //does nothing
+	Attack* lockon = new Attack("LOCK ON", "locked onto", false, -5, 0, 0, 1, 1, 1);
+	lockon->addEffect(lockedon);
+	Effect* defensemode = new Effect("DEFENSE MODE", 2147483647, 1, 2.0f);
+	Effect* assaultmode = new Effect("ASSAULT MODE", 2147483647, 2.0f, 1);
+	Attack* minigun = new Attack("MINIGUN", "gunned down", false, 4, 6, 15, 6, 6, 1);
+	minigun->afterdesc = " with his minigun";
+	minigun->synergies.push_back(lockedon);
+	minigun->selfeffect = defensemode;
+	minigun->selfcancel = assaultmode;
+	minigun->affectselfbeforeattack = true;
+	Attack* flamethrower = new Attack("FLAMETHROWER", "torched", false, 8, 20, 10, 2, 2, 1);
+	flamethrower->afterdesc = " with his flamethrower";
+	flamethrower->synergies.push_back(lockedon);
+	flamethrower->selfeffect = defensemode;
+	flamethrower->selfcancel = assaultmode;
+	flamethrower->affectselfbeforeattack = true;
+	flamethrower->addEffect(onfire);
+	Attack* bombard = new Attack("BOMBARD", "bombarded the team with his missile launchers", false, 13, 20, 20, 4, 4, 3);
+	bombard->focushits = false;
+	bombard->synergies.push_back(lockedon);
+	bombard->selfeffect = assaultmode;
+	bombard->selfcancel = defensemode;
+	bombard->affectselfbeforeattack = true;
+	Attack* megagun = new Attack("MEGAGUN", "gunned down", false, 15, 20, 0, 3, 3, 1);
+	megagun->afterdesc = " with big bullets";
+	megagun->synergies.push_back(lockedon);
+	megagun->selfeffect = assaultmode;
+	megagun->selfcancel = defensemode;
+	megagun->affectselfbeforeattack = true;
+	ceo->setEffect(defensemode, false);
+	ceo->setBasicAttack(lockon);
+	ceo->addSpecialAttack(minigun);
+	ceo->addSpecialAttack(flamethrower);
+	ceo->addSpecialAttack(bombard);
+	ceo->addSpecialAttack(megagun);
 
 	//burger warden
 
@@ -3300,37 +3334,33 @@ NPC* SetupWorld() {
 	
 	//keycard
 	NPC* richpeople = new NPC(*richperson); //RICH PEOPLE GAUNTLET!
+	richpeople->setLeader(true, 23, ballroom, false);
 	richpeople->setMask("", "RICH PEOPLE", "A huge gathering of rich people, discussing rich people things while drinking expensive wine and eating expensive cheese.");
-	richpeople->setParty({richperson, richperson}); 
-	richpeople->setParty({richperson, richperson, richcyborg}, true);
-	richpeople->setParty({richcyborg, burgerlawyer}, true);
-	richpeople->setParty({burgeragent, richperson, richperson}, true);
-	richpeople->setParty({burgerbutler}, true);
-	richpeople->setParty({burgerlawyer, burgerlawyer, richcyborg}, true);
-	richpeople->setParty({burgeragent, burgeragent}, true);
-	richpeople->setParty({burgerlawyer, burgerlawyer, burgerlawyer}, true);
-	richpeople->setParty({richcyborg, burgeragent, burgerlawyer}, true);
-	richpeople->setParty({richperson, richperson, richperson, richperson, richperson, richperson, richperson, richperson}, true);
-	richpeople->setParty({burgerbutler, burgerbutler}, true);
+	richpeople->setParty({richperson, richperson}); //rich person x3
+	richpeople->setParty({richperson, richperson, richcyborg}, true); //rich person x2 + rich cyborg
+	richpeople->setParty({richcyborg, burgerlawyer}, true); //rich cyborg + burger lawyer
+	richpeople->setParty({burgeragent, richperson, richperson}, true); //burger agent + rich person x2
+	richpeople->setParty({burgerbutler}, true); //burger butler
+	richpeople->setParty({burgerlawyer, burgerlawyer, richcyborg}, true); //burger lawyer x2 + rich cyborg
+	richpeople->setParty({burgeragent, burgeragent}, true); //burger agent x2
+	richpeople->setParty({burgerlawyer, burgerlawyer, burgerlawyer}, true); //burger lawyer x3
+	richpeople->setParty({richcyborg, burgeragent, burgerlawyer}, true); //rich cyborg + burger agent + burger lawyer
+	richpeople->setParty({richperson, richperson, richperson, richperson, richperson, richperson, richperson, richperson}, true); //rich person x8
+	richpeople->setParty({burgerbutler, burgerbutler}, true); //burger butler x2
+	richpeople->addConversation({{self, "HEY!"}, {NULL, "RICH PEOPLE - *indistinct chatter*"}, {self, "GUYS!"}, {NULL, "You jump onto a table and grab a glass and a fork."}, {NULL, "You clink the fork against the glass a few times."}, {NULL, "The room goes silent."}, {richperson, "Who the heck are you?"}, {self, "I'm saving this kid you guys kidnapped. >:("}, {self, "So..."}, {self, "(wait what am I saying exactly?)"}, {self, "Could one of you guys direct me towards where you kidnap people to?"}, {self, "..."}, {richpeople, "..."}, {richperson, "LET'S GET HIM!"}});
+	richpeople->setDialogue({{self, "I'm gonna save that kid you guys kidnapped >:("}, {richperson, "LET'S GET HIM!"}});
+	richpeople->setRejectionDialogue({{NULL, "Like, are you trying to recruit all of them at once?"}, {NULL, "That's not gonna work. :|"}});
+	richpeople->setForceBattle();
+	richpeople->addLinkedRoom({ballroom, "in the BURGER ballroom, full of incapacitated rich people."});
 
-	//rich person x3
-	//rich person x2 + rich cyborg
-	//rich cyborg + burger lawyer
-	//burger agent + rich person x2
-	//burger butler
-	//burger lawyer x2 + rich cyborg
-	//burger agent x2
-	//burger lawyer x3
-	//rich cyborg + burger agent + burger lawyer
-	//rich person x8
-	//burger butler x2
+	//richpeople->setGift(keycard, true);
 
 	NPC* enzo = new NPC(*ceo);
 	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
 	enzo->setLeader(true, 30, ceoroom, false);
 	ceo->blockExit(IN_SAFE, ENEMY, "guarded by the BURGER CEO.");
-	enzo->addConversation({{self, "Why did you guys kidnap that kid? >:("},
-						   {ceo, "So that's what you were storming through this joint for?"},
+	enzo->addConversation({{self, "Why'd you guys kidnap that kid? >:("},
+						   {ceo, "So that's what you busted into this joint for?"},
 						   {ceo, "Over some kid? Hah hah hah hah!"},
 						   {self, "Answer my question! >:("},
 						   {ceo, "Eh, don't even remember that."},
@@ -3373,6 +3403,10 @@ NPC* SetupWorld() {
 	ceo->setDialogue({{ceo, "You got a screw loose if ya think you can beat me!"}, {ceo, "HAH HAH HAH HAH!"}});
 	ceo->setRejectionDialogue("You're asking me to join ya? Are ya crazy?");
 	ceo->addLinkedRoom({ceoroom, "in the BURGER CEO's office, now missing the roof and walls.\nThe BURGER SAFE is still intact."});
+	ceo->addLinkedRoom({ballroom, "in the BURGER ballroom. The action has died down and the room is pretty quiet."});
+	ceo->addLinkedRoom({ceolobby, "in the ornate lobby of the building, featuring both an elevator and fancy stairs.\nThe yearly RICH PEOPLE reunion has concluded."});
+	ceo->addLinkedRoom({ceolobby2, "on the second floor of the building, still the lobby."});
+	ceo->addLinkedRoom({richneighborhood4, "at the doorway of the BURGER corporation's headquarters."});
 	ceo->setForceBattle();
 	ceo->setEscapable(false);
 	ceo->setWorldCondition(BEATCEO);
