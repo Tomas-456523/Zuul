@@ -89,7 +89,10 @@ public: //you need to set stats on creation
 	Effect* getAttackEffect();
 	bool getMasked();
 	const char* getHiddenTitle();
+	const char* getHiddenName();
 	const char* getHiddenDescription();
+	bool moreWaves(); //get if there's more waves to fight other than the current one
+	void popWave();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -117,7 +120,7 @@ public: //you need to set stats on creation
 	void Dismiss(bool gohome = true); //dismiss them and go home if specified
 	void setRoom(Room* _room); //move the npc
 	void setHome(Room* room);
-	void setParty(NPC* npc1 = NULL, NPC* npc2 = NULL, NPC* npc3 = NULL, NPC* npc4 = NULL, NPC* npc5 = NULL, NPC* npc6 = NULL, NPC* npc7 = NULL, NPC* npc8 = NULL, NPC* npc9 = NULL, NPC* npc10 = NULL, NPC* npc11 = NULL, NPC* npc12 = NULL, NPC* npc13 = NULL, NPC* npc14 = NULL, NPC* npc15 = NULL, NPC* npc16 = NULL, NPC* npc17 = NULL, NPC* npc18 = NULL, NPC* npc19 = NULL);
+	void setParty(initializer_list<NPC*> wave, bool newwave = false);
 	void setName(const char* _name);
 	void setTitle(const char* _title);
 	void setDescription(const char* _description);
@@ -174,7 +177,7 @@ public: //you need to set stats on creation
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
-	void setMask(const char* _title, const char* _desc); //make fake identity for the npc outside battle
+	void setMask(const char* _title, const char* _name, const char* _desc); //make fake identity for the npc outside battle
 	
 	void printDialogue(Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
 	void printRejectionDialogue(); //prints the rejection dialogue for the npc
@@ -207,6 +210,7 @@ protected:
 
 	bool masked = false; //if this npc looks different in battle compared to outside battle
 	const char* hiddentitle; //store the masked title and descriptions outside of battle
+	char hiddenname[255];
 	const char* hiddendesc;
 	
 	Room* home; //where the npc goes after being dismissed
@@ -214,7 +218,7 @@ protected:
 
 	int id; //npc's index in npcsH
 
-	vector<NPC*> party; //the npc's party if it is a leader
+	queue<vector<NPC*>> party; //the npc's party if it is a leader (and supports multiple waves)
 
 	Attack* standard_attack = NULL; //the npc's normal attack for generating sp
 	vector<Attack*> special_attacks; //the npc's special attacks that cost sp

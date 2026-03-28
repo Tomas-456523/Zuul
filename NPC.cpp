@@ -23,7 +23,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	isLeader = _isleader;
 	isPlayer = _player;
 	if (isLeader) { //adds itself to its own party if it's a leader npc (fightable or the player)
-		party.push_back(&*this);
+		party.push({&*this});
 	}
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 	id = npcID++; //get this npc's id and increment it for the next one
@@ -139,7 +139,10 @@ int NPC::xpForLevel(int level) { //uses an altered version of the above arbitrar
 	return ((level-1)*(2*level-1)*level/6) + 9*level;
 }
 vector<NPC*>* NPC::getParty() { //gets the npc's party for leader npcs
-	return &party;
+	return &party.front();
+}
+void NPC::popParty() {
+	party.pop();
 }
 bool NPC::getLeader() {
 	return isLeader;
@@ -268,8 +271,14 @@ bool NPC::getMasked() {
 const char* NPC::getHiddenTitle() {
 	return hiddentitle;
 }
+const char* NPC::getHiddenName() {
+	return hiddenname;
+}
 const char* NPC::getHiddenDescription() {
 	return hiddendesc;
+}
+bool NPC::moreWaves() {
+	return !party.empty();
 }
 const char* NPC::popRevealDialogue() {
 	const char* dialogue = revealdialogue;
@@ -285,11 +294,13 @@ void NPC::startNewChanges(bool looplast) { //make a new world changes object to 
 	changes.push(WorldChange());
 	loopLastChange = looplast;
 }
-void NPC::setMask(const char* _title, const char* _desc) {
+void NPC::setMask(const char* _title, const char* _name, const char* _desc) {
 	masked = true;
-	hiddentitle = title; //store the true title and description
+	hiddentitle = title; //store the true title and name and description
+	strcpy(hiddenname, name);
 	hiddendesc = description;
 	title = _title; //set the visible stuff to the fake stuff
+	strcpy(name, _name);
 	description = _desc;
 }
 time_t NPC::getGymStart() {
@@ -402,12 +413,12 @@ void NPC::setHome(Room* room) {
 	home = room;
 }
 //set a party for enemy leader npcs
-void NPC::setParty(NPC* npc1, NPC* npc2, NPC* npc3, NPC* npc4, NPC* npc5, NPC* npc6, NPC* npc7, NPC* npc8, NPC* npc9, NPC* npc10, NPC* npc11, NPC* npc12, NPC* npc13, NPC* npc14, NPC* npc15, NPC* npc16, NPC* npc17, NPC* npc18, NPC* npc19) {
-	NPC* npcs[] = { npc1, npc2, npc3, npc4 }; //makes an array of npcs so we can add them in a for loop
-	for (NPC* _npc : npcs) { //loops through the list and adds all the npcs to the party
+void NPC::setParty(initializer_list<NPC*> wave, bool newwave) {
+	if (newwave) party.push({}); //make the waves queue have a new party if we're making a new wave
+	for (NPC* _npc : wave) { //loops through the npcs in the wave and adds all the npcs to the party
 		if (_npc != NULL) {
 			NPC* npc = new NPC(*_npc); //duplicates the npc because there might be multiple of the same one
-			party.push_back(npc);
+			party.back().push_back(npc);
 		}
 	}
 }
@@ -459,7 +470,7 @@ void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn, bool bos
 	isBoss = boss;
 	if (isLeader) {
 		setLevel(_level); //set the level
-		party.push_back(&*this); //adds itself to its own party
+		party.front().push_back(&*this); //adds itself to its own party
 		if (room != NULL) { //puts itself in the given room
 			setRoom(room);
 		}

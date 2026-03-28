@@ -51,6 +51,10 @@ NPC* SetupWorld() {
 	const char* IN_ELEVATOR = "IN ELEVATOR";
 	const char* IN_SAFE = "IN SAFE";
 	const char* IN_TEMPLE = "IN TEMPLE";
+	const char* IN_ROOM_1 = "IN ROOM 1";
+	const char* IN_ROOM_2 = "IN ROOM 2";
+	const char* IN_ROOM_3 = "IN ROOM 3";
+	const char* IN_ROOM = "IN ROOM";
 	const char* INSIDE = "INSIDE";
 	const char* OUTSIDE = "OUTSIDE";
 	const char* UPSTAIRS = "UPSTAIRS";
@@ -195,7 +199,7 @@ NPC* SetupWorld() {
 	Room* volcano = new Room("in the scorched highlands just before BURGERSBURG. It's very hot.");
 	volcano->setWelcome({{NULL, "WELCOME TO HELLISH HIGHLANDS!"},
 						 {NULL, "<<< THE END OF THE ROAD >>>"},
-						 {NULL, "Radiation from the lava burns against your skin."}, //The air burns your skin and ash fills your lungs
+						 {NULL, "Radiation from the lava burns against your skin."},
 						 {NULL, "The BURGER RESTAURANT can be seen clearly, its image heavily distorted by the heat."},
 						 {NULL, "You're almost there."}});
 	Room* volcano1 = new Room("in the volcanic highlands. An old, abandoned factory stands to the EAST.");
@@ -323,7 +327,7 @@ NPC* SetupWorld() {
 	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
 	Room* richneighborhood2 = new Room("in the rich neighborhood. The security systems put you on guard; as soon as you step on a lawn, you'd probably be blown to smithereens.");
 	Room* richneighborhood3 = new Room("at a secluded corner of the rich neighborhood. Some guy's standing outside. What a daredevil.");
-	Room* richneighborhood4 = new Room("at the doorway of a huge layered bureaucratic-looking building. It's probably the second-tallest building in the city.");
+	Room* richneighborhood4 = new Room("at the doorway of a huge layered complex, the BURGER corporation's headquarters.");
 	//city interiors
 	Room* burgfish = new Room("in the fish building. A warm light shines down the stairs.");
 	Room* burgchurch = new Room("in a hidden church. Everyone seems joyful despite the state of the city.");
@@ -335,24 +339,20 @@ NPC* SetupWorld() {
 	Room* shrimpartment3 = new Room("on the third floor. There is a cat poster here.");
 	Room* shrimproof = new Room("on the apartment rooftop. You have a nice view of the city lights.");
 	Room* firedepartment = new Room("in the fire department. The fire alarm is sadly whimpering.");
-	Room* burgstation = new Room("in the BURGERSBURG train station. Oddly enough, this one seems in the best condition out of all the ones you've seen.");
+	Room* burgstation = new Room("in the BURGERSBURG train station.\nOddly enough, this one seems in the best condition out of all the ones you've seen.");
 	burgstation->setStation();
-	Room* ceolobby = new Room("in the ornate lobby of the building. The yearly RICH PEOPLE reunion is ongoing.");
-	Room* ceoelevator0 = new Room("in the elevator of the rich people building, at the lowest level.");
+	Room* ceolobby = new Room("in the ornate lobby of the building, featuring both an elevator and fancy stairs.\nThe yearly RICH PEOPLE reunion is ongoing.");
+	Room* ceolobby2 = new Room("on the second floor of the building, still the lobby! There's some huge doors here.");
+	Room* ballroom = new Room("in the BURGER ballroom, surrounded by a sea of rich people."); //in the BURGER ballroom, full of incapacitated rich people. //in the BURGER ballroom. The action has died down and the room is pretty quiet.
 	Room* ceoelevator1 = new Room("in the elevator, at ground level.");
-	Room* ceoelevator2 = new Room("in the elevator, on the first level. You see a grand hallway being cleaned by a robot butler.");
-	Room* ceoelevator3 = new Room("in the elevator, on the second level. You see a huge ballroom ahead.");
-	Room* ceoelevator4 = new Room("in the elevator, at the top level. You see the CEO's office ahead.");
+	Room* ceoelevator2 = new Room("in the elevator, on the second floor.");
+	Room* ceoelevator3 = new Room("in the elevator, at the top level with the CEO's office.");
 	Room* ceoroom = new Room("in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.");
-	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies, BURGERs, and company documents are piled up here.");
+	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies and company documents are piled up here.");
+
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
-	Room* elevatortop = new Room("in the elevator, elevated all the way to the tippity top."); //Once you go through the door, there is no going back. (for full version)
-	elevatortop->setWelcome({{NULL, "You ventured beyond your forest home,"},
-							 {NULL, "endured through desolate sands,"},
-							 {NULL, "journeyed through volcanic highlands,"},
-							 {NULL, "and braved the crime of the city."},
-							 {NULL, "It was a long journey, but you're just barely away from the end..."}, //from your destination?
-							 {NULL, "The elevator shoots upwards."},
+	Room* elevatortop = new Room("in the elevator, elevated all the way to the tippity top.");
+	elevatortop->setWelcome({{NULL, "The elevator shoots upwards."},
 							 {NULL, "..."},
 							 {NULL, "..."},
 							 {NULL, "..."},
@@ -369,7 +369,7 @@ NPC* SetupWorld() {
 							 {NULL, "The elevator dings."},
 							 {NULL, "You have arrived at your destination."}});
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
-	BURGERRESTAURANT->setWelcome({{NULL, "BURGER MAN - \"HELLO VALUED CUSTOMER.\""}, {NULL, "BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT.\""}});
+	BURGERRESTAURANT->setWelcome({{NULL, "BURGER MAN - \"HELLO VALUED CUSTOMER!\""}, {NULL, "BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT!\""}});
 	Room* elevatorbottom = new Room("in the elevator, deep down in the restricted level of the BURGER RESTAURANT.");
 	elevatorbottom->setWelcome({{NULL, "The elevator shoots downwards."},
 								{NULL, "..."},
@@ -383,7 +383,7 @@ NPC* SetupWorld() {
 								{NULL, "..."},
 								{NULL, "..."},
 								{NULL, "..."},
-								{NULL, "Temperatures have risen above volcanic levels..."},
+								{NULL, "The rock outside is glowing red hot..."},
 								{NULL, "The elevator dings."}});
 	Room* burgerbasement = new Room("in the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
@@ -1065,7 +1065,7 @@ NPC* SetupWorld() {
 	//Yeah.
 	//Yeah, lets go gettem.
 
-	//Did you just blow up the BURGER building?
+	//Did you just blow up the BURGER headquarters?
 	//I saw you walk in there and the top floor just blew up.
 	//Oh that was the CEO.
 	//We fought him normally but he kind of just blew up on his own.
@@ -1202,6 +1202,18 @@ NPC* SetupWorld() {
 	burgerman->setLeader(true, 0, NULL, false);
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
+
+	//HELLO WELCOME TO MY BURGER RESTAURANT!
+	//HOW MAY I TAKE YOUR ORDER?
+
+	//YOU HAVE BEEN MAKING QUITE THE MESS.
+	//YOU THOUGHT I WOULDN'T NOTICE?
+	//I wasn't thinking about you.
+	
+	//YOU ARE REALLY STUPID.
+	//YOU CAME BACK WITHOUT THE PLOT DEVICE?
+	//<<<       BURGER QUEST COMPLETE  T_T       >>>
+	//<<< ENDING ACHIEVED: YOU FORGOR THE DEVICE >>>
 	
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
 	burgerprisoner->setDialogue("Hi how are you doing?");
@@ -2073,9 +2085,8 @@ NPC* SetupWorld() {
 	richneighborhood4->setExit(SOUTHWEST, richneighborhood1);
 	richneighborhood4->setExit(INSIDE, ceolobby);
 	ceolobby->setExit(OUTSIDE, richneighborhood4);
-	ceolobby->setExit(IN_ELEVATOR, ceoelevator0);
-	ceoelevator0->setExit(OUTSIDE, ceolobby);
-	ceoelevator0->setExit(UP, ceoelevator1);
+	ceolobby->setExit(IN_ELEVATOR, ceoelevator1);
+	ceolobby->setExit(UP, ceolobby2);
 	ceoelevator1->setExit(UP, ceoelevator2);
 	ceoelevator1->setExit(DOWN, ceoelevator0);
 	ceoelevator2->setExit(UP, ceoelevator3);
@@ -2617,6 +2628,8 @@ NPC* SetupWorld() {
 
 	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats());
 	//
+	//suspend
+	//chuck
 
 	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats());
 	//shell
@@ -2654,22 +2667,67 @@ NPC* SetupWorld() {
 	//prep time
 
 
-	//rich person
+	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his money.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
+	Attack brassknuckles = new Attack("BRASS KNUCKLES", "swung at", -5, 20, 0, 1, 1, 1);
+	brassknuckles->afterdesc = " with brass knuckles";
+	Attack chairthrow = new Attack("CHAIR", "threw a nearby chair at", 6, 40, 0, 1, 1, 1);
+	Effect* ouchknees = new Effect("OUCH MY KNEES", 2, 0, 0, 1, 0.9f);
+	Attack* canecrunch = new Attack("CANE CRUNCH", "hit", 15, 30, 0, 1, 1, 1);
+	canecrunch->afterdesc = "'s knees with his rich person cane";
+	richperson->setBasicAttack(brassknuckles);
+	richperson->addSpecialAttack(chairthrow);
+	richperson->addSpecialAttack(canecrunch);
 
-	//rich cyborg
+	NPC* richcyborg = new NPC("", "RICH CYBORG", "A really rich BURGER shareholder who has traded some of his weak human flesh for metal.", limbo, 0, Stats(30, 30, 20, 25, 15, 18, 9));
+	Attack metalknuckles = new Attack("METALS KNUCKLES", "struck", -5, 20, 0, 1, 1, 1);
+	metalknuckles->afterdesc = " with metallic fists";
+	Attack fingergun = new Attack("FINGER GUN", "shot at", 5, 15, 40, 2, 2, 1);
+	fingergun->afterdesc = "with his integrated weaponry"
+	Attack* runover = new Attack("RUN OVER", "flew into", 12, 35, 0, 1, 1, 1);
+	runover->afterdesc = " with his integrated jet pack";
+	richcyborg->setBasicAttack(metalknuckles);
+	richcyborg->addSpecialAttack(fingergun);
+	richcyborg->addSpecialAttack(runover);
 
-	//burger lawyer
+	NPC* burgerlawyer = new NPC("", "BURGER LAWYER", "A really corrupt lawyer, rich from covering up the BURGER corporation's crimes.", limbo, 0, Stats(20, 15, 10, 5, 0, 5, 9));
+	Attack* briefcasebash = new Attack("BRIEFCASE BASH", "bashed", -5, 25, 0, 1, 1, 1);
+	briefcasebash->afterdesc = " with his briefcase";
+	Effect* legalimmunity = new Effect("LEGAL IMMUNITY", 2);
+	legalimmunity->invincible = true;
+	Attack* legaldefense = new Attack("LEGAL DEFENSE", "legally defended", 7, 0, 0, 1, 1, 1, true);
+	legaldefense->addEffect(legalimmunity);
+	Effect* enjoined = new Effect("ENJOINED", 1);
+	enjoined->freeze = true;
+	Attack* injunction = new Attack("INJUNCTION", "injuncted", 7, 0, 0, 1, 1, 1);
+	injunction->afterdesc = "'s right to battle";
+	injunction->addEffect(enjoined);
+	burgerlawyer->setBasicAttack(briefcasebash);
+	burgerlawyer->addSpecialAttack(legaldefense);
+	burgerlawyer->addSpecialAttack(injunction);
 	
-	//burger agent
+	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats());
+	//beat up
+	//
+	//
 
-	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation.", limbo, 0, Stats());
+	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation. Looks like a big suited rice cooker on wheels.", limbo, 0, Stats(100, 50, 15, 30, 0, 0, 9));
+	burgerbutler->setBoss(true); //miniboss
+	//
+	//
+	//
+	//
 	
 	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 50, 50, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
 	ceo->setBoss(true);
+	//minigun
+	//flamethrower
+	//lock on
+	//bombard
+	//megagun
 
 	//burger warden
 
-	//burger scientist
+	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "", "Genius husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats());
 
 	//burger man
 
@@ -2763,7 +2821,7 @@ NPC* SetupWorld() {
 
 	NPC* govguard = new NPC(*ninjachief);
 	govguard->setLeader(true, 19, ninjacapitol);
-	govguard->setParty(ninja, ninja);
+	govguard->setParty({ninja, ninja});
 	govguard->setDialogue({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Now, fight me as your final test."}});
 	govguard->addConversation({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Most impressive."}, {ninjachief, "Now, fight me as your final test."}}); //just so he says that before the fight
 	govguard->addRejectionDialogue("I must continue to govern the ninja village.");
@@ -2783,7 +2841,7 @@ NPC* SetupWorld() {
 
 	NPC* forestguard2 = new NPC(*buffgrassman);
 	forestguard2->setLeader(true, 2, foresttempleentrance);
-	forestguard2->setParty(pricklyhog);
+	forestguard2->setParty({pricklyhog});
 	forestguard2->blockExit(NORTH, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard2->setDialogue({{NULL, "BUFF GRASSMAN - *burly bush noises*"}});
 	forestguard2->addRejectionDialogue({{NULL, "*BUFF GRASSMAN - haughty bush noises*"}});
@@ -2796,14 +2854,14 @@ NPC* SetupWorld() {
 
 	NPC* hogguard2 = new NPC(*greaterhog);
 	hogguard2->setLeader(true, 3, forestspork);
-	hogguard2->setParty(pricklyhog, pricklyhog);
+	hogguard2->setParty({pricklyhog, pricklyhog});
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
 	hogguard2->setDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
 	hogguard2->addRejectionDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
 
 	NPC* forestguard3 = new NPC(*buffgrassman);
 	forestguard3->setLeader(true, 4, forestnice);
-	forestguard3->setParty(grassman, grassman);
+	forestguard3->setParty({grassman, grassman});
 	forestguard3->blockExit(EAST, ENEMY, "guarded by the BUFF GRASSMAN.");
 	forestguard3->setDialogue({{NULL, "BUFF GRASSMAN - *burly bush noises*"}});
 	forestguard3->addRejectionDialogue({{NULL, "*BUFF GRASSMAN - haughty bush noises*"}});
@@ -2854,7 +2912,7 @@ NPC* SetupWorld() {
 	
 	NPC* forestboss = new NPC(*savagehog);
 	forestboss->setLeader(true, 5, bossgrove, true, true);
-	forestboss->setParty(pricklyhog, greaterhog);
+	forestboss->setParty({pricklyhog, greaterhog});
 	forestboss->blockExit(NORTH, ENEMY, "blocked off by the MAMMOTH HOG!");
 	forestboss->setEscapable(false);
 	forestboss->setDialogue({{NULL, "MAMMOTH HOG - *SAVAGE ROAR*"}});
@@ -2869,14 +2927,14 @@ NPC* SetupWorld() {
 
 	NPC* desertguard = new NPC(*sandman);
 	desertguard->setLeader(true, 5, desert);
-	desertguard->setParty(sandman, sandman);
+	desertguard->setParty({sandman, sandman});
 	desertguard->blockExit(NORTHWEST, ENEMY, "blocked by the SANDMAN.", true);
 	desertguard->setDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
 	desertguard->addRejectionDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
 
 	NPC* desertguard2 = new NPC(*sandman);
 	desertguard2->setLeader(true, 6, desertdune);
-	desertguard2->setParty(rumbleweed, rumbleweed);
+	desertguard2->setParty({rumbleweed, rumbleweed});
 	desertguard2->blockExit(SOUTHEAST, ENEMY, "blocked by the SANDMAN.", true);
 	desertguard2->setDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
 	desertguard2->addRejectionDialogue({{NULL, "SANDMAN - *angry falling sand noises*"}});
@@ -2892,21 +2950,21 @@ NPC* SetupWorld() {
 
 	NPC* canyonguard = new NPC(*skeleminer);
 	canyonguard->setLeader(true, 6, canyon3);
-	canyonguard->setParty(rockbug);
+	canyonguard->setParty({rockbug});
 	canyonguard->blockExit(UNDERGROUND, ENEMY, "blocked by the SKELEMINER.");
 	canyonguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	canyonguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
 	NPC* mineguard = new NPC(*skeleminer);
 	mineguard->setLeader(true, 6, deserttunnel);
-	mineguard->setParty(rockbug, rockbug);
+	mineguard->setParty({rockbug, rockbug});
 	mineguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEMINER.", true);
 	mineguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	mineguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	
 	NPC* mineguard2 = new NPC(*skeleminer);
 	mineguard2->setLeader(true, 8, mineshaft2);
-	mineguard2->setParty(sandman);
+	mineguard2->setParty({sandman});
 	//mineguard2->blockExit(NORTH, ENEMY, "blocked by the SKELEMINER.");
 	mineguard2->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	mineguard2->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
@@ -2914,32 +2972,10 @@ NPC* SetupWorld() {
 
 	NPC* boomguard = new NPC(*dreadnaut);
 	boomguard->setLeader(true, 8, mineshaftside);
-	boomguard->setParty(rockbug, rockbug);
+	boomguard->setParty({rockbug, rockbug});
 	boomguard->blockExit(SOUTHWEST, ENEMY, "blocked by the DREADNOUGHT.");
 	boomguard->setDialogue({{NULL, "DREADNOUGHT - *mechanical invertabrate noises*"}});
 	boomguard->addRejectionDialogue({{NULL, "DREADNOUGHT - *mechanical rejection*"}});
-
-	/*NPC* minerando = new NPC(*rascal);
-	minerando->setLeader(true, 67, mineshaftside);*/
-
-	/*NPC* richguard0 = new NPC(*richguy1);
-	richguard->setLeader(true, 20, ceolobby);
-	richguard->setParty(richguy2, businessguy);
-	richguard->blockExit(IN_ELEVATOR, ENEMY, "blocked by the RICH PERSON.");
-
-	NPC* richguard1 = new NPC(*richguy1);
-	richguard1->setLeader(true, 20, ceoelevator1);
-	richguard1->setParty(richguy2, businessguy);
-	richguard1->blockExit(UP, ENEMY, "manually blocked by the RICH PERSON.");
-
-	NPC* richguard2 = new NPC(*burgerbutler);
-	richguard2->setLeader(true, 30, ceoelevator2);
-	richguard2->blockExit(UP, ENEMY, "manually blocked by the BURGER BUTLER.");
-
-	NPC* richguard3 = new NPC(*businessguy);
-	richguard3->setLeader(true, 25, ceoelevator3);
-	richguard3->setParty(businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, businessguy, richguy1, richguy1, richguy1, richguy1, richguy1, richguy2, richguy2, richguy2, richguy2);
-	richguard3->blockExit(UP, ENEMY, "manually blocked by a bunch of BUSINESSPEOPLE.");*/
 	
 	//MARK: Lobster
 	NPC* florian = new NPC(*tunnellobster);
@@ -3048,42 +3084,42 @@ NPC* SetupWorld() {
 
 	NPC* volcanoguard2 = new NPC(*magman);
 	volcanoguard2->setLeader(true, 12, volcano3);
-	volcanoguard2->setParty(lavizard, lavizard);
+	volcanoguard2->setParty({lavizard, lavizard});
 	volcanoguard2->blockExit(NORTHEAST, ENEMY, "guarded by the LAVAMAN.");
 	volcanoguard2->setDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
 	volcanoguard2->addRejectionDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
 
 	NPC* volcanoguard3 = new NPC(*largelavaman);
 	volcanoguard3->setLeader(true, 14, volcano5);
-	volcanoguard3->setParty(magman, magman, lavizard);
+	volcanoguard3->setParty({magman, magman, lavizard});
 	volcanoguard3->blockExit(NORTH, ENEMY, "guarded by the LARGE LAVAMAN.");
 	volcanoguard3->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 	volcanoguard3->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 
 	NPC* fact1guard = new NPC(*slagman);
 	fact1guard->setLeader(true, 11, factoryplat);
-	fact1guard->setParty(magman, magman);
+	fact1guard->setParty({magman, magman});
 	fact1guard->blockExit(EAST, ENEMY, "guarded by the SLAGMAN.");
 	fact1guard->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
 	fact1guard->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
 	NPC* fact2guard = new NPC(*lavasoldier);
 	fact2guard->setLeader(true, 12, factory2);
-	fact2guard->setParty(magman);
+	fact2guard->setParty({magman});
 	fact2guard->blockExit(NORTHEAST, ENEMY, "guarded by the LAVA SOLDIER.");
 	fact2guard->setDialogue({{NULL, "LAVA SOLDIER - *lavally challenges you to a battle*"}});
 	fact2guard->addRejectionDialogue({{NULL, "LAVA SOLDIER - *proud laval noises*"}});
 
 	NPC* fact2guard2 = new NPC(*slagman);
 	fact2guard2->setLeader(true, 12, factorybalcony1);
-	fact2guard2->setParty(lavasoldier, lavasoldier); //reverse so it's 1 soldier 2 slagmen?
+	fact2guard2->setParty({lavasoldier, lavasoldier}); //reverse so it's 1 soldier 2 slagmen?
 	fact2guard2->blockExit(NORTHEAST, ENEMY, "guarded by the SLAGMAN.", true);
 	fact2guard2->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
 	fact2guard2->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
 
 	NPC* fact2guard3 = new NPC(*slagman);
 	fact2guard3->setLeader(true, 13, factorystorage);
-	fact2guard3->setParty(slagman);
+	fact2guard3->setParty({slagman});
 	fact2guard3->blockExit(EAST, ENEMY, "guarded by the SLAGMAN.", true);
 	fact2guard3->setDialogue({{NULL, "SLAGMAN - *HISSSSSSSS*"}});
 	fact2guard3->addRejectionDialogue({{NULL, "SLAGMAN - *HISSSSSSSSSS*"}});
@@ -3096,14 +3132,14 @@ NPC* SetupWorld() {
 
 	NPC* fact3guard = new NPC(*lavasoldier);
 	fact3guard->setLeader(true, 14, factorynw);
-	fact3guard->setParty(slagman, lavizard, lavizard);
+	fact3guard->setParty({slagman, lavizard, lavizard});
 	fact3guard->blockExit(EAST, ENEMY, "guarded by the LAVA SOLDIER.");
 	fact3guard->setDialogue({{NULL, "LAVA SOLDIER - *lavally challenges you to a battle*"}});
 	fact3guard->addRejectionDialogue({{NULL, "LAVA SOLDIER - *proud laval noises*"}});
 
 	NPC* fact3guard2 = new NPC(*poizard);
 	fact3guard2->setLeader(true, 14, factoryse);
-	fact3guard2->setParty(lavizard, lavizard);
+	fact3guard2->setParty({lavizard, lavizard});
 	fact3guard2->blockExit(EAST, ENEMY, "guarded by the LAVA SOLDIER.");
 	fact3guard2->setDialogue({{NULL, "POIZARD - *squeakily threatens you*"}});
 	fact3guard2->addRejectionDialogue({{NULL, "POIZARD - *squeakily rejects you*"}});
@@ -3121,28 +3157,28 @@ NPC* SetupWorld() {
 
 	NPC* carlosguard = new NPC(*superslagman);
 	carlosguard->setLeader(true, 14, factoryroofne);
-	carlosguard->setParty(lavasoldier, lavasoldier);
+	carlosguard->setParty({lavasoldier, lavasoldier});
 	carlosguard->blockExit(EAST, ENEMY, "guarded by the SUPER SLAGMAN.");
 	carlosguard->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
 	carlosguard->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
 
 	NPC* fact3guard3 = new NPC(*poizard);
 	fact3guard3->setLeader(true, 15, factoryroofnw);
-	fact3guard3->setParty(slagman, poizard, poizard);
+	fact3guard3->setParty({slagman, poizard, poizar});
 	fact3guard3->blockExit(NORTH, ENEMY, "guarded by the SUPER SLAGMAN.");
 	fact3guard3->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
 	fact3guard3->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
 
 	NPC* shortcutguard = new NPC(*skeleminer); //skeleminer duo!
 	shortcutguard->setLeader(true, 15, sewer);
-	shortcutguard->setParty(skeleminer);
+	shortcutguard->setParty({skeleminer});
 	shortcutguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEMINER.");
 	shortcutguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	shortcutguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
 	NPC* sewerguards = new NPC(*largelavaman);
 	sewerguards->setLeader(true, 15, sewercenter1);
-	sewerguards->setParty(magman);
+	sewerguards->setParty({magman});
 	sewerguards->blockExit(NORTHWEST, ENEMY, "guarded by the LARGE LAVAMAN.", true);
 	sewerguards->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 	sewerguards->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
@@ -3161,7 +3197,7 @@ NPC* SetupWorld() {
 
 	NPC* crocguardn = new NPC(*lavadile);
 	crocguardn->setLeader(true, 15, sewercenter1);
-	crocguardn->setParty(lavadile);
+	crocguardn->setParty({lavadile});
 	crocguardn->blockExit(NORTH, ENEMY, "guarded by the LAVADILE.", true);
 	crocguardn->setDialogue({{NULL, "LAVADILE - *growllll*"}});
 	crocguardn->addRejectionDialogue({{NULL, "LAVADILE - *growllllll*"}});
@@ -3206,7 +3242,7 @@ NPC* SetupWorld() {
 
 	NPC* tabguard = new NPC(*newtab);
 	tabguard->setLeader(true, 12, castlehall, false);
-	tabguard->setParty(newtab, newtab);
+	tabguard->setParty({newtab, newtab});
 	tabguard->blockExit(SOUTH, ENEMY, "blocked by the NEW TAB");
 	tabguard->setDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
 	tabguard->addRejectionDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
@@ -3248,7 +3284,7 @@ NPC* SetupWorld() {
 
 	NPC* jimshady0 = new NPC(*realjimshady);
 	jimshady0->setLeader(true, 25, mountainside);
-	jimshady0->setParty(jimmyshimmy, jimmyshimmy);
+	jimshady0->setParty({jimmyshimmy, jimmyshimmy});
 	jimshady0->blockExit(WEST, ENEMY, "blocked by THE REAL JIM SHADY.");
 	jimshady0->addConversation({{realjimshady, "Hi."}, {realjimshady, "My name is-"}, {NULL, "What?"}, {realjimshady, "My name is-"}, {NULL, "Who?"}, {realjimshady, "My name is"}, {NULL, "*chka chka*"}, {realjimshady, "JIM SHADY."}});
 	jimshady0->addRejectionDialogue("No.");
@@ -3261,8 +3297,22 @@ NPC* SetupWorld() {
 
 	NPC* theratman = new NPC(*ratman);
 	theratman->setLeader(true, 22, rightstreet3);
+	
+	//keycard
+	NPC* richpeople = new NPC(*richperson); //RICH PEOPLE GAUNTLET!
+	richpeople->setMask("", "RICH PEOPLE", "A huge gathering of rich people, discussing rich people things while drinking expensive wine and eating expensive cheese.");
+	richpeople->setParty({richperson, richperson}); 
+	richpeople->setParty({richperson, richperson, richcyborg}, true);
+	richpeople->setParty({richcyborg, burgerlawyer}, true);
+	richpeople->setParty({burgeragent, richperson, richperson}, true);
+	richpeople->setParty({burgerbutler}, true);
+	richpeople->setParty({burgerlawyer, burgerlawyer, richcyborg}, true);
+	richpeople->setParty({burgeragent, burgeragent}, true);
+	richpeople->setParty({burgerlawyer, burgerlawyer, burgerlawyer}, true);
+	richpeople->setParty({richcyborg, burgeragent, burgerlawyer}, true);
+	richpeople->setParty({richperson, richperson, richperson, richperson, richperson, richperson, richperson, richperson}, true);
+	richpeople->setParty({burgerbutler, burgerbutler}, true);
 
-	//RICH PEOPLE GAUNTLET!
 	//rich person x3
 	//rich person x2 + rich cyborg
 	//rich cyborg + burger lawyer
@@ -3276,7 +3326,7 @@ NPC* SetupWorld() {
 	//burger butler x2
 
 	NPC* enzo = new NPC(*ceo);
-	enzo->setMask("BURGER CEO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
+	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
 	enzo->setLeader(true, 30, ceoroom, false);
 	ceo->blockExit(IN_SAFE, ENEMY, "guarded by the BURGER CEO.");
 	enzo->addConversation({{self, "Why did you guys kidnap that kid? >:("},
@@ -3313,16 +3363,16 @@ NPC* SetupWorld() {
 								{self, "It did work once \\_(:|)_/"},
 								{enzo, "GO HOME, KID."},
 								{enzo, "You don't know what yer messing with."},
-								{NULL, "Enzo's core starts to beep."},
+								{NULL, "Enzo's core starts to glow."},
 								{self, "O_O"},
 								{NULL, "You jump away from Enzo."},
 								{NULL, "Enzo self-destructed!"},
-								{NULL, "The top of the BURGER BUILDING went flying in pieces!"},
-								{NULL, "The fire alarm starts blaring."},
+								{NULL, "The top of the BURGER headquarters went flying in pieces!"},
 								{self, "O_O"}}});
 	enzo->setTalkOnDefeat();
 	ceo->setDialogue({{ceo, "You got a screw loose if ya think you can beat me!"}, {ceo, "HAH HAH HAH HAH!"}});
 	ceo->setRejectionDialogue("You're asking me to join ya? Are ya crazy?");
+	ceo->addLinkedRoom({ceoroom, "in the BURGER CEO's office, now missing the roof and walls.\nThe BURGER SAFE is still intact."});
 	ceo->setForceBattle();
 	ceo->setEscapable(false);
 	ceo->setWorldCondition(BEATCEO);

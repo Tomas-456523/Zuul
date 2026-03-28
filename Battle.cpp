@@ -26,6 +26,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	}
 	if (enemyTeam[0]->getMasked()) { //set to hidden values if the enemy leader was masked
 		enemyTeam[0]->setTitle(enemyTeam[0]->getHiddenTitle());
+		enemyTeam[0]->setName(enemyTeam[0]->getHiddenName());
 		enemyTeam[0]->setDescription(enemyTeam[0]->getHiddenDescription());
 	}
 	//add everyone to a list of everyone for convenience
