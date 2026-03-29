@@ -62,6 +62,11 @@ NPC* SetupWorld() {
 	const char* UNDERGROUND = "UNDERGROUND";
 	const char* ABOVEGROUND = "ABOVEGROUND";
 	const char* FORWARD = "FORWARD";
+	const char* TO_THE_TOP = "TO THE TOP";
+	const char* TO_GROUND_LEVEL = "TO GROUND LEVEL";
+	const char* TO_THE_BOTTOM = "TO THE BOTTOM";
+	const char* TO_FLOOR_1 = "TO FLOOR 1";
+	const char* TO_FLOOR_2 = "TO FLOOR 2";
 	//fast travel directions
 	const char* TO_THE_VILLAGE = "TO THE VILLAGE";
 	const char* TO_THE_DESERT = "TO THE DESERT";
@@ -989,7 +994,7 @@ NPC* SetupWorld() {
 	//Gambler Graham is the rng guy MARK: Graham
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(), Stats());
 	Conversation gramconvo = {{self, "You should stop gambling."}, {graham, "What?"}, {graham, "Haven't you heard that 99% of gamblers quit right before hitting it big?"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}};
-	gramconvo->skipcondition = NOGAMBLING;
+	gramconvo.skipcondition = NOGAMBLING;
 	graham->addConversation(gramconvo);
 	graham->addRejectionDialogue({{self, "Hey wana join my team?"}, {graham, "Sure man, as soon as I win the jackpot."}, {graham, "I'm just about to win it. I can feel it!"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}});
 	graham->addRecruitmentDialogue({{self, "Well now that you can't gamble anymore you wanna join my team?"}, {graham, "Eh..."}, {graham, "Sure, but I'm coming back once they fix this place."}});
@@ -1491,7 +1496,7 @@ NPC* SetupWorld() {
 	cloakingchange.recruitLinks.push(richie);
 	cloakingchange.recruitLinks.push(forestknight);
 	
-	NPC* child = new NPC("CHILD", "JILLY", "The daughter of MATILDA who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3);
+	NPC* child = new NPC("", "JILLY", "The daughter of MATILDA who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3);
 
 	NPC* matilda = new NPC("WORRIED MOTHER", "MATILDA", "A frequent churchgoer with distress very visible on her face.", burgchurch, 10);
 	matilda->addConversation({{self, "You look distressed."},
@@ -1524,18 +1529,58 @@ NPC* SetupWorld() {
 	//rejection
 	//dialogue
 
-	//jilly is surprisingly good at fighting and when you USE the bag she jumps out of it and kicks Bernard in the gut
+	//You untie the bag.
+	//JILLY flies out of the bag!
+	//Jilly uppercuts you into the roof.
 	//"OW"
 	//"Take that you meanie!"
 	//"BRO WHAT THE HECK I'M TRYING TO SAVE YOU"
 	//"Oh okay!"
 	//"Thank you mister!"
+	//"No problem."
+	//RECRUIT Jilly once you're ready to bring her back to her mom.
+
+	//Are we going back home, mister?
+	//Yeah just a second.
+
+	//Alright I'm taking you back to your mom now.
+	//YAY!
+	//Thank you mister!
+
+	//Actually can you just stay here a little longer?
+	//Okay.
+
+	//Uhhh I don't want to go there.
+	//I thought we were going back to my mom? :(
+
+	//MOM!
+	//JILLY!
+	//Jilly flies into Matilda's arms.
+	//Tears of joy flow from Matilda's eyes.
+	//Oh thank you so much!
+	//Thank you so much for reuniting me with my Jilly!
+	//I'm sorry, I wish I had something to repay you with.
+	//No, it's fine don't worry.
+	//child, "Thank you mister for saving me!"
+	//child, "I made you this drawing!"
+	//Jilly hands you a drawing of her uppercutting you.
+	//self, Oh thanks.
+
+	//dillydally (basic attack) JILLY is watching you battle!
+	//FLYING KICK
+	//UPPERCUT (spatula)
 
 	//I have just finished fighting the CEO
 	//I should be getting close!
 	//Oh.
 
-	//
+	/*Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 7, 25, 0, 1, 1, 1);
+	uppercut->afterdesc = " into the air";
+	Effect* uppercutted = new Effect("UPPERCUTTED", 0);
+	uppercutted->remove = true;
+	uppercutted->falldamage = 10;
+	uppercut->addEffect(uppercutted);
+	uppercut->addDescription("Uppercut the target into the air, interrupting their turn if it hits them before they move. (25 ATTACK)");*/
 	
 	Item* greenkey = new KeyItem("GREEN KEY", "A big key in a similar shade of green to the volcanic sewers' accents.", {{NULL, "You put the GREEN KEY in the keyhole."}, {NULL, "The doorway has been unlocked!"}}, limbo, LOCK);
 	NPC* jim = new NPC("", "JIM", "A self-aware shrimp wearing a dark hood, tired of his shrimple brother's shenanigans.", shrimproof, 0, Stats(50, 10, 10, 35, 15, 10, 9));
@@ -1550,7 +1595,7 @@ NPC* SetupWorld() {
 						  {jim, "Here you go."},
 						  {self, "Oh thanks."}});
 	jim->addConversation({{self, "So, you live here?"},
-						  {jim, "Yeah."},
+						  {jim, "Yeah I'm the landlord."},
 						  {self, "Cool."}});
 	jim->setDialogue({{jim, "..."}, {self, "..."}});
 	jim->addRejectionDialogue("I have to manage my apartment.");
@@ -2087,15 +2132,20 @@ NPC* SetupWorld() {
 	ceolobby->setExit(OUTSIDE, richneighborhood4);
 	ceolobby->setExit(IN_ELEVATOR, ceoelevator1);
 	ceolobby->setExit(UP, ceolobby2);
-	ceoelevator1->setExit(UP, ceoelevator2);
-	ceoelevator1->setExit(DOWN, ceoelevator0);
-	ceoelevator2->setExit(UP, ceoelevator3);
-	ceoelevator2->setExit(DOWN, ceoelevator1);
-	ceoelevator3->setExit(UP, ceoelevator4);
-	ceoelevator3->setExit(DOWN, ceoelevator2);
-	ceoelevator4->setExit(OUTSIDE, ceoroom);
-	ceoelevator4->setExit(DOWN, ceoelevator3);
-	ceoroom->setExit(IN_ELEVATOR, ceoelevator4);
+	ceolobby2->setExit(IN_ROOM, ballroom);
+	ceolobby2->setExit(IN_ELEVATOR, ceoelevator2);
+	ceolobby2->setExit(DOWN, ceolobby);
+	ballroom->setExit(OUT, ceolobby2);
+	ceoelevator1->setExit(TO_FLOOR_2, ceoelevator2);
+	ceoelevator1->setExit(TO_THE_TOP, ceoelevator3);
+	ceoelevator1->setExit(OUT, ceolobby);
+	ceoelevator2->setExit(TO_FLOOR_1, ceoelevator1);
+	ceoelevator2->setExit(TO_THE_TOP, ceoelevator3);
+	ceoelevator2->setExit(OUT, ceolobby2);
+	ceoelevator3->setExit(TO_FLOOR_1, ceoelevator1);
+	ceoelevator3->setExit(TO_FLOOR_2, ceoelevator2);
+	ceoelevator3->setExit(OUT, ceoroom);
+	ceoroom->setExit(IN_ELEVATOR, ceoelevator3);
 	ceoroom->setExit(IN_SAFE, burgsafe);
 	burgsafe->setExit(OUT, ceoroom);
 	elevator->setExit(UP, elevatortop);
@@ -2152,9 +2202,9 @@ NPC* SetupWorld() {
 	NPC* ninjachef = new NPC("", "NINJA CHEF", "An expert ninja who is also an expert in cooking. He guards the ninja pantry.", limbo, 0, Stats(80, 20, 20, 20, 20, 25, 9));
 	Attack* shuripan = new Attack("SHURIPAN", "threw spinning pans at", false, -5, 15, 0, 1, 2, 3);
 	shuripan->afterdesc = " like shurikens";
-	Attack* spatula = new Attack("UPSLASH", "flipped", true, 6, 10, 0, 1, 1, 1);
+	Attack* spatula = new Attack("SPATULA", "flipped", true, 6, 10, 0, 1, 1, 1);
 	spatula->afterdesc = " into the air with a spatula";
-	Effect* spatulad = new Effect("UPSLASHED", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
+	Effect* spatulad = new Effect("SPATULA'D", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
 	spatulad->remove = true;
 	spatulad->falldamage = 20;
 	spatula->addEffect(spatulad);
@@ -3198,7 +3248,7 @@ NPC* SetupWorld() {
 
 	NPC* fact3guard3 = new NPC(*poizard);
 	fact3guard3->setLeader(true, 15, factoryroofnw);
-	fact3guard3->setParty({slagman, poizard, poizar});
+	fact3guard3->setParty({slagman, poizard, poizard});
 	fact3guard3->blockExit(NORTH, ENEMY, "guarded by the SUPER SLAGMAN.");
 	fact3guard3->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
 	fact3guard3->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
@@ -3331,6 +3381,8 @@ NPC* SetupWorld() {
 
 	NPC* theratman = new NPC(*ratman);
 	theratman->setLeader(true, 22, rightstreet3);
+
+	//burgerguards
 	
 	//keycard
 	NPC* richpeople = new NPC(*richperson); //RICH PEOPLE GAUNTLET!
@@ -3349,9 +3401,9 @@ NPC* SetupWorld() {
 	richpeople->setParty({burgerbutler, burgerbutler}, true); //burger butler x2
 	richpeople->addConversation({{self, "HEY!"}, {NULL, "RICH PEOPLE - *indistinct chatter*"}, {self, "GUYS!"}, {NULL, "You jump onto a table and grab a glass and a fork."}, {NULL, "You clink the fork against the glass a few times."}, {NULL, "The room goes silent."}, {richperson, "Who the heck are you?"}, {self, "I'm saving this kid you guys kidnapped. >:("}, {self, "So..."}, {self, "(wait what am I saying exactly?)"}, {self, "Could one of you guys direct me towards where you kidnap people to?"}, {self, "..."}, {richpeople, "..."}, {richperson, "LET'S GET HIM!"}});
 	richpeople->setDialogue({{self, "I'm gonna save that kid you guys kidnapped >:("}, {richperson, "LET'S GET HIM!"}});
-	richpeople->setRejectionDialogue({{NULL, "Like, are you trying to recruit all of them at once?"}, {NULL, "That's not gonna work. :|"}});
+	richpeople->addRejectionDialogue({{NULL, "Like, are you trying to recruit all of them at once?"}, {NULL, "That's not gonna work. :|"}});
 	richpeople->setForceBattle();
-	richpeople->addLinkedRoom({ballroom, "in the BURGER ballroom, full of incapacitated rich people."});
+	richpeople->addLinkedRoom(ballroom, "in the BURGER ballroom, full of incapacitated rich people.");
 
 	//richpeople->setGift(keycard, true);
 
@@ -3379,34 +3431,34 @@ NPC* SetupWorld() {
 						   {NULL, "Enzo bursts into a metallic mass of heavy weaponry!"},
 						   {ceo, "Let's see how much that humanity of yours'll help ya out now!"},
 						   {ceo, "HAH HAH HAH HAH!"}});
-	enzo->addLinkedConvo({enzo, {{NULL, "Enzo breaks down into pieces."},
-								{NULL, "You walk up to his core."},
-								{enzo, "WHAT?"},
-								{enzo, "WHAT?"},
-								{enzo, "YOU?"},
-								{enzo, "HOW DID YOU?"},
-								{self, "Well clearly all this robot stuff wasn't worth it."},
-								{self, "So can you tell me where that kid is?"},
-								{enzo, "YOU THINK I'M JUST GONNA BE ALL BUDDY BUDDY WITH YA?"},
-								{enzo, "CAUSE YA BEAT ME UP, I'M GONNA SEE THE ERROR IN MY WAYS?"},
-								{self, "Well like..."},
-								{self, "It did work once \\_(:|)_/"},
-								{enzo, "GO HOME, KID."},
-								{enzo, "You don't know what yer messing with."},
-								{NULL, "Enzo's core starts to glow."},
-								{self, "O_O"},
-								{NULL, "You jump away from Enzo."},
-								{NULL, "Enzo self-destructed!"},
-								{NULL, "The top of the BURGER headquarters went flying in pieces!"},
-								{self, "O_O"}}});
+	enzo->addLinkedConvo(enzo, {{NULL, "Enzo breaks down into pieces."},
+							   {NULL, "You walk up to his core."},
+							   {enzo, "WHAT?"},
+							   {enzo, "WHAT?"},
+							   {enzo, "YOU?"},
+							   {enzo, "HOW DID YOU?"},
+							   {self, "Well clearly all this robot stuff wasn't worth it."},
+							   {self, "So can you tell me where that kid is?"},
+							   {enzo, "YOU THINK I'M JUST GONNA BE ALL BUDDY BUDDY WITH YA?"},
+							   {enzo, "CAUSE YA BEAT ME UP, I'M GONNA SEE THE ERROR IN MY WAYS?"},
+							   {self, "Well like..."},
+							   {self, "It did work once \\_(:|)_/"},
+							   {enzo, "GO HOME, KID."},
+							   {enzo, "You don't know what yer messing with."},
+							   {NULL, "Enzo's core starts to glow."},
+							   {self, "O_O"},
+							   {NULL, "You jump away from Enzo."},
+							   {NULL, "Enzo self-destructed!"},
+							   {NULL, "The top of the BURGER headquarters went flying in pieces!"},
+							   {self, "O_O"}});
 	enzo->setTalkOnDefeat();
 	ceo->setDialogue({{ceo, "You got a screw loose if ya think you can beat me!"}, {ceo, "HAH HAH HAH HAH!"}});
-	ceo->setRejectionDialogue("You're asking me to join ya? Are ya crazy?");
-	ceo->addLinkedRoom({ceoroom, "in the BURGER CEO's office, now missing the roof and walls.\nThe BURGER SAFE is still intact."});
-	ceo->addLinkedRoom({ballroom, "in the BURGER ballroom. The action has died down and the room is pretty quiet."});
-	ceo->addLinkedRoom({ceolobby, "in the ornate lobby of the building, featuring both an elevator and fancy stairs.\nThe yearly RICH PEOPLE reunion has concluded."});
-	ceo->addLinkedRoom({ceolobby2, "on the second floor of the building, still the lobby."});
-	ceo->addLinkedRoom({richneighborhood4, "at the doorway of the BURGER corporation's headquarters."});
+	ceo->addRejectionDialogue("You're asking me to join ya? Are ya crazy?");
+	ceo->addLinkedRoom(ceoroom, "in the BURGER CEO's office, now missing the roof and walls.\nThe BURGER SAFE is still intact.");
+	ceo->addLinkedRoom(ballroom, "in the BURGER ballroom. The action has died down and the room is pretty quiet.");
+	ceo->addLinkedRoom(ceolobby, "in the ornate lobby of the building, featuring both an elevator and fancy stairs.\nThe yearly RICH PEOPLE reunion has concluded.");
+	ceo->addLinkedRoom(ceolobby2, "on the second floor of the building, still the lobby.");
+	ceo->addLinkedRoom(richneighborhood4, "at the doorway of the BURGER corporation's headquarters.");
 	ceo->setForceBattle();
 	ceo->setEscapable(false);
 	ceo->setWorldCondition(BEATCEO);

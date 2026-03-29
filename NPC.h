@@ -114,6 +114,7 @@ public: //you need to set stats on creation
 	void setRecruitDialogueChange(const char* _dialogue);
 	void addDismissalDialogue(const char* _dialogue);
 	void addOpeningDialogue(const char* _dialogue); //sets the opening dialogue for the npc
+	void setRespawnReq(NPC* req);
 
 	void setRecruitable(bool _recruitable); //set if you can recruit them
 	void Recruit(); //set recurited to true
@@ -209,9 +210,9 @@ protected:
 	const char* description; //npc's description when analyzed
 
 	bool masked = false; //if this npc looks different in battle compared to outside battle
-	const char* hiddentitle; //store the masked title and descriptions outside of battle
+	const char* hiddentitle = NULL; //store the masked title and descriptions outside of battle
 	char hiddenname[255];
-	const char* hiddendesc;
+	const char* hiddendesc = NULL;
 	
 	Room* home; //where the npc goes after being dismissed
 	Room* currentRoom;

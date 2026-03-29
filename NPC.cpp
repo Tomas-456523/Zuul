@@ -141,7 +141,7 @@ int NPC::xpForLevel(int level) { //uses an altered version of the above arbitrar
 vector<NPC*>* NPC::getParty() { //gets the npc's party for leader npcs
 	return &party.front();
 }
-void NPC::popParty() {
+void NPC::popWave() {
 	party.pop();
 }
 bool NPC::getLeader() {
@@ -279,11 +279,6 @@ const char* NPC::getHiddenDescription() {
 }
 bool NPC::moreWaves() {
 	return !party.empty();
-}
-const char* NPC::popRevealDialogue() {
-	const char* dialogue = revealdialogue;
-	revealdialogue = NULL; //we only print the reveal dialogue once
-	return dialogue;
 }
 WorldChange& NPC::editRespawnChanges() { //gets respawn changes for editing
 	gotRespawnChanges = true; //we only get the changes if we want to add some changes, so set got respawn changes to true
