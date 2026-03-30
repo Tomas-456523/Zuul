@@ -927,7 +927,7 @@ NPC* SetupWorld() {
 	overloaded->freeze = true;
 	ddos->addEffect(overloaded);
 	carlos->addSpecialAttack(ddos);
-	ddos->addDescription("Direct all of Carlos's botnet's traffic, freezing them in place. (8 ATACK, 40 PIERCE, 3 hits)");
+	ddos->addDescription("Direct all of Carlos's botnet's traffic, freezing them in place. (8 ATTACK, 40 PIERCE, 3 hits)");
 	Attack* forkbomb = new Attack("FORK BOMB", "sent a forking bomb towards the enemy team", false, 14, 25, 40, 1, 1, 7, false, 15);
 	forkbomb->focushits = false;
 	carlos->addSpecialAttack(forkbomb);
@@ -2374,7 +2374,7 @@ NPC* SetupWorld() {
 	tunnellobster->setBoss(true);
 
 	//Gravity Girl Viola is mostly attack with some support but a boss fight first MARK: Viola (enemy)
-	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 10, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 20, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
 	tkviola->setBoss(true);
 	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", false, -5, 10, 20, 1, 1, 1);
 	tkviola->setBasicAttack(wave);
@@ -2669,40 +2669,113 @@ NPC* SetupWorld() {
 	bewlizard->addSpecialAttack(bsod);
 
 	NPC* thief = new NPC("", "THIEF", "Citizen of BURGERSBURG turned to thievery due to desperate times.", limbo, 0, Stats(10, 0, 20, 0, 20, 25, 9));
-	//stab
-	//
+	Attack* steal = new Attack("STEAL", "swiped", true, -5, 10, 15, 1, 1, 1, false, 0, 5);
+	steal->afterdesc = "'s SP";
+	Attack* stab = new Attack("STAB", "stabbed", true, 5, 20, 15, 1, 1, 1);
+	steal->afterdesc = " with a thief knife";
+	thief->setBasicAttack(steal);
+	thief->addSpecialAttack(stab);
 
 	NPC* axeman = new NPC("", "AXEMAN", "A really deranged human whose head was exchanged for the head of an axe.", limbo, 0, Stats(40, 15, 35, 18, 50, 30, 9));
-	//chop
+	Attack* chop = new Attack("CHOP", "swung his head at", true, -5, 15, 20, 1, 1, 1);
+	Effect* chopped = new Effect("CHOPPED", 2147483647, 0, 0, 1, 1, 0.5f, 1, 0.5f);
+	Attack* karatechop = new Attack("KARATE CHOP", "karate chopped", true, 2, 5, 0, 1, 1, 1);
+	karatechop->afterdesc = "'s neck";
+	karatechop->addEffect(chopped);
+	Attack* axeflip = new Attack("AXEFLIP", "frontflipped at", true, 5, 30, 25, 1, 1, 1);
+	axeman->setBasicAttack(chop);
+	axeman->addSpecialAttack(karatechop);
+	axeman->addSpecialAttack(axeflip);
 
 	NPC* disamalg = new NPC("", "DISEASE AMALGAMATION", "Writhing mass of pathogens featuring many colors.", limbo, 0, Stats(100, 40, 5, 5, 30, 0, 9));
-	//disease
-	//
+	//weakness
+	//DOT
+	//spleak
+	//bedridden
 
-	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats());
-	//
-	//suspend
-	//chuck
+	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats(50, 0, 25, 10, 20, 25, 9));
+	Attack* chuck = new Attack("CHUCKED", "telekinetically chucked some debris at", false, -5, 15, 0, 1, 1, 1);
+	Effect stretched = new Effect("STRETCHED", 3, 10);
+	stretched->freeze = true;
+	Attack* stretch = new Attack("STRETCHED", "is stretching", false, 7, 20, 20, 1, 1, 1);
+	stretch->afterdesc = " apart in the air";
+	stretch->addEffect(stretched);
+	Attack* tossaside = new Attack("TOSS ASIDE", "telekinetically tossed", false, 5, 30, 0, 1, 1, 1);
+	tossaside->afterdesc = " into a wall";
+	Effect* tossed = new Effect("TOSSED ASIDE", 0);
+	tossed->remove = true;
+	tossaside->addEffect(tossed);
+	tossaside->synergies.push_back(stretched);
+	tossaside->cancel = suspended;
+	crimmind->setBasicAttack(chuck);
+	crimmind->addSpecialAttack(stretch);
+	crimmind->addSpecialAttack(tossaside);
 
-	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats());
-	//shell
-	//roll over
-	//supershell
+	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats(30, 100, 30, 50, 10, 10, 9));
+	Attack* shell = new Attack("SHELL", "fired a shell at", -5, 20, 20, 1, 1, 1);
+	Attack* runover = new Attack("RUN OVER", "ran over", 4, 50, 0, 1, 1, 1);
+	Attack* flammpanzer = new Attack("FLAMMPANZER", "spewed a stream of napalm at", 8, 20, 10, 1, 1, 1);
+	flammpanzer->addEffect(extrafire);
+	Attack* supershell = new Attack("SUPERSHELL", "fired a supershell at", 10, 30, 20, 1, 1, 3);
+	minipanzer->setBasicAttack(shell);
+	minipanzer->addSpecialAttack(runover);
+	minipanzer->addSpecialAttack(flammpanzer);
+	minipanzer->addSpecialAttack(supershell);
 
-	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Hulking brute franknsteined into existence who will fenagle your bagels.\nIt wears a suit, and a sack over its head with a painted smiley face.", limbo, 0, Stats());
-	//fenagle
+	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Hulking brute franknsteined into existence who will fenagle your bagels.\nIt wears a suit, and a sack over its head with a painted smiley face.", limbo, 0, Stats(120, 20, 30, 0, 0, 5, 9));
+	Attack* slam = new Attack("SLAM", "slammed down its fists on", true, -5, 25, 0, 1, 1, 1);
+	Attack* smackaside = new Attack("SMACK ASIDE", "smacked", true, 5, 20, 0, 2, 2, 1);
+	smackaside->afterdesc = " into a wall";
+	Effect* smacked = new Effect("SMACKED ASIDE", 0);
+	smacked->remove = true;
+	smackaside->addEffect(smacked);
+	Attack* fenagle = new Attack("FENAGLE", "fenagled", true, 4, 0, 0, 1, 1, 1);
+	fenagle->afterdesc = " with its sack";
+	fenagle->take = true;
+	bagelfenagler->setBasicAttack(slam);
+	bagelfenagler->addSpecialAttack(smackaside);
+	bagelfenagler->addSpecialAttack(fenagle);
 
-	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats());
-	//
+	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough pavement-gray shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats(20, 15, 35, 25, 50, 30, 9));
+	Effect* submerged = new Effect("SUBMERGED", 2147483647, 0, 0, 1, 2);
+	Attack* sharkbite = new Attack("SHARK BITE", "sharkily bit", true, -5, 20, 50, 1, 1, 1);
+	sharkbite->selfcancel = submerged;
+	sharkbite->affectselfbeforeattack = true;
+	Attack* submerge = new Attack("SUBMERGE", "submerged into the pavement", false, 3, 0, 0, 0, 0, 0);
+	submerge->selfeffect = submerged;
+	Attack* breach = new Attack("BREACH", "jumped biting out of the pavement at", true, 5, 30, 50, 1, 1, 1);
+	sharkbite->synergies.push_back(submerged);
+	sharkbite->selfcancel = submerged;
+	sharkbite->affectselfbeforeattack = true;
+	paveshark->setBasicAttack(sharkbite);
+	paveshark->addSpecialAttack(submerge);
+	paveshark->addSpecialAttack(breach);
 
-	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Twister with an abnormally long lifespan and a collection of junk from all across BURGERSBURG.", limbo, 0, Stats());
-	//opening: tailwind
-	//thing fling
-	//twister
-	//rumble
-	//split
+	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Twister with an abnormally long lifespan and a collection of junk from all across BURGERSBURG.", limbo, 0, Stats(100, 30, 30, 0, 30, 50, 9));
+	Effect* tailwinded = new Effect("TAILWIND", 2147483647, 0, 0, 1, 1, 1, 1, 2.5f);
+	Attack* tailwind = new Attack("TAILWIND", "is boosting its team's speed", false, 0, 0, 0, 1, 1, 9, true);
+	tailwind->focushits = false;
+	tailwind->addEffect(tailwinded);
+	Attack* thingfling = new Attack("THING FLING", "flung around random debris", -5, 20, 0, 3, 5, 1);
+	thingfling->focushits = false;
+	Attack* updraft = new Attack("UPDRAFT", "sucked", false, 6, 0, 0, 1, 1, 1);
+	updraft->afterdesc = " into its updraft";
+	Effect* updrafted = new Effect("UPDRAFTED", 2);
+	updrafted->remove = true;
+	updrafted->falldamage = 40;
+	updraft->addEffect(updrafted);
+	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 4, 30, 0, 1, 1, 7);
+	Attack* supercell = new Attack("SUPERCELL", "called down another twister from a supercell", false, 12, 0, 0, 0, 0, 0);
+	supercell->summon = naturaldisaster;
+	supercell->summonamount = 1;
+	supercell->matchsummonhealth = true; //so you don't have to fight another natural disaster all over again
+	naturaldisaster->setOpener(tailwind);
+	naturaldisaster->setBasicAttack(thingfling);
+	naturaldisaster->addSpecialAttack(updraft);
+	naturaldisaster->addSpecialAttack(supercell);
 
 	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Pitch black humanoid who stalks the shadows of BURGERSBURG's citizens.", limbo, 0, Stats());
+	//
 
 	NPC* grandma = new NPC("GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats());
 	//She looks like a poor grandma getting beat up by Ratman.
@@ -3321,7 +3394,7 @@ NPC* SetupWorld() {
 	lavaguard->setLeader(true, 16, bridge3, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN.");
 	lavaguard->setDialogue("*ethereal breathing*");
-	lavaguard->addRejectionDialogue("*ethereal breathing*");
+	lavaguard->addRejectionDialogue({{self, "Hey you wanna join me on my BURGER QUEST?"}, {lavaguardian, "*ethereal breathing*"}, {self, "..."}});
 	lavaguard->setEscapable(false);
 
 	NPC* tabguard = new NPC(*newtab);
@@ -3375,7 +3448,162 @@ NPC* SetupWorld() {
 	jimshady0->setDialogue("I'm JIM SHADY, yes I'm the REAL SHADY.");
 	jimshady0->setForceBattle(true);
 	jimshady0->addLinkedConvo(jimshady0, {{self, "So what's it like being the real Jim Shady?"}, {jimshady0, "Pretty real."}});
-	
+
+	NPC* leftguard1 = new NPC(*paveshark);
+	leftguard1->setLeader(true, 16, leftstreet3);
+	leftguard1->setParty({paveshark, paveshark});
+	leftguard1->blockExit(NORTH, ENEMY, "guarded by the PAVEMENT SHARK.", true);
+	leftguard1->setDialogue({{NULL, "PAVEMENT SHARK - *angry shark noises*"}});
+	leftguard1->addRejectionDialogue({{NULL, "PAVEMENT SHARK - *angry shark noises*"}});
+
+	NPC* leftguard2 = new NPC(*bagelfenagler);
+	leftguard2->setLeader(true, 17, leftstreet4);
+	leftguard2->setParty({axeman, paveshark, paveshark});
+	leftguard2->blockExit(NORTH, ENEMY, "guarded by the BAGEL FENAGLER.", true);
+	leftguard2->setDialogue("Uhhh huuhhhhhh huuhhhhhh  hhuuhhhhhhhhhhh... :)");
+	leftguard2->addRejectionDialogue("Uh uhhhhhh... :)");
+
+	NPC* newguard1 = new NPC(*crimmind);
+	newguard1->setLeader(true, 16, newstreet1);
+	newguard1->setParty({thief, thief});
+	newguard1->blockExit(NORTH, ENEMY, "guarded by the CRIMINAL MASTERMIND.", true);
+	newguard1->setDialogue("I am 4 parallel universes ahead of you.");
+	newguard1->addRejectionDialogue("I will not stoop down to your level.");
+
+	NPC* newguard2 = new NPC(*disamalg);
+	newguard2->setLeader(true, 17, newstreet2);
+	newguard2->setParty({paveshark, paveshark});
+	newguard2->blockExit(NORTH, ENEMY, "guarded by the DISEASE AMALGAMATION.", true);
+	newguard2->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+	newguard2->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+
+	NPC* newguard3 = new NPC(*naturaldisaster);
+	newguard3->setLeader(true, 18, newstreet3);
+	newguard3->setParty({paveshark, paveshark}); //sharknado!
+	newguard3->blockExit(NORTH, ENEMY, "guarded by the NATURAL DISASTER.", true);
+	newguard3->setDialogue({{NULL, "NATURAL DISASTER - *angry jet engine noises*"}});
+	newguard3->addRejectionDialogue({{NULL, "NATURAL DISASTER - *angry jet engine noises*"}});
+
+	NPC* mainguard = new NPC(*thief);
+	mainguard->setLeader(true, 13, mainstreet2);
+	mainguard->setParty({thief, thief});
+	mainguard->blockExit(NORTH, ENEMY, "guarded by the THIEF.", true);
+	mainguard->setDialogue("I'm gonna rob ya, kid! >:D");
+	mainguard->addRejectionDialogue("Nah stealing's all I do! >:D");
+
+	NPC* mainguard2 = new NPC(*bagelfenagler);
+	mainguard2->setLeader(true, 16, mainstreet4);
+	mainguard2->setParty({axeman});
+	mainguard2->blockExit(NORTH, ENEMY, "guarded by the BAGEL FENAGLER.", true);
+	mainguard2->setDialogue("Uhhhhhhhh huhhh huh huuuuuhhhhhh... :)");
+	mainguard2->addRejectionDialogue("Uh uh uhhhh... :)");
+
+	NPC* coolguard = new NPC(*disamalg);
+	coolguard->setLeader(true, 16, coolstreet1);
+	coolguard->setParty({thief, thief});
+	coolguard->blockExit(NORTH, ENEMY, "guarded by the DISEASE AMALGAMATION.", true);
+	coolguard->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+	coolguard->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+
+	NPC* coolguard2 = new NPC(*naturaldisaster);
+	coolguard2->setLeader(true, 18, coolstreet2);
+	coolguard2->setParty({disamalg, disamalg, thief});
+	coolguard2->blockExit(NORTH, ENEMY, "guarded by the NATURAL DISASTER.", true);
+	coolguard2->setDialogue({{NULL, "NATURAL DISASTER - *angry jet engine noises*"}});
+	coolguard2->addRejectionDialogue({{NULL, "NATURAL DISASTER - *angry jet engine noises*"}});
+
+	NPC* coolguard2 = new NPC(*naturaldisaster);
+	coolguard2->setLeader(true, 19, coolstreet4);
+	coolguard2->setParty({crimmind, axeman});
+	coolguard2->blockExit(NORTH, ENEMY, "guarded by the MINIPANZER.", true);
+	coolguard2->setDialogue({{NULL, "MINIPANZER - *muffled maniacal laughter*"}});
+	coolguard2->addRejectionDialogue({{NULL, "You make out some faint muffled speech from the MINIPANZER:"}, {minipanzer, "nh br m gnna rb ya"}});
+
+	NPC* rightguard = new NPC(*minipanzer);
+	rightguard->setLeader(true, 18, rightstreet1);
+	rightguard->setParty({axeman, axeman});
+	rightguard->blockExit(NORTH, ENEMY, "guarded by the MINIPANZER.", true);
+	rightguard->setDialogue({{NULL, "MINIPANZER - *muffled maniacal laughter*"}});
+	rightguard->addRejectionDialogue({{NULL, "You make out some faint muffled speech from the MINIPANZER:"}, {minipanzer, "nh br m gnna rb ya"}});
+
+	NPC* oneguardl = new NPC(*thief);
+	oneguardl->setLeader(true, 14, newstreet1);
+	oneguardl->setParty({thief});
+	oneguardl->blockExit(WEST, ENEMY, "guarded by the THIEF.", true);
+	oneguardl->setDialogue("I'm gonna rob ya, kid! >:D");
+	oneguardl->addRejectionDialogue("Nah kid, I'm gonna rob ya! >:D");
+
+	NPC* oneguardr = new NPC(*axeman);
+	oneguardr->setLeader(true, 16, coolstreet1);
+	oneguardr->setParty({thief, thief});
+	oneguardr->blockExit(EAST, ENEMY, "guarded by the AXEMAN.", true);
+	oneguardr->setDialogue("AHAAHHAHAHAHHA!");
+	oneguardr->addRejectionDialogue("HAHAHHAHAHAHHAHAHAH!");
+
+	NPC* twoguard = new NPC(*minipanzer);
+	twoguard->setLeader(true, 18, rightstreet2);
+	twoguard->setParty({axeman});
+	twoguard->blockExit(WEST, ENEMY, "guarded by the MINIPANZER.", true);
+	twoguard->setDialogue({{NULL, "MINIPANZER - *muffled maniacal laughter*"}});
+	twoguard->addRejectionDialogue({{NULL, "You make out some faint muffled speech from the MINIPANZER:"}, {minipanzer, "nh br m gnna rb ya"}});
+
+	NPC* threeguard = new NPC(*disamalg);
+	threeguard->setLeader(true, 17, coolstreet3);
+	threeguard->setParty({disamalg, axeman});
+	threeguard->blockExit(WEST, ENEMY, "guarded by the MINIPANZER.", true);
+	threeguard->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+	threeguard->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+
+	NPC* fourguard = new NPC(*bagelfenagler);
+	fourguard->setLeader(true, 20, coolstreet4);
+	fourguard->setParty({naturaldisaster, minipanzer, minipanzer});
+	fourguard->blockExit(EAST, ENEMY, "guarded by the BAGEL FENAGLER.", true);
+	fourguard->setDialogue("Huhhhh huhhhhh huhhhhh huhhhhhhh... :)");
+	fourguard->addRejectionDialogue("Hhhmmmmmmmmmm... :)");
+
+	NPC* fiveguard = new NPC(*crimmind);
+	fiveguard->setLeader(true, 20, newstreet5);
+	fiveguard->setParty({minipanzer, minipanzer, axeman});
+	fiveguard->blockExit(EAST, ENEMY, "guarded by the CRIMINAL MASTERMIND.", true);
+	fiveguard->setDialogue("I am 4 parallel universes ahead of you.");
+	fiveguard->addRejectionDialogue("I will not stoop down to your level.");
+
+	NPC* fiveguard2 = new NPC(*disamalg);
+	fiveguard2->setLeader(true, 21, coolstreet5);
+	fiveguard2->setParty({axeman, axeman});
+	fiveguard2->blockExit(EAST, ENEMY, "guarded by the DISEASE AMALGAMATION.", true);
+	fiveguard2->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+	fiveguard2->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+
+	NPC* richguardv = new NPC(*crimmind);
+	richguardv->setLeader(true, 21, richneighborhood2);
+	richguardv->setParty({crimmind, minipanzer});
+	richguardv->blockExit(SOUTH, ENEMY, "guarded by the CRIMINAL MASTERMIND.", true);
+	richguardv->setDialogue("I am 4 parallel universes ahead of you.");
+	richguardv->addRejectionDialogue("I will not stoop down to your level.");
+
+	NPC* richguardh = new NPC(*disamalg);
+	richguardh->setLeader(true, 20, richneighborhood1);
+	richguardh->setParty({axeman, crimmind});
+	richguardh->blockExit(EAST, ENEMY, "guarded by the DISEASE AMALGAMATION.", true);
+	richguardh->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+	richguardh->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
+
+	NPC* apguard1 = new NPC(*thief);
+	apguard1->setLeader(true, 20, shrimpartment2);
+	apguard1->setParty({thief});
+	apguard1->blockExit(UP, ENEMY, "guarded by the THIEF.");
+	apguard1->addConversation({{thief, "angry noises"}, {self, "What?"}, {thief, "Uhhh..."}, {thief, "I'm gonna rob ya, kid! >:D"}})
+	apguard1->setDialogue("I'm gonna rob ya, kid! >:D");
+	apguard1->addRejectionDialogue("angry noises");
+
+	NPC* apguard2 = new NPC(*axeman);
+	apguard2->setLeader(true, 20, shrimpartment3);
+	apguard2->setParty({crimmind, minipanzer, thief});
+	apguard2->blockExit(UP, ENEMY, "guarded by the AXEMAN.");
+	apguard2->setDialogue("HHHHHHHHAAAAAAAAAAAAAAAAAAHHHAAAHAHHAHAHAHHAAAA!");
+	apguard2->addRejectionDialogue("AHAHAHHAAHHAHAHAHAAAAAAAAAAA!");
+
 	NPC* evilgrandma = new NPC(*grandma);
 	evilgrandma->setLeader(true, 22, rightstreet3, false);
 

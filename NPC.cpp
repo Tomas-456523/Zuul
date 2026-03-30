@@ -277,6 +277,9 @@ const char* NPC::getHiddenName() {
 const char* NPC::getHiddenDescription() {
 	return hiddendesc;
 }
+NPC* NPC::getTaking() {
+	return taking;
+}
 bool NPC::moreWaves() {
 	return !party.empty();
 }
@@ -516,6 +519,15 @@ void NPC::setRespawnReq(NPC* req) {
 }
 void NPC::setGymStart(time_t start) {
 	gymStart = start;
+}
+void NPC::setTaking(NPC* npc) {
+	taking = npc;
+	if (taking) {
+		taking->setAway(true);
+	}
+}
+void NPC::setAway(bool isaway) {
+	away = isaway;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;

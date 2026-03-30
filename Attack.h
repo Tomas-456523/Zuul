@@ -55,6 +55,7 @@ struct Attack {
 
 	NPC* summon = NULL; //the npc that the attack summons
 	int summonamount = 0; //how many of the summon to summon
+	bool matchsummonhealth; //if the summons should match their health to the summoner's
 
 	bool contact; //if the attacker makes contact with the target
 	bool beneficial = false; //if you want to get hit by this
@@ -63,6 +64,8 @@ struct Attack {
 	int extralives = 0; //how many extra lives to give to the target
 
 	bool risky = false; //if we shouldn't do this move to a teammate below half health
+
+	bool take = false; //if this attack is an attack that makes the attacker take the target
 
 	Attack() {} //default constructor so NPC doesn't throw error
 

@@ -91,6 +91,7 @@ public: //you need to set stats on creation
 	const char* getHiddenTitle();
 	const char* getHiddenName();
 	const char* getHiddenDescription();
+	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
 	bool moreWaves(); //get if there's more waves to fight other than the current one
 	void popWave();
 
@@ -163,6 +164,8 @@ public: //you need to set stats on creation
 	void setAttackEffect(Effect* effect);
 	void setGymStart(time_t start);
 	void setWorldCondition(size_t cond); //set a world condition for this npc to edit on defeat
+	void setTaking(NPC* npc); //set this npc to taking the given one in battle
+	void setAway(bool isaway);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
@@ -259,6 +262,7 @@ protected:
 	vector<NPC*> guardians; //what npcs are guarding this one
 	NPC* guarding = NULL; //what npc this npc is guarding
 	Attack* guardattack = NULL; //what attack the npc might use instead of just taking the hit
+	NPC* taking = NULL; //if this npc has kidnapped another npc during battle
 
 	bool isLobster = false; //if it's the lobster
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
