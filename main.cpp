@@ -2859,16 +2859,32 @@ NPC* SetupWorld() {
 	burgerlawyer->addSpecialAttack(injunction);
 	
 	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats(45, 25, 20, 20, 0, 18, 9));
-	//beatdown (multi hit)
-	//tackle (make target away until next turn)
+	Attack* beatdown = new Attack("BEATDOWN", "beat up", true, -5, 10, 0, 3, 3, 1);
+	Effect* tackled = new Effect("TACKLED", 0);
+	Effect* tackling = new Effect("TACKLING", 0);
+	tackled->away = true;
+	tackling->away = true;
+	Attack* tackle = new Attack("TACKLE", "tackled", true, 5, 24, 0, 3, 3, 1);
+	tackle->addEffect(tackle);
+	tackle->selfeffect = tackling;
+	burgeragent->setBasicAttack(beatdown);
+	burgeragent->addSpecialAttack(tackle);
+	burgeragent->addSpecialAttack();
 	//
 
 	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation. Looks like a big suited rice cooker on wheels.", limbo, 0, Stats(100, 50, 15, 30, 0, 0, 9));
 	burgerbutler->setBoss(true); //miniboss
-	//butler hands (2 unfocused hits)
-	//table toss (3 target)
+	Attack* butlerhands = new Attack("BUTLER HANDS", "threw out two punches with its robotic extendable hands", true, -5, 20, 2, 2, 1);
+	butlerhands->focushits = false;
+	Attack* tableflip = new Attack("TABLE FLIP", "flipped one of the fancy tables onto", false, 7, 30, 1, 1, 3);
 	//wax on wax off / dinner is served
-	//vacuuum? (take teammate)
+	Attack* vacuum = new Attack("VACUUM", "sucked up", true, 13, 20, 15, 1, 1, 1);
+	vacuum->afterdesc = " with its vacuum";
+	vacuum->take = true;
+	burgerbutler->setBasicAttack(butlerhands);
+	burgerbutler->addSpecialAttack(tableflip);
+	burgerbutler->addSpecialAttack();
+	burgerbutler->addSpecialAttack(vacuum);
 	
 	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 25, 25, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
 	ceo->setBoss(true);
@@ -3637,51 +3653,17 @@ NPC* SetupWorld() {
 	NPC* theratman = new NPC(*ratman);
 	theratman->setLeader(true, 22, rightstreet3);
 
-	//MARK: burgerguards
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//MARK: IMPLEMENT THAT ^^^^^^^
+	NPC* burgerguards = new NPC(*burgeragent);
+	burgerguards->setLeader(true, 23, richneighborhood4, false);
+	burgerguards->setParty({crimmind, minipanzer, thief});
+	burgerguards->blockExit(INSIDE, ENEMY, "guarded by the BURGER AGENT.");
+	burgerguards->addConversation({{self, "Hey I'm trying to rescue this kid can you move please?"}, {burgeragent, "Kid, I'm not sure how you got here,"}, {burgeragent, "but I'm gonna give you the opportunity to leave."}, {self, "No."}, {NULL, "BURGER AGENT - *sigh*"}});
+	burgerguards->setDialogue({{burgeragent, "Kid, go home."}, {self, "No."}});
+	burgerguards->addRejectionDialogue("What?");
 	
 	//keycard
 	NPC* richpeople = new NPC(*richperson); //RICH PEOPLE GAUNTLET!
-	richpeople->setLeader(true, 23, ballroom, false);
+	richpeople->setLeader(true, 22, ballroom, false);
 	richpeople->setMask("", "RICH PEOPLE", "A huge gathering of rich people, discussing rich people things while drinking expensive wine and eating expensive cheese.");
 	richpeople->setParty({richperson, richperson}); //rich person x3
 	richpeople->setParty({richperson, richperson, richcyborg}, true); //rich person x2 + rich cyborg
@@ -3910,7 +3892,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		return;
 	}
 	if (npc->getConvoSize()) { //I want the player to hear all the dialogue instead of blindly fighting everyone, so we make sure if the npc has dialogue that it is said
-		npc->printDialogue();
+		npc->printDialogue(true);
 		cout << "\n";
 	} //print any dialogue that is specifically printed right before battle
 	npc->printOpeningDialogue();
@@ -3958,7 +3940,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		if (npc->getRoom(true) == currentRoom) {
 			npc->setRoom(currentRoom);
 		}
-		if (npc->getTalkOnDefeat()) npc->printDialogue(); //print defeat dialogue
+		if (npc->getTalkOnDefeat()) npc->printDialogue(true); //print defeat dialogue
 		if (Item* item = npc->takeGift()) { //if the guy has a gift to give upon defeat we get the gift and add it to the inventory
 			inventory->push_back(item);
 			cout << name << " gave you the " << item->getName() << "!"; //says that you got the thing
@@ -4482,7 +4464,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
 	} //tells the npc to print their dialogue
-	npc->printDialogue();
+	npc->printDialogue(false);
 	//some npcs give gifts after talking so we check for that here
 	Item* item = npc->takeGift();
 	if (item != NULL) { //adds the gift to the inventory

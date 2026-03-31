@@ -185,7 +185,7 @@ public: //you need to set stats on creation
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
 	void setMask(const char* _title, const char* _name, const char* _desc); //make fake identity for the npc outside battle
 	
-	void printDialogue(Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
+	void printDialogue(bool lastpause, Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
 	void printRejectionDialogue(); //prints the rejection dialogue for the npc
 	void printRecruitmentDialogue(); //prints the recruitment dialogue for the npc
 	void printDismissalDialogue(); //prints the dismissal dialogue for the npc

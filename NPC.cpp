@@ -61,27 +61,26 @@ const char* NPC::getDescription() {
 	return description;
 }
 void NPC::printRejectionDialogue() {
-	printDialogue(&rejectionDialogue.front());
+	printDialogue(true, &rejectionDialogue.front());
 	if (rejectionDialogue.size() != 1) rejectionDialogue.pop();
 }
 void NPC::printRecruitmentDialogue() {
 	if (speakOnRecruit && !conversations.empty()) { //if we have to print normal dialogue before regular dialogue
-		printDialogue();
+		printDialogue(true);
 		speakOnRecruit = false; //only do this once
-		CinPause();
 	}
 	if (recruitmentDialogue.empty()) return;
-	printDialogue(&recruitmentDialogue.front());
+	printDialogue(true, &recruitmentDialogue.front());
 	recruitmentDialogue.pop();
 }
 void NPC::printDismissalDialogue() {
 	if (dismissalDialogue.empty()) return;
-	printDialogue(&dismissalDialogue.front());
+	printDialogue(true, &dismissalDialogue.front());
 	dismissalDialogue.pop();
 }
 void NPC::printOpeningDialogue() {
 	if (openingDialogue.empty()) return;
-	printDialogue(&openingDialogue.front());
+	printDialogue(true, &openingDialogue.front());
 	openingDialogue.pop();
 }
 bool NPC::getRecruited() { //returns if in the player team
@@ -915,7 +914,7 @@ void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc'
 	strcat(name, suffix);
 }
 //prints the npc's dialogue, prioritizing thisone if it's passed
-void NPC::printDialogue(Conversation* thisone) {
+void NPC::printDialogue(bool lastpause, Conversation* thisone) {
 	Conversation conversation; //uninitialized, please initialize
 	if (thisone) { //if we passed thisone, print that one
 		conversation = *thisone;
@@ -938,7 +937,7 @@ void NPC::printDialogue(Conversation* thisone) {
 	} else { //regular dialogue
 		conversation = dialogue;
 	}
-	printConversation(&conversation, false); //courtesy of Helper
+	printConversation(&conversation, lastpause); //courtesy of Helper
 }
 NPC::~NPC() { //removes self from npcs vector when destroyed
 	npcsH.erase(remove(npcsH.begin(), npcsH.end(), this), npcsH.end());

@@ -624,13 +624,15 @@ void Battle::npcTurn(NPC* npc) {
 
 	//make sure to account for instakill with parry
 
-	//don't take the npc if its the only one left (or make it a defeat?)
+	//don't take the npc if its the only one left, and if an npc is taken but all others are defeated, untake it
 
 	//don't do taking attacks if the attacker is already taking an npc
 
 	//if the only member of a team is away, just bring them back already
 
 	//don't allow taking the player?
+
+	//only allow one npc to be taken at a time
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
 	size_t healchecks = 0; //heals specifically may fail
