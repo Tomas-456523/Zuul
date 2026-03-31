@@ -91,6 +91,7 @@ public: //you need to set stats on creation
 	const char* getHiddenTitle();
 	const char* getHiddenName();
 	const char* getHiddenDescription();
+	bool getQuantumn();
 	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
 	bool moreWaves(); //get if there's more waves to fight other than the current one
 	void popWave();
@@ -166,6 +167,7 @@ public: //you need to set stats on creation
 	void setWorldCondition(size_t cond); //set a world condition for this npc to edit on defeat
 	void setTaking(NPC* npc); //set this npc to taking the given one in battle
 	void setAway(bool isaway);
+	void setQuantumn();
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
@@ -258,6 +260,8 @@ protected:
 	bool isLeader;
 	bool isEnemy = false;
 	bool isBoss = false; //bosses cannot be instakilled
+
+	bool quantumn = false; //if it's pretending to be there but actually does nothing and can't be interacted with
 
 	vector<NPC*> guardians; //what npcs are guarding this one
 	NPC* guarding = NULL; //what npc this npc is guarding

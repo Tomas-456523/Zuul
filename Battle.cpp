@@ -629,6 +629,8 @@ void Battle::npcTurn(NPC* npc) {
 	//don't do taking attacks if the attacker is already taking an npc
 
 	//if the only member of a team is away, just bring them back already
+
+	//don't allow taking the player?
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
 	size_t healchecks = 0; //heals specifically may fail

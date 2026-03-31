@@ -280,6 +280,9 @@ const char* NPC::getHiddenDescription() {
 NPC* NPC::getTaking() {
 	return taking;
 }
+bool NPC::getQuantumn() {
+	return quantumn;
+}
 bool NPC::moreWaves() {
 	return !party.empty();
 }
@@ -528,6 +531,10 @@ void NPC::setTaking(NPC* npc) {
 }
 void NPC::setAway(bool isaway) {
 	away = isaway;
+}
+void NPC::setQuantumn() {
+	quantumn = true;
+	respawns = false;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;

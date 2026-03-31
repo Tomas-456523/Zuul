@@ -104,6 +104,7 @@ NPC* SetupWorld() {
 	const char* LAVA = "LAVA";
 	const char* STUFF = "STUFF";
 	const char* COVER = "COVER";
+	const char* FIRE = "FIRE";
 
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms (WW)
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
@@ -310,8 +311,8 @@ NPC* SetupWorld() {
 	Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
 	Room* leftstreet5 = new Room("at the edge of the regular district. The streets past this point look well-maintained.");
 	Room* newstreet1 = new Room("at a construction site. This thing is never getting completed.");
-	Room* newstreet2 = new Room("in an alleyway. You see a THIEF rooting through the dumpster. Is there really nothing better to steal?");
-	Room* newstreet3 = new Room("at the entrance to a convenience store. The door is intact! And all the windows are broken.");
+	Room* newstreet2 = new Room("at the entrance to a convenience store. The door is intact! And all the windows are broken.");
+	Room* newstreet3 = new Room("in an area behind the buildings, where there's an entrance to a dark alley.\nYou see a THIEF rooting through a dumpster. Is there really nothing better to steal?");
 	Room* newstreet4 = new Room("at the city orphanage, scheduled for demolition.");
 	Room* newstreet5 = new Room("at the edge of the regular district. The buildings beyond look really well-maintained.");
 	Room* mainstreet1 = new Room("on main street. There's a few cars above lodged in the side of the buildings.");
@@ -322,16 +323,16 @@ NPC* SetupWorld() {
 	Room* coolstreet1 = new Room("near the entrance of the city. The top of a building is sliced clean off.");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
 	Room* coolstreet3 = new Room("at a functional hot dog stand.");
-	Room* coolstreet4 = new Room("at the entrance to a dark alley. Eh could be darker.");
+	Room* coolstreet4 = new Room("at the entrance to a dark alley.");
 	Room* coolstreet5 = new Room("next to some copy-pasted looking townhouses. Surely homebuilders can be more creative?");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
 	Room* rightstreet2 = new Room("still in the city. You hear a random explosion, business as usual.");
 	Room* rightstreet3 = new Room("at a really nice brick building. You see a guy in a black rat costume fighting an old lady."); //make sure this gets renamed after beating Ratman
 	Room* rightstreet4 = new Room("at a small glass store. You see two guys carrying a large pane of glass."); //add group of people npc for joke
-	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It probably hasn't seen much use recently.");
+	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It hasn't seen much use recently.");
 	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
-	Room* richneighborhood2 = new Room("in the rich neighborhood. The security systems put you on guard; as soon as you step on a lawn, you'd probably be blown to smithereens.");
-	Room* richneighborhood3 = new Room("at a secluded corner of the rich neighborhood. Some guy's standing outside. What a daredevil.");
+	Room* richneighborhood2 = new Room("in the rich neighborhood. The security systems put you on guard;\nas soon as you step on a lawn, you'd probably be blown to smithereens.");
+	Room* richneighborhood3 = new Room("at a secluded corner of the rich neighborhood. The building here has a front yard.");
 	Room* richneighborhood4 = new Room("at the doorway of a huge layered complex, the BURGER corporation's headquarters.");
 	//city interiors
 	Room* burgfish = new Room("in the fish building. A warm light shines down the stairs.");
@@ -339,6 +340,7 @@ NPC* SetupWorld() {
 	Room* burgstore = new Room("in an abandoned store. Nobody bothers to stock the shelves anymore.");
 	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses.\nYou should really leave before you develop a gambling addiction.");
 	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
+	Room* bankalley = new Room("in a dark alley. There is a really shady bank set up here."); //shady as in it's dark
 	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
 	Room* shrimpartment2 = new Room("on the second floor. The wallpaper has a shrimp pattern.");
 	Room* shrimpartment3 = new Room("on the third floor. There is a cat poster here.");
@@ -1007,43 +1009,43 @@ NPC* SetupWorld() {
 	gramplugchanges.linkedDescriptions.push({graham, "Gambling addict whose access to gambling you destroyed."});
 	gramplugchanges.linkedDialogue.push({graham, {{graham, "Aggghhhh I was JUST about to winnnn....."}}});
 
-	//1 blows up
+	//1 blows up instantly and also damages nearby teammates
 
-	//2
+	//2 fully heal opponent
 
-	//3
+	//3 flashbang the team
 
-	//4
+	//4 lightning strikes the team
 
-	//5
+	//5 buff opponent
 
-	//6
+	//6 put anvil over teammate, will hit in 2 turns
 
-	//7
+	//7 give enemy team an icosahedrongus
 
-	//8
+	//8 fling teamate into air
 
-	//9
+	//9 take small damage
 
 	//10 nothing
 
-	//11
+	//11 enemy takes small damage
 
-	//12
+	//12 heal teammate
 
-	//13
+	//13 put anvil above opponent, will hit in 2 turns
 
-	//14
+	//14 freeze opponent
 
-	//15 summon guard for team
+	//15 summon 1 guard for all teammates
 
-	///16
+	//16 summon an icosahedrongus
 
-	//17
+	//17 big heal teammate
 
-	//18
+	//18 big bomb
 
-	//19 big bomb
+	//19 make teammate invincible
 
 	//20 instakill target
 
@@ -1467,7 +1469,7 @@ NPC* SetupWorld() {
 	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 2147483647);
 	desertshopfixed->setStock(reviveroot, 2147483647, 300, "MERRO - \"Thank you for your monies.\"");
 	
-	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing,\nthough not to the extent of its fresh version.", burgstore, 10);
+	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", burgstore, 10);
 
 	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
 	coolstreet3->setStock(hotdog, 2147483647, 2, "HARRY - \"Ayy thanks for the purchase enjoy your hot dog!\"");
@@ -1600,6 +1602,10 @@ NPC* SetupWorld() {
 	jim->setDialogue({{jim, "..."}, {self, "..."}});
 	jim->addRejectionDialogue("I have to manage my apartment.");
 	jim->setGift(greenkey);
+
+	NPC* qthief = new NPC("", "QUANTUMN THIEF", "Citizen of BURGERSBURG whose description you will never read in game as long as I programmed it correctly.", darkalley, 25, Stats(10, 0, 20, 0, 20, 25, 9));
+	qthief->setQuantumn();
+	qthief->blockExit(OUT, ENEMY, "blocked by the QUANTUMN THIEF");
 	
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
@@ -2035,12 +2041,18 @@ NPC* SetupWorld() {
 	leftstreet2->setExit(NORTH, leftstreet3);
 	leftstreet2->setExit(SOUTH, leftstreet1);
 	leftstreet2->setExit(EAST, newstreet2);
+	leftstreet2->setExit(INSIDE, burgfish);
+	burgfish->setExit(OUTSIDE, leftstreet2);
+	burgfish->setExit(DOWNSTAIRS, burgchurch);
+	burgchurch->setExit(UPSTAIRS, burgfish);
 	leftstreet3->setExit(NORTH, leftstreet4);
 	leftstreet3->setExit(SOUTH, leftstreet2);
 	leftstreet3->setExit(EAST, newstreet3);
 	leftstreet4->setExit(NORTH, leftstreet5);
 	leftstreet4->setExit(SOUTH, leftstreet3);
 	leftstreet4->setExit(EAST, newstreet4);
+	leftstreet4->setExit(INSIDE, casino);
+	casino->setExit(OUTSIDE, leftstreet4);
 	leftstreet5->setExit(NORTH, richneighborhood1);
 	leftstreet5->setExit(SOUTH, leftstreet4);
 	leftstreet5->setExit(EAST, newstreet5);
@@ -2052,10 +2064,14 @@ NPC* SetupWorld() {
 	newstreet2->setExit(SOUTH, newstreet1);
 	newstreet2->setExit(EAST, mainstreet2);
 	newstreet2->setExit(WEST, leftstreet2);
+	newstreet2->setExit(INSIDE, burgstore);
+	burgstore->setExit(OUTSIDE, newstreet2);
 	newstreet3->setExit(NORTH, newstreet4);
 	newstreet3->setExit(SOUTH, newstreet2);
 	newstreet3->setExit(EAST, mainstreet3);
 	newstreet3->setExit(WEST, leftstreet3);
+	newstreet3->setExit(IN_ALLEY, darkalley);
+	darkalley->setExit(OUT, newstreet3);
 	newstreet4->setExit(NORTH, newstreet5);
 	newstreet4->setExit(SOUTH, newstreet3);
 	newstreet4->setExit(EAST, mainstreet4);
@@ -2080,6 +2096,8 @@ NPC* SetupWorld() {
 	mainstreet4->setExit(SOUTH, mainstreet3);
 	mainstreet4->setExit(WEST, newstreet4);
 	mainstreet4->setExit(EAST, coolstreet4);
+	mainstreet4->setExit(DOWN, burgstation);
+	burgstation->setExit(UP, mainstreet4);
 	mainstreet5->setExit(SOUTH, mainstreet4);
 	mainstreet5->setExit(WEST, newstreet5);
 	mainstreet5->setExit(EAST, coolstreet5);
@@ -2092,6 +2110,14 @@ NPC* SetupWorld() {
 	coolstreet2->setExit(SOUTH, coolstreet1);
 	coolstreet2->setExit(EAST, rightstreet2);
 	coolstreet2->setExit(WEST, mainstreet2);
+	coolstreet2->setExit(INSIDE, shrimpartment1);
+	shrimpartment1->setExit(OUTSIDE, coolstreet2);
+	shrimpartment1->setExit(UP, shrimpartment2);
+	shrimpartment2->setExit(DOWN, shrimpartment1);
+	shrimpartment2->setExit(UP, shrimpartment3);
+	shrimpartment3->setExit(DOWN, shrimpartment2);
+	shrimpartment3->setExit(UP, shrimproof);
+	shrimproof->setExit(DOWN, shrimpartment3);
 	coolstreet3->setExit(NORTH, coolstreet4);
 	coolstreet3->setExit(SOUTH, coolstreet2);
 	coolstreet3->setExit(EAST, rightstreet3);
@@ -2100,6 +2126,8 @@ NPC* SetupWorld() {
 	coolstreet4->setExit(SOUTH, coolstreet3);
 	coolstreet4->setExit(EAST, rightstreet4);
 	coolstreet4->setExit(WEST, mainstreet4);
+	coolstreet4->setExit(IN_ALLEY, bankalley);
+	bankalley->setExit(OUT, coolstreet4);
 	coolstreet5->setExit(SOUTH, coolstreet4);
 	coolstreet5->setExit(EAST, rightstreet5);
 	coolstreet5->setExit(WEST, mainstreet5);
@@ -2116,6 +2144,8 @@ NPC* SetupWorld() {
 	rightstreet4->setExit(WEST, coolstreet4);
 	rightstreet5->setExit(SOUTH, rightstreet4);
 	rightstreet5->setExit(WEST, coolstreet5);
+	rightstreet5->setExit(INSIDE, firedepartment);
+	firedepartment->setExit(OUTSIDE, rightstreet5);
 	richneighborhood1->setExit(EAST, richneighborhood2);
 	richneighborhood1->setExit(NORTHEAST, richneighborhood4);
 	richneighborhood1->setExit(SOUTH, leftstreet5);
@@ -2774,9 +2804,6 @@ NPC* SetupWorld() {
 	naturaldisaster->addSpecialAttack(updraft);
 	naturaldisaster->addSpecialAttack(supercell);
 
-	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Pitch black humanoid who stalks the shadows of BURGERSBURG's citizens.", limbo, 0, Stats());
-	//
-
 	NPC* grandma = new NPC("GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats());
 	//She looks like a poor grandma getting beat up by Ratman.
 
@@ -2831,17 +2858,17 @@ NPC* SetupWorld() {
 	burgerlawyer->addSpecialAttack(legaldefense);
 	burgerlawyer->addSpecialAttack(injunction);
 	
-	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats());
-	//beatdown
-	//
+	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats(45, 25, 20, 20, 0, 18, 9));
+	//beatdown (multi hit)
+	//tackle (make target away until next turn)
 	//
 
 	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation. Looks like a big suited rice cooker on wheels.", limbo, 0, Stats(100, 50, 15, 30, 0, 0, 9));
 	burgerbutler->setBoss(true); //miniboss
-	//
-	//
-	//
-	//
+	//butler hands (2 unfocused hits)
+	//table toss (3 target)
+	//wax on wax off / dinner is served
+	//vacuuum? (take teammate)
 	
 	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 25, 25, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
 	ceo->setBoss(true);
@@ -3458,14 +3485,14 @@ NPC* SetupWorld() {
 
 	NPC* leftguard2 = new NPC(*bagelfenagler);
 	leftguard2->setLeader(true, 17, leftstreet4);
-	leftguard2->setParty({axeman, paveshark, paveshark});
+	leftguard2->setParty({crimmind, paveshark, paveshark});
 	leftguard2->blockExit(NORTH, ENEMY, "guarded by the BAGEL FENAGLER.", true);
 	leftguard2->setDialogue("Uhhh huuhhhhhh huuhhhhhh  hhuuhhhhhhhhhhh... :)");
 	leftguard2->addRejectionDialogue("Uh uhhhhhh... :)");
 
 	NPC* newguard1 = new NPC(*crimmind);
 	newguard1->setLeader(true, 16, newstreet1);
-	newguard1->setParty({thief, thief});
+	newguard1->setParty({axeman});
 	newguard1->blockExit(NORTH, ENEMY, "guarded by the CRIMINAL MASTERMIND.", true);
 	newguard1->setDialogue("I am 4 parallel universes ahead of you.");
 	newguard1->addRejectionDialogue("I will not stoop down to your level.");
@@ -3500,24 +3527,24 @@ NPC* SetupWorld() {
 
 	NPC* coolguard = new NPC(*disamalg);
 	coolguard->setLeader(true, 16, coolstreet1);
-	coolguard->setParty({thief, thief});
+	coolguard->setParty({crimmind, thief});
 	coolguard->blockExit(NORTH, ENEMY, "guarded by the DISEASE AMALGAMATION.", true);
 	coolguard->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
 	coolguard->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
 
 	NPC* coolguard2 = new NPC(*naturaldisaster);
 	coolguard2->setLeader(true, 18, coolstreet2);
-	coolguard2->setParty({disamalg, disamalg, thief});
+	coolguard2->setParty({disamalg, crimmind, thief});
 	coolguard2->blockExit(NORTH, ENEMY, "guarded by the NATURAL DISASTER.", true);
 	coolguard2->setDialogue({{NULL, "NATURAL DISASTER - *angry jet engine noises*"}});
 	coolguard2->addRejectionDialogue({{NULL, "NATURAL DISASTER - *angry jet engine noises*"}});
 
-	NPC* coolguard2 = new NPC(*naturaldisaster);
-	coolguard2->setLeader(true, 19, coolstreet4);
-	coolguard2->setParty({crimmind, axeman});
-	coolguard2->blockExit(NORTH, ENEMY, "guarded by the MINIPANZER.", true);
-	coolguard2->setDialogue({{NULL, "MINIPANZER - *muffled maniacal laughter*"}});
-	coolguard2->addRejectionDialogue({{NULL, "You make out some faint muffled speech from the MINIPANZER:"}, {minipanzer, "nh br m gnna rb ya"}});
+	NPC* coolguard3 = new NPC(*minipanzer);
+	coolguard3->setLeader(true, 19, coolstreet4);
+	coolguard3->setParty({crimmind, axeman});
+	coolguard3->blockExit(NORTH, ENEMY, "guarded by the MINIPANZER.", true);
+	coolguard3->setDialogue({{NULL, "MINIPANZER - *muffled maniacal laughter*"}});
+	coolguard3->addRejectionDialogue({{NULL, "You make out some faint muffled speech from the MINIPANZER:"}, {minipanzer, "nh br m gnna rb ya"}});
 
 	NPC* rightguard = new NPC(*minipanzer);
 	rightguard->setLeader(true, 18, rightstreet1);
@@ -3550,7 +3577,7 @@ NPC* SetupWorld() {
 	NPC* threeguard = new NPC(*disamalg);
 	threeguard->setLeader(true, 17, coolstreet3);
 	threeguard->setParty({disamalg, axeman});
-	threeguard->blockExit(WEST, ENEMY, "guarded by the MINIPANZER.", true);
+	threeguard->blockExit(WEST, ENEMY, "guarded by the DISEASE AMALGAMATION.", true);
 	threeguard->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
 	threeguard->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
 
@@ -3563,14 +3590,14 @@ NPC* SetupWorld() {
 
 	NPC* fiveguard = new NPC(*crimmind);
 	fiveguard->setLeader(true, 20, newstreet5);
-	fiveguard->setParty({minipanzer, minipanzer, axeman});
+	fiveguard->setParty({crimmind, minipanzer, axeman});
 	fiveguard->blockExit(EAST, ENEMY, "guarded by the CRIMINAL MASTERMIND.", true);
 	fiveguard->setDialogue("I am 4 parallel universes ahead of you.");
 	fiveguard->addRejectionDialogue("I will not stoop down to your level.");
 
 	NPC* fiveguard2 = new NPC(*disamalg);
 	fiveguard2->setLeader(true, 21, coolstreet5);
-	fiveguard2->setParty({axeman, axeman});
+	fiveguard2->setParty({crimmind, axeman});
 	fiveguard2->blockExit(EAST, ENEMY, "guarded by the DISEASE AMALGAMATION.", true);
 	fiveguard2->setDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
 	fiveguard2->addRejectionDialogue({{NULL, "DISEASE AMALGAMATION - *slimy writhing disease noises*"}});
@@ -3610,7 +3637,47 @@ NPC* SetupWorld() {
 	NPC* theratman = new NPC(*ratman);
 	theratman->setLeader(true, 22, rightstreet3);
 
-	//burgerguards
+	//MARK: burgerguards
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//MARK: IMPLEMENT THAT ^^^^^^^
 	
 	//keycard
 	NPC* richpeople = new NPC(*richperson); //RICH PEOPLE GAUNTLET!
@@ -3825,6 +3892,10 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //try to find the given npc in the room
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), name);
+	}
+	if (npc && npc->getQuantumn()) { //we just defeat quantumn enemies and ignore that they were ever there
+		npc->defeat();
+		npc = NULL;
 	}
 	if (npc == NULL || npc->getDefeated()) { //print error message if they're not here (or defeated and not supposed to be there technically)
 		cout << "\nThere is nobody named \"" << name << "\" here.";
@@ -4329,6 +4400,10 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
 	}
+	if (npc && npc->getQuantumn()) { //we just defeat quantumn enemies and ignore that they were ever there
+		npc->defeat();
+		npc = NULL;
+	}
 	if (npc == NULL) { //error message if nobody in the current room is named npcname
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
@@ -4399,6 +4474,10 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
 	}
+	if (npc && npc->getQuantumn()) { //we just defeat quantumn enemies and ignore that they were ever there
+		npc->defeat();
+		npc = NULL;
+	}
 	if (npc == NULL) { //error message if no such npc is in the current room
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
@@ -4448,6 +4527,10 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //tries to find an npc in the room or party
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), name);
+	}
+	if (npc && npc->getQuantumn()) { //we just defeat quantumn enemies and ignore that they were ever there
+		npc->defeat();
+		npc = NULL;
 	}
 	if (npc != NULL) { //prints the data of the npc that was found
 		printNPCData(npc);
