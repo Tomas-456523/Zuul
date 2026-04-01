@@ -32,6 +32,7 @@ struct Attack {
 	bool focushits = true; //if every hit of multihit moves should hit the same target, as opposed to random targets each time
 	int recoil = 0; //how much damage the user takes (calculated later using their own attack stat)
 	int guardset = 0; //set guard on the attacker
+	int targuard = 0; //set guard on the target
 
 	bool spbomb = false;
 	bool protect = false; //if this is the move that makes the mover start defending the target

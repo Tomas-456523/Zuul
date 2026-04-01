@@ -323,6 +323,21 @@ namespace Helper {
 			data.first->unblockExit(data.second);
 			changes.exitUnblocks.pop();
 		}
+		while (!changes.decruitLinks.empty()) { //make unrecruitable all the npcs
+			NPC* data = changes.decruitLinks.front();
+			data->setRecruitable(false);
+			changes.decruitLinks.pop();
+		}
+		while (!changes.linkedWelcomes.empty()) { //unguard all the items
+			pair<Room*, Conversation>& data = changes.linkedWelcomes.front();
+			data.first->setWelcome(data.second);
+			changes.linkedWelcomes.pop();
+		}
+		while (!changes.linkedItems.empty()) {
+			pair<Item*, Room*>& data = changes.linkedItems.front();
+			data.first->setRoom(data.second);
+			changes.linkedItems.pop();
+		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;
 		}

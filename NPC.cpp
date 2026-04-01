@@ -535,6 +535,9 @@ void NPC::setQuantumn() {
 	quantumn = true;
 	respawns = false;
 }
+void NPC::setTalkMakeChanges() {
+	talktochange = true;
+}
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;
 }
@@ -690,6 +693,9 @@ void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a c
 }
 void NPC::addLinkedStats(NPC* npc, Stats stats) {
 	changes.back().linkedStats.push({npc, stats});
+}
+void addLinkedItem(Item* item, Room* room) {
+	changes.back().linkedItems.push({item, room});
 }
 void NPC::addAttackRemoval(NPC* npc, Attack* attack) {
 	changes.back().removeAttacks.push({npc, attack});
@@ -938,6 +944,10 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone) {
 		conversation = dialogue;
 	}
 	printConversation(&conversation, lastpause); //courtesy of Helper
+	if (talktochange && !changes.empty()) {
+		applyWorldChange(changes.front()); //apply all the world changes associated with this npc
+		if (!loopLastChange || changes.size() > 1) changes.pop(); //pop the changes if we don't need them anymore (not the last one OR it's the last one and we don't loop it)
+	}
 }
 NPC::~NPC() { //removes self from npcs vector when destroyed
 	npcsH.erase(remove(npcsH.begin(), npcsH.end(), this), npcsH.end());

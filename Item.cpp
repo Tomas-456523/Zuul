@@ -428,6 +428,18 @@ const Conversation& WorldChangeItem::getUseText() const {
 bool WorldChangeItem::getTakeToUse() {
 	return takeToUse;
 }
+//gets if it's usable in the given room
+bool getUsable(Room* _room) {
+	if (usableRooms.empty()) return true; //if we didn't clarify it's usable anywhere
+	for (Room* room : usableRooms) {
+		if (room == _room) return true;
+	}
+	return false;
+}
+//make item need to be usable in these rooms only
+void setUsableRooms(initializer_list<Room*> rooms) {
+	usableRooms = rooms;
+}
 
 //blender items, for taking ingredients and combining them into one thing
 BlenderItem::BlenderItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, initializer_list<const char*> _ingredients, Item* _product) : Item(_name, _description, _room, false, false) {

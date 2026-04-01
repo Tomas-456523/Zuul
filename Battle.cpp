@@ -560,6 +560,23 @@ void Battle::npcTurn(NPC* npc) {
 	int r = rand()%100; //we choose a random number from 0 to 99
 	int limit = 0; //the limit from 0 to 100 that the total attack weight must add up to
 	Attack* attack = NULL; //the attack that was chosen
+	
+
+	//MARK: IMPLEMENT THIS
+
+
+
+
+
+
+
+
+
+
+
+
+	//MARK: if the target has no basic attack, just choose a special attack using pure rng, no weights
+
 	for (Attack* _attack : npc->getSpecialAttacks()) { //checks each attack for if we should choose it
 		if (_attack->cost > npc->getSP()) { //if it's too expensive with the current sp we move on to the next attack
 			continue;

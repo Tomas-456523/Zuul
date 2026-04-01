@@ -55,6 +55,7 @@ NPC* SetupWorld() {
 	const char* IN_ROOM_2 = "IN ROOM 2";
 	const char* IN_ROOM_3 = "IN ROOM 3";
 	const char* IN_ROOM = "IN ROOM";
+	const char* IN_BACK_ROOM = "IN BACK ROOM";
 	const char* INSIDE = "INSIDE";
 	const char* OUTSIDE = "OUTSIDE";
 	const char* UPSTAIRS = "UPSTAIRS";
@@ -327,8 +328,8 @@ NPC* SetupWorld() {
 	Room* coolstreet5 = new Room("next to some copy-pasted looking townhouses. Surely homebuilders can be more creative?");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
 	Room* rightstreet2 = new Room("still in the city. You hear a random explosion, business as usual.");
-	Room* rightstreet3 = new Room("at a really nice brick building. You see a guy in a black rat costume fighting an old lady."); //make sure this gets renamed after beating Ratman
-	Room* rightstreet4 = new Room("at a small glass store. You see two guys carrying a large pane of glass."); //add group of people npc for joke
+	Room* rightstreet3 = new Room("at a really nice brick building. You see a guy in a black rat costume fighting an old lady.");
+	Room* rightstreet4 = new Room("at a small glass store. You see two guys carrying a large pane of glass.");
 	Room* rightstreet5 = new Room("at the entrance to the BURGERSBURG fire department. It hasn't seen much use recently.");
 	Room* richneighborhood1 = new Room("in the rich people corner of town. Each huge building corresponds to just one person.");
 	Room* richneighborhood2 = new Room("in the rich neighborhood. The security systems put you on guard;\nas soon as you step on a lawn, you'd probably be blown to smithereens.");
@@ -339,6 +340,8 @@ NPC* SetupWorld() {
 	Room* burgchurch = new Room("in a hidden church. Everyone seems joyful despite the state of the city.");
 	Room* burgstore = new Room("in an abandoned store. Nobody bothers to stock the shelves anymore.");
 	Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses.\nYou should really leave before you develop a gambling addiction.");
+	Room* casinoback = new Room("in the casino's back room. There's a staircase heading to the basement,\nand crates full of gambling addicts' monies.");
+	Room* casinobase = new Room("in the casino's basement, housing the massive energy core required to power all the lights.");
 	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
 	Room* bankalley = new Room("in a dark alley. There is a really shady bank set up here."); //shady as in it's dark
 	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
@@ -637,6 +640,7 @@ NPC* SetupWorld() {
 	forestknight->addRecruitmentDialogue(absrecruit1);
 	forestknight->addDismissalDialogue({{forestknight, "I shall return to defending the forest."},
 										{forestknight, "Farewell, friend!"}});
+	forestknight->addGymDialogue({{forestknight, "This is quite the splendid little gym!"}, {forestknight, "A good knight must always stay in shape!"}});
 	
 	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 15, 10, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
@@ -742,6 +746,7 @@ NPC* SetupWorld() {
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
+	cacty->addGymDialogue({{NULL, "CACTY - *exercising cactus noises*"}});
 
 	Attack* loosespines = new Attack("LOOSE SPINES", "'s loose spines flew at the enemy team", false, 0, 8, 15, 1, 3, 1);
 	cacty->setRecoilAttack(loosespines);
@@ -811,6 +816,8 @@ NPC* SetupWorld() {
 	michelin->addRecruitedDialogue("You know, maybe there's more to life than finding recipies.");
 	michelin->addDismissalDialogue({{michelin, "Well, I guess I'll go back to my little kitchen area."}, {michelin, "Gotta start packing my bags to head home."}});
 	michelin->setRecruitDialogueChange({{michelin, "Hey what's up"}, {michelin, "Just packing my bags."}, {michelin, "Might take a while cause I've set up a whole freaking kitchen here."}});
+	michelin->addGymDialogue({{michelin, "I don't really work out that much,"}, {michelin, "but I know I should so I might as well start now."}});
+	michelin->addGymDialogue({{michelin, "excercising"}, {michelin, "yeah"}});
 
 	Item* cactiberry = new MaterialItem("CACTIBERRY", "Special berry that is pale green and prickly, adorned with a pink flower.", berryroom);
 	Item* radiberry = new MaterialItem("RADIBERRY", "Special radioactive berry that glows neon green. Might wanna handle this one quickly.", factorygarden);
@@ -896,6 +903,7 @@ NPC* SetupWorld() {
 	carlos->addRecruitedDialogue({{carlos, "woah what is this stuff"}, {self, "That's grass."}});
 	carlos->setRecruitDialogueChange("gaming");
 	carlos->addDismissalDialogue({{carlos, "i dont feel like hacking microsoft all over again"}, {carlos, "guess ill just play fortnite or something"}});
+	carlos->addGymDialogue({{carlos, "..."}, {carlos, "theres too much sunlight here"}});
 
 	Item* carlosplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", factorytower, {{NULL, "All the monitors in the room turn off."}, {carlos, "BRO WHAT THE HECK"}, {self, "Oh my bad."}, {self, "I didn't realize it would do that."}, {carlos, "I WAS LIKE SECONDS FROM STEALING ALL OF MICROSOFTS MONIES"}, {carlos, "THAT WAS LIKE A MONTH LONG PROCESS"}, {self, "You shouldn't steal monies."}, {carlos, "SHUT UP"}, {carlos, "GIMME BACK THAT PLUG"}, {self, "Alright."}, {NULL, "You returned the PLUG to CARLOS."}}, true);
 	WorldChange& carlosplugchanges = ((WorldChangeItem*)carlosplug)->getChanges();
@@ -955,6 +963,7 @@ NPC* SetupWorld() {
 	plum->addDismissalDialogue({{plum, "Well, I'll be heading back to my kingdom!"}, {plum, "Bye bye!"}});
 	plum->addRecruitedDialogue({{plum, "Ahh, sure beats a diet of pure fungus!"}});
 	plum->addRecruitmentDialogue({{self, "Hey before you head back to your kingdom, wanna join my team?"}, {plum, "It would be my pleasure!"}});
+	plum->addGymDialogue({{plum, "This is a very nice gym!"}, {plum, "I love playing tennis!"}});
 	//some of plum's dialogue logic is tied to Browser below in the enemies section
 
 	Attack* racket = new Attack("RACKET", "whacked", true, -5, 10, 0, 1, 1, 1);
@@ -1001,66 +1010,128 @@ NPC* SetupWorld() {
 	graham->addRejectionDialogue({{self, "Hey wana join my team?"}, {graham, "Sure man, as soon as I win the jackpot."}, {graham, "I'm just about to win it. I can feel it!"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}});
 	graham->addRecruitmentDialogue({{self, "Well now that you can't gamble anymore you wanna join my team?"}, {graham, "Eh..."}, {graham, "Sure, but I'm coming back once they fix this place."}});
 	graham->addDismissalDialogue({{graham, "I'm just gonna go check if they've fixed the casino yet."}});
-	graham->setRecruitDialogueChange({});
+	graham->setRecruitDialogueChange({{graham, "Come onnnnn....."}, {graham, "What's taking them so long to fix this place?"}});
+	graham->addGymDialogue("This place is out of my comfort zone.");
+	
+	//Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
+	//Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses.\nYou should really leave before you develop a gambling addiction.");
+	//Room* casinoback = new Room("in the casino's back room. There's a staircase heading to the basement and crates full of gambling addicts' monies.");
+	//Room* casinobase = new Room("in the casino's basement, housing the massive energy core required to power all the lights.");
+	Item* grambutton4 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "Emergency sirens start blaring!"}, {NULL, "Thick protective shields envelop the energy core!"}, {NULL, "The energy core explodes within the casing!"}, {NULL, "The protective shields almost hit your face."}, {self, "Oh oops O_O"}});
+	WorldChange& gramchanges4 = ((WorldChangeItem*)grambutton4)->getChanges();
+	gramchanges4.recruitLinks.push(graham);
+	gramchanges4.linkedDescriptions.push({graham, "Gambling addict whose access to gambling you destroyed, save for his icosahedral die."});
+	gramchanges4.linkedConversations.push({graham, {{graham, "AGGGHHHHH I was just about to win the jackpot!"}, {graham, "The machine just short-circuited!"}, {self, "Yeah I think that was my bad."}, {self, "I broke the power in the back sorry."}, {graham, "..."}, {self, "Well you shouldn't gamble anyway."}, {graham, "......"}}});
+	gramchanges4.linkedDialogue.push({graham, {{graham, "Aggghhhh I was JUST about to winnnn....."}}});
+	gramchanges4->roomChanges.push({casinobase, "in the casino's basement, featuring cracks and now-spherical protective walls, courtesy of you."});
+	gramchanges4->roomChanges.push({casino, "in the casino, full of complaining gamblers and deprived of its flashing lights."});
+	gramchanges4->roomChanges.push({leftstreet4, "at the entrance of the casino, more dark than the average block due to the building's shadow."});
 
-	Item* gramplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", casino, {});
-	WorldChange& gramplugchanges = ((WorldChangeItem*)gramplug)->getChanges();
-	gramplugchanges.recruitLinks.push(graham);
-	gramplugchanges.linkedDescriptions.push({graham, "Gambling addict whose access to gambling you destroyed, save for his icosahedral die."});
-	gramplugchanges.linkedDialogue.push({graham, {{graham, "Aggghhhh I was JUST about to winnnn....."}}});
+	Item* grambutton3 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "The basement starts shaking with power!"}});
+	WorldChange& gramchanges3 = ((WorldChangeItem*)grambutton3)->getChanges();
+	gramchanges->linkedItems.push({grambutton4, casinobase});
+	gramchanges->roomChanges.push({casinobase, "in the casino's basement, tinted blue from the energy core.\nYou can feel its pulsations in your chest."});
+	
+	Item* grambutton2 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "The energy core starts throbbing with energy!"}});
+	WorldChange& gramchanges2 = ((WorldChangeItem*)grambutton2)->getChanges();
+	gramchanges2->linkedItems.push({grambutton3, casinobase});
+	gramchanges2->roomChanges.push({casinobase, "in the casino's basement. The energy core is pulsating heavily, shaking the dust in the room."});
+	
+	Item* grambutton = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", casinobase, {{self, "I wonder what this does."}, {NULL, "You press the TURBO BUTTON."}, {NULL, "The energy core surges with energy!"}});
+	WorldChange& gramchanges = ((WorldChangeItem*)grambutton)->getChanges();
+	gramchanges->linkedItems.push({grambutton2, casinobase});
+	gramchanges->roomChanges.push({casinobase, "in the casino's basement. The energy core is glowing extra blue."});
 
 	NPC* icosahedrongus = new NPC("", "ICOSAHEDRONGUS", "Floating yellow icosahedral construct from Graham's icosahedral die.", limbo, 0, Stats(20, 10, 20, 10, 20, 20, 9));
-	//laser
-	//bonk
-	//hypnotize
+	Attack* laser = new Attack("LASER", "fired a laser at", -5, 12, 12, 1, 1, 1);
+	laser->afterdesc = " from one of its vertices";
+	Attack* bonk = new Attack("BONK", "flew into", 8, 24, 24, 1, 1, 1);
+	bonk->afterdesc = "'s head";
+	Effect* hypotized = new Effect("HYPNOTIZED", 2);
+	hypnotize->hypnotize = true;
+	Attack* hypnotize = new Attack("HYPNOTIZE", "emitted hypnotizing waves at", 15, 0, 0, 1, 1, 1);
+	hypnotize->addEffect(hypnotized);
+	icosahedrongus->setBasicAttack(laser);
+	icosahedrongus->addSpecialAttack(bonk);
+	icosahedrongus->addSpecialAttack(hypnotize);
 	
 	Attack* nat1 = new Attack("DICE ROLL", "rolled a NAT 1!", false, 0, 30, 50, 1, 1, 3, true); //1 - Graham explodes also damages nearby teammates
 	nat1->afterdesc = " blew up!";
 	nat1->targetself = true;
 	nat1->instakill = true;
-
-	//2 fully heal opponent
-
-	//3 flashbang the team
-	
+	graham->addSpecialAttack(nat1);
+	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -2147483648, 0, 1, 1, 1); //2 - enemy gets fully healed
+	nat2->afterdesc = " was fully healed";
+	graham->addSpecialAttack(nat2);
+	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 7, true); //3 - freeze team
+	nat3->focushits = false;
+	Effect* blinded = new Effect("BLINDED", 1);
+	blinded->freeze = true;
+	nat3->addEffect(blinded);
+	graham->addSpecialAttack(nat3);
 	Attack* nat4 = new Attack("DICE ROLL", "rolled a 4! Lightning struck", false, 0, 23, 35, 1, 1, 3, true); //4 - lightning strikes the team
-
-	//5 buff opponent
-
-	//6 put anvil over teammate, will hit in 2 turns
-
-	Attack* nat7 = new Attack("DICE ROLL", "rolled a 7!", false, 0, 0, 0, 0, 0, 0); //7 - give enemy team an icosahedrongus
+	graham->addSpecialAttack(nat4);
+	Attack* nat5 = new Attack("DICE ROLL", "rolled a 5!", false, 0, 0, 0, 1, 1, 1); //5 buff opponent
+	nat5->afterdesc = " turned into gold";
+	Effect* golden = new Effect("GOLDEN", 5, 0, 0, 2.75f, 2.75f);
+	nat5->addEffect(golden);
+	graham->addSpecialAttack(nat5);
+	Attack* nat6 = new Attack("DICE ROLL", "rolled a 6! An anvil appeared over", false, 0, 0, 0, 1, 1, 1, true); //6 put anvil over teammate, will hit in 2 turns
+	Effect* anvilabove = new Effect("ANVIL ABOVE", 2);
+	anvilabove->falldamage = 50;
+	nat6->addEffect(anvilabove);
+	graham->addSpecialAttack(nat6);
+	Attack* nat7 = new Attack("DICE ROLL", "rolled a 7", false, 0, 0, 0, 0, 0, 0); //7 - give enemy team an icosahedrongus
 	nat7->summon = icosahedrongus;
 	nat7->enemysummon = true;
-
-	//8 fling teamate into air
-
-	//9 take small damage
-
+	graham->addSpecialAttack(nat7);
+	Attack* nat8 = new Attack("DICE ROLL", "rolled an 8!", false, 0, 0, 0, 1, 1, 1, true); //8 - fling teammate into the air
+	nat8->afterdesc = " was surged up into the sky";
+	Effect* falling = new Effect("FALLING", 2);
+	falling->remove = true;
+	falling->falldamage = 35;
+	nat8->addEffect(falling);
+	graham->addSpecialAttack(nat8);
+	Attack* nat9 = new Attack("DICE ROLL", "rolled a 9!", false, 0, 15, 0, 1, 1, 1, true); //9 - team takes small damage
+	nat9->afterdesc = " took damage";
+	graham->addSpecialAttack(nat9);
 	Attack* nat10 = new Attack("DICE ROLL", "rolled a 10! Nothing happened", false, 0, 0, 0, 0, 0, 0);
-
-	//11 enemy takes small damage
-
-	//12 heal teammate
-
-	//13 put anvil above opponent, will hit in 2 turns
-
-	//14 freeze opponent
-
-	//15 summon 1 guard for all teammates
-
+	graham->addSpecialAttack(nat10);
+	Attack* nat11 = new Attack("DICE ROLL", "rolled an 11!", false, 0, 15, 0, 1, 1, 1); //11 - enemy takes small damage
+	nat11->afterdesc = " took damage";
+	graham->addSpecialAttack(nat11);
+	Attack* nat12 = new Attack("DICE ROLL", "rolled a 12!", false, 0, -17, 0, 1, 1, 1, true); //12 - team gets small heal
+	nat12->afterdesc = " recovered HP";
+	graham->addSpecialAttack(nat12);
+	Attack* nat13 = new Attack("DICE ROLL", "rolled a 13! An anvil appeared over", false, 0, 0, 0, 1, 1, 1); //13 put anvil over opponent, will hit in 2 turns
+	nat13->addEffect(anvilabove);
+	graham->addSpecialAttack(nat13);
+	Attack* nat14 = new Attack("DICE ROLL", "rolled a 14!", false, 0, 0, 0, 1, 1, 1);
+	nat14->afterdesc = " was frozen in a cube of ice";
+	Effect* frozen = new Effect("FROZEN", 3);
+	frozen->freeze = true;
+	nat14->addEffect(frozen);
+	graham->addSpecialAttack(nat14);
+	Attack* nat15 = new Attack("DICE ROLL", "rolled a 15! Icosahedral energy barriers form around the team!", false, 0, 0, 0, 1, 1, 7, true); //15 - summon guard for team
+	nat15->focushits = false;
+	nat15->targuard = 1;
+	graham->addSpecialAttack(nat15);
 	Attack* nat16 = new Attack("DICE ROLL", "rolled a 16!", false, 0, 0, 0, 0, 0, 0, true); //16 - summon icosahedrongus for team
 	nat16->summon = icosahedrongus;
-
-	//17 big heal teammate
-
-	//18 big bomb
-
-	//19 make teammate invincible
-
+	graham->addSpecialAttack(nat16);
+	Attack* nat17 = new Attack("DICE ROLL", "rolled a 17!", false, 0, -2147483648, 0, 1, 1, 1, true); //17 - teammate gets fully healed
+	nat17->afterdesc = " was fully healed";
+	graham->addSpecialAttack(nat17);
+	Attack* nat18 = new Attack("DICE ROLL", "rolled an 18! A big burst of energy appeared at", false, 0, 30, 50, 1, 1, 3); //18 - big bomb
+	graham->addSpecialAttack(nat18);
+	Attack* nat19 = new Attack("SUPER STAR", "rolled a 19!", false, 25, 0, 0, 0, 0, 0, true); //19 make teammate invincible
+	nat19->afterdesc = " is invincible";
+	nat19->addEffect(invincible); //from plum's move, also buffs attack cause there's no teammate buff roll anyway
+	graham->addSpecialAttack(nat19);
 	Attack* nat20 = new Attack("DICE ROLL", "rolled a NAT 20!", false, 0, 100, 100, 1, 1, 1); //20 - target explodes
 	nat20->afterdesc = " blew up!";
 	nat20->instakill = true;
+	graham->addSpecialAttack(nat20);
 
 	//Rich Guy Richie is the summoner MARK: Richie
 	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(), Stats());
@@ -1429,7 +1500,7 @@ NPC* SetupWorld() {
 	gymbro->setGymStart(1); //he will always catch up to your level
 
 	mike->addGymDialogue({{mike, "HA this place is great for practicing my throwing range!"}, {gymbro, "PSST!"}, {gymbro, "Hey, kid."}, {self, "Yeah?"}, {gymbro, "Can you please hurry and RECRUIT this guy back?"}, {gymbro, "He's freaking scary."}});
-	mike->addGymDialogue({{mike, "Check out how far I can throw this dynamite!"}});
+	mike->addGymDialogue({{mike, "Check out how far I can throw this dynamite!"}, {mike, "HAHAHA!"}});
 
 	Attack* forkthrow = new Attack("FORK THROW", "threw a fork at", false, 0, 1, 0, 1, 1, 1);
 	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", false, 0, 1, 2, 1, 1, 1);
@@ -1748,9 +1819,43 @@ NPC* SetupWorld() {
 	masterschanges.linkedDialogue.push({factelder, {{factelder, "Well done with the lava!"}, {factelder, "Stay safe, child."}}});
 	masterschanges.worldcon = LAVADRAINED;
 
-	//firefighter
+	//Room* rightstreet4 = new Room("at a small glass store. You see two guys carrying a large pane of glass.");
+	NPC* panepeople = new NPC("", "TWO GUYS CARRYING PANE OF GLASS", "They are two guys who are carrying a pane of glass, as you typically see on the street.", rightstreet4, 7);
+	panepeople->addLinkedRoom(rightstreet4, "at the glass store. They have very tough windows, so thieves have to steal the glass through the door.");
+	panepeople->addLinkedRoom(rightstreet4, "at the glass store. They have very tough windows, so thieves have to steal the glass through the door.");
+	panepeople->addDefeatRoom(panepeople, limbo);
+	panepeople->setTalkMakeChanges();
+	panepeople->setDialogue({{NULL, "You walk up to the guys to talk to them."}, {NULL, "GLASS STORE OWNER - \"HEY!\""}, {NULL, "GLASS STORE OWNER - \"STOP STEALING MY GLASS!\""}, {NULL, "GUY 1 - \"Hahahaha! You'll never catch us!\""}, {NULL, "The two guys run away with the pane of glass."}, {self, "..."}});
+	panepeople->addRejectionDialogue({{NULL, "You walk up to the guys to recruit them."}, {NULL, "GLASS STORE OWNER - \"HEY!\""}, {NULL, "GLASS STORE OWNER - \"STOP STEALING MY GLASS!\""}, {NULL, "GUY 1 - \"Hahahaha! You'll never catch us!\""}, {NULL, "The two guys run away with the pane of glass."}, {self, "..."}});
 
-	//
+	NPC* banker = new NPC("SHADY BANKER", "SHAUN", "He is a very reliable banker who has set up this bank in this shady alley.", bankalley, 16);
+	banker->setDialogue({{banker, "Hi, friend."}, {banker, "Feel free to leave your monies heeeere with meeee."}, {banker, "They will be saaaafe and sooound..."}});
+	banker->addRejectionDialogue({{banker, "No, friend."}, {banker, "I'm a banker, not an adventurer."}, {banker, "How can I take care of everyone's monies if I leeave?"}});
+
+	NPC* firefighter = new NPC("FIREFIGHTER", "DANIEL", "Firefighter of BURGERSBURG who has lost hope and is lying on the floor.", firedepartment, 19);
+	firefighter->addConversation({{firefighter, "Hm?"}, 
+								  {self, "Are you a firefighter?"},
+								  {firefighter, "Yep."},
+								  {self, "There was a fire like right outside here."},
+								  {firefighter, "Eh, who cares."},
+								  {firefighter, "No matter how many fires you put out in this city,"},
+								  {firefighter, "five more just pop up in its place."},
+								  {self, ":/"}
+								  {firefighter, "Feel free to use the hose,"},
+								  {firefighter, "but I myself don't care enough to try anymore."}});
+	firefighter->setDialogue("What's even the point of anything?");
+	firefighter->addRejectionDialogue({{firefighter, "For what?"}, {firefighter, "I can't do anything to help you."}});
+	
+	//for the two elevators the hose gets caught on the hose and can't close
+	//fast travel pulls you off the lobster
+	//and the hose is just fully extended at the gate of BB
+	//still can't use elevators if the hose is dropped in the elevator
+	
+	Attack* hosedown = new Attack("HOSE DOWN", "hosed down", false, 0, 20, 15, 1, 1, 1);
+	hosedown->afterdesc = " with the fire hose"
+	Effect* soaked = new Effect("SOAKED", 3, 0, 0, 1, 1, 1, 1, 0.5f);
+	hosedown->addEffect(soaked);
+	Item* firehose = new KeyItem("FIRE HOSE", "A hose for spraying water at fires, powered by the water tank back at the fire station.", {{NULL, "You sprayed water at the fire."}, {NULL, "The fire has been put out!"}}, firedepartment, FIRE, false, hosedown);
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -2066,6 +2171,10 @@ NPC* SetupWorld() {
 	leftstreet4->setExit(EAST, newstreet4);
 	leftstreet4->setExit(INSIDE, casino);
 	casino->setExit(OUTSIDE, leftstreet4);
+	casino->setExit(IN_BACK_ROOM, casinoback);
+	casinoback->setExit(OUT, casino);
+	casinoback->setExit(DOWN, casinobase);
+	casinobase->setExit(UP, casinoback);
 	leftstreet5->setExit(NORTH, richneighborhood1);
 	leftstreet5->setExit(SOUTH, leftstreet4);
 	leftstreet5->setExit(EAST, newstreet5);
@@ -2731,10 +2840,27 @@ NPC* SetupWorld() {
 	axeman->addSpecialAttack(axeflip);
 
 	NPC* disamalg = new NPC("", "DISEASE AMALGAMATION", "Writhing mass of pathogens featuring many colors.", limbo, 0, Stats(100, 40, 5, 5, 30, 0, 9));
-	//weakness
-	//DOT
-	//spleak
-	//bedridden
+	Effect* tetanus = new Effect("TETANUS", 5, 8);
+	Effect* commoncold = new Effect("COMMON COLD", 3, 2, 0, 1, 0.8f);
+	Effect* asthenia = new Effect("ASTHENIA", 5, 0, 0, 0.75f, 0.5f);
+	Effect* brainbug = new Effect("BRAIN BUG", 5, 0, 5);
+	Effect* bedridden = new Effect("BEDRIDDEN", 3);
+	bedridden->tired = true;
+	Attack* contagious = new Attack("CONTAGIOUS", "spread its disease to", false, 0, 0, 0, 1, 1, 1);
+	contagious->addEffect(tetanus);
+	Attack* sneeze = new Attack("SNEEZE", "sneezed disease at", false, -5, 0, 0, 1, 1, 1);
+	sneeze->addEffect(commoncold);
+	Attack* sneeze2 = new Attack("SNEEZE", "sneezed disease at", false, 5, 0, 0, 1, 1, 1);
+	sneeze2->addEffect(asthenia);
+	Attack* cough = new Attack("COUGH", "coughed up disease at", false, 5, 0, 0, 1, 1, 1);
+	cough->addEffect(brainbug);
+	Attack* superbug = new Attack("SUPERBUG", "spit out a superbug at", false, 15, 0, 0, 1, 1, 1);
+	superbug->addEffect(bedridden);
+	disamalg->setRecoilAttack(contagious);
+	disamalg->setBasicAttack(sneeze);
+	disamalg->addSpecialAttack(sneeze2);
+	disamalg->addSpecialAttack(cough);
+	disamalg->addSpecialAttack(superbug);
 
 	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats(50, 0, 25, 10, 20, 25, 9));
 	Attack* chuck = new Attack("CHUCKED", "telekinetically chucked some debris at", false, -5, 15, 0, 1, 1, 1);
@@ -3204,7 +3330,7 @@ NPC* SetupWorld() {
 	florian->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
 	florian->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
 	florian->addLinkedDesc(florian, "Your big pet crustacean who inhabits the tunnels below.");
-	florian->addLinkedDialogue(florian, {{florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)."}});
+	florian->addLinkedDialogue(florian, {{NULL, "You pet your lobster."}, {self, ":D"}, {florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)."}});
 
 	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
 	desertstation->setBackup(lobstercaller);
@@ -3675,7 +3801,18 @@ NPC* SetupWorld() {
 	burgerguards->setDialogue({{burgeragent, "Kid, go home."}, {self, "No."}});
 	burgerguards->addRejectionDialogue("What?");
 	
-	//keycard
+	Item* keycard = new WorldChangeItem("EXECUTIVE KEYCARD", "Golden elevator keycard given to BURGER executives for going up to the CEO's office.", limbo,
+		{{NULL, "You slid the EXECUTIVE KEYCARD across the keycard slot."},
+		 {NULL, "KEYCARD SLOT - *error beep*"},
+		 {self, "Oh it's the other way."},
+		 {NULL, "You flip the EXECUTIVE KEYCARD around and slide it across the keycard slot."},
+		 {NULL, "KEYCARD SLOT - *confirmation beep*"},
+		 {NULL, "You can go TO THE TOP now!"}});
+	keycard->setUsableRooms({ceoelevator1, ceoelevator2});
+	WorldChange& kcchanges = ((WorldChangeItem*)keycard)->getChanges();
+	kcchanges.exitUnblocks.push({ceoelevator1, TO_THE_TOP});
+	kcchanges.exitUnblocks.push({ceoelevator2, TO_THE_TOP});
+
 	NPC* richpeople = new NPC(*richperson); //RICH PEOPLE GAUNTLET!
 	richpeople->setLeader(true, 22, ballroom, false);
 	richpeople->setMask("", "RICH PEOPLE", "A huge gathering of rich people, discussing rich people things while drinking expensive wine and eating expensive cheese.");
@@ -3695,27 +3832,26 @@ NPC* SetupWorld() {
 								 {self, "GUYS!"}, {NULL, "You jump onto a table and grab a glass and a fork."},
 								 {NULL, "You clink the fork against the glass a few times."}, {NULL, "The room goes silent."},
 								 {richperson, "Who the heck are you?"},
-								 {self, "I'm saving this kid you guys kidnapped. >:("},
+								 {self, "I'm saving this kid you guys kidnapped. >:|"},
 								 {self, "So..."}, {self, "(wait what am I saying exactly?)"},
 								 {self, "Could one of you guys direct me towards where you kidnap people to?"},
 								 {self, "..."},
 								 {richpeople, "..."},
 								 {richperson, "LET'S GET HIM!"}});
-	richpeople->setDialogue({{self, "I'm gonna save that kid you guys kidnapped >:("}, {richperson, "LET'S GET HIM!"}});
+	richpeople->setDialogue({{self, "I'm gonna save that kid you guys kidnapped >:|"}, {richperson, "LET'S GET HIM!"}});
 	richpeople->addRejectionDialogue({{NULL, "Like, are you trying to recruit all of them at once?"}, {NULL, "That's not gonna work. :|"}});
 	richpeople->setForceBattle();
 	richpeople->addLinkedRoom(ballroom, "in the BURGER ballroom, full of incapacitated rich people.");
-
-	//richpeople->setGift(keycard, true);
+	richpeople->addLinkedItem(keycard, ballroom); //beat the rich people to get the keycard
 
 	NPC* enzo = new NPC(*ceo);
 	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
 	enzo->setLeader(true, 30, ceoroom, false);
 	ceo->blockExit(IN_SAFE, ENEMY, "guarded by ENZO.");
-	enzo->addConversation({{self, "Why'd you guys kidnap that kid? >:("},
+	enzo->addConversation({{self, "Why'd you guys kidnap that kid? >:|"},
 						   {ceo, "So that's what you busted into this joint for?"},
 						   {ceo, "Over some kid? Hah hah hah hah!"},
-						   {self, "Answer my question! >:("},
+						   {self, "Answer my question! >:|"},
 						   {ceo, "Eh, don't even remember that."},
 						   {ceo, "I must've sent one of my lackeys to do that some time ago."},
 						   {ceo, "I just do whatever the BURGER MAN tells me to do."},
@@ -3817,6 +3953,21 @@ NPC* SetupWorld() {
 	factoryroofse->blockExit(DOWN, HIGH, "too far down to jump.");
 	sewermineswest->blockExit(WEST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mountainmine->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
+	mainstreet2->blockExit(EAST, FIRE, "blocked by a blazing fire!");
+	coolstreet2->blockExit(WEST, FIRE, "blocked by a blazing fire!");
+	coolstreet2->blockExit(INSIDE, FIRE, "blocked by a blazing fire!");
+	newstreet3->blockExit(EAST, FIRE, "blocked by a blazing fire!");
+	mainstreet3->blockExit(WEST, FIRE, "blocked by a blazing fire!");
+	leftstreet4->blockExit(EAST, FIRE, "blocked by a blazing fire!");
+	newstreet4->blockExit(WEST, FIRE, "blocked by a blazing fire!");
+	newstreet4->blockExit(NORTH, FIRE, "blocked by a blazing fire!");
+	newstreet5->blockExit(SOUTH, FIRE, "blocked by a blazing fire!");
+	mainstreet4->blockExit(EAST, FIRE, "blocked by a blazing fire!");
+	coolstreet4->blockExit(WEST, FIRE, "blocked by a blazing fire!");
+	coolstreet3->blockExit(NORTH, FIRE, "blocked by a blazing fire!");
+	coolstreet4->blockExit(SOUTH, FIRE, "blocked by a blazing fire!");
+	rightstreet4->blockExit(NORTH, FIRE, "blocked by a blazing fire!");
+	rightstreet5->blockExit(SOUTH, FIRE, "blocked by a blazing fire!");
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
@@ -4346,6 +4497,10 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		WorldChangeItem* changer = (WorldChangeItem*)item;
 		if (changer->getTakeToUse()) { //you can't use takeToUse world change items normally
 			cout << "\nYou can't use the " << itemname << "!";
+			return;
+		}
+		if (!changer->getUsable(currentRoom)) {
+			cout << "\nThere's nothing to use the " << itemname << " for here!";
 			return;
 		}
 		applyWorldChange(changer->getChanges()); //do the changes

@@ -168,6 +168,7 @@ public: //you need to set stats on creation
 	void setTaking(NPC* npc); //set this npc to taking the given one in battle
 	void setAway(bool isaway);
 	void setQuantumn();
+	void setTalkMakeChanges(); //set if the npc should make changes by ASKing, not FIGHTing
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
@@ -178,6 +179,7 @@ public: //you need to set stats on creation
 	void addLinkedRoom(Room* room, const char* desc); //room to affect on defeat
 	void addRedirect(Room* room1, Room* room2); //set room to redirect upon defeat
 	void addLinkedStats(NPC* npc, Stats stats);
+	void addLinkedItem(Item* item, Room* room);
 	void addAttackRemoval(NPC* npc, Attack* attack);
 	void guardItem(Item* item); //start guarding the item
 
@@ -315,6 +317,7 @@ protected:
 	
 	queue<WorldChange> changes; //stuff this npc does when defeated
 	bool loopLastChange = false; //if we should loop the last change every single defeat for respawning enemies, as opposed to only do the changes once
+	bool talktochange = false; //if we should make changes when asking the npc instead of when they are defeated
 
 	time_t gymStart = 0; //what time the npc was left at the gym (0 means is not at the gym, bad news for anybody hoping to drop their teammate off at the gym on the first second of 1970)
 

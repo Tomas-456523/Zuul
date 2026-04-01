@@ -36,6 +36,8 @@ struct WorldChange {
 	std::queue<NPC*> decruitLinks; //these npcs are set to not recruitable
 	std::queue<std::pair<Room*, Conversation>> linkedWelcomes; //we add these room welcomes to the rooms
 
+	std::queue<std::pair<Item*, Room*>> linkedItems; //items that change rooms
+
 	size_t worldcon = Helper::NEVER; //world condition that this affects, unless it's NEVER then it doesn't do anything
 };
 

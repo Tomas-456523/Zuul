@@ -298,10 +298,14 @@ public:
 	WorldChange& getChanges(); //returns the world changes, as a reference so it's easier to edit
 	const Conversation& getUseText() const; //gets the text printed by using it
 	bool getTakeToUse(); //get if we need to take it instead of use it to make it do the thing
+	bool getUsable(Room* _room); //gets if it's usable in the given room
+
+	void setUsableRooms(initializer_list<Room*> rooms); //make item need to be usable in these rooms only
 private:
 	WorldChange changes; //the changes to do
 	Conversation useText;
 	bool takeToUse; //if we need to take it instead of use it to make it do the thing
+	vector<Room*> usableRooms; //rooms where this is usable (if it's empty it's usable everywhere)
 };
 
 //blender items, for taking ingredients and combining them into one thing
