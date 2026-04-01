@@ -994,7 +994,7 @@ NPC* SetupWorld() {
 	plum->addSpecialAttack(lifemushroom);
 
 	//Gambler Graham is the rng guy MARK: Graham
-	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(), Stats());
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(24, 12, 12, 12, 12, 12, 9), Stats(1, 1, 1, 0, 0, 0, 1));
 	Conversation gramconvo = {{self, "You should stop gambling."}, {graham, "What?"}, {graham, "Haven't you heard that 99% of gamblers quit right before hitting it big?"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}};
 	gramconvo.skipcondition = NOGAMBLING;
 	graham->addConversation(gramconvo);
@@ -1006,28 +1006,38 @@ NPC* SetupWorld() {
 	Item* gramplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", casino, {});
 	WorldChange& gramplugchanges = ((WorldChangeItem*)gramplug)->getChanges();
 	gramplugchanges.recruitLinks.push(graham);
-	gramplugchanges.linkedDescriptions.push({graham, "Gambling addict whose access to gambling you destroyed."});
+	gramplugchanges.linkedDescriptions.push({graham, "Gambling addict whose access to gambling you destroyed, save for his icosahedral die."});
 	gramplugchanges.linkedDialogue.push({graham, {{graham, "Aggghhhh I was JUST about to winnnn....."}}});
 
-	//1 blows up instantly and also damages nearby teammates
+	NPC* icosahedrongus = new NPC("", "ICOSAHEDRONGUS", "Floating yellow icosahedral construct from Graham's icosahedral die.", limbo, 0, Stats(20, 10, 20, 10, 20, 20, 9));
+	//laser
+	//bonk
+	//hypnotize
+	
+	Attack* nat1 = new Attack("DICE ROLL", "rolled a NAT 1!", false, 0, 30, 50, 1, 1, 3, true); //1 - Graham explodes also damages nearby teammates
+	nat1->afterdesc = " blew up!";
+	nat1->targetself = true;
+	nat1->instakill = true;
 
 	//2 fully heal opponent
 
 	//3 flashbang the team
-
-	//4 lightning strikes the team
+	
+	Attack* nat4 = new Attack("DICE ROLL", "rolled a 4! Lightning struck", false, 0, 23, 35, 1, 1, 3, true); //4 - lightning strikes the team
 
 	//5 buff opponent
 
 	//6 put anvil over teammate, will hit in 2 turns
 
-	//7 give enemy team an icosahedrongus
+	Attack* nat7 = new Attack("DICE ROLL", "rolled a 7!", false, 0, 0, 0, 0, 0, 0); //7 - give enemy team an icosahedrongus
+	nat7->summon = icosahedrongus;
+	nat7->enemysummon = true;
 
 	//8 fling teamate into air
 
 	//9 take small damage
 
-	//10 nothing
+	Attack* nat10 = new Attack("DICE ROLL", "rolled a 10! Nothing happened", false, 0, 0, 0, 0, 0, 0);
 
 	//11 enemy takes small damage
 
@@ -1039,7 +1049,8 @@ NPC* SetupWorld() {
 
 	//15 summon 1 guard for all teammates
 
-	//16 summon an icosahedrongus
+	Attack* nat16 = new Attack("DICE ROLL", "rolled a 16!", false, 0, 0, 0, 0, 0, 0, true); //16 - summon icosahedrongus for team
+	nat16->summon = icosahedrongus;
 
 	//17 big heal teammate
 
@@ -1047,7 +1058,9 @@ NPC* SetupWorld() {
 
 	//19 make teammate invincible
 
-	//20 instakill target
+	Attack* nat20 = new Attack("DICE ROLL", "rolled a NAT 20!", false, 0, 100, 100, 1, 1, 1); //20 - target explodes
+	nat20->afterdesc = " blew up!";
+	nat20->instakill = true;
 
 	//Rich Guy Richie is the summoner MARK: Richie
 	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(), Stats());
@@ -2858,32 +2871,33 @@ NPC* SetupWorld() {
 	burgerlawyer->addSpecialAttack(legaldefense);
 	burgerlawyer->addSpecialAttack(injunction);
 	
-	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats(45, 25, 20, 20, 0, 18, 9));
-	Attack* beatdown = new Attack("BEATDOWN", "beat up", true, -5, 10, 0, 3, 3, 1);
+	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats(45, 25, 20, 20, 10, 18, 9));
+	Attack* nightstick = new Attack("NIGHTSTICK", "thwacked", -5, 20, 25, 1, 1, 1);
+	nightstick->afterdesc = " with a nightstick";
+	Attack* beatdown = new Attack("BEATDOWN", "beat up", true, 4, 10, 0, 3, 3, 1); //funny cause up and down are opposites but here they mean the same thing
 	Effect* tackled = new Effect("TACKLED", 0);
 	Effect* tackling = new Effect("TACKLING", 0);
 	tackled->away = true;
 	tackling->away = true;
-	Attack* tackle = new Attack("TACKLE", "tackled", true, 5, 24, 0, 3, 3, 1);
-	tackle->addEffect(tackle);
+	Attack* tackle = new Attack("TACKLE", "tackled", true, 5, 24, 0, 1, 1, 1);
+	tackle->addEffect(tackled);
 	tackle->selfeffect = tackling;
-	burgeragent->setBasicAttack(beatdown);
+	burgeragent->setBasicAttack(nightstick);
+	burgeragent->addSpecialAttack(beatdown);
 	burgeragent->addSpecialAttack(tackle);
-	burgeragent->addSpecialAttack();
-	//
 
 	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation. Looks like a big suited rice cooker on wheels.", limbo, 0, Stats(100, 50, 15, 30, 0, 0, 9));
 	burgerbutler->setBoss(true); //miniboss
-	Attack* butlerhands = new Attack("BUTLER HANDS", "threw out two punches with its robotic extendable hands", true, -5, 20, 2, 2, 1);
+	Attack* butlerhands = new Attack("BUTLER HANDS", "threw out two punches with its robotic extendable hands", true, -5, 15, 0, 2, 2, 1);
 	butlerhands->focushits = false;
-	Attack* tableflip = new Attack("TABLE FLIP", "flipped one of the fancy tables onto", false, 7, 30, 1, 1, 3);
-	//wax on wax off / dinner is served
+	Attack* tableflip = new Attack("TABLE FLIP", "flipped one of the fancy tables onto", false, 7, 23, 0, 1, 1, 3);
+	Attack* chandelier = new Attack("CHANDELIER", "ripped a chandelier from the ceiling and crashed it down onto", true, 20, 40, 0, 1, 1, 1);
 	Attack* vacuum = new Attack("VACUUM", "sucked up", true, 13, 20, 15, 1, 1, 1);
 	vacuum->afterdesc = " with its vacuum";
 	vacuum->take = true;
 	burgerbutler->setBasicAttack(butlerhands);
 	burgerbutler->addSpecialAttack(tableflip);
-	burgerbutler->addSpecialAttack();
+	burgerbutler->addSpecialAttack(chandelier);
 	burgerbutler->addSpecialAttack(vacuum);
 	
 	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 25, 25, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
@@ -3676,7 +3690,17 @@ NPC* SetupWorld() {
 	richpeople->setParty({richcyborg, burgeragent, burgerlawyer}, true); //rich cyborg + burger agent + burger lawyer
 	richpeople->setParty({richperson, richperson, richperson, richperson, richperson, richperson, richperson, richperson}, true); //rich person x8
 	richpeople->setParty({burgerbutler, burgerbutler}, true); //burger butler x2
-	richpeople->addConversation({{self, "HEY!"}, {NULL, "RICH PEOPLE - *indistinct chatter*"}, {self, "GUYS!"}, {NULL, "You jump onto a table and grab a glass and a fork."}, {NULL, "You clink the fork against the glass a few times."}, {NULL, "The room goes silent."}, {richperson, "Who the heck are you?"}, {self, "I'm saving this kid you guys kidnapped. >:("}, {self, "So..."}, {self, "(wait what am I saying exactly?)"}, {self, "Could one of you guys direct me towards where you kidnap people to?"}, {self, "..."}, {richpeople, "..."}, {richperson, "LET'S GET HIM!"}});
+	richpeople->addConversation({{self, "HEY!"},
+								 {NULL, "RICH PEOPLE - *indistinct chatter*"},
+								 {self, "GUYS!"}, {NULL, "You jump onto a table and grab a glass and a fork."},
+								 {NULL, "You clink the fork against the glass a few times."}, {NULL, "The room goes silent."},
+								 {richperson, "Who the heck are you?"},
+								 {self, "I'm saving this kid you guys kidnapped. >:("},
+								 {self, "So..."}, {self, "(wait what am I saying exactly?)"},
+								 {self, "Could one of you guys direct me towards where you kidnap people to?"},
+								 {self, "..."},
+								 {richpeople, "..."},
+								 {richperson, "LET'S GET HIM!"}});
 	richpeople->setDialogue({{self, "I'm gonna save that kid you guys kidnapped >:("}, {richperson, "LET'S GET HIM!"}});
 	richpeople->addRejectionDialogue({{NULL, "Like, are you trying to recruit all of them at once?"}, {NULL, "That's not gonna work. :|"}});
 	richpeople->setForceBattle();
@@ -3687,7 +3711,7 @@ NPC* SetupWorld() {
 	NPC* enzo = new NPC(*ceo);
 	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
 	enzo->setLeader(true, 30, ceoroom, false);
-	ceo->blockExit(IN_SAFE, ENEMY, "guarded by the BURGER CEO.");
+	ceo->blockExit(IN_SAFE, ENEMY, "guarded by ENZO.");
 	enzo->addConversation({{self, "Why'd you guys kidnap that kid? >:("},
 						   {ceo, "So that's what you busted into this joint for?"},
 						   {ceo, "Over some kid? Hah hah hah hah!"},
