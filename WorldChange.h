@@ -34,6 +34,7 @@ struct WorldChange {
 	std::queue<std::pair<Room*, const char*>> exitUnblocks; //unlock these exits (enemies don't use this but some world change items may need to unblock exits)
 
 	std::queue<NPC*> decruitLinks; //these npcs are set to not recruitable
+	std::queue<std::pair<NPC*, size_t>> conditionalDecruits; //these npcs are set to not recruitable unless the given world condition true
 	std::queue<std::pair<Room*, Conversation>> linkedWelcomes; //we add these room welcomes to the rooms
 
 	std::queue<std::pair<Item*, Room*>> linkedItems; //items that change rooms

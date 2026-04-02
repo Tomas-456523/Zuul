@@ -273,6 +273,10 @@ protected:
 	bool isLobster = false; //if it's the lobster
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
 
+	bool banker = false; //if its a banker we can withdraw or deposit monies
+	int depositedmonies = 0;
+	time_t deposittime; //track time monies were deposited so we can add interest
+
 	//npc stats
 	Stats basestats; //base stats
 	Stats stats; //the actual stats including level up increases

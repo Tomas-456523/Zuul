@@ -328,6 +328,11 @@ namespace Helper {
 			data->setRecruitable(false);
 			changes.decruitLinks.pop();
 		}
+		while (!changes.conditionalDecruits.empty()) { //make unrecruitable all the npcs unless the condition paired to them is true
+			pair<NPC*, size_t>& data = changes.conditionalDecruits.front();
+			if (!WorldState[data.second]) data.first->setRecruitable(false);
+			changes.conditionalDecruits.pop();
+		}
 		while (!changes.linkedWelcomes.empty()) { //unguard all the items
 			pair<Room*, Conversation>& data = changes.linkedWelcomes.front();
 			data.first->setWelcome(data.second);
