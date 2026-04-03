@@ -5,6 +5,7 @@
 
 #include <queue>
 #include <utility>
+#include <tuple>
 #include "WorldState.h"
 #include "Conversation.h"
 #include "Stats.h"
@@ -31,7 +32,8 @@ struct WorldChange {
 
     std::queue<Item*> guardedItems; //remove these items' guards so they're takable/usable
 	
-	std::queue<std::pair<Room*, const char*>> exitUnblocks; //unlock these exits (enemies don't use this but some world change items may need to unblock exits)
+	std::queue<std::pair<Room*, const char*>> exitUnblocks; //unlock these exits (most enemies don't use this but some world change items may need to unblock exits)
+	std::queue<std::tuple<Room*, const char*, const char*, const char*>> exitBlocks; //block these exits with that type for that reason
 
 	std::queue<NPC*> decruitLinks; //these npcs are set to not recruitable
 	std::queue<std::pair<NPC*, size_t>> conditionalDecruits; //these npcs are set to not recruitable unless the given world condition true

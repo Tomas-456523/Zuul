@@ -348,7 +348,7 @@ bool Battle::useItem(const char* itemname) {
 	//} else if (!strcmp(item->getType(), "BURGER")) {
 
 	//some key items have attacks, so you can use them here
-	} else if (!strcmp(item->getType(), "key")) {
+	} else if (!strcmp(item->getType(), "key") || !strcmp(item->getType(), "hose")) {
 		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass
 		if (key->getAttack() == NULL) { //if the key item has no attack
 			cout << "The " << itemname << " can't be used in battle!";

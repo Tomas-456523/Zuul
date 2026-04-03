@@ -318,10 +318,15 @@ namespace Helper {
 			changes.guardedItems.front()->setGuard(NULL);
 			changes.redirectRooms.pop();
 		}
-		while (!changes.exitUnblocks.empty()) { //unguard all the items
+		while (!changes.exitUnblocks.empty()) { //unblock the exits
 			pair<Room*, const char*>& data = changes.exitUnblocks.front();
 			data.first->unblockExit(data.second);
 			changes.exitUnblocks.pop();
+		}
+		while (!changes.exitBlocks.empty()) { //block the exits
+			tuple<Room*, const char*, const char*, const char*>& data = changes.exitBlocks.front();
+			data[0]->blockExit(data[1], data[2], data[3]);
+			changes.exitBlocks.pop();
 		}
 		while (!changes.decruitLinks.empty()) { //make unrecruitable all the npcs
 			NPC* data = changes.decruitLinks.front();

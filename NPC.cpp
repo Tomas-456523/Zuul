@@ -285,8 +285,9 @@ bool NPC::getQuantumn() {
 bool NPC::getBanker() {
 	return banker;
 }
-void NPC::depositMonies(int& monies) {
-	double interesttime = difftime(time(NULL), deposittime) / 31536000; //get how many years have elapsed
+void NPC::depositMonies(int& monies) { //mony depositing system for the banker
+	time_t now = time(NULL);
+	double interesttime = difftime(now, deposittime) / 31536000; //get how many years have elapsed
 	int newmonies = depositedmonies * exp(interesttime * 0.02);
 	if (newmonies > depositedmonies) {
 		cout << "\nYour balance rose by " << newmonies - depositedmonies << " due to interest!";
@@ -300,25 +301,21 @@ void NPC::depositMonies(int& monies) {
 		if (!amount) cout << "\nJust checking your balance, I seee.";
 		else if (amount > 0) { //deposit
 			if (amount > monies) cout << "Youuu do not have this kind of moniiiiies...";
-			else {
-				monies -= amount;
-				depositedmonies += amount;
-				cout << "\nYou deposited " << amount << " monies. You now have " << monies << " monies and " << depositedmonies << "monies deposited.";
-			}
+			else cout << "\nYou deposited " << amount << " monies. You now have " << monies << " monies and " << depositedmonies << "monies deposited.";
 		} else { //withdraw
 			if (amount < -depositedmonies) cout << "Youuu do not have this kind of moniiiiies...";
-			else {
-				monies += amount;
-				depositedmonies -= amount;
-				cout << "\nYou withdrew " << amount << " monies.\nYou now have " << monies << " monies and " << depositedmonies << "monies deposited.";
-			}
+			else cout << "\nYou withdrew " << amount << " monies.\nYou now have " << monies << " monies and " << depositedmonies << "monies deposited.";
 		}
 	} else {
 		cout << "\nThis issss... not a number I know of.";
 	}
+
+	monies -= amount;
+	depositedmonies += amount;
+
 	CinIgnoreAll();
 
-	time_t deposittime = time(NULL); //get the new time
+	deposittime = now; //get the new time
 }
 bool NPC::moreWaves() {
 	return !party.empty();

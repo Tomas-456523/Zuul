@@ -1888,12 +1888,13 @@ NPC* SetupWorld() {
 	//fast travel pulls you off the lobster
 	//and the hose is just fully extended at the gate of BB
 	//still can't use elevators if the hose is dropped in the elevator
+	//if hose is in elevator and you go around to other end of elevator, can't go in because elevator is stuck due to hose
 	
 	Attack* hosedown = new Attack("HOSE DOWN", "hosed down", false, 0, 20, 15, 1, 1, 1);
 	hosedown->afterdesc = " with the fire hose"
 	Effect* soaked = new Effect("SOAKED", 3, 0, 0, 1, 1, 1, 1, 0.5f);
 	hosedown->addEffect(soaked);
-	Item* firehose = new KeyItem("FIRE HOSE", "A hose for spraying water at fires, powered by the water tank back at the fire station.", {{NULL, "You sprayed water at the fire."}, {NULL, "The fire has been put out!"}}, firedepartment, FIRE, false, hosedown);
+	Item* firehose = new HoseItem("FIRE HOSE", "A hose for spraying water at fires, powered by the water tank back at the fire station.", {{NULL, "You sprayed water at the fire."}, {NULL, "The fire has been put out!"}}, firedepartment, FIRE, false, hosedown);
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -4057,6 +4058,9 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 		return;
 	//if there is a valid room to go to, but the exit is blocked
 	//we go there anyway if we force the move (done by movement items)
+
+	//MARK: check for hose items
+
 	} else if (!forceTravel && currentRoom->getBlocked(direction)) {
 		currentRoom->printBlock(direction);
 		return;
@@ -4456,8 +4460,8 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	} else if (!strcmp(item->getType(), "toll")) {
 		TollItem* toll = (TollItem*)item;
 	//used for unblocking blocked exits
-	} else if (!strcmp(item->getType(), "key")) {
-		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass		
+	} else if (!strcmp(item->getType(), "key") || !strcmp(item->getType(), "hose")) {
+		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass
 		vector<const char*> exitsUnlocked; //the exits that were unlocked in the key using process, so we can unlock the other side also
 		
 		bool used = false; //if we ended up actually using the key

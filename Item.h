@@ -4,6 +4,7 @@
 #define ITEM
 
 #include <vector>
+#include <tuple>
 #include "WorldChange.h"
 #include "Conversation.h"
 using namespace std;
@@ -206,6 +207,24 @@ private:
 
 	vector<Room*> targetRooms; //keys can be targeted keys, so no matter where you are, using them will remotely unblock the exit. So this has those exits
 	Conversation useText; //the text printed by using it
+};
+
+//hose items that are keyitems that have some bonus inconvenient blocking functionalities
+class HoseItem : public KeyItem {
+public:
+	HoseItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _consumable = true, Attack* _attack = NULL);
+
+	void addBlocker(Room* room, const char* direction, const char* reason); //block the room in that direction
+	void addDropChange(Room* room, WorldChange changes); //make world changes on take and on drop
+	void addTakeChange(Room* room, WorldChange changes);
+
+	const char* getBlocked(Room* room, const char* direction); //check if this hose is blocking going in this direction from this room, return why if so
+	void doDropChanges(); //do the changes when needed
+	void doTakeChanges();
+private:
+	vector<tuple<Room*, const char*, const char*>> blockers; //you cannot go in this direction in these rooms for that reason if you have the item
+	vector<pair<Room*, WorldChange>> dropchanges; //if the hose is dropped in this room make these changes
+	vector<pair<Room*, WorldChange>> takechanges; //if the hose is taken in this room make these changes
 };
 
 //movement items for moving through locked exits
