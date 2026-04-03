@@ -92,6 +92,8 @@ public: //you need to set stats on creation
 	const char* getHiddenName();
 	const char* getHiddenDescription();
 	bool getQuantumn();
+	bool getBanker();
+	void depositMonies(int& monies);
 	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
 	bool moreWaves(); //get if there's more waves to fight other than the current one
 	void popWave();
@@ -168,6 +170,7 @@ public: //you need to set stats on creation
 	void setTaking(NPC* npc); //set this npc to taking the given one in battle
 	void setAway(bool isaway);
 	void setQuantumn();
+	void setBanker();
 	void setTalkMakeChanges(); //set if the npc should make changes by ASKing, not FIGHTing
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);

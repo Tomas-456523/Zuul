@@ -4694,8 +4694,13 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 	if (npc == NULL) { //error message if no such npc is in the current room
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
-	} //tells the npc to print their dialogue
-	npc->printDialogue(false);
+	}
+	if (npc->getBanker() && !npc->getConvoSize()) { //does banker stuff if the npc is a banker and has already explained how to bank
+		npc->printDialogue(true); //print the dialogue with the final pause
+		npc->depositMonies(mony);
+	} else { //tells the npc to print their dialogue normally
+		npc->printDialogue(false);
+	}
 	//some npcs give gifts after talking so we check for that here
 	Item* item = npc->takeGift();
 	if (item != NULL) { //adds the gift to the inventory
