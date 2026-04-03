@@ -302,8 +302,11 @@ Item* KeyItem::Duplicate() { //returns a new key item as an Item*
 HoseItem::HoseItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _consumable, Attack* _attack) : KeyItem(_name, _description, _useText, _room, _unlockType, _consumable, _attack) {
 	type = "hose"; //sets the type
 }
-void HoseItem::addBlocker(Room* room, const char* direction, const char* reason) { //block the room in that direction
+void HoseItem::addBlocker(Room* room, const char* direction, const char* reason, const char* floorreason) { //block the room in that direction
 	blockers.push_back(make_tuple(room, direction, reason));
+}
+void HoseItem::setStationBlock(const char* message) {
+	stationblock = message;
 }
 void HoseItem::addDropChange(Room* room, WorldChange& changes) { //make world changes on take and on drop
 	dropchanges.push_back({room, changes});
@@ -313,15 +316,22 @@ void HoseItem::addTakeChange(Room* room, WorldChange& changes) {
 }
 const char* HoseItem::getBlocked(Room* room, const char* direction) { //check if this hose is blocking going in this direction from this room, return why if so
 	for (tuple<Room*, const char*, const char*>& blocker : blockers) {
-		if (room == get<0>(blocker) && direction == get<1>(blocker)) return get<2>(blocker);
+		if (room == get<0>(blocker) && direction == get<1>(blocker)) return (currentroom ? get<2>(blocker) : get<3>(blocker)); //return different message based on if it's in the inventory or on the floor
 	}
 	return NULL;
 }
-void HoseItem::doDropChanges() { //do the changes when needed
-	applyWorldChange(dropchanges);
+const char* HoseItem::getStationBlock() {
+	return stationblock;
 }
-void HoseItem::doTakeChanges() {
-	applyWorldChange(takechanges);
+void HoseItem::doDropChanges(Room* currentroom) { //do the changes when needed
+	for (pair<Room*, WorldChange> changes : dropchanges) { //by value so we don't get rid of the changes
+		if (changes.first == currentroom) applyWorldChange(changes.second);
+	}
+}
+void HoseItem::doTakeChanges(Room* currentroom) {
+	for (pair<Room*, WorldChange> changes : takechanges) { //by value so we don't get rid of the changes
+		if (changes.first == currentroom) applyWorldChange(changes.second);
+	}
 }
 
 //movement items, for moving through blocked exits

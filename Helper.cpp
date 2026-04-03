@@ -91,6 +91,15 @@ namespace Helper {
 		}
 		return NULL; //no valid item was found so return null
 	}
+	//finds an item in the given vector that has the given type
+	Item* getItemTypeInVector(std::vector<Item*>& the_vector, const char* itemtype) {
+		for (Item* item : the_vector) { //if the item's type matches, we return that
+			if (!strcmp(item->getType(), itemtype)) {
+				return item;
+			}
+		}
+		return NULL; //no valid item was found so return null
+	}
 	//prints the data of the given npc
 	void printNPCData(NPC* npc) {
 		cout << "\n" << npc->getTitle(); //prints the title of the npc if they have one
@@ -325,8 +334,14 @@ namespace Helper {
 		}
 		while (!changes.exitBlocks.empty()) { //block the exits
 			tuple<Room*, const char*, const char*, const char*>& data = changes.exitBlocks.front();
-			data[0]->blockExit(data[1], data[2], data[3]);
+			get<0>(data)->blockExit(get<1>(data), get<2>(data), get<3>(data));
 			changes.exitBlocks.pop();
+		}
+		while (!changes.exitPavings.empty()) { //block the exits
+			tuple<Room*, Room*, const char*, const char*>& data = changes.exitPavings.front();
+			get<0>(data)->setExit(get<2>(data), get<1>(data)); //first room goes to second room via first exit
+			get<1>(data)->setExit(get<3>(data), get<0>(data)); //second room goes to first room via second exit
+			changes.exitPavings.pop();
 		}
 		while (!changes.decruitLinks.empty()) { //make unrecruitable all the npcs
 			NPC* data = changes.decruitLinks.front();

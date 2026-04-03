@@ -320,7 +320,7 @@ NPC* SetupWorld() {
 	Room* mainstreet2 = new Room("on main street. A lopsided helicopter struggles to spin its rotors.");
 	Room* mainstreet3 = new Room("on main street. The traffic lights are all broken, but the random fires provide cozy lighting.");
 	Room* mainstreet4 = new Room("on main street. There's a stairway here leading down to the BURGERSBURG train station.");
-	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you, welcoming you into the elevator.");
+	Room* mainstreet5 = new Room("at the end of main street. The BURGER RESTAURANT looms ahead of you, welcoming you inside.");
 	Room* coolstreet1 = new Room("near the entrance of the city. The top of a building is sliced clean off.");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
 	Room* coolstreet3 = new Room("at a functional hot dog stand.");
@@ -359,7 +359,7 @@ NPC* SetupWorld() {
 	Room* ceoelevator3 = new Room("in the elevator, at the top level with the CEO's office.");
 	Room* ceoroom = new Room("in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.");
 	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies and company documents are piled up here.");
-
+	Room* elevatorentrance = new Room("in the entrance of the BURGER RESTAURANT. It has glass walls curving up and BURGER furniture.\nThe elevator is not currently on ground level.");
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
 	Room* elevatortop = new Room("in the elevator, elevated all the way to the tippity top.");
 	elevatortop->setWelcome({{NULL, "The elevator shoots upwards."},
@@ -389,7 +389,7 @@ NPC* SetupWorld() {
 								{NULL, "..."},
 								{NULL, "..."},
 								{NULL, "..."},
-								{NULL, "It's so far down; the temperature starts rising."},
+								{NULL, "It's so far down; the AC struggles to keep up with the rising temperature."},
 								{NULL, "..."},
 								{NULL, "..."},
 								{NULL, "..."},
@@ -1146,6 +1146,15 @@ NPC* SetupWorld() {
 	//Yea.
 	//You know we have like these advanced security systems right?
 	//You're gonna get blown up as soon as you walk onto their doorstep.
+	//Nah I got this cloaking device.
+	//...
+	//You look pretty uncloaked to me.
+
+	//Hey you wanna help me fight these BURGER guys?
+	//In that building over there?
+	//Yea.
+	//You know we have like these advanced security systems right?
+	//You're gonna get blown up as soon as you walk onto their doorstep.
 	//Nah check it out I got this cloaking device.
 	//You turn invisible and visible again.
 	//Huh.
@@ -1202,8 +1211,21 @@ NPC* SetupWorld() {
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
 	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(), Stats());
+	//make sure he's guarding richie and give him one guard
 
-	//
+	//counter (recoil attack)
+
+	//martial art (multi hit basic)
+
+	//scissor kick (two hits)
+
+	//sweep the leg (stun until next turn)
+
+	//suplex
+
+	//discombobulate (stun for two turns)
+
+	//540
 
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
 	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER.\nHe wears a formal business suit and a traumatized expression.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
@@ -1618,11 +1640,11 @@ NPC* SetupWorld() {
 	cloakingchange.exitUnblocks.push({richneighborhood2, NORTH});
 	cloakingchange.exitUnblocks.push({richneighborhood3, NORTHWEST});
 	cloakingchange.recruitLinks.push(richie);
-	cloakingchange.recruitLinks.push(forestknight);
+	cloakingchange.worldcon = CLOAKED;
 	
 	NPC* child = new NPC("", "JILLY", "The daughter of MATILDA who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3);
 
-	NPC* matilda = new NPC("WORRIED MOTHER", "MATILDA", "A frequent churchgoer with distress very visible on her face.", burgchurch, 10);
+	NPC* matilda = new NPC("WORRIED MOTHER", "MATILDA", "A frequent churchgoer with distress very visible on her face.", burgchurch, 0);
 	matilda->addConversation({{self, "You look distressed."},
 							  {matilda, "My daughter Jilly..."},
 							  {matilda, "She was kidnapped."},
@@ -1649,9 +1671,45 @@ NPC* SetupWorld() {
 							  {matilda, "I was holding on to it in hopes of finding someone who could help."},
 							  {self, "Oh thanks."},
 							  {self, "I will get your kid back!"}});
+	matilda->setDialogue({{matilda, "Ohhh my poor Jilly..."}, {matilda, "She must be so scared..."}, {matilda, "Thank you so much for offering to help!"}, {matilda, "I'll be praying for you from here!"}});
 	matilda->setGift(cloakingdevice);
-	//rejection
-	//dialogue
+	matilda->setTalkMakeChanges(false);
+	matilda->setWorldCondition(JILLYQUEST);
+	matilda->addRecruitLink(forestknight);
+	Conversation matrej1 = {{self, "Hey wanna join my BURGER QUEST?"},
+							{matilda, "..."},
+							{matilda, "BURGERs aren't good, you know."},
+							{self, "So they're a little unhealthy..."},
+							{matilda, "No, they're bad for your soul."},
+							{matilda, "You shouldn't try it."},
+							{matilda, "Where are your parents?"}};
+	matrej1.skipcondition = JILLYQUEST;
+	Conversation matrej2 = {{self, "Hey wanna help me save your kid?"},
+							{matilda, "I appreciate the offer,"},
+							{matilda, "But I haven't any fighting ability like you."},
+							{matilda, "I'll be praying for you from here!"}};
+	matrej1->altdialogue = matrej2;
+	matrej2->skipcondition = JILLYSAVED;
+	Conversation matrej3 = {{self, "Hey wanna get a celebratory BURGER?"},
+							{matilda, "What?"},
+							{matilda, "You don't know the truth about BURGERs?"},
+							{matilda, "They'll hurt your soul!"},
+							{matilda, "Don't try any!"},
+							{matilda, "Please!"}};
+	matrej2->altdialogue = matrej3;
+	matrej3->skipcondition = TEMPLEQUEST;
+	Conversation matrej4 = {{self, "Hey wanna help me destroy BURGERs?"},
+							{matilda, "What?"},
+							{matilda, "Well that would be great,"},
+							{matilda, "but I haven't any fighting ability like you."},
+							{matilda, "I'll be praying for you from here!"}};
+	matrej3->altdialogue = matrej4;
+	matrej4->skipcondition = BURGERMENDEF;
+	Conversation matrej5 = {{self, "Hey wanna join my team?"},
+							{matilda, "Sorry, I need to take care of my Jilly."},
+							{matilda, "Besides, I haven't any fighting ability like you."},
+							{matilda, "Safe travels!"}};
+	matrej5->altdialogue = matrej4;
 
 	//You untie the bag.
 	//JILLY flies out of the bag!
@@ -1795,10 +1853,19 @@ NPC* SetupWorld() {
 	valvechanges.recruitLinks.push(cacty);
 	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
 
-	//make coolant attack that slows down enemies
-	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", {{NULL, "You poured some sand coolant onto the scorching sands."}, {NULL, "The sands cooled down!"}}, deserttempleentrance, SAND, false);
-	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", {{NULL, "You used the pole to go over the chasm!"}}, desertpole, CHASM, true);
-	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", {{NULL, "You hopped into the SPARE MINECART and went to the other side of the track."}}, mineshaftside, TRACK, false);
+	Attack* cooldown = new Attack("COOL DOWN", "poured sand coolant on", false, 0, 0, 0, 1, 1, 1);
+	Effect* cooled = new Effect("COOLED", 6, 0, 0, 1, 1, 1, 1, 0.75f);
+	cooldown->addEffect(cooled);
+	Attack* polevault = new Attack("POLE VAULT", "pole vaulted into the air", false, 0, 0, 0, 0, 0, 0); //dodge move!
+	Effect* polevaulting = new Effect("POLE VAULTING", 0);
+	polevaulting->remove = true;
+	polevault->selfeffect = polevaulting;
+	Attack* mineram = new Attack("MINECART RAM", "rammed", true, 0, 20, 0, 1, 1, 1); //decent attack but doesn't gain any sp
+	mineram->afterdesc = " with the SPARE MINECART";
+
+	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", {{NULL, "You poured some sand coolant onto the scorching sands."}, {NULL, "The sands cooled down!"}}, deserttempleentrance, SAND, false, cooldown);
+	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", {{NULL, "You used the pole to go over the chasm!"}}, desertpole, CHASM, true, polevault);
+	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", {{NULL, "You hopped into the SPARE MINECART and went to the other side of the track."}}, mineshaftside, TRACK, false, mineram);
 
 	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the WEST MINECART and went to the other side of the track."}}, mineshaft3, TRACK, false);
 	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the EAST MINECART and went to the other side of the track."}}, mineshaftside, TRACK, false);
@@ -1814,12 +1881,28 @@ NPC* SetupWorld() {
 	minecart4->setDenial("This minecart is clamped onto the minecart tracks!");
 
 	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", {{NULL, "You pushed down onto the DETONATOR lever."}, {NULL, "*KABOOM!*"}, {NULL, "An exit SOUTH has been opened!"}}, mineshortcut, mineshortcut, SOUTH, mineshaftside);
-	Item* downbutton = new PaverItem("DOWN BUTTON", "An elevator button for going downwards. It's the same style as the BURGER RESTAURANT elevator's buttons.", {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go DOWN now!"}}, burgsafe, elevator, DOWN, elevatorbottom);
+	
+	Item* downbutton = new WorldChangeItem("DOWN BUTTON", "Restricted elevator button for going alllllll the way down.\nIt's in the same style as the BURGER RESTAURANT elevator buttons.", {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go TO THE BOTTOM now!"}}, burgsafe);
+	downbutton->setUsableRooms(elevator, elevatortop);
+	downbutton->setTakable(true);
+	WorldChange& dbchanges =((WorldChangeItem*)downbutton)->getChanges();
+	dbchanges.exitPavings.push(make_tuple(elevator, elevatorbottom, TO_THE_BOTTOM, TO_GROUND_LEVEL));
+	dbchanges.exitPavings.push(make_tuple(elevatortop, elevatorbottom, TO_THE_BOTTOM, TO_THE_TOP));
+	
+	Attack* forkliftup = new Attack("FORKLIFT UP", "forklifted", true, 15, 0, 0, 1, 1, 1); //uppercut preview basically
+	forkliftup->afterdesc = " into the air";
+	Effect* forklifted = new Effect("FORKLIFTED", 1);
+	forklifted->remove = true;
+	forkliftup->addEffect(forklifted);
 
-	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", {{NULL, "You used the FORKLIFT to move the collapsed ceiling material out of the way."}}, heavymachineryroom, STUFF, false);
-	//you can use the scissor lift to get to the ninja village I guess, I'll keep it because it technically makes sense and it's funny
+	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", {{NULL, "You used the FORKLIFT to move the collapsed ceiling material out of the way."}}, heavymachineryroom, STUFF, false, forkliftup);
 	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, heavymachineryroom, HIGH, false);
 	scissorlift->setDropToUse(true);
+
+	Attack* scissorup = new Attack("SCISSOR LIFT", "scissor lifted into the air", false, 0, 0, 0, 0, 0, 0); //dodge move! (with slightly longer duration than pole vault)
+	Effect* scissorlifted = new Effect("SCISSOR LIFTED", 1);
+	scissorlifted->remove = true;
+	scissorup->selfeffect = scissorlifted;
 
 	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofsw, HIGH, false);
 	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofnw, HIGH, false);
@@ -1894,7 +1977,36 @@ NPC* SetupWorld() {
 	hosedown->afterdesc = " with the fire hose"
 	Effect* soaked = new Effect("SOAKED", 3, 0, 0, 1, 1, 1, 1, 0.5f);
 	hosedown->addEffect(soaked);
+
 	Item* firehose = new HoseItem("FIRE HOSE", "A hose for spraying water at fires, powered by the water tank back at the fire station.", {{NULL, "You sprayed water at the fire."}, {NULL, "The fire has been put out!"}}, firedepartment, FIRE, false, hosedown);
+	HoseItem* hose = (HoseItem*)firehose;
+	hose->addBlocker(BURGERSBURG, SOUTH, "You tried to go SOUTH but got stopped by your fully extended FIRE HOSE.", NULL);
+	hose->addBlocker(elevator, TO_THE_TOP, "You pressed the button to go TO THE TOP but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO THE TOP but the door reopened after closing on the FIRE HOSE on the ground.");
+	hose->addBlocker(elevator, TO_THE_BOTTOM, "You tried to go TO THE BOTTOM but the door reopened after closing on your FIRE HOSE.", "You tried to go TO THE BOTTOM but the door reopened after closing on the FIRE HOSE on the ground.");
+	hose->addBlocker(ceoelevator1, TO_FLOOR_2, "You pressed the button to go TO FLOOR 2 but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO FLOOR 2 but the door reopened after closing on the FIRE HOSE on the ground.");
+	hose->addBlocker(ceoelevator1, TO_THE_TOP, "You pressed the button to go TO THE TOP but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO THE TOP but the door reopened after closing on the FIRE HOSE on the ground.");
+	hose->addBlocker(ceoelevator2, TO_FLOOR_1, "You pressed the button to go TO FLOOR 1 but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO FLOOR 1 but the door reopened after closing on the FIRE HOSE on the ground.");
+	hose->addBlocker(ceoelevator2, TO_THE_TOP, "You pressed the button to go TO THE TOP but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO THE TOP but the door reopened after closing on the FIRE HOSE on the ground.");
+	hose->setStationBlock("You started going into the tunnels but got pulled off your lobster by your fully extended FIRE HOSE!");
+
+	WorldChange hsdropceoele1; //changes if you drop the hose in the floor 1 ceo elevator
+	hsdropceoele1.exitBlocks.push(make_tuple(ceolobby2, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move.")); //fire exit because you just dropped the thing that can unblock that type
+	hose->addDropChange(ceoelevator1, hsdropceoele1);
+	WorldChange hsdropceoele2; //changes if you drop the hose in the floor 2 ceo elevator
+	hsdropceoele1.exitBlocks.push(make_tuple(ceolobby1, IN_ELEVATOR, FIRE, "closed because the hose you dropped below isn't letting it move."));
+	hose->addDropChange(ceoelevator2, hsdropceoele2);
+	WorldChange hstakeceoele1; //changes if you take the hose from the floor 1 ceo elevator
+	hstakeceoele1.exitUnblocks.push({ceolobby2, IN_ELEVATOR});
+	hose->addDropChange(ceoelevator1, hstakeceoele1);
+	WorldChange hstakeceoele2; //changes if you take the hose from the floor 2 ceo elevator
+	hstakeceoele2.exitUnblocks.push({ceolobby1, IN_ELEVATOR});
+	hose->addDropChange(ceoelevator2, hstakeceoele2);
+	WorldChange hsdropburgele; //changes if you drop the hose in the restaurant elevator
+	hsdropburgele.exitBlocks.push(make_tuple(burgerbasement, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move."));
+	hose->addDropChange(elevator, hsdropburgele);
+	WorldChange hstakeburgele; //changes if you take the hose from the restaurant elevator
+	hstakeburgele.exitUnblocks.push({burgerbasement, IN_ELEVATOR});
+	hose->addDropChange(elevator, hstakeburgele);
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -2262,7 +2374,7 @@ NPC* SetupWorld() {
 	mainstreet5->setExit(SOUTH, mainstreet4);
 	mainstreet5->setExit(WEST, newstreet5);
 	mainstreet5->setExit(EAST, coolstreet5);
-	mainstreet5->setExit(INSIDE, elevator);
+	mainstreet5->setExit(INSIDE, elevatorentrance);
 	coolstreet1->setExit(NORTH, coolstreet2);
 	coolstreet1->setExit(SOUTHWEST, BURGERSBURG);
 	coolstreet1->setExit(EAST, rightstreet1);
@@ -2339,12 +2451,15 @@ NPC* SetupWorld() {
 	ceoroom->setExit(IN_ELEVATOR, ceoelevator3);
 	ceoroom->setExit(IN_SAFE, burgsafe);
 	burgsafe->setExit(OUT, ceoroom);
-	elevator->setExit(UP, elevatortop);
-	elevator->setExit(OUTSIDE, mainstreet5);
+	//elevatorentrance->setExit(IN_ELEVATOR, elevator);
+	elevatorentrance->setExit(OUTSIDE, mainstreet5);
+	elevator->setExit(TO_THE_TOP, elevatortop);
+	//elevator->setExit(OUT, elevatorentrance);
 	elevatortop->setExit(OUT, BURGERRESTAURANT);
-	elevatortop->setExit(DOWN, elevator);
+	elevatortop->setExit(TO_GROUND_LEVEL, elevator);
 	BURGERRESTAURANT->setExit(IN_ELEVATOR, elevatortop);
-	elevatorbottom->setExit(UP, elevator);
+	elevatorbottom->setExit(TO_GROUND_LEVEL, elevator);
+	elevatorbottom->setExit(TO_THE_TOP, elevatortop);
 	elevatorbottom->setExit(OUT, burgerbasement);
 	burgerbasement->setExit(IN_ELEVATOR, elevatorbottom);
 	burgerbasement->setExit(SOUTH, BURGERPRISON);
@@ -2352,6 +2467,34 @@ NPC* SetupWorld() {
 	basestation->setExit(NORTH, BURGERPRISON);
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
+
+	Item* elevatorbutton = new WorldChangeItem("ELEVATOR BUTTON", "The button for calling the elevator of the BURGER RESTAURANT.", elevatorentrance,
+		{{NULL, "You call the elevator with the ELEVATOR BUTTON."},
+		 {NULL, "The display above the elevator door shows an arrow going up."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {self, ":|"},
+		 {NULL, "You press the button again for a slightly longer duration."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "You hear an intensifying magnetic hum."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "You see the elevator rise from the ground!"},
+		 {NULL, "The elevator dings."},
+		 {NULL, "You can go IN ELEVATOR now!"}});
+	WorldChange& ebchanges = ((WorldChangeItem*)elevatorbutton)->getChanges();
+	ebchanges.exitPavings.push(make_tuple(elevatorentrance, elevator, IN_ELEVATOR, OUT));
+	ebchanges.roomChanges.push({elevatorentrance, "in the entrance of the BURGER RESTAURANT. It has glass walls curving up and BURGER furniture."});
+
+	/*Item* downbutton = new WorldChangeItem("DOWN BUTTON", "Restricted elevator button for going alllllll the way down.\nIt's in the same style as the BURGER RESTAURANT elevator buttons.", {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go TO THE BOTTOM now!"}}, burgsafe);
+	downbutton->setUsableRooms(elevator, elevatortop);
+	WorldChange& dbchanges =((WorldChangeItem*)downbutton)->getChanges();
+	dbchanges.exitPavings.push(make_tuple(elevator, elevatorbottom, TO_THE_BOTTOM, TO_GROUND_LEVEL));
+	dbchanges.exitPavings.push(make_tuple(elevatortop, elevatorbottom, TO_THE_BOTTOM, TO_THE_TOP));*/
 
 	//set up enemies enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
@@ -3862,6 +4005,7 @@ NPC* SetupWorld() {
 		 {NULL, "KEYCARD SLOT - *confirmation beep*"},
 		 {NULL, "You can go TO THE TOP now!"}});
 	keycard->setUsableRooms({ceoelevator1, ceoelevator2});
+	keycard->setTakable(true);
 	WorldChange& kcchanges = ((WorldChangeItem*)keycard)->getChanges();
 	kcchanges.exitUnblocks.push({ceoelevator1, TO_THE_TOP});
 	kcchanges.exitUnblocks.push({ceoelevator2, TO_THE_TOP});
@@ -4058,12 +4202,16 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 		return;
 	//if there is a valid room to go to, but the exit is blocked
 	//we go there anyway if we force the move (done by movement items)
-
-	//MARK: check for hose items
-
 	} else if (!forceTravel && currentRoom->getBlocked(direction)) {
 		currentRoom->printBlock(direction);
 		return;
+	//block movement if we have a hose item that does that
+	} else if ((Item* hose = getItemTypeInVector(*inventory, "hose")) || (hose = getItemTypeInVector(currentRoom->getItems(), "hose"))) {
+		const char* blockreason = ((HoseItem*)hose)->getBlocked(currentRoom, direction); //slightly different error based on if you're holding it or not
+		if (blockreason) {
+			cout << blockreason; //print why we can't move
+			return;
+		}
 	}
 	//rooms may redirect you to go somewhere else
 	if (roomCanidate->getRedirect() != NULL) {
@@ -4328,6 +4476,10 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		} //we can't use the lobster twice in a row, because that wouldn't make any sense
 		if (currentRoom == lobster->getHome()) {
 			cout << "\nYou are already in the tunnels!";
+			return;
+		}
+		if (Item* hose = getItemTypeInVector(*inventory, "hose")) { //block usage of tunnels if we have a hose item
+			cout << ((HoseItem*)hose)->getStationBlock();
 			return;
 		} //prints flavor text based on if you have teammates or if it's just you
 		cout << "\n" << itemname << " carried you";

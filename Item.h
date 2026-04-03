@@ -214,17 +214,20 @@ class HoseItem : public KeyItem {
 public:
 	HoseItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _consumable = true, Attack* _attack = NULL);
 
-	void addBlocker(Room* room, const char* direction, const char* reason); //block the room in that direction
+	void addBlocker(Room* room, const char* direction, const char* reason, const char* floorreason); //block the room in that direction
+	void setStationBlock(const char* message);
 	void addDropChange(Room* room, WorldChange changes); //make world changes on take and on drop
 	void addTakeChange(Room* room, WorldChange changes);
 
 	const char* getBlocked(Room* room, const char* direction); //check if this hose is blocking going in this direction from this room, return why if so
-	void doDropChanges(); //do the changes when needed
-	void doTakeChanges();
+	const char* getStationBlock();
+	void doDropChanges(Room* currentroom); //do the changes when needed
+	void doTakeChanges(Room* currentroom);
 private:
-	vector<tuple<Room*, const char*, const char*>> blockers; //you cannot go in this direction in these rooms for that reason if you have the item
+	vector<tuple<Room*, const char*, const char*, const char*>> blockers; //you cannot go in this direction in these rooms for that reason if you have the item
 	vector<pair<Room*, WorldChange>> dropchanges; //if the hose is dropped in this room make these changes
 	vector<pair<Room*, WorldChange>> takechanges; //if the hose is taken in this room make these changes
+	const char* stationblock = NULL; //text after getting blocked from fast travel
 };
 
 //movement items for moving through locked exits

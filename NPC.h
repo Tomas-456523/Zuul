@@ -171,7 +171,7 @@ public: //you need to set stats on creation
 	void setAway(bool isaway);
 	void setQuantumn();
 	void setBanker();
-	void setTalkMakeChanges(); //set if the npc should make changes by ASKing, not FIGHTing
+	void setTalkMakeChanges(bool miscworks = true); //set if the npc should make changes by ASKing, not FIGHTing, also variable asking if miscellaneous dialogue other than normal convos should work
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc);
@@ -325,6 +325,7 @@ protected:
 	queue<WorldChange> changes; //stuff this npc does when defeated
 	bool loopLastChange = false; //if we should loop the last change every single defeat for respawning enemies, as opposed to only do the changes once
 	bool talktochange = false; //if we should make changes when asking the npc instead of when they are defeated
+	bool miscdoeschange = false; //if non-normal conversations should work for the talktochange thing
 
 	time_t gymStart = 0; //what time the npc was left at the gym (0 means is not at the gym, bad news for anybody hoping to drop their teammate off at the gym on the first second of 1970)
 

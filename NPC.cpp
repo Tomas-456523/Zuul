@@ -573,8 +573,9 @@ void NPC::setQuantumn() {
 void NPC::setBanker() {
 	banker = true;
 }
-void NPC::setTalkMakeChanges() {
+void NPC::setTalkMakeChanges(bool miscworks) {
 	talktochange = true;
+	miscdoeschange = miscworks;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
 	tunnelLinks[room] = direction;
@@ -982,7 +983,7 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone) {
 		conversation = dialogue;
 	}
 	printConversation(&conversation, lastpause); //courtesy of Helper
-	if (talktochange && !changes.empty()) {
+	if (talktochange && !changes.empty() && (miscdoeschange || !thisone)) { //don't do changes if misc don't do changes and thisone wasn't NULL and was instead passed, so no special dialogue
 		applyWorldChange(changes.front()); //apply all the world changes associated with this npc
 		if (!loopLastChange || changes.size() > 1) changes.pop(); //pop the changes if we don't need them anymore (not the last one OR it's the last one and we don't loop it)
 	}
