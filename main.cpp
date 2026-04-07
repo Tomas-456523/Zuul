@@ -479,11 +479,11 @@ NPC* SetupWorld() {
 	floria->addGymDialogue({{floria, "I love running in circles around the gym!"}, {floria, "Exercise is so fun!"}});
 	Conversation floriarecruit1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}};
 	floriarecruit1.skipcondition = TEMPLEQUEST;
-	Conversation floriarecruit2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}};
-	floriarecruit1.alt = &floriarecruit1;
-	floriarecruit2.skipcondition = BURGERMENDEF;
-	Conversation floriarecruit3 = {{self, "Hey wanna join my team?"}, {floria, "Yes! I hope we see some new flowers!"}};
-	floriarecruit2.alt = &floriarecruit3;
+	shared_ptr<Conversation> floriarecruit2 = make_shared<Conversation>(Conversation({{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {floria, "Yes! I hope we see some new flowers on the way!"}}));
+	floriarecruit1.alt = floriarecruit2;
+	floriarecruit2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> floriarecruit3 = make_shared<Conversation>(Conversation({{self, "Hey wanna join my team?"}, {floria, "Yes! I hope we see some new flowers!"}}));
+	floriarecruit2->alt = floriarecruit3;
 	floria->addRecruitmentDialogue(floriarecruit1);
 	floria->addRecruitedDialogue("I must see all the flowers!");
 	floria->addDismissalDialogue("I'm going to go back to my flower field!");
@@ -541,21 +541,21 @@ NPC* SetupWorld() {
 								{self, "I can go destroy it if you want."},
 								{egadwick, "Yes! That would be great, thanks!"}};
 	egadwreject1.skipcondition = TEMPLEQUEST;
-	Conversation egadwreject2 = {{self, "Yo Gramps wanna help me destroy BURGERs?"},
+	shared_ptr<Conversation> egadwreject2 = make_shared<Conversation>(Conversation({{self, "Yo Gramps wanna help me destroy BURGERs?"},
 								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
 								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
 								{egadwick, "So now it's trying to cut my hair."},
 								{self, "I can go destroy it if you want."},
-								{egadwick, "Yes! That would be great, thanks!"}};
-	egadwreject1.alt = &egadwreject1;
-	egadwreject2.skipcondition = BURGERMENDEF;
-	Conversation egadwreject3 = {{self, "Yo Gramps wanna join my team?"},
+								{egadwick, "Yes! That would be great, thanks!"}}));
+	egadwreject1.alt = egadwreject2;
+	egadwreject2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> egadwreject3 = make_shared<Conversation>(Conversation({{self, "Yo Gramps wanna join my team?"},
 								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
 								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
 								{egadwick, "So now it's trying to cut my hair."},
 								{self, "I can go destroy it if you want."},
-								{egadwick, "Yes! That would be great, thanks!"}};
-	egadwreject2.alt = &egadwreject3;
+								{egadwick, "Yes! That would be great, thanks!"}}));
+	egadwreject2->alt = egadwreject3;
 	egadwick->addRejectionDialogue(egadwreject1);
 	egadwick->addRejectionDialogue("Sorry, kiddo, there's the whole gardening robot situation, remember?");
 	egadwick->addRecruitmentDialogue({{egadwick, "Ah, I haven't been adventuring in decades."}, {egadwick, "Thanks for the invitation, kiddo!"}});
@@ -625,18 +625,18 @@ NPC* SetupWorld() {
 							    {forestknight, "Of course, the fiendish stewards of BURGER."},
 							    {forestknight, "I shall assist you in saving this child!"}};
 	absrecruit1.skipcondition = TEMPLEQUEST;
-	Conversation absrecruit2 = {{self, "Hey knight man wanna help me annihilate BURGERs from existence?"},
+	shared_ptr<Conversation> absrecruit2 = make_shared<Conversation>(Conversation({{self, "Hey knight man wanna help me annihilate BURGERs from existence?"},
 							    {forestknight, "Ah, what a splendid goal for a quest!"},
 							    {forestknight, "But how do you propose to accomplish this?"},
 							    {self, "With this thing I learned about called THE PLOT DEVICE."},
 							    {forestknight, "THE PLOT DEVICE? I cannot say I have heard of it,"},
 							    {forestknight, "but I believe you when you say it can solve the BURGER problem."},
-							    {forestknight, "I shall join you on this quest!"}};
-	absrecruit2.skipcondition = BURGERMENDEF;
-	Conversation absrecruit3 = {{self, "Hey knight man wanna join me?"},
-							    {forestknight, "I do not see why not."}};
-	absrecruit1.alt = &absrecruit2;
-	absrecruit2.alt = &absrecruit3;
+							    {forestknight, "I shall join you on this quest!"}}));
+	absrecruit2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> absrecruit3 = make_shared<Conversation>(Conversation({{self, "Hey knight man wanna join me?"},
+							    {forestknight, "I do not see why not."}}));
+	absrecruit1.alt = absrecruit2;
+	absrecruit2->alt = absrecruit3;
 	forestknight->addRecruitmentDialogue(absrecruit1);
 	forestknight->addDismissalDialogue({{forestknight, "I shall return to defending the forest."},
 										{forestknight, "Farewell, friend!"}});
@@ -680,11 +680,11 @@ NPC* SetupWorld() {
 	mike->setDialogue("HAHAHAHA I love the smell of explosions in the morning!");
 	Conversation mikerec1 = {{self, "Hey I'm going on a BURGER QUEST wanna join?"}, {mike, "Why not, kid! Blowing up rocks is getting old."}};
 	mikerec1.skipcondition = TEMPLEQUEST;
-	Conversation mikerec2 = {{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {mike, "HAHAHAHA! Let's go blow up some BURGERs, kid!"}};
-	mikerec1.alt = &mikerec1;
-	mikerec2.skipcondition = BURGERMENDEF;
-	Conversation mikerec3 = {{self, "Hey wanna join my team?"}, {mike, "Why not, kid! Blowing up rocks is getting old."}};
-	mikerec2.alt = &mikerec3;
+	shared_ptr<Conversation> mikerec2 = make_shared<Conversation>(Conversation({{self, "Hey I'm going on a QUEST to destroy BURGERs wanna join?"}, {mike, "HAHAHAHA! Let's go blow up some BURGERs, kid!"}}));
+	mikerec1.alt = mikerec2;
+	mikerec2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> mikerec3 = make_shared<Conversation>(Conversation({{self, "Hey wanna join my team?"}, {mike, "Why not, kid! Blowing up rocks is getting old."}}));
+	mikerec2->alt = mikerec3;
 	mike->addRecruitmentDialogue(mikerec1);
 	mike->addRecruitedDialogue("HAHAHAHAHA! So many things to explode!");
 	mike->addDismissalDialogue("Alright Imma head back to my cave!");
@@ -748,7 +748,8 @@ NPC* SetupWorld() {
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
 	cacty->addGymDialogue({{NULL, "CACTY - *exercising cactus noises*"}});
 
-	Attack* loosespines = new Attack("LOOSE SPINES", "'s loose spines flew at the enemy team", false, 0, 8, 15, 1, 3, 1);
+	Attack* loosespines = new Attack("CACTUS SPINES", " pricked", false, 0, 8, 15, 1, 3, 1);
+	loosespines->afterdesc = " with his spines";
 	cacty->setRecoilAttack(loosespines);
 	Attack* cactbomb = new Attack("CACTUS BOMB", "threw a cactus bomb at", false, -5, 3, 15, 4, 6, 1);
 	cacty->setBasicAttack(cactbomb);
@@ -807,11 +808,11 @@ NPC* SetupWorld() {
 	michelin->addRejectionDialogue({ {michelin, "Can't sorry I gotta focus on the task at hand."}, {michelin, "Maybe once we're done with this."}});
 	Conversation michrec1 = {{self, "Well..."}, {self, "Wanna join my BURGER QUEST?"}, {michelin, "sure why not. :("}};
 	michrec1.skipcondition = TEMPLEQUEST;
-	Conversation michrec2 = {{self, "Well..."}, {self, "Wanna help me destroy BURGERs?"}, {michelin, "sure why not. :("}};
-	michrec1.alt = &michrec2;
-	michrec2.skipcondition = BURGERMENDEF;
-	Conversation michrec3 = {{self, "Well..."}, {self, "Wanna join my team?"}, {michelin, "sure why not. :("}};
-	michrec2.alt = &michrec3;
+	shared_ptr<Conversation> michrec2 = make_shared<Conversation>(Conversation({{self, "Well..."}, {self, "Wanna help me destroy BURGERs?"}, {michelin, "sure why not. :("}}));
+	michrec1.alt = michrec2;
+	michrec2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> michrec3 = make_shared<Conversation>(Conversation({{self, "Well..."}, {self, "Wanna join my team?"}, {michelin, "sure why not. :("}}));
+	michrec2->alt = michrec3;
 	michelin->addRecruitmentDialogue(michrec1);
 	michelin->addRecruitedDialogue("You know, maybe there's more to life than finding recipies.");
 	michelin->addDismissalDialogue({{michelin, "Well, I guess I'll go back to my little kitchen area."}, {michelin, "Gotta start packing my bags to head home."}});
@@ -1030,8 +1031,8 @@ NPC* SetupWorld() {
 
 	Item* grambutton3 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "The basement starts shaking with power!"}});
 	WorldChange& gramchanges3 = ((WorldChangeItem*)grambutton3)->getChanges();
-	gramchanges.linkedItems.push({grambutton4, casinobase});
-	gramchanges.roomChanges.push({casinobase, "in the casino's basement, tinted blue from the energy core.\nYou can feel its pulsations in your chest."});
+	gramchanges3.linkedItems.push({grambutton4, casinobase});
+	gramchanges3.roomChanges.push({casinobase, "in the casino's basement, tinted blue from the energy core.\nYou can feel its pulsations in your chest."});
 	
 	Item* grambutton2 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "The energy core starts throbbing with energy!"}});
 	WorldChange& gramchanges2 = ((WorldChangeItem*)grambutton2)->getChanges();
@@ -1048,7 +1049,7 @@ NPC* SetupWorld() {
 	laser->afterdesc = " from one of its vertices";
 	Attack* bonk = new Attack("BONK", "flew into", 8, 24, 24, 1, 1, 1);
 	bonk->afterdesc = "'s head";
-	Effect* hypotized = new Effect("HYPNOTIZED", 2);
+	Effect* hypnotized = new Effect("HYPNOTIZED", 2);
 	hypnotized->hypnotize = true;
 	Attack* hypnotize = new Attack("HYPNOTIZE", "emitted hypnotizing waves at", 15, 0, 0, 1, 1, 1);
 	hypnotize->addEffect(hypnotized);
@@ -1250,14 +1251,14 @@ NPC* SetupWorld() {
 							 {archie, "I must stay here and watch over the village."},
 							 {archie, "Make sure to bring back a BURGER for me!"}};
 	archrej1.skipcondition = TEMPLEQUEST;
-	Conversation archrej2 = {{self, "Hey wanna help me destroy BURGERs?"},
+	shared_ptr<Conversation> archrej2 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"},
 							{archie, "Destroy BURGERs?"},
-							{archie, "Well, I must watch over the village, sorry."}};
-	archrej1.alt = &archrej2;
-	archrej2.skipcondition = BURGERMENDEF;
-	Conversation archrej3 = {{self, "Hey wanna join my team?"},
-							{archie, "I appreciate the offer, but I must watch over the village."}};
-	archrej2.alt = &archrej3;
+							{archie, "Well, I must watch over the village, sorry."}}));
+	archrej1.alt = archrej2;
+	archrej2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> archrej3 = make_shared<Conversation>(Conversation({{self, "Hey wanna join my team?"},
+							{archie, "I appreciate the offer, but I must watch over the village."}}));
+	archrej2->alt = archrej3;
 	archie->addRejectionDialogue(archrej1);
 	
 	NPC* fisho = new NPC("FISHERMAN", "FRED", "Your dad, a fisherman who frequently fishes at the village docks.", docks, 25);
@@ -1266,13 +1267,13 @@ NPC* SetupWorld() {
 							 {fisho, "I've already gone on mine."},
 							 {fisho, "It might be difficult but I know you're capable of doing this."}};
 	fishrej1.skipcondition = TEMPLEQUEST;
-	Conversation fishrej2 = {{self, "Hey wanna help me destroy BURGERs?"},
-							{fisho, "Uh, I'm busy fishing sorry."}};
-	fishrej1.alt = &fishrej2;
-	fishrej2.skipcondition = BURGERMENDEF;
-	Conversation fishrej3 = {{self, "Hey wanna join my team?"},
-							{fisho, "Sorry, kid, I gotta be fishing right now."}};
-	fishrej2.alt = &fishrej3;
+	shared_ptr<Conversation> fishrej2 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"},
+							{fisho, "Uh, I'm busy fishing sorry."}}));
+	fishrej1.alt = fishrej2;
+	fishrej2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> fishrej3 = make_shared<Conversation>(Conversation({{self, "Hey wanna join my team?"},
+							{fisho, "Sorry, kid, I gotta be fishing right now."}}));
+	fishrej2->alt = fishrej3;
 	fisho->addRejectionDialogue(fishrej1);
 	Conversation fishdef = {{fisho, "Hey I heard you're finally on a BURGER QUEST?"},
 							{fisho, "The trek has gotten more difficult recently,"},
@@ -1281,6 +1282,7 @@ NPC* SetupWorld() {
 							{fisho, "It's not much but I'm sure it'll be useful to you."},
 							{self, "Thanks dad."},
 							{fisho, "Of course! Well, have a safe trip!"}};
+	//MARK: alternates for DESTROY BURGER QUEST and postgame
 	fishdef.skipcondition = TEMPLEQUEST;
 	fisho->addConversation(fishdef);
 
@@ -1288,25 +1290,26 @@ NPC* SetupWorld() {
 	fisho->setGift(fish);
 
 	NPC* mango = new NPC("", "MANGOLIA", "Your mom, not really a fan of fish.", tenthouse, 10);
-	mango->setDialogue("The fish do be fishing today.");
+	mango->setDialogue("Oh hi sweetie! I hope everything is going swell!");
 	Conversation mangorej1 = {{self, "Hey wanna join me on my BURGER QUEST?"},
 							  {mango, "Sorry sweetie I can't be going on quests anymore."},
 							  {mango, "But I hope yours goes well!"}};
 	mangorej1.skipcondition = TEMPLEQUEST;
-	Conversation mangorej2 = {{self, "Hey wanna help me destroy BURGERs?"},
+	shared_ptr<Conversation> mangorej2 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"},
 							  {mango, "Now I don't wanna hear any of this nonsense."},
-							  {mango, "Besides, how would you even do that?"}};
-	mangorej1.alt = &mangorej2;
-	mangorej2.skipcondition = BURGERMENDEF;
-	Conversation mangorej3 = {{self, "Hey wanna join my team?"},
-							  {mango, "Sorry sweetie, I don't have time to play right now."}};
-	fishrej2.alt = &mangorej3;
+							  {mango, "Besides, how would you even do that?"}}));
+	mangorej1.alt = mangorej2;
+	mangorej2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> mangorej3 = make_shared<Conversation>(Conversation({{self, "Hey wanna join my team?"},
+							  {mango, "Sorry sweetie, I don't have time to play right now."}}));
+	mangorej2->alt = mangorej3;
 	mango->addRejectionDialogue(mangorej1);
 	Conversation mangodef = {{mango, "Ah! I've heard you're on your BURGER QUEST."},
 							 {mango, "I'm just so proud!"},
 							 {mango, "Here, take this cake I made just for this occasion!"},
 							 {self, "Thanks mom."},
 							 {mango, "Of course sweetie! Have a safe trip!"}};
+	//MARK: alternates for DESTROY BURGER QUEST and postgame
 	mango->addConversation(mangodef);
 
 	Item* cake = new HpItem("HEALTHY CAKE", "A cake your mom made to commemorate your BURGER QUEST. (heals 100 HP)", limbo, 100);
@@ -1317,17 +1320,52 @@ NPC* SetupWorld() {
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
 
-	//HELLO WELCOME TO MY BURGER RESTAURANT!
+	//HELLO! WELCOME TO MY BURGER RESTAURANT!
 	//HOW MAY I TAKE YOUR ORDER?
+
+	//YOU HAVE BEEN MAKING QUITE THE MESS.
+	//I'm sorry :(
+	//But like your employees kidnapped this kid,
+	//so I had to save her.
+	//REALLY?
+	//THIS TRULY SADDENS ME.
+	//SUCH CORRPUTION IN MY OWN COMPANY?
+	//I MUST THANK YOU, THEN.
+	//FOR DEALING WITH IT FOR ME.
+	//The CEO guy said you told him to do that though?
+	//WOW.
+	//NOT ONLY DOES HE ORDER THE KIDNAPPING OF A CHILD,
+	//BUT HE SHIFTS THE BLAME TO ME?
+	//YOU CAN'T TRUST THE WORD OF A KIDNAPPER...
+	//REST ASSURED, I WILL FIND BETTER EMPLOYEES,
+	//TO ENSURE A MOST POSITIVE EXPERIENCE FOR ALL.
+	//HERE, HAVE A BURGER ON THE HOUSE.
+	//A TOKEN OF MY GRATITUDE.
+	//Oh thanks.
 
 	//YOU HAVE BEEN MAKING QUITE THE MESS.
 	//YOU THOUGHT I WOULDN'T NOTICE?
 	//I wasn't thinking about you.
+	//The BURGER MAN knocks you unconscious.
+	//...
+	//...
+	//...
+
+	//WOW.
+	//YOU WANT TO DEFEAT ME?
+	//AFTER I GAVE YOU A BURGER ON THE HOUSE?
+	//I don't believe you anymore.
+	//I WILL NOT TOLERATE THIS NEW QUEST OF YOURS.
+	//The BURGER MAN knocks you unconscious.
+	//...
+	//...
+	//...
 	
 	//YOU ARE REALLY STUPID.
 	//YOU CAME BACK WITHOUT THE PLOT DEVICE?
-	//<<<       BURGER QUEST COMPLETE  T_T       >>>
-	//<<< ENDING ACHIEVED: YOU FORGOR THE DEVICE >>>
+	//<<< BURGER QUEST COMPLETE  T_T >>>
+	//  <<<    ENDING ACHIEVED:    >>>
+	//  <<< YOU FORGOR THE DEVICE  >>>
 	
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
 	burgerprisoner->setDialogue("Hi how are you doing?");
@@ -1392,7 +1430,7 @@ NPC* SetupWorld() {
 							  {factelder, "Please! You must lower the lava again!"},
 							  {factelder, "These factories have drainage valves in their control rooms!"}};
 	factconvo.skipcondition = SWITCHUSED;
-	Conversation factconvo2 = {{factelder, "Child, Have you seen the lava sea?"},
+	shared_ptr<Conversation> factconvo2 = make_shared<Conversation>(Conversation({{factelder, "Child, Have you seen the lava sea?"},
 							   {factelder, "It's been abnormally high recently, covering up the road to BURGERSBURG."},
 							   {factelder, "But the allure of BURGER is too great!"},
 							   {factelder, "Some people try to sail across and get burnt up!"},
@@ -1400,15 +1438,15 @@ NPC* SetupWorld() {
 							   {factelder, "Please! You must lower the lava again!"},
 							   {factelder, "These factories have drainage valves in their control rooms!"},
 							   {self, "Yea I've already been doing that."},
-							   {factelder, "Oh. Well, carry on then."}};
-	factconvo.alt = &factconvo2;
-	factconvo2.skipcondition = LAVADRAINED;
-	Conversation factconvo3 = {{factelder, "Child, Have you seen the lava sea?"},
+							   {factelder, "Oh. Well, carry on then."}}));
+	factconvo.alt = factconvo2;
+	factconvo2->skipcondition = LAVADRAINED;
+	shared_ptr<Conversation> factconvo3 = make_shared<Conversation>(Conversation({{factelder, "Child, Have you seen the lava sea?"},
 							   {self, "Yeah I already did this whole quest."},
 							   {self, "Lava sea looks pretty lowered now."},
 							   {factelder, "Oh. Well, good job!"},
-							   {self, "Thanks."}};
-	factconvo2.alt = &factconvo3;
+							   {self, "Thanks."}}));
+	factconvo2->alt = factconvo3;
 	factelder->addConversation(factconvo);
 	factelder->addConversation({{self, "So what's it like being on a wall your whole life?"}, {factelder, "Kind of boring, but I have plenty of time to come up with a lot of stories."}, {self, "I see."}});
 	factelder->setDialogue("You must drain the lava before more lives are lost!");
@@ -1440,14 +1478,14 @@ NPC* SetupWorld() {
 							{developer, "Here have this cool amazing new move."},
 							{self, "Yoooo nice thanks.\n\n\n"}};
 	devconvo.skipcondition = ISBERNARD;
-	Conversation devconvo2 = {{developer, "Ayy BERNARD how's it going?"},
+	shared_ptr<Conversation> devconvo2 = make_shared<Conversation>(Conversation({{developer, "Ayy BERNARD how's it going?"},
 							{self, "Pretty good!"},
 							{self, "The player actually named me the correct name!"},
 							{developer, "Yo nice."},
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
-							{self, "Yoooo nice thanks.\n\n\n"}};
-	devconvo.alt = &devconvo2;
+							{self, "Yoooo nice thanks.\n\n\n"}}));
+	devconvo.alt = devconvo2;
 	developer->addConversation(devconvo);
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
@@ -1554,8 +1592,73 @@ NPC* SetupWorld() {
 	switchhelper2->setConveyor(conveyor4);
 	switchhelper2->setConveyor(conveyor5);
 
-	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER and it smells like a BURGER.", limbo, IN_ELEVATOR);
+	//You finally have your BURGER!
+	//This is what you came for.
+	//Do you want to eat the BURGER?
+
+	//You could keep saving Jilly.
+	//But isn't this BURGER what you really came for?
+	//Do you want to eat the BURGER?
+
+	//Well, you saved Jilly.
+	//But wasn't this BURGER what you really came for?
+	//Do you want to eat the BURGER?
+
+	//This BURGER is what you originally came for.
+	//You've since come to understand what it truly is.
+	//Do you really want to eat the BURGER?
+	
+	Conversation burgerconvo = {{NULL, "You finally get to eat your BURGER!"},
+								{NULL, "You take a bite of the BURGER..."},
+								{NULL, "Your BURGER QUEST has finally come to an end."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "..."},
+								{NULL, "It tasted pretty good."},
+								{NULL, "..."},
+								{NULL, "Was it really worth it?"},
+								{NULL, "You did the same as the world,"},
+								{NULL, "and the BURGER has hardened your heart."},
+								{NULL, "\n\t<<< BURGER QUEST COMPLETE? >>>"
+									   "\n\t<<<    ENDING ACHIEVED:    >>>"
+									   "\n\t<<<    CONSUMER MINDSET    >>>"},
+								{NULL, "\nWow what a lame and unfulfilling ending..."},
+								{NULL, "Maybe there's another path you could take..."}};
+	
+	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
+
+	//Wow what a lame and unfulfilling ending...
+	//Maybe there's another path you could take...
+
+	//Wow what a lame and unfulfilling ending...
+	//Maybe you should focus on the task at hand...
+
+	//Wow what a lame and unfulfilling ending...
+	//Maybe there's another path you could take...
+
+	//Wow what a lame and unfulfilling ending...
+	//Maybe you should focus on the task at hand...
+
+
+
+	//The BURGER MENACE has been subdued.
+	//All around the world, all the BURGERs fade to ashes.
+	//The BURGER RESTAUANT has been left to rot in the depths.
+	//The BURGER corporation has been deprived of its leadership...
+	//and its source of revenue.
+	//BURGER's grasp on the world has been dissolved.
+	//<<< BURGER QUEST COMPLETE! >>>
+	//<<<    ENDING ACHIEVED:    >>>
+	//<<<      BURG NO MORE      >>>
+	
+	//HENRY JERRY - Well, in the end, this has truly been a BURGER QUEST too.
+	//self - Say that again?
+
+	//Thank you so much for playing BURGER QUEST 2: ELECTRIC BOOGALOO all the way to the end!
+	//I hope this has been an enjoyable and meaningful experience.
+	//May we meet again on the road ahead!
+	//- Tomas
 
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
@@ -1597,24 +1700,31 @@ NPC* SetupWorld() {
 	techdemoman->addRejectionDialogue("NO THIS IS NO LONGER THE TECH DEMO.");
 
 	NPC* fr = new NPC("FATHER", "DAMIAN", "The priest in charge of the hidden church.", burgchurch, 2);
-	fr->addConversation({{self, "Are you her husband?"},
-						 {fr, "No?"},
-						 {self, "Oh but like your title says 'father' and you're in the same room as that mother."},
-						 {fr, "Well, I'm a priest."},
-						 {fr, "I act as a sort of spiritual father to this community."},
-						 {self, "I see."},
-						 {fr, "I take it you're not familiar with churches?"},
-						 {self, "Well I have one back home but the priest went missing a while ago."},
-						 {fr, "I see."}});
-						 //So, am I correct in assuming you don't know about Jesus, then?
-						 //Yeah no clue.
-						 //Well, would you like to know?
-
-						 //player chooses YES or NO
-
-						 //NO: Well, if you ever want to know, I'm right here.
-
-						 //YES: proceed to explain the kerygma
+	Conversation frcon = {{self, "Are you her husband?"},
+						  {fr, "No?"},
+						  {self, "Oh but like your title says 'father' and you're in the same room as that mother."},
+						  {fr, "Well, I'm a priest."},
+						  {fr, "I act as a sort of spiritual father to this community."},
+						  {self, "I see."},
+						  {fr, "I take it you're not familiar with churches?"},
+						  {self, "Well I have one back home but the priest went missing a while ago."},
+						  {fr, "I see."},
+						  {fr, "So, am I correct in assuming you don't know about Jesus, then?"},
+						  {self, "Yeah no clue."},
+						  {fr, "Well, would you like to know?"},
+						  {NULL, "Would you like to hear about Jesus? (YES or NO)"}};
+	shared_ptr<Conversation> fryes = make_shared<Conversation>(Conversation(
+		{{fr, "Well..."},
+		 {fr, "*explanation that i will implement later*"}}));
+	shared_ptr<Conversation> frno = make_shared<Conversation>(Conversation({{fr, "Well, if you ever want to know, I'm right here."}}));
+	frcon.branch1 = {"YES", fryes};
+	frcon.branch2 = {"NO", frno};
+	shared_ptr<Conversation> fragain = make_shared<Conversation>(Conversation({{fr, "So are you curious about Jesus, then?"}, {NULL, "Would you like to hear about Jesus? (YES or NO)"}}));
+	fragain->branch1 = {"YES", fryes};
+	fragain->branch2 = {"NO", frno};
+	frno->relay = {fr, fragain};
+	relaysH.push_back(fragain); //make sure this one conversation doesn't expire
+	fr->addConversation(frcon);
 	fr->addRejectionDialogue({{fr, "My vocation is to guide this community."}});
 	//Hey do you want to get a BURGER with me?
 	//a BURGER?
@@ -1684,32 +1794,32 @@ NPC* SetupWorld() {
 							{matilda, "You shouldn't try it."},
 							{matilda, "Where are your parents?"}};
 	matrej1.skipcondition = JILLYQUEST;
-	Conversation matrej2 = {{self, "Hey wanna help me save your kid?"},
+	shared_ptr<Conversation> matrej2 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me save your kid?"},
 							{matilda, "I appreciate the offer,"},
 							{matilda, "But I haven't any fighting ability like you."},
-							{matilda, "I'll be praying for you from here!"}};
-	matrej1->altdialogue = matrej2;
+							{matilda, "I'll be praying for you from here!"}}));
+	matrej1.alt = matrej2;
 	matrej2->skipcondition = JILLYSAVED;
-	Conversation matrej3 = {{self, "Hey wanna get a celebratory BURGER?"},
+	shared_ptr<Conversation> matrej3 = make_shared<Conversation>(Conversation({{self, "Hey wanna get a celebratory BURGER?"},
 							{matilda, "What?"},
 							{matilda, "You don't know the truth about BURGERs?"},
 							{matilda, "They'll hurt your soul!"},
 							{matilda, "Don't try any!"},
-							{matilda, "Please!"}};
-	matrej2->altdialogue = matrej3;
+							{matilda, "Please!"}}));
+	matrej2->alt = matrej3;
 	matrej3->skipcondition = TEMPLEQUEST;
-	Conversation matrej4 = {{self, "Hey wanna help me destroy BURGERs?"},
+	shared_ptr<Conversation> matrej4 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"},
 							{matilda, "What?"},
 							{matilda, "Well that would be great,"},
 							{matilda, "but I haven't any fighting ability like you."},
-							{matilda, "I'll be praying for you from here!"}};
-	matrej3->altdialogue = matrej4;
+							{matilda, "I'll be praying for you from here!"}}));
+	matrej3->alt = matrej4;
 	matrej4->skipcondition = BURGERMENDEF;
-	Conversation matrej5 = {{self, "Hey wanna join my team?"},
+	shared_ptr<Conversation> matrej5 = make_shared<Conversation>(Conversation({{self, "Hey wanna join my team?"},
 							{matilda, "Sorry, I need to take care of my Jilly."},
 							{matilda, "Besides, I haven't any fighting ability like you."},
-							{matilda, "Safe travels!"}};
-	matrej5->altdialogue = matrej4;
+							{matilda, "Safe travels!"}}));
+	matrej5->alt = matrej4;
 
 	//You untie the bag.
 	//JILLY flies out of the bag!
@@ -1882,10 +1992,11 @@ NPC* SetupWorld() {
 
 	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", {{NULL, "You pushed down onto the DETONATOR lever."}, {NULL, "*KABOOM!*"}, {NULL, "An exit SOUTH has been opened!"}}, mineshortcut, mineshortcut, SOUTH, mineshaftside);
 	
-	Item* downbutton = new WorldChangeItem("DOWN BUTTON", "Restricted elevator button for going alllllll the way down.\nIt's in the same style as the BURGER RESTAURANT elevator buttons.", {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go TO THE BOTTOM now!"}}, burgsafe);
-	downbutton->setUsableRooms(elevator, elevatortop);
+	Item* downbutton = new WorldChangeItem("DOWN BUTTON", "Restricted elevator button for going alllllll the way down.\nIt's in the same style as the BURGER RESTAURANT elevator buttons.", burgsafe, {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go TO THE BOTTOM now!"}});
 	downbutton->setTakable(true);
-	WorldChange& dbchanges =((WorldChangeItem*)downbutton)->getChanges();
+	WorldChangeItem* db = (WorldChangeItem*)downbutton;
+	db->setUsableRooms({elevator, elevatortop});
+	WorldChange& dbchanges =db->getChanges();
 	dbchanges.exitPavings.push(make_tuple(elevator, elevatorbottom, TO_THE_BOTTOM, TO_GROUND_LEVEL));
 	dbchanges.exitPavings.push(make_tuple(elevatortop, elevatorbottom, TO_THE_BOTTOM, TO_THE_TOP));
 	
@@ -1961,7 +2072,7 @@ NPC* SetupWorld() {
 								  {firefighter, "Eh, who cares."},
 								  {firefighter, "No matter how many fires you put out in this city,"},
 								  {firefighter, "five more just pop up in its place."},
-								  {self, ":/"}
+								  {self, ":/"},
 								  {firefighter, "Feel free to use the hose,"},
 								  {firefighter, "but I myself don't care enough to try anymore."}});
 	firefighter->setDialogue("What's even the point of anything?");
@@ -1974,7 +2085,7 @@ NPC* SetupWorld() {
 	//if hose is in elevator and you go around to other end of elevator, can't go in because elevator is stuck due to hose
 	
 	Attack* hosedown = new Attack("HOSE DOWN", "hosed down", false, 0, 20, 15, 1, 1, 1);
-	hosedown->afterdesc = " with the fire hose"
+	hosedown->afterdesc = " with the fire hose";
 	Effect* soaked = new Effect("SOAKED", 3, 0, 0, 1, 1, 1, 1, 0.5f);
 	hosedown->addEffect(soaked);
 
@@ -1993,13 +2104,13 @@ NPC* SetupWorld() {
 	hsdropceoele1.exitBlocks.push(make_tuple(ceolobby2, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move.")); //fire exit because you just dropped the thing that can unblock that type
 	hose->addDropChange(ceoelevator1, hsdropceoele1);
 	WorldChange hsdropceoele2; //changes if you drop the hose in the floor 2 ceo elevator
-	hsdropceoele1.exitBlocks.push(make_tuple(ceolobby1, IN_ELEVATOR, FIRE, "closed because the hose you dropped below isn't letting it move."));
+	hsdropceoele1.exitBlocks.push(make_tuple(ceolobby, IN_ELEVATOR, FIRE, "closed because the hose you dropped below isn't letting it move."));
 	hose->addDropChange(ceoelevator2, hsdropceoele2);
 	WorldChange hstakeceoele1; //changes if you take the hose from the floor 1 ceo elevator
 	hstakeceoele1.exitUnblocks.push({ceolobby2, IN_ELEVATOR});
 	hose->addDropChange(ceoelevator1, hstakeceoele1);
 	WorldChange hstakeceoele2; //changes if you take the hose from the floor 2 ceo elevator
-	hstakeceoele2.exitUnblocks.push({ceolobby1, IN_ELEVATOR});
+	hstakeceoele2.exitUnblocks.push({ceolobby, IN_ELEVATOR});
 	hose->addDropChange(ceoelevator2, hstakeceoele2);
 	WorldChange hsdropburgele; //changes if you drop the hose in the restaurant elevator
 	hsdropburgele.exitBlocks.push(make_tuple(burgerbasement, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move."));
@@ -2911,9 +3022,7 @@ NPC* SetupWorld() {
 	lavaguardian->addSpecialAttack(eruption);
 	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 10, 20, 1, 1, 7);
 	solarflare->focushits = false;
-	Effect* blinded = new Effect("BLINDED", 2, 0, 0);
-	blinded->freeze = true;
-	solarflare->addEffect(blinded);
+	solarflare->addEffect(blinded); //defined in graham's nat 3
 	lavaguardian->addSpecialAttack(solarflare);
 	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation upon", false, 20, 40, 100, 1, 1, 3);
 	lavaguardian->addSpecialAttack(gammarayburst);
@@ -3027,7 +3136,7 @@ NPC* SetupWorld() {
 	Effect* asthenia = new Effect("ASTHENIA", 5, 0, 0, 0.75f, 0.5f);
 	Effect* brainbug = new Effect("BRAIN BUG", 5, 0, 5);
 	Effect* bedridden = new Effect("BEDRIDDEN", 3);
-	bedridden->tired = true;
+	bedridden->tiring = true;
 	Attack* contagious = new Attack("CONTAGIOUS", "spread its disease to", false, 0, 0, 0, 1, 1, 1);
 	contagious->addEffect(tetanus);
 	Attack* sneeze = new Attack("SNEEZE", "sneezed disease at", false, -5, 0, 0, 1, 1, 1);
@@ -3046,7 +3155,7 @@ NPC* SetupWorld() {
 
 	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats(50, 0, 25, 10, 20, 25, 9));
 	Attack* chuck = new Attack("CHUCKED", "telekinetically chucked some debris at", false, -5, 15, 0, 1, 1, 1);
-	Effect stretched = new Effect("STRETCHED", 3, 10);
+	Effect* stretched = new Effect("STRETCHED", 3, 10);
 	stretched->freeze = true;
 	Attack* stretch = new Attack("STRETCHED", "is stretching", false, 7, 20, 20, 1, 1, 1);
 	stretch->afterdesc = " apart in the air";
@@ -3064,12 +3173,12 @@ NPC* SetupWorld() {
 
 	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats(30, 100, 30, 50, 10, 10, 9));
 	Attack* shell = new Attack("SHELL", "fired a shell at", -5, 20, 20, 1, 1, 1);
-	Attack* runover = new Attack("RUN OVER", "ran over", 4, 50, 0, 1, 1, 1);
+	Attack* rollover = new Attack("RUN OVER", "ran over", 4, 50, 0, 1, 1, 1);
 	Attack* flammpanzer = new Attack("FLAMMPANZER", "spewed a stream of napalm at", 8, 20, 10, 1, 1, 1);
 	flammpanzer->addEffect(extrafire);
 	Attack* supershell = new Attack("SUPERSHELL", "fired a supershell at", 10, 30, 20, 1, 1, 3);
 	minipanzer->setBasicAttack(shell);
-	minipanzer->addSpecialAttack(runover);
+	minipanzer->addSpecialAttack(rollover);
 	minipanzer->addSpecialAttack(flammpanzer);
 	minipanzer->addSpecialAttack(supershell);
 
@@ -3132,8 +3241,26 @@ NPC* SetupWorld() {
 	gamblemonster->setBasicAttack(gonna);
 	gamblemonster->addSpecialAttack(get);
 
-	NPC* grandma = new NPC("GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats());
+	NPC* grandma = new NPC("EVIL GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats());
+	//HELP ME DEARIE!
+	//This bad man is beating me up!
+	//And stealing my purse!
+	//self, Why are you beating up this grandma? >:(
+	//ratman, Because I'm Ratman.
+
+	//Thank you so much!
+	//Hahahaha
+	//HAHAHAHAHAHAHAHA!
+	//THANK YOU FOR BEING SO DUMB!
+	//MARGE athletically sprints away with all your monies.
 	//She looks like a poor grandma getting beat up by Ratman.
+
+	//HAH! I wasn't convincing enough, was I?
+	//You're a smart cookie, you!
+	//(grandma saying but in a threatening way)
+
+	//And I would have gotten away with it too,
+	//If it weren't for you meddling kids!
 
 	//axe
 	//purse pow
@@ -3141,6 +3268,7 @@ NPC* SetupWorld() {
 
 	//Ratman is Batman MARK: Ratman (enemy)
 	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(), Stats());
+	//I'm Ratman.
 	//He's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.
 
 	//ratarang
@@ -3192,8 +3320,8 @@ NPC* SetupWorld() {
 	Attack* beatdown = new Attack("BEATDOWN", "beat up", true, 4, 10, 0, 3, 3, 1); //funny cause up and down are opposites but here they mean the same thing
 	Effect* tackled = new Effect("TACKLED", 0);
 	Effect* tackling = new Effect("TACKLING", 0);
-	tackled->away = true;
-	tackling->away = true;
+	tackled->remove = true;
+	tackling->remove = true;
 	Attack* tackle = new Attack("TACKLE", "tackled", true, 5, 24, 0, 1, 1, 1);
 	tackle->addEffect(tackled);
 	tackle->selfeffect = tackling;
@@ -3965,7 +4093,7 @@ NPC* SetupWorld() {
 	apguard1->setLeader(true, 20, shrimpartment2);
 	apguard1->setParty({thief});
 	apguard1->blockExit(UP, ENEMY, "guarded by the THIEF.");
-	apguard1->addConversation({{thief, "angry noises"}, {self, "What?"}, {thief, "Uhhh..."}, {thief, "I'm gonna rob ya, kid! >:D"}})
+	apguard1->addConversation({{thief, "angry noises"}, {self, "What?"}, {thief, "Uhhh..."}, {thief, "I'm gonna rob ya, kid! >:D"}});
 	apguard1->setDialogue("I'm gonna rob ya, kid! >:D");
 	apguard1->addRejectionDialogue("angry noises");
 
@@ -3985,17 +4113,20 @@ NPC* SetupWorld() {
 
 	NPC* evilgrandma = new NPC(*grandma);
 	evilgrandma->setLeader(true, 22, rightstreet3, false);
+	evilgrandma->setMask("GRANDMA", "MARGE", "She looks like a poor grandma getting beat up and robbed by Ratman.");
 
 	NPC* theratman = new NPC(*ratman);
 	theratman->setLeader(true, 22, rightstreet3);
 
 	NPC* burgerguards = new NPC(*burgeragent);
 	burgerguards->setLeader(true, 23, richneighborhood4, false);
+	burgerguards->setMask("", "BURGER GUARDS", "Security guards of the BURGER corporation, dripped out in suit and sunglasses.");
 	burgerguards->setParty({crimmind, minipanzer, thief});
-	burgerguards->blockExit(INSIDE, ENEMY, "guarded by the BURGER AGENT.");
+	burgerguards->blockExit(INSIDE, ENEMY, "guarded by the BURGER GUARDS.");
 	burgerguards->addConversation({{self, "Hey I'm trying to rescue this kid can you move please?"}, {burgeragent, "Kid, I'm not sure how you got here,"}, {burgeragent, "but I'm gonna give you the opportunity to leave."}, {self, "No."}, {NULL, "BURGER AGENT - *sigh*"}});
 	burgerguards->setDialogue({{burgeragent, "Kid, go home."}, {self, "No."}});
-	burgerguards->addRejectionDialogue("What?");
+	burgerguards->addRejectionDialogue({{self, "Hey you guys wanna join my team?"}, {burgeragent, "What?"}, {self, "I said 'You wanna join my team.' "}, {burgeragent, "No."}, {self, "What about you?"}, {NULL, "BURGER AGENT 2 - \"No.\""}, {self, "ok"}});
+	burgerguards->addRejectionDialogue({{burgerguards, "No."}});
 	
 	Item* keycard = new WorldChangeItem("EXECUTIVE KEYCARD", "Golden elevator keycard given to BURGER executives for going up to the CEO's office.", limbo,
 		{{NULL, "You slid the EXECUTIVE KEYCARD across the keycard slot."},
@@ -4004,9 +4135,10 @@ NPC* SetupWorld() {
 		 {NULL, "You flip the EXECUTIVE KEYCARD around and slide it across the keycard slot."},
 		 {NULL, "KEYCARD SLOT - *confirmation beep*"},
 		 {NULL, "You can go TO THE TOP now!"}});
-	keycard->setUsableRooms({ceoelevator1, ceoelevator2});
 	keycard->setTakable(true);
-	WorldChange& kcchanges = ((WorldChangeItem*)keycard)->getChanges();
+	WorldChangeItem* kc = (WorldChangeItem*)keycard;
+	kc->setUsableRooms({ceoelevator1, ceoelevator2});
+	WorldChange& kcchanges = kc->getChanges();
 	kcchanges.exitUnblocks.push({ceoelevator1, TO_THE_TOP});
 	kcchanges.exitUnblocks.push({ceoelevator2, TO_THE_TOP});
 
@@ -4205,12 +4337,15 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 	} else if (!forceTravel && currentRoom->getBlocked(direction)) {
 		currentRoom->printBlock(direction);
 		return;
-	//block movement if we have a hose item that does that
-	} else if ((Item* hose = getItemTypeInVector(*inventory, "hose")) || (hose = getItemTypeInVector(currentRoom->getItems(), "hose"))) {
-		const char* blockreason = ((HoseItem*)hose)->getBlocked(currentRoom, direction); //slightly different error based on if you're holding it or not
-		if (blockreason) {
-			cout << blockreason; //print why we can't move
-			return;
+	} else { //block movement if we have a hose item that does that
+		Item* hose = getItemTypeInVector(*inventory, "hose");
+		if (!hose) hose = getItemTypeInVector(currentRoom->getItems(), "hose");
+		if (hose) {
+			const char* blockreason = ((HoseItem*)hose)->getBlocked(currentRoom, direction); //slightly different error based on if you're holding it or not
+			if (blockreason) {
+				cout << blockreason; //print why we can't move
+				return;
+			}
 		}
 	}
 	//rooms may redirect you to go somewhere else
@@ -4561,7 +4696,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			exit(0);
 		}
 		BURGERItem* boiga = (BURGERItem*)item; //get burger as burgeritem to get the elevator direction
-		travel(currentRoom, boiga->getDirection(), party, inventory, true); //leave to the elevator so the player can keep playing
+		//travel(currentRoom, boiga->getDirection(), party, inventory, true); //leave to the elevator so the player can keep playing
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass

@@ -11,8 +11,8 @@ using namespace std;
 
 namespace Helper {
 	//if there's extra or faulty input, this handy function will ignore that for you without having to type numeric limits every time
-	void CinIgnoreAll() {
-		if (!cin) {
+	void CinIgnoreAll(bool force) {
+		if (!cin || force) {
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		}
@@ -201,7 +201,8 @@ namespace Helper {
 		while (true) { //loops until valid response, after which the loop is returned out of
 			char command[255] = ""; //the charray that the player inputs into
 
-			cout << "\n" << prompt << "\n> "; //The amazing >
+			if (prompt) cout << "\n" << prompt;
+			cout << "\n> "; //The amazing >
 			cin.getline(command, 255); //gets the player input
 
 			AllCaps(command); //capitalizes the command for easier parsing
@@ -222,7 +223,7 @@ namespace Helper {
 		cout << "\n";
 		const Conversation* current = _convo;
 		while (WorldState[current->skipcondition]) {
-			current = current->alt;
+			current = current->alt.get();
 		}
 		const vector<pair<NPC*, const char*>>& convo = current->lines;
 		for (int i = 0; i < convo.size(); i++) { //prints all the dialogue in the conversation
@@ -231,9 +232,19 @@ namespace Helper {
 			} else {
 				cout << convo[i].second;
 			}
-			if (finalpause || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards) we do a pause, so the last one lets the player type
+			if ((finalpause && !current->branch1.first) || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards (AND we don't have branching paths)) we do a pause, so the last one lets the player type
 				CinPause();
 			}
+		}
+		if (current->branch1.first) { //if one of the four components isn't NULL I'm assuming I made all of them equal something otherwise why would I put a branch
+			if (AOrB(NULL, current->branch1.first, current->branch2.first)) {
+				printConversation(current->branch1.second.get(), finalpause);
+			} else {
+				printConversation(current->branch2.second.get(), finalpause);
+			}
+		}
+		if (shared_ptr<Conversation> relay = current->relay.second.lock()) { //relay the relaying conversation to the npc
+			current->relay.first->addConversation(*relay);
 		}
 	}
 	//print the level up data tracked by this npc
@@ -376,6 +387,7 @@ namespace Helper {
 	vector<Item*> itemsH;
 	vector<Attack*> attacksH;
 	vector<Effect*> effectsH;
+	vector<shared_ptr<Conversation>> relaysH;
 
 	bool WorldState[NEVER+1] = {false}; //every world state starts as false (NEVER + 1 because the last enumerator is equal enum size minus 1, since it starts at 0)
 

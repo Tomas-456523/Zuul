@@ -138,13 +138,13 @@ public:
 //BURGER items which are used for endgame stuff and are only different than materials due to having a Duplicate() and having a different type
 class BURGERItem : public Item {
 public:
-	BURGERItem(const char* _name, const char* _description, Room* _room, const char* direction);
+	BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText);
 
-	const char* getDirection(); //returns the elevator direction to go bakc there if the player wants to keep playing after getting the ending
-
+	const Conversation& getUseText() const;
+	
 	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
-	const char* elevatordir; //the elevator direction to go bakc there if the player wants to keep playing after getting the ending
+	Conversation useText;
 };
 
 //education items for learning new attacks
@@ -216,10 +216,10 @@ public:
 
 	void addBlocker(Room* room, const char* direction, const char* reason, const char* floorreason); //block the room in that direction
 	void setStationBlock(const char* message);
-	void addDropChange(Room* room, WorldChange changes); //make world changes on take and on drop
-	void addTakeChange(Room* room, WorldChange changes);
+	void addDropChange(Room* room, WorldChange& changes); //make world changes on take and on drop
+	void addTakeChange(Room* room, WorldChange& changes);
 
-	const char* getBlocked(Room* room, const char* direction); //check if this hose is blocking going in this direction from this room, return why if so
+	const char* getBlocked(Room* currentroom, const char* direction); //check if this hose is blocking going in this direction from this room, return why if so
 	const char* getStationBlock();
 	void doDropChanges(Room* currentroom); //do the changes when needed
 	void doTakeChanges(Room* currentroom);

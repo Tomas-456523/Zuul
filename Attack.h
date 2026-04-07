@@ -59,6 +59,8 @@ struct Attack {
 	bool matchsummonhealth; //if the summons should match their health to the summoner's
 	bool enemysummon = false; //if the summon goes to the enemy team
 
+	int copyamount = 0; //how many times the target gets duplicated
+
 	bool contact; //if the attacker makes contact with the target
 	bool beneficial = false; //if you want to get hit by this
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated

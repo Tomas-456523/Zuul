@@ -290,28 +290,33 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 	double interesttime = difftime(now, deposittime) / 31536000; //get how many years have elapsed
 	int newmonies = depositedmonies * exp(interesttime * 0.02);
 	if (newmonies > depositedmonies) {
-		cout << "\nYour balance rose by " << newmonies - depositedmonies << " due to interest!";
+		cout << "\nYour balance rose by " << newmonies - depositedmonies << " mon" << (newmonies - depositedmonies == 1 ? "y" : "ies") <<" due to interest!";
 		depositedmonies = newmonies;
 		CinPause();
 	}
-	cout << "\nYour current balance is " << depositedmonies << ".\nHow many monies would you like to deposit? (- to withdraw)\n> ";
+	cout << "\nYou currently have " << monies << " mon" << (monies == 1 ? "y" : "ies") <<" and " << depositedmonies << " mon" << (depositedmonies == 1 ? "y" : "ies") <<" deposited.\nHow many monies would you like to deposit? (- to withdraw)\n> ";
 	int amount;
 	if (cin >> amount) {
 		CinIgnoreAll(true);
 		if (!amount) cout << "\nJust checking your balance, I seee.";
 		else if (amount > 0) { //deposit
 			if (amount > monies) cout << "Youuu do not have this kind of moniiiiies...";
-			else cout << "\nYou deposited " << amount << " monies. You now have " << monies << " monies and " << depositedmonies << "monies deposited.";
+			else {
+				monies -= amount;
+				depositedmonies += amount;
+				cout << "\nYou deposited " << amount << " mon" << (amount == 1 ? "y" : "ies") << ".\nYou now have " << monies << " mon" << (monies == 1 ? "y" : "ies") <<" and " << depositedmonies << " mon" << (depositedmonies == 1 ? "y" : "ies") <<" deposited.";
+			}
 		} else { //withdraw
 			if (amount < -depositedmonies) cout << "Youuu do not have this kind of moniiiiies...";
-			else cout << "\nYou withdrew " << amount << " monies.\nYou now have " << monies << " monies and " << depositedmonies << "monies deposited.";
+			else {
+				monies -= amount;
+				depositedmonies += amount;
+				cout << "\nYou withdrew " << -amount << " mon" << (amount == -1 ? "y" : "ies") << ".\nYou now have " << monies << " mon" << (monies == 1 ? "y" : "ies") <<" and " << depositedmonies << " mon" << (depositedmonies == 1 ? "y" : "ies") <<" deposited.";
+			}
 		}
 	} else {
 		cout << "\nThis issss... not a number I know of.";
 	}
-
-	monies -= amount;
-	depositedmonies += amount;
 
 	CinIgnoreAll();
 
@@ -525,7 +530,7 @@ void NPC::setExtraXP(int xp) {
 	xpReward = xp;
 }
 void NPC::setExtraMonies(int monies) {
-	monyReward = xp;
+	monyReward = monies;
 }
 void NPC::setTalkOnRecruit(bool talk) {
 	speakOnRecruit = talk;
@@ -733,7 +738,7 @@ void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a c
 void NPC::addLinkedStats(NPC* npc, Stats stats) {
 	changes.back().linkedStats.push({npc, stats});
 }
-void addLinkedItem(Item* item, Room* room) {
+void NPC::addLinkedItem(Item* item, Room* room) {
 	changes.back().linkedItems.push({item, room});
 }
 void NPC::addAttackRemoval(NPC* npc, Attack* attack) {

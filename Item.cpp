@@ -216,12 +216,11 @@ MaterialItem::MaterialItem(const char* _name, const char* _description, Room* _r
 }
 
 //BURGER items, for the bad/lame ending
-BURGERItem::BURGERItem(const char* _name, const char* _description, Room* _room, const char* direction) : Item(_name, _description, _room, true, true) {
+BURGERItem::BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText) : Item(_name, _description, _room, true, false) { //not consumable because it ends the game
 	type = "BURGER"; //sets the type
-	elevatordir = direction;
 }
-const char* BURGERItem::getDirection() { //returns the elevator direction to go bakc there if the player wants to keep playing after getting the ending
-	return elevatordir;
+const Conversation& BURGERItem::getUseText() const {
+	return useText;
 }
 Item* BURGERItem::Duplicate() { //returns a new BURGER item as an Item*
 	return new BURGERItem(*this);
@@ -303,7 +302,7 @@ HoseItem::HoseItem(const char* _name, const char* _description, const Conversati
 	type = "hose"; //sets the type
 }
 void HoseItem::addBlocker(Room* room, const char* direction, const char* reason, const char* floorreason) { //block the room in that direction
-	blockers.push_back(make_tuple(room, direction, reason));
+	blockers.push_back(make_tuple(room, direction, reason, floorreason));
 }
 void HoseItem::setStationBlock(const char* message) {
 	stationblock = message;
@@ -314,9 +313,9 @@ void HoseItem::addDropChange(Room* room, WorldChange& changes) { //make world ch
 void HoseItem::addTakeChange(Room* room, WorldChange& changes) {
 	takechanges.push_back({room, changes});
 }
-const char* HoseItem::getBlocked(Room* room, const char* direction) { //check if this hose is blocking going in this direction from this room, return why if so
-	for (tuple<Room*, const char*, const char*>& blocker : blockers) {
-		if (room == get<0>(blocker) && direction == get<1>(blocker)) return (currentroom ? get<2>(blocker) : get<3>(blocker)); //return different message based on if it's in the inventory or on the floor
+const char* HoseItem::getBlocked(Room* currentroom, const char* direction) { //check if this hose is blocking going in this direction from this room, return why if so
+	for (tuple<Room*, const char*, const char*, const char*>& blocker : blockers) {
+		if (currentroom == get<0>(blocker) && direction == get<1>(blocker)) return (room ? get<2>(blocker) : get<3>(blocker)); //return different message based on if it's in the inventory or on the floor
 	}
 	return NULL;
 }
@@ -465,7 +464,7 @@ bool WorldChangeItem::getTakeToUse() {
 	return takeToUse;
 }
 //gets if it's usable in the given room
-bool getUsable(Room* _room) {
+bool WorldChangeItem::getUsable(Room* _room) {
 	if (usableRooms.empty()) return true; //if we didn't clarify it's usable anywhere
 	for (Room* room : usableRooms) {
 		if (room == _room) return true;
@@ -473,7 +472,7 @@ bool getUsable(Room* _room) {
 	return false;
 }
 //make item need to be usable in these rooms only
-void setUsableRooms(initializer_list<Room*> rooms) {
+void WorldChangeItem::setUsableRooms(initializer_list<Room*> rooms) {
 	usableRooms = rooms;
 }
 

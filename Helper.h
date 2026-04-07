@@ -6,6 +6,7 @@
 #include "WorldState.h"
 #include <vector>
 #include <map>
+#include <memory>
 
 class Room;
 class NPC;
@@ -16,7 +17,7 @@ struct Conversation;
 struct WorldChange;
 
 namespace Helper {
-	void CinIgnoreAll(); //clears extra or faulty input
+	void CinIgnoreAll(bool force = false); //clears extra or faulty input
 	void CinPause(); //pauses until the player presses ENTER
 	void AllCaps(char* text); //capitalizes the given text
 	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP, int skipSpaces = 0); //takes commandP, puts the first word in commandWordP, and the rest in commandExtensionP
@@ -45,6 +46,7 @@ namespace Helper {
 	extern std::vector<Item*> itemsH;
 	extern std::vector<Attack*> attacksH;
 	extern std::vector<Effect*> effectsH;
+	extern std::vector<std::shared_ptr<Conversation>> relaysH; //conversation relays use weak_ptrs to avoid infinite loops so we store them here so the conversations don't get deleted
 
 	extern int npcID; //ids for the npcs (their index in npcsH) so we can track them in the save system and also for determining their random stat scale deterministically
 }

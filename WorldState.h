@@ -16,7 +16,7 @@ namespace Helper {
 		CLOAKED,
 		JILLYSAVED,
 		BEATCEO,
-		TEMPLEQUEST,
+		TEMPLEQUEST, //otherwise known as DESTROY BURGER QUEST
 		BURGERMANDEF,
 		BURGERMENDEF,
 		NEVER //never set never to true

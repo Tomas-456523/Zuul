@@ -188,7 +188,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			if (attack->focushits) rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits;
 			for (int j = 0; j < hits; j++) {
 				float randmultiplier = 0.9f + fmod(rand(), 0.2f); //randomly vary attack power of every hit by 10%
-				if (!rand()%20) { //5% chance to crit
+				if (!(rand()%20)) { //5% chance to crit
 					cout << "\nCRITICAL HIT!";
 					randmultiplier *= 1.75f;
 				}
@@ -328,7 +328,7 @@ bool Battle::useItem(const char* itemname) {
 		SpItem* sp = (SpItem*)item; //converts to the corresponding subclass
 		npc->alterSp(sp->getSp()); //alters the sp of the target
 	//revive items are just healing items but you can only use them on incapacitated teammates
-	} if (!strcmp(item->getType(), "revive")) {
+	} else if (!strcmp(item->getType(), "revive")) {
 		ReviveItem* revive = (ReviveItem*)item; //converts to the corresponding subclass
 		if (npc->getHealth()) { //gives error message if used on capacitated teammate
 			cout << "The " << itemname << " must be saved for dire circumstances!";
@@ -337,7 +337,7 @@ bool Battle::useItem(const char* itemname) {
 		cout << npc->getName() << " was recapacitated!";
 		npc->directDamage(-revive->getHp());
 	//effect items apply an effect to the target
-	} if (!strcmp(item->getType(), "effect")) {
+	} else if (!strcmp(item->getType(), "effect")) {
 		EffectItem* affecter = (EffectItem*)item; //converts to the corresponding subclass
 		if (!npc->getHealth()) { //gives error message because you're not allowed to affect incapacitated teammates
 			cout << npc->getName() << " is incapacitated! The " << itemname << " won't work!";
@@ -675,7 +675,7 @@ int Battle::FIGHT() {
 	cout << "\n<<< VERSUS >>>";
 	printTeam(enemyTeam);
 	CinPause(); //gives the player time to orient themselves
-
+	//MARK: make this a priority queue
 	queue<NPC*> turn; //queue for finding whose turn it is
 	NPC* current; //the current npc whose turn it is
 
@@ -693,7 +693,7 @@ int Battle::FIGHT() {
 			cout << "\n" << current->getName() << " is frozen in place!";
 			CinPause();
 		} else if (!current->getBasicAttack()) {
-			cout << current->getName() << " is " << idleText[rand()%9];
+			cout << current->getName() << " is " << idleText[rand()%5];
 			CinPause();
 		} else if (current->getPlayerness()) { //starts the player turn!
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
