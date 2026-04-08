@@ -661,6 +661,10 @@ void Battle::npcTurn(NPC* npc) {
 	//only allow one npc to be taken at a time
 
 	//make guarding moves prioritize unguarded teammates
+
+	//we should tick effects for every npc AFTER their turn and do an extra check for effects with 0 duration at the start or end of every one (effectively literally the same, just choose most convenient option)
+
+	//also remember to readd npc to order queue after changing their speed
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
 	size_t healchecks = 0; //heals specifically may fail

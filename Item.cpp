@@ -216,11 +216,20 @@ MaterialItem::MaterialItem(const char* _name, const char* _description, Room* _r
 }
 
 //BURGER items, for the bad/lame ending
-BURGERItem::BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText) : Item(_name, _description, _room, true, false) { //not consumable because it ends the game
+BURGERItem::BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, const Conversation& _confirmText, const Conversation& _hintText) : Item(_name, _description, _room, true, false) { //not consumable because it ends the game
 	type = "BURGER"; //sets the type
+	useText = _useText;
+	confirmText = _confirmText;
+	hintText = _hintText;
 }
 const Conversation& BURGERItem::getUseText() const {
 	return useText;
+}
+const Conversation& BURGERItem::getConfirmText() const {
+	return confirmText;
+}
+const Conversation& BURGERItem::getHintText() const {
+	return hintText;
 }
 Item* BURGERItem::Duplicate() { //returns a new BURGER item as an Item*
 	return new BURGERItem(*this);

@@ -257,6 +257,9 @@ NPC* NPC::getParrying() {
 bool NPC::getInvincible() {
 	return invincible;
 }
+bool NPC::getEvasive() {
+	return evasive;
+}
 int NPC::popExtraLives() { //return the extra lives then decrement the amount if we have some
 	if (extralives) return extralives--;
 	return 0; //otherwise return 0 extra lives and don't decrement into the negatives
@@ -287,6 +290,9 @@ bool NPC::getBanker() {
 }
 bool NPC::getThief() {
 	return thief;
+}
+bool NPC::getShark() {
+	return isShark;
 }
 void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 	time_t now = time(NULL);
@@ -563,6 +569,9 @@ void NPC::setParrying(NPC* _parrying) {
 void NPC::setInvincible(bool _invincible) {
 	invincible = _invincible;
 }
+void NPC::setEvasive(bool _evasive) {
+	evasive = _evasive;
+}
 void NPC::addExtraLives(int howmany) {
 	extralives += howmany;
 }
@@ -590,6 +599,9 @@ void NPC::setQuantumn() {
 }
 void NPC::setBanker() {
 	banker = true;
+}
+void NPC::setShark() {
+	isShark = true;
 }
 void NPC::setThief() {
 	thief = true;

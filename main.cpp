@@ -1670,24 +1670,20 @@ NPC* SetupWorld() {
 	switchhelper2->setConveyor(conveyor4);
 	switchhelper2->setConveyor(conveyor5);
 
-	//You finally have your BURGER!
-	//This is what you came for.
-	//Do you want to eat the BURGER?
+	Conversation burgabtconv = {{NULL, "You finally have your BURGER!"},
+								{NULL, "This is what you came for."},
+								{NULL, "Do you want to eat the BURGER?"}};
+	Conversation burgabtconv2 = {{NULL, "You could keep saving Jilly."},
+								{NULL, "But isn't this BURGER what you really came for?"},
+								{NULL, "Do you want to eat the BURGER?"}};
+	Conversation burgabtconv3 = {{NULL, "Well, you saved Jilly."},
+								{NULL, "But wasn't this BURGER what you really came for?"},
+								{NULL, "Do you want to eat the BURGER?"}};
+	Conversation burgabtconv4 = {{NULL, "This BURGER is what you originally came for."},
+								{NULL, "You've since come to understand what it truly is."},
+								{NULL, "Do you really want to eat the BURGER?"}};
 
-	//You could keep saving Jilly.
-	//But isn't this BURGER what you really came for?
-	//Do you want to eat the BURGER?
-
-	//Well, you saved Jilly.
-	//But wasn't this BURGER what you really came for?
-	//Do you want to eat the BURGER?
-
-	//This BURGER is what you originally came for.
-	//You've since come to understand what it truly is.
-	//Do you really want to eat the BURGER?
-	
-	Conversation burgerconvo = {{NULL, "You finally get to eat your BURGER!"},
-								{NULL, "You take a bite of the BURGER..."},
+	Conversation burgerconvo = {{NULL, "You take a bite of the BURGER..."},
 								{NULL, "Your BURGER QUEST has finally come to an end."},
 								{NULL, "..."},
 								{NULL, "..."},
@@ -1830,7 +1826,20 @@ NPC* SetupWorld() {
 	cloakingchange.recruitLinks.push(richie);
 	cloakingchange.worldcon = CLOAKED;
 	
-	NPC* child = new NPC("", "JILLY", "The daughter of MATILDA who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3);
+	NPC* child = new NPC("", "JILLY", "The daughter of Matilda who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3, Stats(10, 2, 8, 3, 0, 7, 9));
+	//The daughter of Matilda who you saved from the BURGER corporation, with very good potential in combat.
+	Attack* dillydally = new Attack("DILLYDALLY", "is watching you battle", false, -5, 0, 0, 0, 0, 0);
+	Attack* flyingkick = new Attack("FLYING KICK", "flew at", true, 6, 20, 0, 1, 1, 1);
+	flyingkick->afterdesc = " with a kick";
+	Attack* juppercut = new Attack("UPPERCUT", "uppercut", true, 15, 25, 0, 1, 1, 1);
+	Effect* juppercutted = new Effect("UPPERCUTTED", 2);
+	juppercutted->remove = true;
+	juppercutted->falldamage = 20;
+	juppercut->afterdesc = " into the sky";
+	flyingkick->addEffect(juppercutted);
+	child->setBasicAttack(dillydally);
+	child->addSpecialAttack(flyingkick);
+	child->addSpecialAttack(juppercut);
 
 	NPC* matilda = new NPC("WORRIED MOTHER", "MATILDA", "A frequent churchgoer with distress very visible on her face.", burgchurch, 0);
 	matilda->addConversation({{self, "You look distressed."},
@@ -1863,7 +1872,9 @@ NPC* SetupWorld() {
 	matilda->setGift(cloakingdevice);
 	matilda->setTalkMakeChanges(false);
 	matilda->setWorldCondition(JILLYQUEST);
-	matilda->addRecruitLink(forestknight);
+	matilda->addRecruitLink(forestknight); //this works just fine because you can never have already saved Jilly if you just start the quest to do that
+	matilda->addRecruitLink(theratman, BEATRATMAN); //we can just add both for many possible conditions :D
+	matilda->addRecruitLink(theratman, BEATMARGE);
 	Conversation matrej1 = {{self, "Hey wanna join my BURGER QUEST?"},
 							{matilda, "..."},
 							{matilda, "BURGERs aren't good, you know."},
@@ -1935,10 +1946,6 @@ NPC* SetupWorld() {
 	//child, "I made you this drawing!"
 	//Jilly hands you a drawing of her uppercutting you.
 	//self, Oh thanks.
-
-	//dillydally (basic attack) JILLY is watching you battle!
-	//FLYING KICK
-	//UPPERCUT (spatula)
 
 	//I have just finished fighting the CEO
 	//I should be getting close!
@@ -3275,6 +3282,7 @@ NPC* SetupWorld() {
 	bagelfenagler->addSpecialAttack(fenagle);
 
 	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough pavement-gray shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats(20, 15, 35, 25, 50, 30, 9));
+	paveshark->setShark(); //this is a shark
 	Effect* submerged = new Effect("SUBMERGED", 2147483647, 0, 0, 1, 3);
 	Attack* sharkbite = new Attack("SHARK BITE", "sharkily bit", true, -5, 20, 50, 1, 1, 1);
 	sharkbite->selfcancel = submerged;
@@ -3320,44 +3328,65 @@ NPC* SetupWorld() {
 	gamblemonster->addSpecialAttack(get);
 	
 	NPC* grandma = new NPC("EVIL GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats(150, 10, 30, 0, 30, 37, 9));
-
-	//war axe
-	//are you hungry? (fire flaming cookies)
-	//purse flail (two random targets get hit)
-	Attack* slipper = new Attack("SLIPPER", "threw a heat-seeking slipped at", false, 20, 30, 1, 1, 1);
+	Attack* waraxe = new Attack("WAR AXE", "axed", true, -5, 10, 20, 1, 1, 1);
+	waraxe->afterdesc = " with a war axe";
+	Attack* dualflail = new Attack("FLAIL", "flailed a huge dual flail around", false, 5, 18, 20, 2, 2, 1);
+	waraxe->focushits = false;
+	Attack* areyouhungry = new Attack("ARE YOU HUNGRY?", "fired flaming freshly baked cookies from a machine gun", false, 10, 2, 5, 8, 8, 1);
+	areyouhungry->focushits = false;
+	areyouhungry->addEffect(onfire);
+	Attack* slipper = new Attack("SLIPPER", "threw a heat-seeking slipped at", false, 13, 20, 30, 1, 1, 1);
 	Effect* severelyconcussed = new Effect("SEVERELY CONCUSSED", 3);
 	severelyconcussed->tiring = true;
 	slipper->addEffect(severelyconcussed);
+	grandma->setBasicAttack(waraxe);
+	grandma->addSpecialAttack(dualflail);
+	grandma->addSpecialAttack(areyouhungry);
+	grandma->addSpecialAttack(slipper);
 
 	//Ratman is Batman MARK: Ratman (enemy)
 	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(25, 30, 24, 20, 15, 23, 10), Stats(0, 1, 1, 0, 1, 0, 0));
 	Effect* prepared = new Effect("PREPARED AGAINST", 3);
-	prepared->redundanteffect = false; //don't prepare multiple times
 	ratman->setTargetEffect(prepared);
-
 	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 12, 10, 1, 1, 1);
+	ratarang->synergies.push_back(prepared);
 	ratman->setBasicAttack(ratarang);
-
+	Attack* mma = new Attack("MIXED MARTIAL ARTS", "engaged", true, 8, 12, 0, 3, 3, 1);
+	mma->afterdesc = " in close combat";
+	ratman->addSpecialAttack(mma);
 	Attack* preptime = new Attack("PREP TIME", "prepared against", false, 10, 0, 0, 1, 1, 1);
 	preptime->addEffect(prepared);
+	preptime->redundanteffect = false; //don't prepare multiple times
 	ratman->addSpecialAttack(preptime);
-
-	Attack* taserfinger = new Attack("TASER FINGER", "tased", false, -5, 12, 10, 1, 1, 1);
+	Attack* smokepellet = new Attack("SMOKE PELLET", "threw a smoke pellet on the ground", false, 10, 0, 0, 0, 0, 0);
+	Effect* shrouded = new Effect("SHROUDED", 5); //5 but probably gets canceled before that
+	shrouded->evasive = true;
+	smokepellet->selfeffect = shrouded;
+	ratman->addSpecialAttack(smokepellet);
+	Attack* explosivegel = new Attack("EXPLOSIVE GEL", "sprayed explosive gel on", false, 12, 0, 0, 1, 1, 1);
+	explosivegel->synergies.push_back(prepared);
+	Effect* abttoexplode = new Effect("READY TO BLOW", 1);
+	abttoexplode->falldamage = 30;
+	abttoexplode->spreadfalldamage = true;
+	explosivegel->addEffect(abttoexplode);
+	ratman->addSpecialAttack(explosivegel);
+	Attack* grapplegun = new Attack("GRAPPLE GUN", "grappled", false, 12, 7, 0, 1, 1, 1);
+	grapplegun->afterdesc = "'s legs and flung them away";
+	Effect* grappled = new Effect("GRAPPLED AWAY", 1);
+	grappled->remove = true;
+	grapplegun->addEffect(grappled);
+	ratman->addSpecialAttack(grapplegun);
+	Attack* taserfinger = new Attack("TASER FINGER", "tased", false, 16, 12, 10, 1, 1, 1);
+	taserfinger->synergies.push_back(prepared);
 	taserfinger->afterdesc = " with his taser finger";
 	Effect* tased = new Effect("TASED", 3);
 	tased->freeze = true;
 	taserfinger->addEffect(tased);
 	ratman->addSpecialAttack(taserfinger);
-
-	//smoke bomb
-
-	//explosive gel
-	
-	//grapple gun
-
-	//
-
-	//shark repellant (only use on sharks and instakills)
+	Attack* sharkrepellant = new Attack("SHARK REPELLANT", "sprayed shark repellant at", false, 5, 100, 100, 1, 1, 1); //use 5 sp cause I don't want it to affect weights in normal fights too much
+	sharkrepellant->instakill = true;
+	sharkrepellant->targetshark = true;
+	ratman->addSpecialAttack(explosivegel);
 
 	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his money.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
 	Attack* brassknuckles = new Attack("BRASS KNUCKLES", "swung at", true, -5, 20, 0, 1, 1, 1);
@@ -3467,7 +3496,7 @@ NPC* SetupWorld() {
 
 	//burger warden
 
-	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "", "Genius husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats());
+	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats());
 
 	//burger man
 
@@ -4197,13 +4226,6 @@ NPC* SetupWorld() {
 	NPC* evilgrandma = new NPC(*grandma);
 	evilgrandma->setLeader(true, 22, rightstreet3, false);
 	evilgrandma->setMask("GRANDMA", "MARGE", "She looks like a poor grandma getting beat up and robbed by Ratman.");
-	evilgrandma->setWorldCondition(BEATMARGE);
-	rightstreet3->setWelcome({{grandma, "AHHHHHHHH!"},
-							  {grandma, "HELP ME, DEARIE!"},
-							  {grandma, "This bad man is beating me up!"},
-							  {grandma, "And stealing my purse!"},
-							  {self, "Why are you beating up this grandma? >:|"},
-							  {ratman, "Because I'm Ratman."}});
 	evilgrandma->setTalkOnDefeat();
 	evilgrandma->addOpeningDialogue({{grandma, "HAH! I wasn't convincing enough, was I?"},
 									 {grandma, "You're a smart cookie, you!"},
@@ -4217,11 +4239,12 @@ NPC* SetupWorld() {
 										  {ratman, "But now she's going straight to the BURGERSBURG asylum."},
 										  {ratman, "Because I'm Ratman."},
 										  {NULL, "RATMAN grappling hooks away carrying a tied up MARGE."}});
-
 	evilgrandma->addDeleaderLink(ratman);
 	evilgrandma->addRoamLink(ratman);
 	evilgrandma->addDefeatRoom({grandma, limbo});
-	//recruit ratman?
+	evilgrandma->setWorldCondition(BEATMARGE);
+	evilgrandma->addLinkedDesc("The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
+	evilgrandma->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
 
 	NPC* theratman = new NPC(*ratman);  //MARK: Ratman
 	theratman->setLeader(true, 22, rightstreet3);
@@ -4245,11 +4268,13 @@ NPC* SetupWorld() {
 										  {ratman, "Because I'm Ratman."},
 										  {self, "T_T"},
 										  {NULL, "RATMAN grappling hooks away."}});
-	//The dark knight, the caped crusader, etc.
-	//He's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.
-	
+	theratman->addDeleaderLink(ratman);
+	theratman->addRoamLink(ratman);
+	theratman->addDefeatRoom({grandma, limbo});
 	theratman->setWorldCondition(BEATRATMAN);
-
+	theratman->addLinkedDesc("The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
+	theratman->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
+	
 	theratman->addRejectionDialogue({{self, "Hey rat man wanna join me on my BURGER QUEST?"},
 									 {ratman, "I don't have time to get a BURGER, kid."},
 									 {ratman, "I have a city to protect."},
@@ -4279,6 +4304,12 @@ NPC* SetupWorld() {
 	batrec2->alt = batrec3;
 	theratman->addDismissalDialogue({{ratman, "I shall continue to protect the city."}, {ratman, "Because I'm Ratman."}, {NULL, "RATMAN grappling hooks away."}});
 	theratman->setRoamRooms({mainstreet1, mainstreet2, mainstreet3, mainstreet4, mainstreet5, coolstreet1, coolstreet2, coolstreet3, coolstreet4, coolstreet5, rightstreet1, rightstreet2, rightstreet3, rightstreet4, rightstreet5});
+	rightstreet3->setWelcome({ {grandma, "AHHHHHHHH!"},
+							  {grandma, "HELP ME, DEARIE!"},
+							  {grandma, "This bad man is beating me up!"},
+							  {grandma, "And stealing my purse!"},
+							  {self, "Why are you beating up this grandma? >:|"},
+							  {ratman, "Because I'm Ratman."} });
 
 	NPC* burgerguards = new NPC(*burgeragent);
 	burgerguards->setLeader(true, 23, richneighborhood4, false);
@@ -4858,23 +4889,17 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		npc->addXp(xp->getXp()); //adds the xp
 	//beats the game until I rework this
 	} else if (!strcmp(item->getType(), "BURGER")) {
-		if (!AOrB("Are you sure?", "YES", "NO")) {
+		BURGERItem* boiga = (BURGERItem*)item; //get BURGER as BURGERItem
+		printConversation(boiga->getConfirmText(), false);
+		if (!AOrB(NULL, "YES", "NO")) {
 			return;
 		}
-		cout << "\nYou ate the BURGER...";
-		CinPause();
-		cout << "It tasted alright.";
-		CinPause();
-		cout << "\n\t<<<      BURGER QUEST COMPLETE ?      >>>";
-		cout << "\n\t<<< ENDING ACHIEVED: TEST DEMO ENDING >>>"; //isn't it a TECH demo?
-		CinPause();
-		cout << "\nThank you for playing BURGER QUEST 2: ELECTRIC BOOGALOO!";
-		if (!AOrB("Would you like to keep playing?", "YES", "NO")) {
+		printConversation(boiga->getUseText(), true);
+		printConversation(boiga->getHintText(), true);
+		if (!AOrB("Would you like to keep playing? (YES or NO)", "YES", "NO")) {
 			cout << "\nAlright then cya!\n";
 			exit(0);
 		}
-		BURGERItem* boiga = (BURGERItem*)item; //get burger as burgeritem to get the elevator direction
-		//travel(currentRoom, boiga->getDirection(), party, inventory, true); //leave to the elevator so the player can keep playing
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass
@@ -5310,7 +5335,7 @@ int main() {
 	};
 
 	//a list of the valid commands (and extensions) to be printed by printHelp()
-	const char* validCommands[16] = {
+	const char* validCommands[17] = {
 		"GO [direction]",
 		"TAKE [item]",
 		"DROP [item]",
@@ -5326,6 +5351,7 @@ int main() {
 		"FIGHT [npc]",
 		"BUY [item]",
 		"HELP",
+		"SAVE (AND QUIT)",
 		"QUIT"
 	};
 
@@ -5414,6 +5440,8 @@ int main() {
 			buy(currentRoom, inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands
 			printHelp(validCommands, flavorText);
+		} else if (!strcmp(commandWord, "SAVE")) { //for saving and also possibly quitting
+			//continuing = saveWorld(currentRoom, inventory, party, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game
 			continuing = false;
 		} else { //prints an error message if the player typed something that isn't an actual command //if (strcmp(commandWord, "")) 
@@ -5444,3 +5472,11 @@ int main() {
 	}
 	delete inventory;
 }
+
+//SAVES
+//LOAD
+//NEW GAME
+//IMPORT
+//EXPORT
+//HELP
+//QUIT

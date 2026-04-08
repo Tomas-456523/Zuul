@@ -34,6 +34,7 @@ struct Effect {
 	bool remove = false; //if the attack removes the target from the fight temporarily
 	bool tiring = false; //if the effect makes the affected tired and not be able to move (to differentiate from frozen pretty much)
 	int falldamage = 0; //if remove == true, how much damage the affected npc takes on return
+	bool spreadfalldamage = false; //if fall damage should affect surroundings
 
 	int guardset = 0; //if this effect sets guard on the target
 
@@ -45,6 +46,7 @@ struct Effect {
 	bool turntick = false; //if we tick after the npc turn as opposed to at the start of each round
 
 	bool invincible = false; //if this effect makes the affected npc invincible
+	bool evasive = false; //invincible but due to amazing dodging skills
 
 	bool stacks = false; //if the effect stacks instead of just being extended when reapplied
 

@@ -138,13 +138,17 @@ public:
 //BURGER items which are used for endgame stuff and are only different than materials due to having a Duplicate() and having a different type
 class BURGERItem : public Item {
 public:
-	BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText);
+	BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, const Conversation& _confirmText, const Conversation& _hintText);
 
 	const Conversation& getUseText() const;
+	const Conversation& getConfirmText() const;
+	const Conversation& getHintText() const;
 	
 	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	Conversation useText;
+	Conversation confirmText;
+	Conversation hintText;
 };
 
 //education items for learning new attacks

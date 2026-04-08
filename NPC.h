@@ -85,6 +85,7 @@ public: //you need to set stats on creation
 	NPC* getGuarding();
 	NPC* getParrying();
 	bool getInvincible();
+	bool getEvasive();
 	int popExtraLives();
 	Effect* getAttackEffect();
 	bool getMasked();
@@ -94,6 +95,7 @@ public: //you need to set stats on creation
 	bool getQuantumn();
 	bool getBanker();
 	bool getThief();
+	bool getShark();
 	void depositMonies(int& monies);
 	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
 	bool moreWaves(); //get if there's more waves to fight other than the current one
@@ -164,6 +166,7 @@ public: //you need to set stats on creation
 	void setGuarding(NPC* npc);
 	void setParrying(NPC* _parrying);
 	void setInvincible(bool _invincible);
+	void setEvasive(bool _evasive);
 	void addExtraLives(int howmany);
 	void setAttackEffect(Effect* effect);
 	void setGymStart(time_t start);
@@ -172,7 +175,8 @@ public: //you need to set stats on creation
 	void setAway(bool isaway);
 	void setQuantumn();
 	void setBanker();
-	void setThief(); //if you lose all monies after beating this npc
+	void setThief(); //set if you lose all monies after beating this npc
+	void setShark(); //set if this is a shark
 	void setRoaming(bool roam = true);
 	void setTargetEffect(Effect* effect);
 	void setRoamRooms(initializer_list<Room*> rooms);
@@ -285,6 +289,7 @@ protected:
 	NPC* taking = NULL; //if this npc has kidnapped another npc during battle
 
 	bool isLobster = false; //if it's the lobster
+	bool isShark = false; //if this is a shark
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
 
 	bool banker = false; //if its a banker we can withdraw or deposit monies
@@ -306,6 +311,7 @@ protected:
 	float damageMultiplier = 1; //multiplies damage taken
 
 	bool invincible = false;
+	bool evasive = false;
 	NPC* parrying = NULL; //who we parrying
 
 	int extralives = 0; //how many extra lives this npc has

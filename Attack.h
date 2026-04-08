@@ -66,6 +66,7 @@ struct Attack {
 	bool beneficial = false; //if you want to get hit by this
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated
 	bool targetself = false; //self-explanatory
+	bool targetshark = false; //if this attack should only target sharks
 
 	int extralives = 0; //how many extra lives to give to the target
 
