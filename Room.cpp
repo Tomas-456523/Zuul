@@ -137,7 +137,7 @@ void Room::printStock() {
 void Room::printNPCs() {
 	vector<NPC*> validNPCs;
 	for (NPC* npc : npcs) {
-		if (!npc->getRecruited() && !npc->getDefeated()) { //only count non-recruited and non-defeated npcs
+		if (!npc->getRecruited() && !npc->getDefeated() && (!npc->getGuarding() || !npc->getGuarding()->getRecruited())) { //only count non-recruited and non-defeated npcs (and if they're not the guard of a recruited npc)
 			validNPCs.push_back(npc);
 		}
 	}

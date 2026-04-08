@@ -287,6 +287,18 @@ namespace Helper {
 			}
 			changes.recruitLinks.pop();
 		}
+		while (!changes.conditionalRecruits.empty()) { //make unrecruitable all the npcs unless the condition paired to them is true
+			pair<NPC*, size_t>& data = changes.conditionalRecruits.front();
+			if (WorldState[data.second]) {
+				data.first->setRecruitable(true);
+				if (npc->getLeader()) {
+					npc->setLeader(false);
+					npc->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
+					npc->undefeat();
+				}
+			}
+			changes.conditionalRecruits.pop();
+		}
 		while (!changes.linkedConversations.empty()) {
 			pair<NPC*, Conversation>& data = changes.linkedConversations.front();
 			data.first->addConversation(data.second);
@@ -359,6 +371,13 @@ namespace Helper {
 			data->setRecruitable(false);
 			changes.decruitLinks.pop();
 		}
+		while (!changes.deleaderLinks.empty()) {
+			NPC* data = changes.deleaderLinks.front();
+			data->setLeader(false);
+			data->setBoss(false); //falsify boss just in case
+			data->undefeat();
+			changes.deleaderLinks.pop();
+		}
 		while (!changes.conditionalDecruits.empty()) { //make unrecruitable all the npcs unless the condition paired to them is true
 			pair<NPC*, size_t>& data = changes.conditionalDecruits.front();
 			if (!WorldState[data.second]) data.first->setRecruitable(false);
@@ -373,6 +392,12 @@ namespace Helper {
 			pair<Item*, Room*>& data = changes.linkedItems.front();
 			data.first->setRoom(data.second);
 			changes.linkedItems.pop();
+		}
+		while (!changes.roamLinks.empty()) { //this is assuming we previously set roamrooms prior to setting roaming
+			NPC* npc = changes.roamLinks.front();
+			npc->setRoaming();
+			npc->roam();
+			changes.roamLinks.pop();
 		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;

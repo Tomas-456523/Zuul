@@ -93,6 +93,7 @@ public: //you need to set stats on creation
 	const char* getHiddenDescription();
 	bool getQuantumn();
 	bool getBanker();
+	bool getThief();
 	void depositMonies(int& monies);
 	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
 	bool moreWaves(); //get if there's more waves to fight other than the current one
@@ -171,10 +172,16 @@ public: //you need to set stats on creation
 	void setAway(bool isaway);
 	void setQuantumn();
 	void setBanker();
+	void setThief(); //if you lose all monies after beating this npc
+	void setRoaming(bool roam = true);
+	void setTargetEffect(Effect* effect);
+	void setRoamRooms(initializer_list<Room*> rooms);
+	void roam();
 	void setTalkMakeChanges(bool miscworks = true); //set if the npc should make changes by ASKing, not FIGHTing, also variable asking if miscellaneous dialogue other than normal convos should work
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
-	void addRecruitLink(NPC* npc);
+	void addRecruitLink(NPC* npc, size_t condition = NEVER);
+	void addDecruitLink(NPC* npc, size_t condition = NEVER);
 	void addDefeatRoom(NPC* npc, Room* room);
 	void addLinkedDialogue(NPC* speaker, const Conversation& dialogue);
 	void addLinkedTitle(NPC* npc, const char* title);
@@ -185,6 +192,8 @@ public: //you need to set stats on creation
 	void addLinkedItem(Item* item, Room* room);
 	void addAttackRemoval(NPC* npc, Attack* attack);
 	void guardItem(Item* item); //start guarding the item
+	void addDeleaderLink(NPC* npc);
+	void addRoamLink(NPC* npc);
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
@@ -239,6 +248,8 @@ protected:
 
 	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack
 
+	Effect* targeteffect = NULL; //prioritize hitting targets with this effect
+
 	vector<Effect> effects; //the effects affecting this npc
 	map<Attack*, int> attackWeight; //the weight of the npc's attacks
 
@@ -277,6 +288,7 @@ protected:
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
 
 	bool banker = false; //if its a banker we can withdraw or deposit monies
+	bool thief = false; //if its a thief you lose all your monies after beating them
 	int depositedmonies = 0;
 	time_t deposittime; //track time monies were deposited so we can add interest
 
@@ -326,6 +338,9 @@ protected:
 	bool loopLastChange = false; //if we should loop the last change every single defeat for respawning enemies, as opposed to only do the changes once
 	bool talktochange = false; //if we should make changes when asking the npc instead of when they are defeated
 	bool miscdoeschange = false; //if non-normal conversations should work for the talktochange thing
+
+	bool roaming = false; //if this npc roams
+	vector<Room*> roamrooms; //which rooms this npc roams between
 
 	time_t gymStart = 0; //what time the npc was left at the gym (0 means is not at the gym, bad news for anybody hoping to drop their teammate off at the gym on the first second of 1970)
 

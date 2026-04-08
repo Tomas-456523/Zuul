@@ -18,8 +18,17 @@ using namespace Helper;
 //creates the battle instance MARK: initialize
 Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable) {
 	//clone npcs from both teams so I don't have to reset them later
-	for (NPC* npc : *_playerTeam) {
-		playerTeam.push_back(new NPC(*npc));
+	for (NPC* _npc : *_playerTeam) {
+		NPC* npc = new NPC(*_npc);
+		playerTeam.push_back(npc);
+		vector<NPC*> guards = npc->getGuardians();
+		for (NPC* _guard : guards) { //update all guardian links so they're not pointing to outside battle
+			npc->removeGuardian(_guard);
+			NPC* guard = new NPC(*_guard);
+			npc->setGuardian(guard);
+			guard->setGuarding(npc);
+			playerTeam.push_back(guard);
+		}
 	}
 	for (NPC* npc : *_enemyTeam) {
 		enemyTeam.push_back(new NPC(*npc));
@@ -167,7 +176,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				cout << "\n" << reciever->getName() << " is incapacitated and was not affected.";
 				continue;
 			}
-			/*if (NPC* guardian = reciever->getGuardian()) { //MARK: AND THE MOVE ISN'T POSITIVE
+			/*if (NPC* guardian = reciever->getGuardian()) { //MARK: AND THE MOVE ISN'T POSITIVE and also if the guardian isn't on the other team due to hypnosis or other situations
 				cout << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
 				reciever = guardian;
 				CinPause();
@@ -209,7 +218,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			if (attack->guardset) { //set the guard if the attack does that, add it to the current guard unless it's negative, then it geos from 0 because getGuard returns that for values < 0
 				attacker->setGuard(attacker->getGuard() + attack->guardset);
 			}
-			if (attack->protect) {
+			if (attack->protect) { //MARK: guardians should NOT defend if frozen, tired, or hypnotized, or removed
 				attacker->getGuarding()->setGuardian(NULL); //can only guard one npc at a time
 				reciever->setGuardian(attacker);
 				attacker->setGuarding(reciever);
@@ -650,6 +659,8 @@ void Battle::npcTurn(NPC* npc) {
 	//don't allow taking the player?
 
 	//only allow one npc to be taken at a time
+
+	//make guarding moves prioritize unguarded teammates
 	
 	NPC* target = NULL; //try to find the target by randomly throwing darts until one hits
 	size_t healchecks = 0; //heals specifically may fail

@@ -285,6 +285,9 @@ bool NPC::getQuantumn() {
 bool NPC::getBanker() {
 	return banker;
 }
+bool NPC::getThief() {
+	return thief;
+}
 void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 	time_t now = time(NULL);
 	double interesttime = difftime(now, deposittime) / 31536000; //get how many years have elapsed
@@ -448,6 +451,16 @@ void NPC::setRoom(Room* _room) { //moves the npc from one room to the next, and 
 	currentRoom->removeNPC(this);
 	currentRoom = _room;
 	currentRoom->setNPC(this);
+	for (NPC* guard : guardians) { //move guards to the same room because they do be guarding
+		guard->setRoom(_room);
+	}
+}
+void NPC::roam() { //roam to a random room out of the rooms we roam to
+	Room* target = currentRoom;
+	while (target == currentRoom) {
+		target = roamrooms[rand()%(roamrooms.size())];
+	}
+	setRoom(target);
 }
 void NPC::setHome(Room* room) {
 	home = room;
@@ -577,6 +590,18 @@ void NPC::setQuantumn() {
 }
 void NPC::setBanker() {
 	banker = true;
+}
+void NPC::setThief() {
+	thief = true;
+}
+void NPC::setRoaming(bool roam = true) {
+	roaming = roam;
+}
+void NPC::setRoamRooms(initializer_list<Room*> rooms) {
+	roamrooms = rooms;
+}
+void NPC::setTargetEffect(Effect* effect) {
+	targeteffect = effect;
 }
 void NPC::setTalkMakeChanges(bool miscworks) {
 	talktochange = true;
@@ -717,8 +742,19 @@ void NPC::setGuard(int _guard) {
 	guard = _guard;
 }
 //all the changes editors edit the most recently added changes object and should only be called on world setup lest we segfault due to a lack of thing in queue
-void NPC::addRecruitLink(NPC* npc) { //links this npc to be set to recuritable later
-	changes.back().recruitLinks.push(npc);
+void NPC::addRecruitLink(NPC* npc, size_t condition) { //links this npc to be set to recuritable later
+	if (condition != NEVER) {
+		changes.back().conditionalRecruits.push({npc, condition});
+	} else { 
+		changes.back().recruitLinks.push(npc);
+	}
+}
+void NPC::addDecruitLink(NPC* npc, size_t condition) { //links this npc to be set to recuritable later
+	if (condition != NEVER) {
+		changes.back().conditionalDecruits.push({npc, condition});
+	} else { 
+		changes.back().decruitLinks.push(npc);
+	}
 }
 void NPC::addLinkedRoom(Room* room, const char* desc) { //room's description gets changed to this after this npc is defeated
 	changes.back().roomChanges.push({room, desc});
@@ -757,6 +793,12 @@ void NPC::addRedirect(Room* room1, Room* room2) { //makes room1 redirect to room
 void NPC::guardItem(Item* item) { //guard the given item until defeat
 	item->setGuard(this);
 	changes.back().guardedItems.push(item);
+}
+void NPC::addDeleaderLink(NPC* npc) {
+	changes.back().deleaderLinks.push(npc);
+}
+void NPC::addRoamLink(NPC* npc) {
+	changes.back().roamLinks.push(npc);
 }
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;

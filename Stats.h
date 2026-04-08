@@ -76,8 +76,6 @@ struct Stats {
         return stats; //return the stats we just made!
     }
 
-    
-
     static Stats getStatScale(const Stats& basestats) { //calculate default scaling stats based on base stats
         Stats scale = Stats(); //all stats start as 0
         Stats score = basestats; //the score for each stat

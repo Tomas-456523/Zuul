@@ -395,7 +395,21 @@ NPC* SetupWorld() {
 								{NULL, "..."},
 								{NULL, "The rock outside is glowing red hot..."},
 								{NULL, "The elevator dings."}});
-	Room* burgerbasement = new Room("in the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
+	Room* burgerbasement = new Room("at the entrance of the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
+	Room* burgbasenw = new Room("in a sort of BURGER storage room, on a metal platform above a pit of BURGERs.");
+	Room* burgbasene = new Room("at the entrance of a storage room.");
+	Room* burgbasew = new Room("at the entrance of the basement cooler room.");
+	Room* burgbasec = new Room("in the middle of the BURGER BASEMENT, featuring many control panels and security cameras.\nYou'd like to press all the buttons but they all need key access.");
+	Room* burgbasee = new Room("at a side room of the basement, with a window overlooking the BURGER assembly line.");
+	Room* burgbasesw = new Room("at an unremarkable corner of the BURGER BASEMENT.");
+	Room* burgbases = new Room("at the entrance of a side room. It looks very high-tech in there.");
+	Room* burgbasese = new Room("at a staircase heading down to the BURGER production platform.");
+
+	Room* burgstorage = new Room("in the storage room. This seems to be where they kidnap people to.");
+	Room* burgboiler = new Room("in the cooler room. The air conditioner is working overtime, complete with its own air conditioner.");
+	Room* burglab = new Room("in the BURGER LABORATORY. There's many nasty looking needles and contraptions.\nThere's a UNIHORN here in quantumn chains.");
+
+
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
 	basestation->setStation();
@@ -404,7 +418,7 @@ NPC* SetupWorld() {
 	tunnels->setStation();
 
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", limbo, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 1), true, true);
+	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", limbo, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
 	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -469,7 +483,7 @@ NPC* SetupWorld() {
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
 
 	//Flower Girl Floria is primarily a healer with some other stuff for variety as well MARK: Floria
-	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 1));
+	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 0));
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely? :>"},
 							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."},
 							 {NULL, "FLORIA - :>"},
@@ -531,7 +545,7 @@ NPC* SetupWorld() {
 	floria->addSpecialAttack(mayflower);
 
 	//Science Gramps Egadwick is a support + some heavy damage MARK: Egadwick
-	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village.\nHe's always advancing science to the dismay of high school chemistry students.", tentlab, 5, Stats(15, 2, 3, 10, 10, 2, 9), Stats(0, 0, 1, 1, 1, 0, 1));
+	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village.\nHe's always advancing science to the dismay of high school chemistry students.", tentlab, 5, Stats(15, 2, 3, 10, 10, 2, 9), Stats(0, 0, 1, 1, 1, 0, 0));
 	egadwick->setDialogue({{egadwick, "Ah hello kiddo. How's it going?"}, {self, "Pretty good."}, {egadwick, "Ah, that's good to hear."}});
 	egadwick->addGymDialogue({{egadwick, "Eh, exercise isn't really my thing."}, {egadwick, "I gain experience by working out my mind!"}});
 	Conversation egadwreject1 = {{self, "Yo Gramps wanna join my BURGER QUEST?"},
@@ -609,13 +623,13 @@ NPC* SetupWorld() {
 	egadwick->addSpecialAttack(orbitalstrike);
 	
 	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
-	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 1));
+	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 0));
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
 										{forestknight, "I shan't assist you; this is an object of sin."},
 										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
 	forestknight->addConversation({{forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots."},
-								   {forestknight, "No matter what I tried, he specifically countered my every technique."},
+								   {forestknight, "No matter what I tried, he countered my every technique."},
 								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's grasp."},
 								   {self, "Yeah no problem."}});
 	Conversation absrecruit1 = {{self, "Hey knight man wanna help me save this kid?"},
@@ -645,9 +659,9 @@ NPC* SetupWorld() {
 	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 15, 10, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
 	forestknight->setBasicAttack(forestslash);
-	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 0, 0, 1, 1, 3, true, 10);
-	forestknight->addSpecialAttack(defend);
+	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 0, 0, 1, 1, 1, true, 10);
 	defend->protect = true; //defend start protecting
+	forestknight->addSpecialAttack(defend);
 	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 25, 30, 1, 1, 3, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
@@ -672,7 +686,7 @@ NPC* SetupWorld() {
 	forestknight->addSpecialAttack(blitz);
 
 	//Miner Maniac Mike is a good damage teammate with the risk of friendly fire MARK: Mike
-	NPC* mike = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a reckless mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 1));
+	NPC* mike = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a reckless mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
 	mike->addConversation({{NULL, "MIKE is throwing dynamite at the rocky wall."},
 						   {self, "That doesn't look very safe."},
 						   {mike, "HAHAHAHA Aren't the blasts just music to your ears?"},
@@ -742,7 +756,7 @@ NPC* SetupWorld() {
 	//and make him say "Oops."
 
 	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
-	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
+	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
@@ -778,7 +792,7 @@ NPC* SetupWorld() {
 	cacty->addSpecialAttack(superspine);
 
 	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
-	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", factorykitchen, 10, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 1));
+	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", factorykitchen, 10, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
 	michelin->addConversation({{michelin, "Oh hi."},
 							   {self, "hi"},
 							   {michelin, "Hey can you help me with something?"},
@@ -896,7 +910,7 @@ NPC* SetupWorld() {
 	michelin->addSpecialAttack(congratulation);
 
 	//Hackerman Carlos is a disruptor MARK: Carlos
-	NPC* carlos = new NPC("HACKERMAN", "CARLOS", "Black hat hacker with no hat and no vitamin D. He has a space invaders hoodie.", factorytower, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 1));
+	NPC* carlos = new NPC("HACKERMAN", "CARLOS", "Black hat hacker with no hat and no vitamin D. He has a space invaders hoodie.", factorytower, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
 	carlos->setDialogue({{carlos, "get out i cant focus with you here"}, {carlos, "im so close to hacking into microsofts mony supply"}});
 	carlos->addRejectionDialogue({{carlos, "what"}, {carlos, "get outta my room im tryna focus"}});
 	carlos->addRecruitmentDialogue({{self, "Hey wanna join my team?"}, {carlos, "no"}, {self, "Come on you gotta get some vitamin D."}, {carlos, "no i gotta start over stealing microsofts monies >:("}, {self, "If you want monies we get a lot just by fighting random enemies."}, {carlos, "..."}, {carlos, "fine ill join you"}});
@@ -960,7 +974,7 @@ NPC* SetupWorld() {
 	cascadingfailure->addDescription("Trigger a cascading failure in the enemy team, with the attack's effectiveness multiplied for every one of Carlos's statuses present. (20 ATTACK, 40 PIERCE)");
 
 	//Princess Plum is support MARK: Plum
-	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", limbo, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 9));
+	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", limbo, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 0));
 	plum->addDismissalDialogue({{plum, "Well, I'll be heading back to my kingdom!"}, {plum, "Bye bye!"}});
 	plum->addRecruitedDialogue({{plum, "Ahh, sure beats a diet of pure fungus!"}});
 	plum->addRecruitmentDialogue({{self, "Hey before you head back to your kingdom, wanna join my team?"}, {plum, "It would be my pleasure!"}});
@@ -1004,7 +1018,7 @@ NPC* SetupWorld() {
 	plum->addSpecialAttack(lifemushroom);
 
 	//Gambler Graham is the rng guy MARK: Graham
-	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(24, 12, 12, 12, 12, 12, 9), Stats(1, 1, 1, 0, 0, 0, 1));
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(24, 12, 12, 12, 12, 12, 9), Stats(1, 1, 1, 0, 0, 0, 0));
 	Conversation gramconvo = {{self, "You should stop gambling."}, {graham, "What?"}, {graham, "Haven't you heard that 99% of gamblers quit right before hitting it big?"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}};
 	gramconvo.skipcondition = NOGAMBLING;
 	graham->addConversation(gramconvo);
@@ -1015,10 +1029,6 @@ NPC* SetupWorld() {
 	graham->setRecruitDialogueChange({{graham, "Come onnnnn....."}, {graham, "What's taking them so long to fix this place?"}});
 	graham->addGymDialogue("This place is out of my comfort zone.");
 	
-	//Room* leftstreet4 = new Room("at the entrance to a glowing casino. One of the few functioning buildings here.");
-	//Room* casino = new Room("in the casino. Sounds of slot machines and flashing lights overload your senses.\nYou should really leave before you develop a gambling addiction.");
-	//Room* casinoback = new Room("in the casino's back room. There's a staircase heading to the basement and crates full of gambling addicts' monies.");
-	//Room* casinobase = new Room("in the casino's basement, housing the massive energy core required to power all the lights.");
 	Item* grambutton4 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "Emergency sirens start blaring!"}, {NULL, "Thick protective shields envelop the energy core!"}, {NULL, "The energy core explodes within the casing!"}, {NULL, "The protective shields almost hit your face."}, {self, "Oh oops O_O"}});
 	WorldChange& gramchanges4 = ((WorldChangeItem*)grambutton4)->getChanges();
 	gramchanges4.recruitLinks.push(graham);
@@ -1136,103 +1146,171 @@ NPC* SetupWorld() {
 	graham->addSpecialAttack(nat20);
 
 	//Rich Guy Richie is the summoner MARK: Richie
-	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(), Stats());
+	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(5, 0, 15, 0, 0, 14, 9), Stats(1, 0, 1, 0, 0, 1, 0));
+	Conversation richrej = {{richie, "No, everyone in this city is either rich and trying to get me to join some BURGER cult,"}, {richie, "or not rich and trying to rob me."}, {richie, "No offense but I don't really trust you."}};
+	shared_ptr<Conversation> richrej2 = make_shared(Conversation({{self, "Hey you wanna help me fight these BURGER guys?"},
+		{richie, "In that building over there?"},
+		{self, "Yea."},
+		{richie, "You know we have like these advanced security systems in this neighborhood right?"},
+		{richie, "You're gonna get blown up as soon as you walk onto their doorstep."},
+		{self, "Nah I got this cloaking device."},
+		{richie, "..."},
+		{richie, "You look pretty uncloaked to me."}}));
+	richrej.skipcondition = JILLYQUEST;
+	richrej.alt = richrej2;
+	richie->addRejectionDialogue(richrej);
+	Conversation richrec = {{self, "Hey you wanna help me fight these BURGER guys?"},
+		{richie, "In that building over there?"},
+		{self, "Yea."},
+		{richie, "You know we have like these advanced security systems in this neighborhood right?"},
+		{richie, "You're gonna get blown up as soon as you walk onto their doorstep."},
+		{self, "Nah I got this cloaking device."},
+		{NULL, "You turn invisible and visible again."},
+		{richie, "Huh."},
+		{self, "So I'm going there to save this kid they kidnapped."},
+		{richie, "Oh."},
+		{richie, "Yeah I really want these BURGER guys gone."},
+		{richie, "Like their whole cult thing is one thing."},
+		{richie, "But you just said they kidnapped someone?"},
+		{self, "Yeah."},
+		{richie, "Yeah, lets go gettem."}};
+	shared_ptr<Conversation> richrec2 = make_shared<Conversation>(Conversation({{richie, "Did you blow up the BURGER headquarters?"},
+		{richie, "I saw you walk in there and the top floor just blew up."},
+		{self, "Oh that was the CEO."},
+		{self, "We fought him normally but he kind of just blew up on his own."},
+		{richie, "Huh."},
+		{self, "Hey you wanna help me find this kid they kidnapped?"},
+		{richie, "They what?"},
+		{richie, "Well I always wanted these BURGER guys gone."},
+		{richie, "But you just said they kidnapped someone?"},
+		{richie, "That's way too far."},
+		{richie, "Yeah, lets go gettem."}}));
+	shared_ptr<Conversation> richrec3 = make_shared<Conversation>(Conversation({{self, "Hey you wanna help me destroy BURGERs from existence?"},
+		{richie, "..."},
+		{richie, "What?"},
+		{self, "Yeah, using this THE PLOT DEVICE."},
+		{richie, "..."},
+		{richie, "You were the one who blew up the CEO right?"},
+		{richie, "Cause I saw you walk in their building and that happened."},
+		{self, "Well we fought him normaly but he kind of just blew up on his own."},
+		{richie, "You sound like you're making everything up..."},
+		{richie, "But you also clearly know what you're doing if you beat Enzo..."},
+		{richie, "Yeah why not, I don't have anything better to do."},
+		{richie, "Plus I really want this BURGER cult gone."}}));
+	shared_ptr<Conversation> richrec4 = make_shared<Conversation>(Conversation({{self, "Hey you wanna join my team?"},
+		{richie, "You were the one who blew up the CEO right?"},
+		{richie, "Cause I saw you walk in their building and that happened."},
+		{self, "Well we fought him normaly but he kind of just blew up on his own."},
+		{richie, "Well if you beat Enzo you seem pretty qualified..."},
+		{richie, "Why not, I don't have anything better to do."}}));
+	richrec.alt = richrec2;
+	richrec.skipcondition = BEATCEO;
+	richrec2->alt = richrec3;
+	richrec2->skipcondition = TEMPLEQUEST;
+	richrec3->alt = richrec4;
+	richrec3->skipcondition = BURGERMENDEF;
+	richie->addRecruitmentDialogue(richrec);
+	richie->addDismissalDialogue("Welp, Imma head back to my house.");
+	Conversation richdial = {{richie, "Hey man don't come any closer."}, {richie, "Or you're gonna get blown up by my security systems."}};
+	shared_ptr<Conversation> richdial2 = make_shared<Conversation>(Conversation({{richie, "I know you beat the CEO and everything,"}, {richie, "but still watch out for my security systems."}, {richie, "Or you're gonna get blown up."}}));
+	richdial.alt = richdial2;
+	richdial.skipcondition = BEATCEO;
+	richie->setDialogue(richdial);
+	richie->setRecruitDialogueChange("Whattup.");
+	richie->addRecruitedDialogue("Whattup.");
+	richie->addGymDialogue({{richie, "I mean I have a gym at home but I guess this works."}, {richie, "Just offering."}});
 
-	//rejection: No, everyone in this city is either rich and trying to get me to join some BURGER cult,
-	//or not rich and trying to rob me.
-	//No offense but I don't really trust you.
+	NPC* drone = new NPC("", "DRONE", "Combat drone that Richie bought to help in battle.", limbo, 0, Stats(16, 0, 18, 0, 20, 30, 9));
+	Attack* dronegun = new Attack("DRONE GUN", "fired at", false, -5, 4, 10, 3, 3, 1);
+	Attack* ram = new Attack("RAM", "rammed into", true, 8, 17, 0, 1, 1, 1);
+	drone->setBasicAttack(dronegun);
+	drone->addSpecialAttack(ram);
 
-	//Hey you wanna help me fight these BURGER guys?
-	//In that building over there?
-	//Yea.
-	//You know we have like these advanced security systems right?
-	//You're gonna get blown up as soon as you walk onto their doorstep.
-	//Nah I got this cloaking device.
-	//...
-	//You look pretty uncloaked to me.
+	NPC* healsprinkler = new NPC("", "HEAL SPRINKLER", "Portable station that sprinkles health onto the team, bought by Richie to aid in battle.", limbo, 0, Stats(30, 0, 10, 0, 0, 0, 9));
+	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -7, 0, 1, 1, 7, true);
+	sprinkle->focushits = false;
+	healsprinkler->setBasicAttack(sprinkle);
 
-	//Hey you wanna help me fight these BURGER guys?
-	//In that building over there?
-	//Yea.
-	//You know we have like these advanced security systems right?
-	//You're gonna get blown up as soon as you walk onto their doorstep.
-	//Nah check it out I got this cloaking device.
-	//You turn invisible and visible again.
-	//Huh.
-	//So I'm going there to save this kid they kidnapped.
-	//Oh.
-	//Yeah I really want these BURGER guys gone.
-	//Like their whole cult thing is one thing.
-	//But you just said they kidnapped someone?
-	//Yeah.
-	//Yeah, lets go gettem.
+	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(40, 0, 16, 0, 8, 13, 9));
+	Effect* swatshield = new Effect("SWAT SHIELD", 2147483647);
+	swatshield->guardset = 1;
+	guardbot->setEffect(swatshield, false);
+	Attack* baton = new Attack("BATON", "thwacked", true, -5, 15, 0, 1, 1, 1);
+	baton->afterdesc = " with its baton";
+	Attack* pepperspray = new Attack("PEPPER SPRAY", "sprayed pepper spray at", false, 7, 10, 0, 1, 1, 1);
+	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 3, 0, 0.5f, 0.75f);
+	baton->addEffect(pepperspray);
+	guardbot->addSpecialAttack(protectandserve);
+	Attack* protectandserve = new Attack("PROTECT AND SERVE", "is protecting", false, 10, 0, 0, 1, 1, 1, true);
+	protectandserve->protect = true;
+	guardbot->addSpecialAttack(protectandserve);
 
-	//Did you just blow up the BURGER headquarters?
-	//I saw you walk in there and the top floor just blew up.
-	//Oh that was the CEO.
-	//We fought him normally but he kind of just blew up on his own.
-	//Huh.
-	//Hey you wanna help me find this kid they kidnapped?
-	//They what?
-	//Well I always wanted these BURGER guys gone.
-	//But you just said they kidnapped someone?
-	//That's way too far.
-	//Yeah, lets go gettem.
-
-	//Hey you wanna help me destroy BURGERs from existence?
-	//...
-	//What?
-	//Yeah, using this THE PLOT DEVICE.
-	//...
-	//You were the one who blew up the CEO right?
-	//Cause I saw you walk in their building and that happened.
-	//Well we fought him normaly but he kind of just blew up on his own.
-	//You sound like you're making everything up...
-	//But you also clearly know what you're doing if you beat Enzo...
-	//Yeah why not, I don't have anything better to do.
-	//Plus I really want this BURGER cult gone.
-
-	//Hey you wanna join my team?
-	//You were the one who blew up the CEO right?
-	//Cause I saw you walk in their building and that happened.
-	//Well we fought him normaly but he kind of just blew up on his own.
-	//Well if you beat Enzo you seem pretty qualified...
-	//Why not, I don't have anything better to do.
-
-	//dismissal: Welp, Imma head back to my house.
-
-	Attack* throwmoney = new Attack("THROW MONEY AT THE PROBLEM", "threw a heavy gold bar at", -5, 20, 0, 1, 1, 1);
+	NPC* marinemech = new NPC("", "MARINE MECH", "Advanced and expensive military droid bought by Richie as a great help in battle.", limbo, 0, Stats(50, 0, 30, 0, 35, 30, 9));
+	Attack* openfire = new Attack("OPEN FIRE", "opened fire upon", false, -5, 4, 20, 5, 5, 1);
+	Attack* rockemsockem = new Attack("ROCKEM SOCKEM", "rocked and socked", true, 5, 15, 0, 2, 2, 1);
+	Attack* pgmissile = new Attack("PRECISION GUIDED MISSILE", "fired a precision guided missile at", false, 10, 20, 25, 1, 1, 3);
+	marinemech->setBasicAttack(openfire);
+	marinemech->addSpecialAttack(rockemsockem);
+	marinemech->addSpecialAttack(pgmissile);
+	
+	Attack* throwmoney = new Attack("THROW MONEY AT THE PROBLEM", "threw a heavy gold bar at", false, -5, 20, 0, 1, 1, 1);
 	richie->setBasicAttack(throwmoney);
-
-	//drone
-
-	//
-
-	//marine mech
+	Attack* buydrone = new Attack("AMAZON PRIME", "bought a DRONE on Amazon", false, 5, 0, 0, 0, 0, 0);
+	buydrone->summon = drone;
+	richie->addSpecialAttack(buydrone);
+	Attack* buyheal = new Attack("AMAZON PRIME", "bought a HEAL SPRINKLER on Amazon", false, 10, 0, 0, 0, 0, 0);
+	buyheal->summon = healsprinkler;
+	richie->addSpecialAttack(buyheal);
+	Attack* buybot = new Attack("AMAZON PRIME", "bought a ROBOCOP on Amazon", false, 15, 0, 0, 0, 0, 0);
+	buybot->summon = guardbot;
+	richie->addSpecialAttack(nat7);
+	Attack* buymech = new Attack("AMAZON PRIME", "bought a MARINE MECH on Amazon", false, 20, 0, 0, 0, 0, 0);
+	buymech->summon = marinemech;
+	richie->addSpecialAttack(buymech);
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
-	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(), Stats());
-	//make sure he's guarding richie and give him one guard
-
-	//counter (recoil attack)
-
-	//martial art (multi hit basic)
-
-	//scissor kick (two hits)
-
-	//sweep the leg (stun until next turn)
-
-	//suplex
-
-	//discombobulate (stun for two turns)
-
-	//540
+	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(40, 50, 20, 50, 0, 25, 9), Stats());
+	richie->setGuardian(buford);
+	buford->setGuarding(richie);
+	buford->setDialogue("...");
+	buford->addRejectionDialogue({{buford, "..."}, {NULL, "BUFORD is already recruited by RICHIE!"}});
+	Attack* counter = new Attack("COUNTER", "counterattacked", false, -5, 10, 0, 1, 1, 1); //this very much is a contact move but it has to be marked as non-contact lest there be an infinite recoil loop
+	buford->setRecoilAttack(counter);
+	Attack* martialart = new Attack("MARTIAL ART", "combo'd", true, -5, 3, 0, 6, 7, 1);
+	martialart->afterdesc = " with one of his many martial arts";
+	buford->setBasicAttack(martialart);
+	Attack* scissorkick = new Attack("SCISSOR KICK", "threw out a scissor kick", true, 5, 15, 0, 2, 2, 1);
+	scissorkick->focushits = false;
+	buford->addSpecialAttack(scissorkick);
+	Attack* sweeptheleg = new Attack("SWEEP THE LEG", "sweeped", true, 8, 20, 0, 1, 1, 1);
+	Effect* sweeped = new Effect("SWEEPED", 0);
+	sweeped->tiring = true;
+	sweeptheleg->addEffect(sweeped);
+	buford->addSpecialAttack(sweeptheleg);
+	Attack* suplex = new Attack("SUPLEX", "suplexed", true, 8, 0, 0, 1, 1, 1);
+	suplex->afterdesc = " into the air";
+	Effect* suplexed = new Effect("SUPLEXED", 0);
+	suplexed->remove = true;
+	suplex->addEffect(suplexed);
+	suplexed->falldamage = 15;
+	buford->addSpecialAttack(suplex);
+	Attack* discombobulate = new Attack("DISCOMBOBULATE", "thunderclapped", true, 15, 20, 0, 1, 1, 1);
+	Effect* discombobulated = new Effect("DISCOMBOBULATED", 2);
+	discombobulated->freeze = true;
+	discombobulate->addEffect(discombobulated);
+	buford->addSpecialAttack(discombobulate);
+	Attack* fiveforty = new Attack("540", "kicked", true, 18, 35, 0, 1, 1, 1);
+	fiveforty->afterdesc = " with a 540 jump round house";
+	buford->addSpecialAttack(fiveforty);
 
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
 	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER.\nHe wears a formal business suit and a traumatized expression.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
 	//self, "WHAT!?!?"
 	//self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"
 	//hj, "Yeah that's my name."
+
+	//You know there's an ANTI-SKELETON DEVICE lying around in my old office.
+	//Shame the portal's busted because we could probably actually pick it up with this game's brand new multi-word parsing.
 
 	//briefbase
 	
@@ -1457,16 +1535,16 @@ NPC* SetupWorld() {
 	Conversation devconvo = {{developer, "Ayy BERNARD how's it going?"},
 							{self, "Pretty good I think but the player actually named me that."},
 							{NULL, "\n^"
-								"\n|"
-								"\n|"
-								"\n|"},
+								   "\n|"
+								   "\n|"
+								   "\n|"},
 	// (\               				// (\               				// (\               			// (\               
 	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,
 	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |
 	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  /\___/  |
 	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//    ___\, `' _____  `-"""/
-	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//    "--___ /___ ___\__--"
-	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//          |  |   |  |
+	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//    "--__  /___ ___\ _--"
+	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//         '|  |   |  |'
 	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /
 	//             """""				//             """""				//             """""			//             """""" \ 
 	//            |     |				//            |     |				//            |     |			//            |     |.`\ 
@@ -1647,7 +1725,7 @@ NPC* SetupWorld() {
 	//The BURGER RESTAUANT has been left to rot in the depths.
 	//The BURGER corporation has been deprived of its leadership...
 	//and its source of revenue.
-	//BURGER's grasp on the world has been dissolved.
+	//BURGER's grasp on the world has been completely dissolved.
 	//<<< BURGER QUEST COMPLETE! >>>
 	//<<<    ENDING ACHIEVED:    >>>
 	//<<<      BURG NO MORE      >>>
@@ -2717,7 +2795,7 @@ NPC* SetupWorld() {
 	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", false, 10, 20, 0, 1, 1, 1);
 	egadbot->addSpecialAttack(timber);
 
-	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 1));
+	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
 	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 10, 20, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 7);
 	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
@@ -2819,7 +2897,7 @@ NPC* SetupWorld() {
 	tunnellobster->setBoss(true);
 
 	//Gravity Girl Viola is mostly attack with some support but a boss fight first MARK: Viola (enemy)
-	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 20, 20, 19), Stats(1, 0, 1, 0, 2, 0, 1));
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 20, 20, 19), Stats(1, 0, 1, 0, 2, 0, 0));
 	tkviola->setBoss(true);
 	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", false, -5, 10, 20, 1, 1, 1);
 	tkviola->setBasicAttack(wave);
@@ -2865,7 +2943,7 @@ NPC* SetupWorld() {
 	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (35 DAMAGE, 100 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
-	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 9), Stats(1, 2, 1, 0, 1, 0, 1));
+	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 9), Stats(1, 2, 1, 0, 1, 0, 0));
 	greer->setBoss(true);
 	Attack* gun = new Attack("GUN", "shot", false, -5, 30, 50, 1, 1, 1);
 	greer->setBasicAttack(gun);
@@ -3002,7 +3080,7 @@ NPC* SetupWorld() {
 	gatorgun->addEffect(extrafire);
 	lavagator->addSpecialAttack(gatorgun);
 
-	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 1));
+	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 0));
 	lavaguardian->setBoss(true);
 	Attack* contactexplosion = new Attack("EXPLOSION", "blew up in", false, 0, 15, 20, 1, 1, 1);
 	contactexplosion->afterdesc = "'s face";
@@ -3040,7 +3118,7 @@ NPC* SetupWorld() {
 	adblock->prioritizeleader = true;
 	newtab->addSpecialAttack(adblock);
 
-	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 1));
+	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 0));
 	browser->setBoss(true);
 	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 10, 20, 1, 1, 1); //made of fine chromium
 	medge->afterdesc = " with his MICROSOFT EDGE";
@@ -3069,7 +3147,7 @@ NPC* SetupWorld() {
 	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 	castlethrone->setWelcome({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 	
-	NPC* snowman = new NPC("", "SNOWMAN", "Really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
+	NPC* snowman = new NPC("", "SNOWMAN", "A really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
 	Attack* oopsy = new Attack("SNOW BASH", "tripped", false, 50, 15, 0, 1, 1, 1, true);
 	oopsy->focushits = false;
 	Attack* snowbash = new Attack("SNOW BASH", "socked", true, 1, 300, 0, 1, 1, 1); //if he's high level enough he doesn't die instantly! so maybe he can be interesting in the simulator
@@ -3197,16 +3275,16 @@ NPC* SetupWorld() {
 	bagelfenagler->addSpecialAttack(fenagle);
 
 	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough pavement-gray shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats(20, 15, 35, 25, 50, 30, 9));
-	Effect* submerged = new Effect("SUBMERGED", 2147483647, 0, 0, 1, 2);
+	Effect* submerged = new Effect("SUBMERGED", 2147483647, 0, 0, 1, 3);
 	Attack* sharkbite = new Attack("SHARK BITE", "sharkily bit", true, -5, 20, 50, 1, 1, 1);
 	sharkbite->selfcancel = submerged;
 	sharkbite->affectselfbeforeattack = true;
 	Attack* submerge = new Attack("SUBMERGE", "submerged into the pavement", false, 3, 0, 0, 0, 0, 0);
 	submerge->selfeffect = submerged;
 	Attack* breach = new Attack("BREACH", "jumped biting out of the pavement at", true, 5, 30, 50, 1, 1, 1);
-	sharkbite->synergies.push_back(submerged);
-	sharkbite->selfcancel = submerged;
-	sharkbite->affectselfbeforeattack = true;
+	breach->synergies.push_back(submerged);
+	breach->selfcancel = submerged;
+	breach->affectselfbeforeattack = true;
 	paveshark->setBasicAttack(sharkbite);
 	paveshark->addSpecialAttack(submerge);
 	paveshark->addSpecialAttack(breach);
@@ -3240,41 +3318,46 @@ NPC* SetupWorld() {
 	get->focushits = false;
 	gamblemonster->setBasicAttack(gonna);
 	gamblemonster->addSpecialAttack(get);
+	
+	NPC* grandma = new NPC("EVIL GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats(150, 10, 30, 0, 30, 37, 9));
 
-	NPC* grandma = new NPC("EVIL GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats());
-	//HELP ME DEARIE!
-	//This bad man is beating me up!
-	//And stealing my purse!
-	//self, Why are you beating up this grandma? >:(
-	//ratman, Because I'm Ratman.
-
-	//Thank you so much!
-	//Hahahaha
-	//HAHAHAHAHAHAHAHA!
-	//THANK YOU FOR BEING SO DUMB!
-	//MARGE athletically sprints away with all your monies.
-	//She looks like a poor grandma getting beat up by Ratman.
-
-	//HAH! I wasn't convincing enough, was I?
-	//You're a smart cookie, you!
-	//(grandma saying but in a threatening way)
-
-	//And I would have gotten away with it too,
-	//If it weren't for you meddling kids!
-
-	//axe
-	//purse pow
-	//slipper
+	//war axe
+	//are you hungry? (fire flaming cookies)
+	//purse flail (two random targets get hit)
+	Attack* slipper = new Attack("SLIPPER", "threw a heat-seeking slipped at", false, 20, 30, 1, 1, 1);
+	Effect* severelyconcussed = new Effect("SEVERELY CONCUSSED", 3);
+	severelyconcussed->tiring = true;
+	slipper->addEffect(severelyconcussed);
 
 	//Ratman is Batman MARK: Ratman (enemy)
-	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(), Stats());
-	//I'm Ratman.
-	//He's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.
+	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(25, 30, 24, 20, 15, 23, 10), Stats(0, 1, 1, 0, 1, 0, 0));
+	Effect* prepared = new Effect("PREPARED AGAINST", 3);
+	prepared->redundanteffect = false; //don't prepare multiple times
+	ratman->setTargetEffect(prepared);
 
-	//ratarang
+	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 12, 10, 1, 1, 1);
+	ratman->setBasicAttack(ratarang);
 
-	//prep time
+	Attack* preptime = new Attack("PREP TIME", "prepared against", false, 10, 0, 0, 1, 1, 1);
+	preptime->addEffect(prepared);
+	ratman->addSpecialAttack(preptime);
 
+	Attack* taserfinger = new Attack("TASER FINGER", "tased", false, -5, 12, 10, 1, 1, 1);
+	taserfinger->afterdesc = " with his taser finger";
+	Effect* tased = new Effect("TASED", 3);
+	tased->freeze = true;
+	taserfinger->addEffect(tased);
+	ratman->addSpecialAttack(taserfinger);
+
+	//smoke bomb
+
+	//explosive gel
+	
+	//grapple gun
+
+	//
+
+	//shark repellant (only use on sharks and instakills)
 
 	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his money.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
 	Attack* brassknuckles = new Attack("BRASS KNUCKLES", "swung at", true, -5, 20, 0, 1, 1, 1);
@@ -3343,7 +3426,7 @@ NPC* SetupWorld() {
 	burgerbutler->addSpecialAttack(chandelier);
 	burgerbutler->addSpecialAttack(vacuum);
 	
-	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 25, 25, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 1));
+	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 25, 25, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 0));
 	ceo->setBoss(true);
 	Effect* lockedon = new Effect("LOCKED ON", 4); //does nothing
 	Attack* lockon = new Attack("LOCK ON", "locked onto", false, -5, 0, 0, 1, 1, 1);
@@ -4114,9 +4197,88 @@ NPC* SetupWorld() {
 	NPC* evilgrandma = new NPC(*grandma);
 	evilgrandma->setLeader(true, 22, rightstreet3, false);
 	evilgrandma->setMask("GRANDMA", "MARGE", "She looks like a poor grandma getting beat up and robbed by Ratman.");
+	evilgrandma->setWorldCondition(BEATMARGE);
+	rightstreet3->setWelcome({{grandma, "AHHHHHHHH!"},
+							  {grandma, "HELP ME, DEARIE!"},
+							  {grandma, "This bad man is beating me up!"},
+							  {grandma, "And stealing my purse!"},
+							  {self, "Why are you beating up this grandma? >:|"},
+							  {ratman, "Because I'm Ratman."}});
+	evilgrandma->setTalkOnDefeat();
+	evilgrandma->addOpeningDialogue({{grandma, "HAH! I wasn't convincing enough, was I?"},
+									 {grandma, "You're a smart cookie, you!"},
+									 {grandma, "Bless your heart."},
+									 {grandma, "Looks like I'll have to do this the old-fashioned way!"}});
+	evilgrandma->addLinkedConvo(grandma, {{grandma, "AHHHH COME ON!"},
+										  {grandma, "And I would have gotten away with it too,"},
+										  {grandma, "if it weren't for you meddling kids!!"},
+										  {ratman, "Good work, kid."},
+										  {ratman, "This grandma has been terrorizing the city for many years."},
+										  {ratman, "But now she's going straight to the BURGERSBURG asylum."},
+										  {ratman, "Because I'm Ratman."},
+										  {NULL, "RATMAN grappling hooks away carrying a tied up MARGE."}});
 
-	NPC* theratman = new NPC(*ratman);
+	evilgrandma->addDeleaderLink(ratman);
+	evilgrandma->addRoamLink(ratman);
+	evilgrandma->addDefeatRoom({grandma, limbo});
+	//recruit ratman?
+
+	NPC* theratman = new NPC(*ratman);  //MARK: Ratman
 	theratman->setLeader(true, 22, rightstreet3);
+	theratman->setDialogue("I'm Ratman.");
+	theratman->addRecruitedDialogue("I'm Ratman.");
+	theratman->addGymDialogue("I'm Ratman.");
+	theratman->setThief(); //beating Ratman means Marge steals all your monies
+	theratman->addOpeningDialogue({{NULL, "Na na na na na na na na"},
+								   {NULL, "na na na na na na na na"},
+								   {NULL, "na na na na na na na na"},
+								   {NULL, "RATMAN!"}});
+	theratman->setTalkOnDefeat();
+	theratman->addLinkedConvo(theratman, {{grandma, "Thank you so much!"},
+										  {grandma, "Hahahaha"},
+										  {grandma, "HAHAHAHAHAHAHAHA!"},
+										  {grandma, "THANK YOU FOR BEING SO DUMB!"},
+										  {NULL, "MARGE athletically sprints away with all your monies."},
+										  {ratman, "Why'd you get in the way, kid?"},
+										  {self, "Well it looked like you were beating up a poor grandma."},
+										  {self, "Why didn't you clarify better what you were doing?"},
+										  {ratman, "Because I'm Ratman."},
+										  {self, "T_T"},
+										  {NULL, "RATMAN grappling hooks away."}});
+	//The dark knight, the caped crusader, etc.
+	//He's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.
+	
+	theratman->setWorldCondition(BEATRATMAN);
+
+	theratman->addRejectionDialogue({{self, "Hey rat man wanna join me on my BURGER QUEST?"},
+									 {ratman, "I don't have time to get a BURGER, kid."},
+									 {ratman, "I have a city to protect."},
+									 {ratman, "Because I'm Ratman."}});
+	Conversation batrec1 = {{self, "Hey rat man wanna help me save this kid?"},
+							{ratman, "I will help you save this child."},
+							{ratman, "Because I'm Ratman."}};
+	batrec1.skipcondition = TEMPLEQUEST;
+	shared_ptr<Conversation> batrec2 = make_shared<Conversation>(Conversation({{self, "Hey rat man wanna help me destroy BURGERs?"},
+							{ratman, "Sorry, kid."},
+							{ratman, "I've got bigger matters to deal with than a fast food corporation."},
+							{self, "No they're actually evil and stuff."},
+							{self, "They're like trying to destroy all the forests and stuff."},
+							{self, "And also they kidnapped a child."},
+							{self, "And also "}, //MARK: put the reason
+							{ratman, "I stand corrected."},
+							{ratman, "This sounds like serious business."},
+							{ratman, "I will help you destroy BURGERs"},
+							{ratman, "Because I'm Ratman."}}));
+	batrec2->skipcondition = BURGERMENDEF;
+	shared_ptr<Conversation> batrec3 = make_shared<Conversation>(Conversation({{self, "Hey rat man wanna join me?"},
+							{ratman, "I've noticed a decline in crime recently."},
+							{ratman, "I could probably fit in some adventuring."},
+							{ratman, "So I will join your team."},
+							{ratman, "Because I'm Ratman."}}));
+	batrec1.alt = batrec2;
+	batrec2->alt = batrec3;
+	theratman->addDismissalDialogue({{ratman, "I shall continue to protect the city."}, {ratman, "Because I'm Ratman."}, {NULL, "RATMAN grappling hooks away."}});
+	theratman->setRoamRooms({mainstreet1, mainstreet2, mainstreet3, mainstreet4, mainstreet5, coolstreet1, coolstreet2, coolstreet3, coolstreet4, coolstreet5, rightstreet1, rightstreet2, rightstreet3, rightstreet4, rightstreet5});
 
 	NPC* burgerguards = new NPC(*burgeragent);
 	burgerguards->setLeader(true, 23, richneighborhood4, false);
@@ -4262,7 +4424,7 @@ NPC* SetupWorld() {
 	volcano7->blockExit(NORTH, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
 	sewerentrance1->blockExit(DOWN, LAVA, "submerged in lava.");
 	sewerentrance2->blockExit(DOWN, LAVA, "submerged in lava.");
-	sewer2->blockExit(UP, COVER, "covered by a manhole cover."); //these two must be unblocked by taking the manhole cover from above (because the cover perfectly fits the hole, so logically you can't take it from below)
+	sewer2->blockExit(UP, COVER, "covered by a manhole cover."); //these two must be unblocked by taking the manhole cover from above (because the cover perfectly fits the hole, so logically you can't take it from below (I guess you could just push it but there's no push command))
 	sewerentrance1->blockExit(UP, COVER, "covered by a manhole cover.");
 	volcano2->blockExit(DOWN, LAVA, "submerged in lava."); //these two wil not show until the manhole cover is removed
 	volcano6->blockExit(DOWN, LAVA, "submerged in lava.");
@@ -4371,6 +4533,9 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 			if (npc->getLobster() && !npc->getLeader()) {
 				npc->setRoom(roomCanidate); //move the lobster
 				break; //break because there's only one lobster
+			} //make roaming npcs roam
+			if (npc->getRoaming() && !npc->getRecruited() && !npc->getLeader()) {
+				npc->roam();
 			}
 		}
 	}
@@ -4408,9 +4573,19 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	if (npc->getConvoSize()) { //I want the player to hear all the dialogue instead of blindly fighting everyone, so we make sure if the npc has dialogue that it is said
 		npc->printDialogue(true);
 		cout << "\n";
-	} //print any dialogue that is specifically printed right before battle
+	}
+	NPC* roamio = NULL; //add roaming npc to the party if one is here
+	for (NPC* _roamio : currentRoom->getNpcs()) {
+		if (_roamio->getRoaming() && !_roamio->getRecruited() && npc != _roamio) {
+			roamio = _roamio;
+			party->push_back(roamio);
+			cout << roamio->getName() << " is fighting alongside you!";
+			break;
+		}
+	}
+	//print any dialogue that is specifically printed right before battle
 	npc->printOpeningDialogue();
-	//creates the Battle! 
+	//creates the Battle!
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
 	//initiates the battle and returns an int that represents the outcome of the battle
 	int battlestatus = battle.FIGHT();
@@ -4505,8 +4680,11 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 
 			npc->undefeat(); //make sure the lobster isn't defeated after the battle so you can try using it
 			npc->setLeader(false); //make it not a leader so you can't fight it and so you can use it
+		} else if (npc->getThief()) {
+			mony = 0; //if you were fighting someone marked "thief" you lose all your monies (doesn't necessarily mean they were the thief, just means you lose all your monies)
 		}
 	}
+	if (roamio) party->erase(remove(party->begin(), party->end(), roamio), party->end());
 	//prints the room data after battle so that the player can reorient themselves
 	PrintRoomData(currentRoom);
 }

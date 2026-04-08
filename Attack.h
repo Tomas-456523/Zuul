@@ -44,6 +44,7 @@ struct Attack {
 	int spleak; //how much sp the attack removes from the target
 
 	Effect* appliedeffect = NULL; //targets get affected by this effect when hit
+	bool redundanteffect = true; //allow doing effect attack if the target has the effect already
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
 	vector<Effect*> synergies; //if the target has these effects effect, the attack power goes up by 1.5x each
 	Effect* cancel = NULL; //attack removes this effect
@@ -55,7 +56,7 @@ struct Attack {
 	float recoilchance = 0;
 
 	NPC* summon = NULL; //the npc that the attack summons
-	int summonamount = 0; //how many of the summon to summon
+	int summonamount = 1; //how many of the summon to summon
 	bool matchsummonhealth; //if the summons should match their health to the summoner's
 	bool enemysummon = false; //if the summon goes to the enemy team
 
