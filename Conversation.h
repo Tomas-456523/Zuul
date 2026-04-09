@@ -16,7 +16,7 @@ struct Conversation {
 	std::vector<std::pair<NPC*, const char*>> lines;
 	std::shared_ptr<Conversation> alt; //alternate dialogue if the skipcondition is true
 
-	int skipcondition; //if we should skip this, based on WorldConditions in Helper
+	vector<int> skipcondition; //if we should skip this, based on WorldConditions in Helper
 	bool altdialogue; //if skipcondition is true, if we should use alternate dialogue instead of just skipping the conversation
 
 	std::pair<const char*, std::shared_ptr<Conversation>> branch1{NULL, NULL}; //we can have branching dialogue based on if the player responds one or the other const char* in the branches

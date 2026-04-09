@@ -222,8 +222,15 @@ namespace Helper {
 	void printConversation(const Conversation* _convo, bool finalpause) { //pass a pointer so it's easier to do all the alt stuff
 		cout << "\n";
 		const Conversation* current = _convo;
-		while (WorldState[current->skipcondition]) {
-			current = current->alt.get();
+		for (bool continuing = true; continuing;) { //keep going until we didn't find a new alt conversation
+			continuing = false; //assume we don't switch to start
+			for (size_t condition : current->skipcondition) { //check all the conditions
+				if (WorldState[condition]) {
+					current = current->alt.get(); //go to the alt
+					continuing = true; //we have to keep checking to check if we need to go to the alt's alt
+					break; //break because we found the condition so no need to do all that again
+				}
+			}
 		}
 		const vector<pair<NPC*, const char*>>& convo = current->lines;
 		for (int i = 0; i < convo.size(); i++) { //prints all the dialogue in the conversation
