@@ -406,6 +406,21 @@ namespace Helper {
 			npc->roam();
 			changes.roamLinks.pop();
 		}
+		while (!changes.clingyLinks.empty()) {
+			NPC* npc = changes.clingyLinks.front();
+			npc->setDismissable(false);
+			changes.clingyLinks.pop();
+		}
+		while (!changes.linkedGifts.empty()) { //give gifts
+			pair<NPC*, Item*>& data = changes.linkedGifts.front();
+			data.first->setGift(data.second);
+			changes.linkedGifts.pop();
+		}
+		while (!changes.linkedDegifts.empty()) { //remove gifts
+			NPC* data = changes.linkedDegifts.front();
+			data->setGift(NULL); //gifts don't know they're gifts so we don't have to edit their logic and stuff after setting the gift to NULL
+			changes.linkedDegifts.pop();
+		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;
 		}

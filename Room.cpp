@@ -56,6 +56,9 @@ bool Room::getStation() {
 bool Room::getGym() {
 	return gym;
 }
+bool Room::getTempleEntrance() {
+	return templeentrance;
+}
 bool Room::getBlocked(const char* direction) { //get if the exit is blocked
 	for (const char* exit : blockedExits) {
 		if (!strcmp(exit, direction)) { //if the exit was in the vetcor then it's blocked
@@ -215,6 +218,11 @@ void Room::setStation(bool stat) {
 void Room::setGym(bool _gym) {
 	gym = _gym;
 }
+void Room::setTempleEntrance(const char* exit, Room* temple, Conversation opentext) {
+	templeentrance = true;
+	templesettings = {exit, temple};
+	templeopenconvo = opentext;
+}
 void Room::setConveyor(Room* altroom, const char* conveyorexit) {
 	altRoom = altroom;
 	conveyorExit = conveyorexit;
@@ -236,6 +244,12 @@ void Room::removeStock(Item* item) { //we uncatalogue the item when it runs out
 }
 void Room::setBackup(Item* item) {
 	backup = item;
+}
+//make the temple enterable if this is a temple entrance
+void Room::openTemple() {
+	this->setExit(templesettings.first, templesettings.second);
+	printConversation(templeopenconvo, false);
+	templeentrance = false; //so we can't do all this again
 }
 void Room::switchConveyor() { //swaps the altRoom and the FORWARD exit, effectively reversing the conveyor movement
 	swap(altRoom, exits[conveyorExit]);

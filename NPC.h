@@ -31,6 +31,7 @@ public: //you need to set stats on creation
 	const char* getTitle(); //gets the title of the character
 	const char* getName(); //gets the name of the character
 	bool getRecruitable(); //gets the recruitable status of the character
+	bool getDismissable();
 	bool getRecruited(); //gets the recruited status of the npc (if they're already in the party)
 	bool getPlayerness(); //gets if the character is a player character (true) or if they're truly an npc (false)
 	int getHealth(); //gets the current health of the npc
@@ -96,6 +97,9 @@ public: //you need to set stats on creation
 	bool getBanker();
 	bool getThief();
 	bool getShark();
+	bool getNoFight();
+	bool getFifth();
+	bool getBlocked(Room* room, const char* direction); //get if the npc doesn't want to go in this direction
 	void depositMonies(int& monies);
 	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
 	bool moreWaves(); //get if there's more waves to fight other than the current one
@@ -110,6 +114,7 @@ public: //you need to set stats on creation
 	void addRecruitedDialogue(const Conversation& _dialogue); //sets the recruited dialogue for the npc
 	void setRecruitDialogueChange(const Conversation& _dialogue); //sets new recruitment and normal dialogue after recruiting
 	void addDismissalDialogue(const Conversation& _dialogue); //sets the dismissal dialogue for the npc
+	void addDismissalRejection(const Conversation& _dialogue);
 	void addOpeningDialogue(const Conversation& _dialogue); //sets the opening dialogue for the npc
 	//same stuff but they accept just one line for simplicity
 	void setDialogue(const char* _dialogue);
@@ -120,10 +125,12 @@ public: //you need to set stats on creation
 	void addRecruitedDialogue(const char* _dialogue);
 	void setRecruitDialogueChange(const char* _dialogue);
 	void addDismissalDialogue(const char* _dialogue);
+	void addDismissalDialogue(const char* _dialogue);
 	void addOpeningDialogue(const char* _dialogue); //sets the opening dialogue for the npc
 	void setRespawnReq(NPC* req);
 
 	void setRecruitable(bool _recruitable); //set if you can recruit them
+	void setDismissable(bool _dismissable);
 	void Recruit(); //set recurited to true
 	void Dismiss(bool gohome = true); //dismiss them and go home if specified
 	void setRoom(Room* _room); //move the npc
@@ -171,12 +178,18 @@ public: //you need to set stats on creation
 	void setAttackEffect(Effect* effect);
 	void setGymStart(time_t start);
 	void setWorldCondition(size_t cond); //set a world condition for this npc to edit on defeat
+	void setRecruitCondition(size_t cond);
 	void setTaking(NPC* npc); //set this npc to taking the given one in battle
 	void setAway(bool isaway);
 	void setQuantumn();
 	void setBanker();
 	void setThief(); //set if you lose all monies after beating this npc
 	void setShark(); //set if this is a shark
+	void setNoFight();
+	void setFifth(bool isfifth = true);
+	void addBlock(Room* room, const char* direction);
+	void setBlockMessage(Conversation why);
+	void setBlockUnless(size_t condition);
 	void setRoaming(bool roam = true);
 	void setTargetEffect(Effect* effect);
 	void setRoamRooms(initializer_list<Room*> rooms);
@@ -207,7 +220,9 @@ public: //you need to set stats on creation
 	void printRejectionDialogue(); //prints the rejection dialogue for the npc
 	void printRecruitmentDialogue(); //prints the recruitment dialogue for the npc
 	void printDismissalDialogue(); //prints the dismissal dialogue for the npc
+	void printDismissalRejection();
 	void printOpeningDialogue(); //print battle start dialogue for the npc
+	void printBlockDialogue(bool finalpause = false); //print the reason this npc doesn't want to go in a certain direction
 
 	void printDamage(int damage, const char* status = NULL);
 	void printEffects();
@@ -264,6 +279,7 @@ protected:
 	queue<Conversation> rejectionDialogue; //dialogue that the npc says when rejecting recruitment offer
 	queue<Conversation> recruitmentDialogue; //dialogue that the npc says when recruited
 	queue<Conversation> dismissalDialogue; //dialogue that the npc says when dismissed
+	queue<Conversation> dismissalRejection;
 	queue<Conversation> gymDialogue; //dialogue the character says when at the gym
 	queue<Conversation> openingDialogue; //dialogue when starting battle
 
@@ -275,11 +291,18 @@ protected:
 	bool battleReward = false; //if the gift is a battle reward
 
 	bool recruitable = false;
+	bool dismissable = true;
 	bool recruited = false; //if the npc is in the player party
 	bool isPlayer;
 	bool isLeader;
 	bool isEnemy = false;
 	bool isBoss = false; //bosses cannot be instakilled
+
+	bool fifth = false; //if this is a bonus fifth teammate
+
+	vector<pair<Room*, const char*>> blockers; //this npc does not like going in this direction in these rooms and doesn't let you go there if recruited
+	size_t blockunless = NEVER; //actually don't block those directions if this condition is true
+	Conversation blockreason; //says why they don't wanna go there
 
 	bool quantumn = false; //if it's pretending to be there but actually does nothing and can't be interacted with
 
@@ -294,6 +317,7 @@ protected:
 
 	bool banker = false; //if its a banker we can withdraw or deposit monies
 	bool thief = false; //if its a thief you lose all your monies after beating them
+	bool nofight = false; //if it looks like you can fight the npc but you can't
 	int depositedmonies = 0;
 	time_t deposittime; //track time monies were deposited so we can add interest
 
@@ -344,6 +368,7 @@ protected:
 	bool loopLastChange = false; //if we should loop the last change every single defeat for respawning enemies, as opposed to only do the changes once
 	bool talktochange = false; //if we should make changes when asking the npc instead of when they are defeated
 	bool miscdoeschange = false; //if non-normal conversations should work for the talktochange thing
+	int recruitcondition = NEVER; //does NOT mean condition needed to recruit them, but rather condition that gets affected when this npc is recruited/dismissed
 
 	bool roaming = false; //if this npc roams
 	vector<Room*> roamrooms; //which rooms this npc roams between

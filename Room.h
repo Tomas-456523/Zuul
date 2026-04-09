@@ -35,6 +35,7 @@ public:
 	Room* getRedirect(); //get if the room redirects to another one
 	bool getStation(); //gets if this room is a station
 	bool getGym(); //gets if this room is a gym
+	bool getTempleEntrance(); //gets if this room is a temple entrance
 	bool getBlocked(const char* direction); //gets if the given exit is blocked
 	const char* getBlockReason(const char* direction); //gets why the exit is blocked
 	Item* popBackup(); //take the backup from the room to check if we should put it there
@@ -56,11 +57,13 @@ public:
 	void setStation(bool stat = true); //sets if this room is a station
 	void setGym(bool _gym = true); //sets if this room is a gym
 	void setConveyor(Room* altroom, const char* conveyorexit); //sets if this room is a conveyor + references the FORWARD exit in conveyor rooms
+	void setTempleEntrance(const char* exit, Room* temple, Conversation opentext); //makes this room a temple entrance, so we can ASK NICELY to open it
 	void setDescription(const char* _description); //reset the description, used by items that change things
 	void setWelcome(Conversation text); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const char* buydesc = ""); //adds an item for sale
 	void removeStock(Item* item); //removes an item from sale
 	void setBackup(Item* item); //sets a backup item for the room
+	void openTemple(); //set the temple entrance if this is a temple entrance
 
 	void switchConveyor(); //switches the direction of the conveyor
 
@@ -96,6 +99,14 @@ private:
 	bool station; //if it's a train station
 	bool gym; //if it's the gym
 	bool faraway; //if you can't dismiss teammates here
+
+	bool templeentrance = false; //if it's a temple entrance and you can ASK NICELY to set the entrance
+	pair<const char*, Room*> templesettings = {NULL, NULL};
+	Conversation templeopenconvo; //text that is printed when the temple is opened
+
+	pair<size_t> enterchangecondition = {NEVER, NEVER}; //stuff that happens if you enter this room and the first condition is true but not the second one
+	WorldChange enterchange;
+	Conversation enterchangetext; //prints this when it happens, easier to manage than welcome text because I didn't have a way to remove welcomes
 
 	Item* backup; //item that is placed here only if the player doesn't have one already
 };

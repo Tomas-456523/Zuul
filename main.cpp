@@ -138,6 +138,14 @@ NPC* SetupWorld() {
 	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here.");
 	Room* foresttempleentrance = new Room("in the sunny glade, at the sealed entrance of the ancient forest temple.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
+	foresttempleentrance->setTempleEntrance(IN_TEMPLE, foresttemplestairs,
+		{{self, "Hi forest temple can you please open?"},
+		 {NULL, "The temple rumbles..."},
+		 {NULL, "The temple door starts lowering into the ground..."},
+		 {NULL, "Ancient wind from within the temple blows against the trees..."},
+		 {NULL, "The door grinds to a halt."},
+		 {NULL, "The forest temple has been opened!"},
+		 {NULL, "You can go IN TEMPLE now!"}});
 	Room* foresttemple = new Room("in the forest temple.");
 	//temple stuff
 	Room* flowerfield = new Room("in the aromatic flower fields. Your sister likes hanging out here.");
@@ -164,6 +172,15 @@ NPC* SetupWorld() {
 						{NULL, "Surely there must be someone friendly around here?"}});
 	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
 	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
+	deserttempleentrance->setTempleEntrance(IN_TEMPLE, desertttemplestairs,
+		{{self, "Hi desert temple can you please open?"},
+		 {NULL, "The temple rumbles..."},
+		 {NULL, "The temple door starts lowering into the ground..."},
+		 {NULL, "The sand beneath your feet is shaking..."},
+		 {NULL, "Sand from within the temple blasts against your face..."}
+		 {NULL, "The door grinds to a halt."},
+		 {NULL, "The desert temple has been opened!"},
+		 {NULL, "You can go IN TEMPLE now!"}});
 	Room* deserttemple = new Room("in the desert temple.");
 	//temple stuff
 	Room* desertdune = new Room("at a low point in the desert. A rare shadow is present where you can rest.");
@@ -278,7 +295,16 @@ NPC* SetupWorld() {
 	//the volcano temple
 	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple. The rock burns bright red.");
 	Room* volcanotemplestairs = new Room("on the steps that go into the ancient volcanic temple.");
-	Room* volcanotemple = new Room("in the temple of PATIENCE.");
+	volcanotempleentrance->setTempleEntrance(IN_TEMPLE, volcanotemplestairs,
+		{{self, "Hi volcano temple can you please open?"},
+		 {NULL, "The temple rumbles..."},
+		 {NULL, "The temple door starts lowering into the ground..."},
+		 {NULL, "Cracks start to form in the rock around you..."},
+		 {NULL, "The rumbling brings forth lava from the ground..."},
+		 {NULL, "The door grinds to a halt."},
+		 {NULL, "The volcano temple has been opened!"},
+		 {NULL, "You can go IN TEMPLE now!"}});
+	Room* volcanotemple = new Room("in the volcano temple.");
 	//the bridge to BURGERSBURG
 	Room* bridge1 = new Room("on the final bridge to BURGERSBURG. The lava ocean crackles beneath your feet.");
 	Room* bridge2 = new Room("halfway through the bridge. An eternal night looms over the city.");
@@ -313,7 +339,7 @@ NPC* SetupWorld() {
 	Room* leftstreet5 = new Room("at the edge of the regular district. The streets past this point look well-maintained.");
 	Room* newstreet1 = new Room("at a construction site. This thing is never getting completed.");
 	Room* newstreet2 = new Room("at the entrance to a convenience store. The door is intact! And all the windows are broken.");
-	Room* newstreet3 = new Room("in an area behind the buildings, where there's an entrance to a dark alley.\nYou see a THIEF rooting through a dumpster. Is there really nothing better to steal?");
+	Room* newstreet3 = new Room("in an area behind the buildings, where there's an entrance to a dark alley.\nEven the dumpsters have all been stolen from.");
 	Room* newstreet4 = new Room("at the city orphanage, scheduled for demolition.");
 	Room* newstreet5 = new Room("at the edge of the regular district. The buildings beyond look really well-maintained.");
 	Room* mainstreet1 = new Room("on main street. There's a few cars above lodged in the side of the buildings.");
@@ -324,7 +350,7 @@ NPC* SetupWorld() {
 	Room* coolstreet1 = new Room("near the entrance of the city. The top of a building is sliced clean off.");
 	Room* coolstreet2 = new Room("at the entrance to an apartment building. This one's door is open.");
 	Room* coolstreet3 = new Room("at a functional hot dog stand.");
-	Room* coolstreet4 = new Room("at the entrance to a dark alley.");
+	Room* coolstreet4 = new Room("at the entrance to a dark alley. Looks pretty dark.");
 	Room* coolstreet5 = new Room("next to some copy-pasted looking townhouses. Surely homebuilders can be more creative?");
 	Room* rightstreet1 = new Room("in the crumbling corner of the city. The lava sea radiates light onto exposed infrastructure.");
 	Room* rightstreet2 = new Room("still in the city. You hear a random explosion, business as usual.");
@@ -343,7 +369,7 @@ NPC* SetupWorld() {
 	Room* casinoback = new Room("in the casino's back room. There's a staircase heading to the basement,\nand crates full of gambling addicts' monies.");
 	Room* casinobase = new Room("in the casino's basement, housing the massive energy core required to power all the lights.");
 	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
-	Room* bankalley = new Room("in a dark alley. There is a really shady bank set up here."); //shady as in it's dark
+	Room* bankalley = new Room("in a dark alley. There is a really shady bank set up here.\nIf you'd like to deposit your monies, simply USE BANK."); //shady as in it's dark
 	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
 	Room* shrimpartment2 = new Room("on the second floor. The wallpaper has a shrimp pattern.");
 	Room* shrimpartment3 = new Room("on the third floor. There is a cat poster here.");
@@ -404,12 +430,12 @@ NPC* SetupWorld() {
 	Room* burgbasesw = new Room("at an unremarkable corner of the BURGER BASEMENT.");
 	Room* burgbases = new Room("at the entrance of a side room. It looks very high-tech in there.");
 	Room* burgbasese = new Room("at a staircase heading down to the BURGER production platform.");
-
 	Room* burgstorage = new Room("in the storage room. This seems to be where they kidnap people to.");
 	Room* burgboiler = new Room("in the cooler room. The air conditioner is working overtime, complete with its own air conditioner.");
 	Room* burglab = new Room("in the BURGER LABORATORY. There's many nasty looking needles and contraptions.\nThere's a UNIHORN here in quantumn chains.");
-
-
+	Room* burgplatn = new Room("on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories endlessly churning out BURGERs.");
+	Room* burgplate = new Room("next to the BURGER assembly line. There's some BURGER cultists cursing BURGERs as they pass by.");
+	Room* burgplats = new Room("on the platform. There's some diagrams here and a room to the side.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
 	basestation->setStation();
@@ -655,6 +681,10 @@ NPC* SetupWorld() {
 	forestknight->addDismissalDialogue({{forestknight, "I shall return to defending the forest."},
 										{forestknight, "Farewell, friend!"}});
 	forestknight->addGymDialogue({{forestknight, "This is quite the splendid little gym!"}, {forestknight, "A good knight must always stay in shape!"}});
+	forestknight->addBlock(elevator, TO_THE_TOP);
+	forestknight->addBlock(elevatorbottom, TO_THE_TOP);
+	forestknight->setBlockMessage({{forestknight, "The BURGER RESTAURANT?"}, {forestknight, "I shall not be seen there."}, {forestknight, "Let us continue on a better quest!"}});
+	forestknight->setBlockUnless(TEMPLEQUEST);
 	
 	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 15, 10, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
@@ -760,6 +790,7 @@ NPC* SetupWorld() {
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
+	cacty->addRecruitedDialogue({{NULL, "CACTY - *adventuring cactus noises*"}});
 	cacty->addGymDialogue({{NULL, "CACTY - *exercising cactus noises*"}});
 
 	Attack* loosespines = new Attack("CACTUS SPINES", " pricked", false, 0, 8, 15, 1, 3, 1);
@@ -914,8 +945,8 @@ NPC* SetupWorld() {
 	carlos->setDialogue({{carlos, "get out i cant focus with you here"}, {carlos, "im so close to hacking into microsofts mony supply"}});
 	carlos->addRejectionDialogue({{carlos, "what"}, {carlos, "get outta my room im tryna focus"}});
 	carlos->addRecruitmentDialogue({{self, "Hey wanna join my team?"}, {carlos, "no"}, {self, "Come on you gotta get some vitamin D."}, {carlos, "no i gotta start over stealing microsofts monies >:("}, {self, "If you want monies we get a lot just by fighting random enemies."}, {carlos, "..."}, {carlos, "fine ill join you"}});
-	carlos->addRecruitedDialogue("...");
 	carlos->addRecruitedDialogue({{carlos, "woah what is this stuff"}, {self, "That's grass."}});
+	carlos->addRecruitedDialogue("...");
 	carlos->setRecruitDialogueChange("gaming");
 	carlos->addDismissalDialogue({{carlos, "i dont feel like hacking microsoft all over again"}, {carlos, "guess ill just play fortnite or something"}});
 	carlos->addGymDialogue({{carlos, "..."}, {carlos, "theres too much sunlight here"}});
@@ -1025,6 +1056,7 @@ NPC* SetupWorld() {
 	graham->setDialogue({{graham, "Come on, come on..."}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}});
 	graham->addRejectionDialogue({{self, "Hey wana join my team?"}, {graham, "Sure man, as soon as I win the jackpot."}, {graham, "I'm just about to win it. I can feel it!"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}});
 	graham->addRecruitmentDialogue({{self, "Well now that you can't gamble anymore you wanna join my team?"}, {graham, "Eh..."}, {graham, "Sure, but I'm coming back once they fix this place."}});
+	graham->addRecruitedDialogue("Let's not go gambling :(");
 	graham->addDismissalDialogue({{graham, "I'm just gonna go check if they've fixed the casino yet."}});
 	graham->setRecruitDialogueChange({{graham, "Come onnnnn....."}, {graham, "What's taking them so long to fix this place?"}});
 	graham->addGymDialogue("This place is out of my comfort zone.");
@@ -1219,6 +1251,10 @@ NPC* SetupWorld() {
 	richie->setRecruitDialogueChange("Whattup.");
 	richie->addRecruitedDialogue("Whattup.");
 	richie->addGymDialogue({{richie, "I mean I have a gym at home but I guess this works."}, {richie, "Just offering."}});
+	richie->addBlock(elevator, TO_THE_TOP);
+	richie->addBlock(elevatorbottom, TO_THE_TOP);
+	richie->setBlockMessage({{richie, "Umm why are we going there?"}, {richie, "We were like fighting BURGER and stuff."}});
+	richie->setBlockUnless(TEMPLEQUEST);
 
 	NPC* drone = new NPC("", "DRONE", "Combat drone that Richie bought to help in battle.", limbo, 0, Stats(16, 0, 18, 0, 20, 30, 9));
 	Attack* dronegun = new Attack("DRONE GUN", "fired at", false, -5, 4, 10, 3, 3, 1);
@@ -1300,7 +1336,7 @@ NPC* SetupWorld() {
 	discombobulate->addEffect(discombobulated);
 	buford->addSpecialAttack(discombobulate);
 	Attack* fiveforty = new Attack("540", "kicked", true, 18, 35, 0, 1, 1, 1);
-	fiveforty->afterdesc = " with a 540 jump round house";
+	fiveforty->afterdesc = " in the head with a 540 jump round house";
 	buford->addSpecialAttack(fiveforty);
 
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
@@ -1309,8 +1345,9 @@ NPC* SetupWorld() {
 	//self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"
 	//hj, "Yeah that's my name."
 
-	//You know there's an ANTI-SKELETON DEVICE lying around in my old office.
-	//Shame the portal's busted because we could probably actually pick it up with this game's brand new multi-word parsing.
+	//You know, there's an ANTI-SKELETON DEVICE lying around in my old office.
+	//Shame the portal's busted because we could probably actually pick it up now
+	//with this game's brand new multi-word parsing.
 
 	//briefbase
 	
@@ -1893,6 +1930,32 @@ NPC* SetupWorld() {
 	child->setBasicAttack(dillydally);
 	child->addSpecialAttack(flyingkick);
 	child->addSpecialAttack(juppercut);
+	child->setDialogue({{child, "Are we going back home, mister?"}, {self, "Yeah just a second."}});
+	child->addRecruitmentDialogue({{self, "Alright I'm taking you back to your mom now."}, {child, "YAY!"}, {child, "Thank you mister!"}});
+	child->addDismissalDialogue({{self, "Actually can you just stay here a little longer?"}, {child, "Okay."}, {NULL, "JILLY hides behind some boxes."}});
+	child->addRecruitedDialogue("I can't wait to get back home!");
+	child->setBlockMessage({{child, "Uhhh I don't want to go there."}, {child, "I thought we were going back to my mom? :("}});
+	child->addBlocker(BURGERSBURG, SOUTH); //can't leave the city with Jilly
+	child->addBlocker(tunnels, TO_THE_VILLAGE);
+	child->addBlocker(tunnels, TO_THE_DESERT);
+	child->addBlocker(tunnels, TO_THE_HIGHLANDS);
+	child->addBlocker(tunnels, TO_THE_BASEMENT);
+	child->addBlocker(richneighborhood4, NORTH);
+	child->addBlocker(coolstreet2, INSIDE); //can't go in weird places with Jilly
+	child->addBlocker(rightstreet5, INSIDE);
+	child->addBlocker(newstreet2, INSIDE);
+	child->addBlocker(leftstreet4, INSIDE);
+	child->addBlocker(mainstreet5, INSIDE);
+	child->addBlocker(mainstreet4, DOWN);
+	child->addBlocker(coolstreet4, IN_ALLEY);
+	child->addBlocker(newstreet3, IN_ALLEY);
+	child->addBlocker(elevator, TO_THE_TOP); //can't bring Jilly to the restaurant
+	child->addBlocker(elevatorbottom, TO_THE_TOP);
+	child->addBlocker(elevator, TO_THE_BOTTOM); //if you bring her this far just fully bring her home at that point, I did specifically say "when you're ready"
+	child->addBlocker(elevatorentrance, IN_ELEVATOR);
+	child->setRecruitable(true);
+	child->setRecruitCondition(SAVINGJILLY);
+	child->setFifth(true);
 
 	NPC* matilda = new NPC("WORRIED MOTHER", "MATILDA", "A frequent churchgoer with distress very visible on her face.", burgchurch, 0);
 	matilda->addConversation({{self, "You look distressed."},
@@ -1963,55 +2026,44 @@ NPC* SetupWorld() {
 							{matilda, "Safe travels!"}}));
 	matrej4->alt = matrej5;
 
-	//You untie the bag.
-	//JILLY flies out of the bag!
-	//Jilly uppercuts you into the roof.
-	//"OW"
-	//"Take that you meanie!"
-	//"BRO WHAT THE HECK I'M TRYING TO SAVE YOU"
-	//"Oh okay!"
-	//"Thank you mister!"
-	//"No problem."
-	//RECRUIT Jilly once you're ready to bring her back to her mom.
+	WorldChange jillivery; //jilly delivery
 
-	//Are we going back home, mister?
-	//Yeah just a second.
-
-	//Alright I'm taking you back to your mom now.
-	//YAY!
-	//Thank you mister!
-
-	//Actually can you just stay here a little longer?
-	//Okay.
-	//NULL, "JILLY hides behind some boxes."
-
-	//Uhhh I don't want to go there.
-	//I thought we were going back to my mom? :(
-
-	//MOM!
-	//JILLY!
-	//Jilly flies into Matilda's arms.
-	//Tears of joy flow from Matilda's eyes.
-	//Oh thank you so much!
-	//Thank you so much for reuniting me with my Jilly!
-	//I'm sorry, I wish I had something to repay you with.
-	//No, it's fine don't worry.
-	//child, "Thank you mister for saving me!"
-	//child, "I made you this drawing!"
-	//Jilly hands you a drawing of her uppercutting you.
-	//self, Oh thanks.
+	{{child, "MOM!"}, {matilda, "JILLY!"},
+	 {NULL, "Jilly flies into Matilda's arms."},
+	 {NULL, "Tears of joy flow from Matilda's eyes.!"},
+	 {matilda, "Oh thank you so much!"},
+	 {matilda, "Thank you so much for reuniting me with my Jilly!"},
+	 {matilda, "I'm sorry, I wish I had something to repay you with."},
+	 {child, "Thank you mister for saving me!"},
+	 {child, "I made you this drawing!"},
+	 {NULL, "Jilly hands you a drawing of her uppercutting you."},
+	 {NULL, "You got the JILLY'S DRAWING!"},
+	 {self, "Oh thanks."}};
 
 	//I have just finished fighting the CEO
 	//I should be getting close!
 	//Oh.
 
-	/*Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 7, 25, 0, 1, 1, 1);
+	Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 7, 25, 0, 1, 1, 1);
 	uppercut->afterdesc = " into the air";
 	Effect* uppercutted = new Effect("UPPERCUTTED", 0);
 	uppercutted->remove = true;
 	uppercutted->falldamage = 10;
 	uppercut->addEffect(uppercutted);
-	uppercut->addDescription("Uppercut the target into the air, interrupting their turn if it hits them before they move. (25 ATTACK)");*/
+	uppercut->addDescription("Uppercut the target into the air, interrupting their turn if it hits them before they move. (25 ATTACK)");
+
+	Item* jillybag = new WorldChangeItem("SACK", "A tied-up sack with something wriggling inside.\nYou should untie it by USE-ing it.", burgstorage, 
+		{{NULL, "You untie the SACK."},
+		{NULL, "JILLY flies out of the sack!"},
+		{NULL, "Jilly uppercuts you into the roof."},
+		{self, "OW"}, {child, "Take that you meanie!"},
+		{self, "BRO WHAT THE HECK I'M TRYING TO SAVE YOU"},
+		{child, "Oh okay!"}, {child, "Thank you mister!"},
+		{self, "No problem."},
+		{NULL, "RECRUIT Jilly once you're ready to bring her back to her mom."}});
+	jillybag->setDenial("You try to take the bag but it punches you in the gut.");
+	WorldChange& jbchanges = ((WorldChangeItem*)jillybag)->getChanges();
+	jbchanges.defeatRooms.push({child, burgstorage});
 	
 	Item* greenkey = new KeyItem("GREEN KEY", "A big key in a similar shade of green to the volcanic sewers' accents.", {{NULL, "You put the GREEN KEY in the keyhole."}, {NULL, "The doorway has been unlocked!"}}, limbo, LOCK);
 	NPC* jim = new NPC("", "JIM", "A self-aware shrimp wearing a dark hood, tired of his shrimple brother's shenanigans.", shrimproof, 0, Stats(50, 10, 10, 35, 15, 10, 9));
@@ -2198,8 +2250,8 @@ NPC* SetupWorld() {
 	panepeople->addRejectionDialogue({{NULL, "You walk up to the guys to recruit them."}, {NULL, "GLASS STORE OWNER - \"HEY!\""}, {NULL, "GLASS STORE OWNER - \"STOP STEALING MY GLASS!\""}, {NULL, "GUY 1 - \"Hahahaha! You'll never catch us!\""}, {NULL, "The two guys run away with the pane of glass."}, {self, "..."}});
 
 	NPC* banker = new NPC("SHADY BANKER", "SHAUN", "He is a very reliable banker with a constant smile who has set up this bank in this shady alley.", bankalley, 16);
-	banker->addConversation({{banker, "Hiii, frieeend."}, {banker, "Feel free to leave your monies heeeere with meeee."}, {banker, "They will be saaaafe and sooound..."}, {banker, "Just ASK me if you'd liiike."}});
-	banker->setDialogue({{banker, "Hiii, frieeend. Are you looking to manage your accooount?"}});
+	banker->addConversation({{banker, "Hiii, frieeend."}, {banker, "Feel free to leave your monies heeeere with meeee."}, {banker, "They will be saaaafe and sooound..."}});
+	banker->setDialogue({{banker, "Hiii, frieeend."}, {banker, "Are you looking to manage your accooount?"}});
 	banker->addRejectionDialogue({{banker, "No, friend."}, {banker, "I'm a banker, not an adventurer."}, {banker, "How can I take care of everyone's monies if I leeave?"}});
 	banker->setBanker();
 
@@ -2712,8 +2764,46 @@ NPC* SetupWorld() {
 	elevatorbottom->setExit(TO_THE_TOP, elevatortop);
 	elevatorbottom->setExit(OUT, burgerbasement);
 	burgerbasement->setExit(IN_ELEVATOR, elevatorbottom);
-	burgerbasement->setExit(SOUTH, BURGERPRISON);
-	BURGERPRISON->setExit(NORTH, burgerbasement);
+	burgerbasement->setExit(SOUTH, burgbasec);
+	burgerbasement->setExit(EAST, burgbasene);
+	burgerbasement->setExit(WEST, burgbasenw);
+	burgbasenw->setExit(EAST, burgerbasement);
+	burgbasenw->setExit(SOUTH, burgbasew);
+	burgbasene->setExit(WEST, burgerbasement);
+	burgbasene->setExit(SOUTH, burgbasee);
+	burgbasene->setExit(IN_ROOM, burgstation);
+	burgbasew->setExit(NORTH, burgbasenw);
+	burgbasew->setExit(SOUTH, burgbasesw);
+	burgbasew->setExit(EAST, burgbasec);
+	burgbasew->setExit(IN_ROOM, burgboiler);
+	burgbasec->setExit(NORTH, burgbasen);
+	burgbasec->setExit(SOUTH, burgbases);
+	burgbasec->setExit(EAST, burgbasee);
+	burgbasec->setExit(WEST, burgbasew);
+	burgbasee->setExit(NORTH, burgbasene);
+	burgbasee->setExit(SOUTH, burgbasese);
+	burgbasee->setExit(WEST, burgbasec);
+	burgbases->setExit(IN_ROOM, burglab);
+	burgbases->setExit(NORTH, burgbasec);
+	burgbases->setExit(EAST, burgbasese);
+	burgbases->setExit(WEST, burgbasesw);
+	burgbasesw->setExit(EAST, burgbases);
+	burgbasesw->setExit(NORTH, burgbasew);
+	burgbasese->setExit(WEST, burgbases);
+	burgbasese->setExit(NORTH, burgbasee);
+	burgbasese->setExit(DOWNSTAIRS, burgplatn);
+	burgplatn->setExit(UPSTAIRS, burgbasese);
+	burgplatn->setExit(EAST, bugplate);
+	burgplatn->setExit(SOUTH, burgplats);
+	burgplats->setExit(NORTHEAST, bugplate);
+	burgplats->setExit(NORTH, burgplatn);
+	burgplats->setExit(IN_ROOM, BURGERPRISON);
+	burgplate->setExit(WEST, burgplatn);
+	burgplate->setExit(SOUTHWEST, burgplats);
+	burgboiler->setExit(OUT, burgbasew);
+	burgstorage->setExit(OUT, burgbasene);
+	burglab->setExit(OUT, burgbases);
+	BURGERPRISON->setExit(OUT, burgplats);
 	basestation->setExit(NORTH, BURGERPRISON);
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
@@ -3402,19 +3492,20 @@ NPC* SetupWorld() {
 	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(25, 30, 24, 20, 15, 23, 10), Stats(0, 1, 1, 0, 1, 0, 0));
 	Effect* prepared = new Effect("PREPARED AGAINST", 3);
 	ratman->setTargetEffect(prepared);
+	Effect* shrouded = new Effect("SHROUDED", 5); //5 but probably gets canceled before that
+	shrouded->evasive = true;
 	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 12, 10, 1, 1, 1);
 	ratarang->synergies.push_back(prepared);
 	ratman->setBasicAttack(ratarang);
 	Attack* mma = new Attack("MIXED MARTIAL ARTS", "engaged", true, 8, 12, 0, 3, 3, 1);
 	mma->afterdesc = " in close combat";
+	mma->selfcancel = shrouded;
 	ratman->addSpecialAttack(mma);
 	Attack* preptime = new Attack("PREP TIME", "prepared against", false, 10, 0, 0, 1, 1, 1);
 	preptime->addEffect(prepared);
 	preptime->redundanteffect = false; //don't prepare multiple times
 	ratman->addSpecialAttack(preptime);
 	Attack* smokepellet = new Attack("SMOKE PELLET", "threw a smoke pellet on the ground", false, 10, 0, 0, 0, 0, 0);
-	Effect* shrouded = new Effect("SHROUDED", 5); //5 but probably gets canceled before that
-	shrouded->evasive = true;
 	smokepellet->selfeffect = shrouded;
 	ratman->addSpecialAttack(smokepellet);
 	Attack* explosivegel = new Attack("EXPLOSIVE GEL", "sprayed explosive gel on", false, 12, 0, 0, 1, 1, 1);
@@ -3423,6 +3514,7 @@ NPC* SetupWorld() {
 	abttoexplode->falldamage = 30;
 	abttoexplode->spreadfalldamage = true;
 	explosivegel->addEffect(abttoexplode);
+	explosivegel->selfcancel = shrouded;
 	ratman->addSpecialAttack(explosivegel);
 	Attack* grapplegun = new Attack("GRAPPLE GUN", "grappled", false, 12, 7, 0, 1, 1, 1);
 	grapplegun->afterdesc = "'s legs and flung them away";
@@ -3436,10 +3528,12 @@ NPC* SetupWorld() {
 	Effect* tased = new Effect("TASED", 3);
 	tased->freeze = true;
 	taserfinger->addEffect(tased);
+	taserfinger->selfcancel = shrouded;
 	ratman->addSpecialAttack(taserfinger);
 	Attack* sharkrepellant = new Attack("SHARK REPELLANT", "sprayed shark repellant at", false, 5, 100, 100, 1, 1, 1); //use 5 sp cause I don't want it to affect weights in normal fights too much
 	sharkrepellant->instakill = true;
 	sharkrepellant->targetshark = true;
+	sharkrepellant->selfcancel = shrouded;
 	ratman->addSpecialAttack(explosivegel);
 
 	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his money.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
@@ -4298,7 +4392,7 @@ NPC* SetupWorld() {
 	evilgrandma->addLinkedDesc(theratman, "The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
 	evilgrandma->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
 
-	NPC* theratman = new NPC(*ratman);  //MARK: Ratman
+	NPC* theratman = new NPC(*ratman); //MARK: Ratman
 	theratman->setLeader(true, 22, rightstreet3);
 	theratman->setDialogue("I'm Ratman.");
 	theratman->addRecruitedDialogue("I'm Ratman.");
@@ -4326,6 +4420,10 @@ NPC* SetupWorld() {
 	theratman->setWorldCondition(BEATRATMAN);
 	theratman->addLinkedDesc(theratman, "The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
 	theratman->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
+	theratman->addBlock(elevator, TO_THE_TOP);
+	theratman->addBlock(elevatorbottom, TO_THE_TOP);
+	theratman->setBlockMessage({{theratman, "I thought we weren't just going to get fast food."}, {theratman, "I got serious buiness to attend to, kid."}, {theratman, "Because I'm Ratman."}});
+	theratman->setBlockUnless(TEMPLEQUEST);
 	
 	theratman->addRejectionDialogue({{self, "Hey rat man wanna join me on my BURGER QUEST?"},
 									 {ratman, "I don't have time to get a BURGER, kid."},
@@ -4474,9 +4572,10 @@ NPC* SetupWorld() {
 	ceo->setEscapable(false);
 	ceo->setWorldCondition(BEATCEO);
 
-	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 30, Stats(150, 20, 30, 35, 45, 30, 9));
-	//FIGHT or ASK does the same thing and you can't actually fight him
-	//Release switch is being guarded by whatever his name is
+	NPC* unihorn = new NPC("", "UNIHORN", "A mythical and majestic unihorn, restrained by quantumn chains.", burglab, 24, Stats(100, 30, 30, 40, 40, 50, 9));
+
+	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 29, Stats(150, 20, 30, 35, 45, 30, 9));
+	burgerscientist->setNoFight(); //FIGHT or ASK does the same thing and you can't actually fight him
 	burgerscientist->addConversation({{self, "Hey what are you doing to this unihorn? >:|"},
 									  {burgerscientist, "..."},
 									  {burgerscientist, "Take it, I don't care."},
@@ -4625,6 +4724,15 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 			}
 		}
 	}
+	bool npcblocky = false; //if a teammate is blocking the movement
+	for (NPC* npc : *party) {
+		if (npc->getBlocked(currentRoom, direction)) {
+			if (npcblocky) CinPause(); //make a pause from the previous npc's conversation
+			npc->printBlockDialogue(false);
+			npcblocky = true;
+		}
+	}
+	if (npcblocky) return; //don't return cause a teammate is blocking moving
 	//rooms may redirect you to go somewhere else
 	if (roomCanidate->getRedirect() != NULL) {
 		roomCanidate = roomCanidate->getRedirect();
@@ -4920,6 +5028,19 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 		travel(currentRoom, NULL, party, inventory, true, lobster->getHome());
 		return;
 	}
+	if (!strcmp(itemname, "BANK")) { //if using the bank
+		NPC* banker = NULL; //we loop through the rooms npcs to find the banker
+		for (NPC* npc : currentRoom->getNpcs()) {
+			if (npc->getBanker()) {
+				banker = npc;
+				break; //break because the banker was found
+			}
+		}
+		if (banker) { //if we found a banker do the banking
+			npc->depositMonies(mony);
+			return; //return so we don't print error saying "There is no BANK here!"
+		}
+	}
 	//this is actually using item code
 	Item* item = getItemInVector(*inventory, itemname); //finds the item in our inventory
 	char itemName[255] = "";
@@ -5211,8 +5332,12 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	if (npc->getRecruited()) {
 		cout << "\n" << npcname << " is already in your party...";
 		return;
+	} //I guess a better name for fifth teammates would be extra teammates but the only two of these in the game never overlap anyway so it works
+	size_t newpartysize = 0;
+	for (NPC* npc : *party) {
+		if (!npc->getFifth()) newpartysize++;
 	} //you're not allowed to have more than 4 party members (including yourself) otherwise that would be very unbalanced
-	if (party->size() == maxParty) {
+	if (newpartysize >= maxParty && !npc->getFifth()) {
 		cout << "\nYour party is full!";
 		return;
 	}
@@ -5220,7 +5345,8 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	party->push_back(npc);
 	npc->printRecruitmentDialogue(); //print the recruitment dialogue
 	npc->Recruit(); //sets the npc to recruited
-	cout << "\n" << npcname << " was added to your party! (Party size: " << party->size() << "/" << maxParty << ")"; //prints success text
+	cout << "\n" << npcname << " was added to your party!"; //prints success text
+	if (!npc->getFifth()) cout << "(Party size: " << newpartysize << "/" << maxParty << ")";
 	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
 		printLvlUpData(npc);
 		npc->setGymStart(0); //no longer training so we reset training time
@@ -5238,11 +5364,18 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		return;
 	} //you can't dismiss yourself/the main character because that makes no sense
 	if (npc->getPlayerness()) {
-		cout << "\n" << npcname << " - \"Huh? You can't dismiss me bro I'm the main character!\"\n" << npcname << " was not dismissed.";
+		cout << "\n" << npcname << " - \"Huh? You can't dismiss me bro I'm the main character!\"";
+		CinPause();
+		cout << "\n" << npcname << " was not dismissed.";
 		return;
 	} //you can't dismiss someone who isn't recruited anyway
 	if (!npc->getRecruited()) {
 		cout << "\n" << npcname << " is not in your party...";
+		return;
+	} //you can't dismiss the npc if I said so
+	if (!npc->getDismissable()) {
+		npc->printDismissalRejection();
+		cout << "\n" << npcname << " was not dismissed.";
 		return;
 	} //removes the npc from your party
 	party->erase(remove(party->begin(), party->end(), npc), party->end());
@@ -5253,7 +5386,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		npc->setGymStart(time(NULL)); //track when they started training
 	} else { //in every other room, they just say something and go back home
 		npc->printDismissalDialogue();
-		cout << "\n" << npcname << " was removed from your party and returned to what they were doing before.";
+		cout << "\n" << npcname << " left your party.";
 	}
 	//sets the npc to dismissed
 	npc->Dismiss(!gym);
@@ -5269,16 +5402,17 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		npc->defeat();
 		npc = NULL;
 	}
-	if (npc == NULL) { //error message if no such npc is in the current room
+	if (npc == NULL) { //open the temple if we were just ASKing NICELY and it's the temple quest and we're at a temple entrance
+		if (WorldState[TEMPLEQUEST] && currentRoom->getTempleEntrance() && !strcmp(npcname, "NICELY")) {
+			currentRoom->openTemple();
+			return; //return so we don't print that error message
+		}
+		//error message if no such npc is in the current room
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
-	}
-	if (npc->getBanker() && !npc->getConvoSize()) { //does banker stuff if the npc is a banker and has already explained how to bank
-		npc->printDialogue(true); //print the dialogue with the final pause
-		npc->depositMonies(mony);
-	} else { //tells the npc to print their dialogue normally
-		npc->printDialogue(false);
-	}
+	} //tells the npc to print their dialogue normally
+	npc->printDialogue(false);
+	
 	//some npcs give gifts after talking so we check for that here
 	Item* item = npc->takeGift();
 	if (item != NULL) { //adds the gift to the inventory

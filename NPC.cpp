@@ -78,16 +78,26 @@ void NPC::printDismissalDialogue() {
 	printDialogue(true, &dismissalDialogue.front());
 	dismissalDialogue.pop();
 }
+void NPC::printDismissalRejection() {
+	printDialogue(true, &dismissalRejection.front());
+	if (dismissalRejection.size() != 1) dismissalRejection.pop();
+}
 void NPC::printOpeningDialogue() {
 	if (openingDialogue.empty()) return;
 	printDialogue(true, &openingDialogue.front());
 	openingDialogue.pop();
+}
+void NPC::printBlockDialogue(bool finalpause) {
+	printConversation(blockreason, finalpause);
 }
 bool NPC::getRecruited() { //returns if in the player team
 	return recruited;
 }
 bool NPC::getRecruitable() {
 	return recruitable;
+}
+bool NPC::getDismissable() {
+	return dismissable;
 }
 bool NPC::getPlayerness() { //returns if it is the player
 	return isPlayer;
@@ -294,6 +304,20 @@ bool NPC::getThief() {
 bool NPC::getShark() {
 	return isShark;
 }
+bool NPC::getFifth() {
+	return fifth;
+}
+bool NPC::getBlocked(Room* room, const char* direction) {
+	if (WorldState[blockunless]) return false; //if the unless is true we don't block
+	for (pair<Room*, const char*>& blocks : blockers) {
+		if (room == block.first && direction == block.second) {
+			return true;
+		}
+	}
+}
+bool NPC::getNoFight() {
+	return nofight;
+}
 void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 	time_t now = time(NULL);
 	double interesttime = difftime(now, deposittime) / 31536000; //get how many years have elapsed
@@ -307,16 +331,16 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 	int amount;
 	if (cin >> amount) {
 		CinIgnoreAll(true);
-		if (!amount) cout << "\nJust checking your balance, I seee.";
+		if (!amount) cout << "\n" << name << "Just checking your balance, I seee.";
 		else if (amount > 0) { //deposit
-			if (amount > monies) cout << "Youuu do not have this kind of moniiiiies...";
+			if (amount > monies) cout << "\n" << name << "Youuu do not have this kind of moniiiiies...";
 			else {
 				monies -= amount;
 				depositedmonies += amount;
 				cout << "\nYou deposited " << amount << " mon" << (amount == 1 ? "y" : "ies") << ".\nYou now have " << monies << " mon" << (monies == 1 ? "y" : "ies") <<" and " << depositedmonies << " mon" << (depositedmonies == 1 ? "y" : "ies") <<" deposited.";
 			}
 		} else { //withdraw
-			if (amount < -depositedmonies) cout << "Youuu do not have this kind of moniiiiies...";
+			if (amount < -depositedmonies) cout << "\n" << name << "Youuu do not have this kind of moniiiiies...";
 			else {
 				monies -= amount;
 				depositedmonies += amount;
@@ -324,7 +348,7 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 			}
 		}
 	} else {
-		cout << "\nThis issss... not a number I know of.";
+		cout << "\n" << name << "This issss... not a number I know of.";
 	}
 
 	CinIgnoreAll();
@@ -373,6 +397,9 @@ Effect* NPC::getEffect(const char* effect) {
 void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc to edit on defeat
 	changes.back().worldcon = cond;
 }
+void NPC::setRecruitCondition(size_t cond) {
+	recruitcondition = cond;
+}
 const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
 	return tunnelLinks[room];
 }
@@ -400,6 +427,9 @@ void NPC::addRecruitedDialogue(const Conversation& _dialogue) {
 }
 void NPC::addDismissalDialogue(const Conversation& _dialogue) {
 	dismissalDialogue.push(_dialogue);
+}
+void NPC::addDismissalRejection(const Conversation& _dialogue) {
+	dismissalRejection.push(_dialogue);
 }
 void NPC::addOpeningDialogue(const Conversation& _dialogue) {
 	openingDialogue.push(_dialogue);
@@ -429,6 +459,9 @@ void NPC::addRecruitedDialogue(const char* _dialogue) {
 void NPC::addDismissalDialogue(const char* _dialogue) {
 	dismissalDialogue.push(Conversation({{this, _dialogue}}));
 }
+void NPC::addDismissalRejection(const char* _dialogue) {
+	dismissalRejection.push(Conversation({{this, _dialogue}}));
+}
 void NPC::addOpeningDialogue(const char* _dialogue) {
 	openingDialogue.push(Conversation({{this, _dialogue}}));
 }
@@ -441,9 +474,15 @@ void NPC::setRecruitDialogueChange(const char* _dialogue) {
 void NPC::setRecruitable(bool _recruitable) {
 	recruitable = _recruitable;
 }
+void NPC::setDismissable(bool _dismissable) {
+	dismissable = _dismissable;
+}
 void NPC::Recruit() { //recruits the npc
 	if (!newDialogue.empty()) {
 		dialogue = newDialogue;
+	}
+	if (recruitcondition != NEVER) {
+		WorldState[recruitcondition] = true;
 	}
 	recruited = true;
 }
@@ -452,6 +491,7 @@ void NPC::Dismiss(bool gohome) { //removes the npc from the party
 	if (gohome) { //go home if we were told to, only false if dismissed in the gym
 		setRoom(home);
 	}
+	WorldState[recruitcondition] = false; //don't check for NEVER because NEVER should be false anyway
 }
 void NPC::setRoom(Room* _room) { //moves the npc from one room to the next, and lets the rooms know of the change
 	currentRoom->removeNPC(this);
@@ -602,6 +642,21 @@ void NPC::setBanker() {
 }
 void NPC::setShark() {
 	isShark = true;
+}
+void NPC::setFifth(bool isfifth) {
+	fifth = isfifth;
+}
+void NPC::addBlock(Room* room, const char* direction) {
+	blockers.push_back({room, direction});
+}
+void NPC::setBlockMessage(Conversation why) {
+	blockreason = why;
+}
+void NPC::setBlockUnless(size_t condition) {
+	blockunless = condition;
+}
+void NPC::setNoFight() {
+	nofight = true;
 }
 void NPC::setThief() {
 	thief = true;
