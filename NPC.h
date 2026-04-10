@@ -125,7 +125,7 @@ public: //you need to set stats on creation
 	void addRecruitedDialogue(const char* _dialogue);
 	void setRecruitDialogueChange(const char* _dialogue);
 	void addDismissalDialogue(const char* _dialogue);
-	void addDismissalDialogue(const char* _dialogue);
+	void addDismissalRejection(const char* _dialogue);
 	void addOpeningDialogue(const char* _dialogue); //sets the opening dialogue for the npc
 	void setRespawnReq(NPC* req);
 

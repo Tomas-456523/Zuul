@@ -24,8 +24,8 @@ Room::~Room() {
 const char* Room::getDescription() {
 	return description;
 }
-vector<Item*>& Room::getItems() {
-	return items;
+vector<Item*>& Room::getItems() { //used in this same room's functions in case there it shares items with another room
+	return sharedItems ? *sharedItems : items;
 }
 vector<Item*>& Room::getStock() {
 	return stock;
@@ -96,6 +96,7 @@ void Room::printExits() {
 //3+ items: There is THINGY, THINGAMABOB, and THINGAMAJIG here.
 //and so on
 void Room::printItems() {
+	vector<Item*>& items = getItems(); //get items like this because spamming getItems() everywhere looked ugly
 	int len = items.size();
 	if (len < 1) { //if there are 0 items here, don't print anything
 		return;
@@ -180,7 +181,10 @@ void Room::printWelcome() {
 	welcome = false; //we only do the welcome once
 }
 void Room::setItem(Item* item) {
-	items.push_back(item);
+	getItems().push_back(item);
+}
+void Room::shareItems(Room* room) {
+	sharedItems = &room->getItems();
 }
 void Room::setNPC(NPC* npc, bool alt) {
 	if (!alt) {
@@ -197,6 +201,7 @@ void Room::removeNPC(NPC* npc, bool alt) {
 	}
 }
 void Room::removeItem(Item* item) {
+	vector<Item*>& items = getItems();
 	items.erase(remove(items.begin(), items.end(), item), items.end());
 }
 //sets an exit to another room, and blocks it if specified
@@ -208,7 +213,7 @@ void Room::setExit(const char* direction, Room* room, const char* blocktype, con
 }
 void Room::setRedirect(Room* room) {
 	redirect = room;
-	for (Item* item : items) { //moves all this room's items to the redirect room, in case the player dropped some items here
+	for (Item* item : getItems()) { //moves all this room's items to the redirect room, in case the player dropped some items here
 		item->setRoom(redirect); //item's setRoom calls setItem and removeItem as well
 	}
 }

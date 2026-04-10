@@ -49,6 +49,7 @@ public:
 	void printBlock(const char* direction);
 
 	void setItem(Item* item); //puts an item in the room
+	void shareItems(Room* room); //share item vectors with this room
 	void setNPC(NPC* npc, bool alt = false); //puts an npc in the room
 	void removeNPC(NPC* npc, bool alt = false); //removes the thing from the room
 	void removeItem(Item* item);
@@ -82,6 +83,7 @@ private:
 	bool welcome = false; //if this room has a welcome message for an area
 
 	vector<Item*> items; //items in this room
+	vector<Item*>* sharedItems = NULL; //we might actually share items across rooms, such as in multiple rooms representing the same elevator
 	vector<Item*> stock; //items for sale in this room
 	vector<NPC*> npcs; //npcs in this room
 	vector<NPC*> altNpcs; //npcs in an adjacent room that are blocking an exit in this room

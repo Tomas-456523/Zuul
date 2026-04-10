@@ -383,11 +383,14 @@ NPC* SetupWorld() {
 	Room* ceoelevator1 = new Room("in the elevator, at ground level.");
 	Room* ceoelevator2 = new Room("in the elevator, on the second floor.");
 	Room* ceoelevator3 = new Room("in the elevator, at the top level with the CEO's office.");
+	ceoelevator2->shareItems(ceoelevator1);
+	ceoelevator3->shareItems(ceoelevator1);
 	Room* ceoroom = new Room("in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.");
 	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies and company documents are piled up here.");
 	Room* elevatorentrance = new Room("in the entrance of the BURGER RESTAURANT. It has glass walls curving up and BURGER furniture.\nThe elevator is not currently on ground level.");
 	Room* elevator = new Room("in the elevator of the BURGER RESTAURANT. It's a really fancy circular elevator, with a 360 degree view of the city.");
 	Room* elevatortop = new Room("in the elevator, elevated all the way to the tippity top.");
+	elevatortop->shareItems(elevator);
 	elevatortop->setWelcome({{NULL, "The elevator shoots upwards."},
 							 {NULL, "..."},
 							 {NULL, "..."},
@@ -407,6 +410,7 @@ NPC* SetupWorld() {
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
 	BURGERRESTAURANT->setWelcome({{NULL, "BURGER MAN - \"HELLO VALUED CUSTOMER!\""}, {NULL, "BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT!\""}});
 	Room* elevatorbottom = new Room("in the elevator, deep down in the restricted level of the BURGER RESTAURANT.");
+	elevatorbottom->shareItems(elevator);
 	elevatorbottom->setWelcome({{NULL, "The elevator shoots downwards."},
 								{NULL, "..."},
 								{NULL, "..."},
@@ -1629,11 +1633,20 @@ NPC* SetupWorld() {
 	burgerman->addLinkedConvo(developer, "So the parallel universes are just the same universe but going through them increments the number.");
 	burgerman->addLinkedConvo(developer, "Wait that makes no sense because of the news.");
 	burgerman->addLinkedConvo(developer, "Uhhhhhhhhhhhh...");
-	burgerman->addLinkedConvo(developer, "No clue but maybe I'll come up with something later and edit this conversation.");
-	burgerman->addLinkedConvo(developer, "Anyway about the other BURGER MAN,");
-	burgerman->addLinkedConvo(developer, "You know how HENRY JERRY's company invented time travel?");
+	burgerman->addLinkedConvo(developer, "Well I've edited this conversation in the future and I've decided that it's the same universe,");
+	burgerman->addLinkedConvo(developer, "but it's different subtly such as the news due to quantumn superposition.");
+	burgerman->addLinkedConvo(developer, "So going to a different universe is actually the same universe,");
+	burgerman->addLinkedConvo(developer, "except you're viewing a different quantumn state of the timeline/universe,");
+	burgerman->addLinkedConvo(developer, "which is why you see subtle differences such as the news.");
+	burgerman->addLinkedConvo(self, "Oh I see that makes perfect sense!");
+	burgerman->addLinkedConvo(developer, "Anyway tying into the other BURGER MAN,");
+	burgerman->addLinkedConvo(developer, "I guess universe -1 was some sort of prison for the final boss guy.");
+	burgerman->addLinkedConvo(developer, "And then he invented BURGERs,");
+	burgerman->addLinkedConvo(developer, "and you know how Henry Jerry's company invented time travel?");
 	burgerman->addLinkedConvo(self, "Uh huh.");
-	burgerman->addLinkedConvo(developer, "Yeah so the BURGER MAN used the time machine.");
+	burgerman->addLinkedConvo(developer, "Yeah so using a bootstrap paradox,");
+	burgerman->addLinkedConvo(developer, "the BURGER MAN tempted Henry Jerry into finding the BURGER,");
+	burgerman->addLinkedConvo(developer, "and time traveled back to the future once all was said and done.");
 	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
 	burgerman->addLinkedConvo(self, "Dang that's crazy.");*/
 	
@@ -4574,8 +4587,9 @@ NPC* SetupWorld() {
 
 	NPC* unihorn = new NPC("", "UNIHORN", "A mythical and majestic unihorn, restrained by quantumn chains.", burglab, 24, Stats(100, 30, 30, 40, 40, 50, 9));
 
-	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 29, Stats(150, 20, 30, 35, 45, 30, 9));
+	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats(150, 20, 30, 35, 45, 30, 9));
 	burgerscientist->setNoFight(); //FIGHT or ASK does the same thing and you can't actually fight him
+	burgerscientist->setLeader(true, 29);
 	burgerscientist->addConversation({{self, "Hey what are you doing to this unihorn? >:|"},
 									  {burgerscientist, "..."},
 									  {burgerscientist, "Take it, I don't care."},
@@ -4796,6 +4810,10 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	if (npc->getConvoSize()) { //I want the player to hear all the dialogue instead of blindly fighting everyone, so we make sure if the npc has dialogue that it is said
 		npc->printDialogue(true);
 		cout << "\n";
+	}
+	if (npc->getNoFight()) { //fakeout fight
+		npc->setLeader(false); //set leader to false so you can't try again
+		return;
 	}
 	NPC* roamio = NULL; //add roaming npc to the party if one is here
 	for (NPC* _roamio : currentRoom->getNpcs()) {
