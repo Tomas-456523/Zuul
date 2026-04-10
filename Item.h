@@ -40,7 +40,8 @@ public:
 	void setRoom(Room* _room); //sets the item's current room
 	void unRoom(); //removes the item from the room
 
-	void setStock(int _stock, int _price, const char* buydesc = ""); //makes the item for sale
+	void setStock(int _stock, int _price, const Conversation& buydesc); //makes the item for sale
+	void setFreebie(const Conversation& pitydesc); //make one free if you can't afford it
 	void setTakable(bool _takable = true); //manually sets the item to takable, for item types that default to something we don't want
 	void setDropToUse(bool dropreq); //set if we can't use it while in the inventory
 	void setGuard(NPC* npc); //set a guard that prevents you from using the item
@@ -53,9 +54,11 @@ protected:
 
 	bool takable; //if you can take the item
 	const char* denyDescription = ""; //description of why you can't take the item
-	const char* buyDescription = ""; //prints this when buying the item
+	Conversation buyDescription; //prints this when buying the item
 	int price; //how much the item costs to buy
 	int stock = 0; //how much of the item you can buy before it's sold out
+	bool pity = false; //if they give you one free one anyway if you can't afford it
+	Conversation pityDescription;
 
 	bool consumable = false; //if the item gets used up when USEd
 
@@ -294,15 +297,15 @@ private:
 //treasure items, for giving monies and maybe fighting an enemy trap
 class TreasureItem : public Item {
 public:
-	TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, Item* _item = NULL, NPC* _mimic = NULL);
+	TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, initializer_list<Item*> _items = {}, NPC* _mimic = NULL);
 
 	NPC* getMimic(); //get the trap enemy if there is one
 	int getMony(); //get how many monies to give
-	Item* getItem();
+	vector<Item*>& getItems();
 private:
 	NPC* mimic; //the trap enemy it makes you fight
 	int mony; //how many monies it gives
-	Item* item; //the item stored in the thing
+	vector<Item*> items; //the items stored in the thing
 };
 
 //conveyor switches, for switching the direction of conveyor belts

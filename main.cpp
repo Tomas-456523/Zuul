@@ -483,7 +483,7 @@ NPC* SetupWorld() {
 	scarfsmack->afterdesc = "with his scarf";
 	scarfsmack->addDescription("Smack the target with each end of your stretchy scarf. (25 ATTACK, 2 hits)");
 	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
-	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, bigscarf);
+	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, {bigscarf});
 	Attack* energize = new Attack("ENERGIZE", "energized", false, 14, 0, 0, 1, 1, 1, true, 15);
 	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 2.0f, 0, 0, 0);
 	energize->addEffect(energized);
@@ -1518,13 +1518,13 @@ NPC* SetupWorld() {
 	_energybook->setAttack(energize);
 	_energybook->setAttack(spbomb);
 
-	tentstore->setStock(apple, 2147483647, 5, "JIMMY JOHN - Thank you for your patronage! Enjoy your apple!");
-	tentstore->setStock(pineapple, 2147483647, 20, "JIMMY JOHN - Thank you for your patronage! Enjoy your pine apple!");
-	tentstore->setStock(starapple, 2147483647, 60, "JIMMY JOHN - Thank you for your patronage! Enjoy your star apple!");
-	tentstore->setStock(noodles, 2147483647, 5, "JIMMY JOHN - Thank you for your patronage! Enjoy your noodles!");
-	tentstore->setStock(lasagna, 2147483647, 25, "JIMMY JOHN - Thank you for your patronage! Enjoy your lasagna!");
-	tentstore->setStock(pizza, 2147483647, 50, "JIMMY JOHN - Thank you for your patronage! Enjoy your pizza!");
-	tentstore->setStock(energybook, 1, 100, "JIMMY JOHN - I don't understand that book. But if it interests you then great! Oh, and thank you for your patronage!");	
+	tentstore->setStock(apple, 2147483647, 5, {{jimmyjohn, "Thank you for your patronage! Enjoy your apple!"}});
+	tentstore->setStock(pineapple, 2147483647, 20, {{jimmyjohn, "Thank you for your patronage! Enjoy your pine apple!"}});
+	tentstore->setStock(starapple, 2147483647, 60, {{jimmyjohn, "Thank you for your patronage! Enjoy your star apple!"}});
+	tentstore->setStock(noodles, 2147483647, 5, {{jimmyjohn, "Thank you for your patronage! Enjoy your noodles!"}});
+	tentstore->setStock(lasagna, 2147483647, 25, {{jimmyjohn, "Thank you for your patronage! Enjoy your lasagna!"}});
+	tentstore->setStock(pizza, 2147483647, 50, {{jimmyjohn, "Thank you for your patronage! Enjoy your pizza!"}});
+	tentstore->setStock(energybook, 1, 100, {{jimmyjohn, "I don't understand that book."}, {jimmyjohn, "But if it interests you then great!"}, {jimmyjohn, "Oh, and thank you for your patronage!"}});
 
 	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5);
 	Item* deerkey = new KeyItem("DEER KEY", "The key to the great forest wall.", {{NULL, "You put the DEER KEY in the keyhole."}, {NULL, "The forest gate has been unlocked!"}}, limbo, LOCK);
@@ -1591,7 +1591,7 @@ NPC* SetupWorld() {
 	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//         '|  |   |  |'
 	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /
 	//             """""				//             """""				//             """""			//             """""" \ 
-	//            |     |				//            |     |				//            |     |			//            |     |.`\ 
+	//            |     |				//            |     |				//            |     |			//            |     |.`\ .
 							{developer, "Well that's pretty unfortunate."},
 							{self, "Why did you let them name me. T_T"}, //this is annoyed face not crying
 							{developer, "Sorry I came up with your name after the naming feature."},
@@ -1655,7 +1655,20 @@ NPC* SetupWorld() {
 	//jim shady commentary?
 	//favorite character
 	//least favorite character
-	//what are monies
+	{{self, "So what actually are monies?"},
+	 {developer, "???"},
+	 {self, "wdym ???"},
+	 {developer, "Bro you're carrying monies around you tell me."},
+	 {self, "Well you made me say that so you could explain what monies are. T_T"},
+	 {developer, "Yep that's true!"},
+	 {developer, "Well so I'm thinking monies are like gold coins."},
+	 {developer, "So yeah there you have it."},
+	 {developer, "I'm pretty sure that name was based off of this Desmos bookmark,"},
+	 {developer, "for some graph that was for visualizing currency inflation,"},
+	 {developer, "like it starts at a certain value and gets divided by x,"},
+	 {developer, "where x is how many of that currency exists."},
+	 {developer, "I don't really know if that's exactly how it works but that's what the graph was so yeah."},
+	 {developer, "And anyway the bookmark was called \"economonies\" so that's where I assume monies came from."}};
 	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
 	//have you fought greer yet
 	//can you give me feedback (and say link to form)
@@ -1667,8 +1680,11 @@ NPC* SetupWorld() {
 	//future projects
 	//saying dancing
 	//favorite game
-	//talk about the mountain
-	//big cat
+	//talk about the mountain {developer, ""}
+	{{developer, "You know there was going to be a \"BIG CAT\" as the first enemy on the mountain,"},
+	 {developer, "it was like a golden lion and it had a silver mane and it was really big,"},
+	 {developer, "but it was also really boring so I replaced it with that snowman that dies instantly."},
+	 {developer, "Sorry I mean \"gets incapacitated\" instantly."}};
 	//limbo
 	//burger quest 2 ideation
 	//talk about bosses
@@ -1679,7 +1695,9 @@ NPC* SetupWorld() {
 	//development time
 	//so nice seeing game systems evolve
 	//ascii art time
-	//npcs saying generic player names
+	{{developer, "Have you noticed how nobody actually says your name?"},
+	 {developer, "They all say \"kiddo\", \"kid\", etc."},
+	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};
 
 	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
 	pshrimplebeam->instakill = true;
@@ -1700,6 +1718,7 @@ NPC* SetupWorld() {
 	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", false, 0, 80, 0, 1, 1, 1);
 
 	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope. You see an orbital office building!", tentlab);
+	telescope->setDenial("The TELESCOPE is actually one of those observatory telescopes, so not the kind you can carry around.");
 	
 	Item* fork = new ManholeItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork, forkthrow);
 	Item* pickaxe = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", mineshaft2, pickthrow);
@@ -1759,7 +1778,7 @@ NPC* SetupWorld() {
 								{NULL, "Maybe there's another path you could take..."}};
 
 	Conversation burghint = {{NULL, "Wow what a lame and unfulfilling ending..."},
-							 {NULL, "Maybe there's another path you could take?"}}};
+							 {NULL, "Maybe there's another path you could take?"}};
 	shared_ptr<Conversation> burghint2 = make_shared<Conversation>(Conversation({{NULL, "\nWow what a lame and unfulfilling ending..."},
 																				 {NULL, "Maybe you should focus on the task at hand..."}}));
 	shared_ptr<Conversation> burghint3 = make_shared<Conversation>(Conversation({{NULL, "\nWow what a lame and unfulfilling ending..."},
@@ -1774,7 +1793,8 @@ NPC* SetupWorld() {
 	burghint3->alt = burgabtconv4;
 	
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo, burgabtconv, burghint);
-	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, "BURGER MAN - \"ENJOY YOUR BURGER!\"");
+	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
+	BURGER->setFreebie({{burgerman, "I BELIEVE EVERYONE SHOULD HAVE ACCESS TO BURGERS."}, {burgerman, "HERE, HAVE A BURGER ON THE HOUSE!"}});
 
 	//The BURGER MENACE has been subdued.
 	//All around the world, all the BURGERs fade to ashes.
@@ -1802,22 +1822,22 @@ NPC* SetupWorld() {
 
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
-	desertshopfixed->setStock(skateboard, 1, 100, "MERRO - \"Thank you for your monies.\"");
+	desertshopfixed->setStock(skateboard, 1, 100, {{merro, "Thank you for your monies."}});
 
 	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", {{NULL, "You applied the sunscreen."}, {NULL, "No amount of radiation should bother you now!"}}, limbo, HEAT, true);
 	KeyItem* _sunscreen = (KeyItem*)sunscreen;
 	_sunscreen->setTarget(volcanoentrance);
-	desertshopfixed->setStock(sunscreen, 1, 20, "MERRO - \"Thank you for your monies.\"");
+	desertshopfixed->setStock(sunscreen, 1, 20, {{merro, "Thank you for your monies."}});
 
 	Item* vitaminb = new SpItem("VITAMIN B", "A small supplement bottle of pure Vitamin B. (Restores 15 SP)", limbo, 15);
-	desertshopfixed->setStock(vitaminb, 2147483647, 20, "MERRO - \"Thank you for your monies.\"");
+	desertshopfixed->setStock(vitaminb, 2147483647, 20, {{merro, "Thank you for your monies."}});
 	Item* iron = new SpItem("IRON", "A small bottle of iron supplement. (Restores 30 SP)", limbo, 30);
-	desertshopfixed->setStock(iron, 2147483647, 40, "MERRO - \"Thank you for your monies.\"");
+	desertshopfixed->setStock(iron, 2147483647, 40, {{merro, "Thank you for your monies."}});
 	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 2147483647);
-	desertshopfixed->setStock(magnesium, 2147483647, 100, "MERRO - \"Thank you for your monies.\"");
+	desertshopfixed->setStock(magnesium, 2147483647, 100, {{merro, "Thank you for your monies."}});
 
 	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 2147483647);
-	desertshopfixed->setStock(reviveroot, 2147483647, 300, "MERRO - \"Thank you for your monies.\"");
+	desertshopfixed->setStock(reviveroot, 2147483647, 300, {{merro, "Thank you for your monies."}});
 	
 	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", burgstore, 10);
 
@@ -1825,8 +1845,8 @@ NPC* SetupWorld() {
 	Item* memorycrowbar1 = new MaterialItem("MYSTERY EGG", "This egg is containing a special item and will hatch in a future update.", limbo);
 	Item* memorycrowbar2 = new MaterialItem("MYSTERY EGG", "This egg is containing a special item and will hatch in a future update.", limbo);
 
-	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
-	coolstreet3->setStock(hotdog, 2147483647, 2, "HARRY - \"Ayy thanks for the purchase enjoy your hot dog!\"");
+	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", burgboiler, 0, {crowbar});
+	factchest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 
 	NPC* hotdogguy = new NPC("HOT DOG VENDOR", "HARRY", "Manager of the lucrative BURGERSBURG hot dog stand.", coolstreet3, 14);
 	hotdogguy->addConversation({{self, "Hey!"},
@@ -1837,6 +1857,9 @@ NPC* SetupWorld() {
 								{self, "No thank."}});
 	hotdogguy->setDialogue("Ayyy what's up man you want a hot dog?");
 	hotdogguy->addRejectionDialogue("Sorry no, this hot dog stand is my life's calling.");
+
+	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
+	coolstreet3->setStock(hotdog, 2147483647, 2, { {hotdogguy, "Ayy thanks for the purchase enjoy your hot dog!"} });
 
 	//it's TECH DEMO MAN!
 	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 0, Stats(200000, 200000, 20, 20000, 10, 15, 20));
@@ -2106,7 +2129,7 @@ NPC* SetupWorld() {
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 20, 20, 1, 1, 1);
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
-	kaboomroom->setStock(dynamite, 2147483647, 5, "KELVIN - \"Do you need some explosives? Here you go! I assume you know what you're doing...\"");
+	kaboomroom->setStock(dynamite, 2147483647, 5, {{skeleseller, "Do you need some explosives? Here you go! I assume you know what you're doing..."}});
 
 	NPC* bob = new NPC("", "BOB", "A small child wearing a newsboy cap. He has a hard time making human friends and prefers plants.", limbo, 0);
 	Conversation bobcon = {{bob, "Oh my poor friend Cacty!"},
@@ -2195,7 +2218,7 @@ NPC* SetupWorld() {
 	minecart4->setDenial("This minecart is clamped onto the minecart tracks!");
 
 	Item* detonator = new PaverItem("DETONATOR", "A device wired to some explosives up ahead.", {{NULL, "You pushed down onto the DETONATOR lever."}, {NULL, "*KABOOM!*"}, {NULL, "An exit SOUTH has been opened!"}}, mineshortcut, mineshortcut, SOUTH, mineshaftside);
-	
+
 	Item* downbutton = new WorldChangeItem("DOWN BUTTON", "Restricted elevator button for going alllllll the way down.\nIt's in the same style as the BURGER RESTAURANT elevator buttons.", burgsafe, {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go TO THE BOTTOM now!"}});
 	downbutton->setTakable(true);
 	WorldChangeItem* db = (WorldChangeItem*)downbutton;
@@ -2842,12 +2865,6 @@ NPC* SetupWorld() {
 	WorldChange& ebchanges = ((WorldChangeItem*)elevatorbutton)->getChanges();
 	ebchanges.exitPavings.push(make_tuple(elevatorentrance, elevator, IN_ELEVATOR, OUT));
 	ebchanges.roomChanges.push({elevatorentrance, "in the entrance of the BURGER RESTAURANT. It has glass walls curving up and BURGER furniture."});
-
-	/*Item* downbutton = new WorldChangeItem("DOWN BUTTON", "Restricted elevator button for going alllllll the way down.\nIt's in the same style as the BURGER RESTAURANT elevator buttons.", {{NULL, "There is nowhere to put the DOWN BUTTON!"}, {NULL, "..."}, {NULL, "You shove the DOWN BUTTON into the wall."}, {NULL, "The elevator can go TO THE BOTTOM now!"}}, burgsafe);
-	downbutton->setUsableRooms(elevator, elevatortop);
-	WorldChange& dbchanges =((WorldChangeItem*)downbutton)->getChanges();
-	dbchanges.exitPavings.push(make_tuple(elevator, elevatorbottom, TO_THE_BOTTOM, TO_GROUND_LEVEL));
-	dbchanges.exitPavings.push(make_tuple(elevatortop, elevatorbottom, TO_THE_BOTTOM, TO_THE_TOP));*/
 
 	//set up enemies enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
@@ -3834,9 +3851,11 @@ NPC* SetupWorld() {
 	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
 	mimic1->setBoss(true); //of the mini variety
 
-	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, NULL, mimic1);
+	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, {}, mimic1);
+	fakechest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 	Item* rr2 = new ReviveItem(*(ReviveItem*)(reviveroot));
-	Item* realchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasurecliff, 300, rr2); //put a memory crowbar here?
+	Item* realchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasurecliff, 300, {rr2, memorycrowbar1});
+	realchest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 	
 	NPC* forestboss = new NPC(*savagehog);
 	forestboss->setLeader(true, 5, bossgrove, true, true);
@@ -4148,10 +4167,13 @@ NPC* SetupWorld() {
 	mimic1->setExtraMonies(1500); //you get lots of monies for beating the mimic
 	mimic1->setBoss(true); //mini
 
-	Item* fakechest1 = new TreasureItem("TREASURE CHEST 1", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, NULL, mimic2);
-	Item* fakechest2 = new TreasureItem("TREASURE CHEST 2", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, NULL, mimic3);
+	Item* fakechest1 = new TreasureItem("TREASURE CHEST 1", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic2);
+	Item* fakechest2 = new TreasureItem("TREASURE CHEST 2", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic3);
 	Item* rr3 = new ReviveItem(*(ReviveItem*)(reviveroot));
-	Item* realchest2 = new TreasureItem("TREASURE CHEST 3", "A big treasure chest, possibly full of treasure.", sewertreasure, 500, rr3); //put a memory crowbar here?
+	Item* realchest2 = new TreasureItem("TREASURE CHEST 3", "A big treasure chest, possibly full of treasure.", sewertreasure, 500, {rr3, memorycrowbar2});
+	fakechest1->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
+	fakechest2->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
+	realchest2->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 
 	NPC* drainguard = new NPC(*lavagator);
 	drainguard->setLeader(true, 15, sewerplant);
@@ -5245,12 +5267,19 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 				mony += monies; //adds the mony to the player's mony balance
 				cout << "\nYou got " << monies << " monies! You now have " << mony << " monies!"; //says how much they got and new balance
 			}
-			if (Item* newitem = treasure->getItem()) { //if the treasure had an item
+			if (treasure->getItems().size()) { //if the treasure had an item
+				vector<Item*>& items = treasure->getItems();
+				size_t amount = items.size();
 				cout << "\nYou ";
 				if (treasure->getMony()) cout << "also ";
-				newitem->unRoom(); //removes the item from the room
-				inventory->push_back(newitem); //adds it to the inventory
-				cout << "got a " << newitem->getName() << "!";
+				cout << "got a ";
+				for (size_t i = 0; i < amount; i++) {
+					items[i]->unRoom(); //removes the item from the room
+					inventory->push_back(items[i]); //adds it to the inventory
+					cout << items[i]->getName();
+					if (i < amount) cout << " and a ";
+				}
+				cout << "!";
 			}
 		}
 	//switch items are in one factory and switch the direction of all the conveyor belts

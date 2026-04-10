@@ -94,6 +94,7 @@ public: //you need to set stats on creation
 	const char* getHiddenName();
 	const char* getHiddenDescription();
 	bool getQuantumn();
+	bool getRoaming();
 	bool getBanker();
 	bool getThief();
 	bool getShark();
@@ -372,6 +373,9 @@ protected:
 
 	bool roaming = false; //if this npc roams
 	vector<Room*> roamrooms; //which rooms this npc roams between
+	NPC* pursuing = NULL; //which npc the roaming npc is pursuing
+
+	NPC* pursuer = NULL; //npc pursuing this npc in the overworld
 
 	time_t gymStart = 0; //what time the npc was left at the gym (0 means is not at the gym, bad news for anybody hoping to drop their teammate off at the gym on the first second of 1970)
 

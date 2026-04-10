@@ -295,6 +295,9 @@ NPC* NPC::getTaking() {
 bool NPC::getQuantumn() {
 	return quantumn;
 }
+bool NPC::getRoaming() {
+	return roaming;
+}
 bool NPC::getBanker() {
 	return banker;
 }
@@ -508,6 +511,21 @@ void NPC::roam() { //roam to a random room out of the rooms we roam to
 	}
 	setRoom(target);
 }
+//roam logic - 
+//detect last direction saw player moving
+//move every time player travel()s
+//only move in cardinal directions
+//if player goes in non-cardinal direction, the pursuer teleports to and stays in the room outside
+//if not knowing where to go, prefer going to the center
+//if not knowing which way to go to the center, prefer the way that goes via the center column
+//after losing track of the player, go to the middle top room to camp the elevator until player is seen again
+
+//spawn location
+//default location
+//last direction target seen going
+//last direction target seen in
+//camping exit
+//internal coordinates
 void NPC::setHome(Room* room) {
 	home = room;
 }
