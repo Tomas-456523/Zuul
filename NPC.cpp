@@ -88,7 +88,7 @@ void NPC::printOpeningDialogue() {
 	openingDialogue.pop();
 }
 void NPC::printBlockDialogue(bool finalpause) {
-	printConversation(blockreason, finalpause);
+	printConversation(&blockreason, finalpause);
 }
 bool NPC::getRecruited() { //returns if in the player team
 	return recruited;
@@ -312,11 +312,12 @@ bool NPC::getFifth() {
 }
 bool NPC::getBlocked(Room* room, const char* direction) {
 	if (WorldState[blockunless]) return false; //if the unless is true we don't block
-	for (pair<Room*, const char*>& blocks : blockers) {
+	for (pair<Room*, const char*>& block : blockers) {
 		if (room == block.first && direction == block.second) {
 			return true;
 		}
 	}
+	return false;
 }
 bool NPC::getNoFight() {
 	return nofight;
@@ -679,7 +680,7 @@ void NPC::setNoFight() {
 void NPC::setThief() {
 	thief = true;
 }
-void NPC::setRoaming(bool roam = true) {
+void NPC::setRoaming(bool roam) {
 	roaming = roam;
 }
 void NPC::setRoamRooms(initializer_list<Room*> rooms) {

@@ -109,7 +109,7 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 		cout << "\nYou can't afford the " << name << "!";
 		if (pity) {
 			CinPause();
-			printConversation(pityDescription, false);
+			printConversation(&pityDescription, false);
 			pity = false; //only give one freebie
 			inventory->push_back(Duplicate()); //copies the item and adds it to the inventory
 		}
@@ -125,11 +125,11 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 		cout << "ies.";
 	} //if the item says something after being bought (like the shopkeeper saying "thank you for your purchase!" or something)
 	if (!buyDescription.empty()) {
-		printConversation(buyDescription, false); //prints the buying description
+		printConversation(&buyDescription, false); //prints the buying description
 	}
 }
 //makes the item for sale
-void Item::setStock(int _stock, int _price, const Conversation& buydesc, const Conversation& pitydesc) {
+void Item::setStock(int _stock, int _price, const Conversation& buydesc) {
 	stock = _stock; //set how much of the item are for sale
 	price = _price; //set the price of the item
 	buyDescription = buydesc; //set the buy description
@@ -434,7 +434,7 @@ const char* InfoItem::getText() {
 }
 
 //treasure items, for getting monies and also maybe fighting an enemy if it's trapped
-TreasureItem::TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, initializer_list<Item*> _items = {}, NPC* _mimic) : Item(_name, _description, _room, false, true) {
+TreasureItem::TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, initializer_list<Item*> _items, NPC* _mimic) : Item(_name, _description, _room, false, true) {
 	type = "treasure"; //sets the type
 	mimic = _mimic; //sets the trap enemy if there is one
 	mony = _mony;

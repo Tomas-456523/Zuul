@@ -110,6 +110,9 @@ NPC* SetupWorld() {
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms (WW)
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
+	//the player! defined here so the temple opening dialogues can use the player name
+	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", limbo, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
+
 	//create all WANING WOODLANDS rooms
 	Room* village = new Room("in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.");
 	Room* villageleft = new Room("at the westernmost end of the village, where the second-tallest tent stands.\nIt's only two stories, but it's comparatively a tent mansion.");
@@ -172,12 +175,12 @@ NPC* SetupWorld() {
 						{NULL, "Surely there must be someone friendly around here?"}});
 	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
 	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
-	deserttempleentrance->setTempleEntrance(IN_TEMPLE, desertttemplestairs,
+	deserttempleentrance->setTempleEntrance(IN_TEMPLE, deserttemplestairs,
 		{{self, "Hi desert temple can you please open?"},
 		 {NULL, "The temple rumbles..."},
 		 {NULL, "The temple door starts lowering into the ground..."},
 		 {NULL, "The sand beneath your feet is shaking..."},
-		 {NULL, "Sand from within the temple blasts against your face..."}
+		 {NULL, "Sand from within the temple blasts against your face..."},
 		 {NULL, "The door grinds to a halt."},
 		 {NULL, "The desert temple has been opened!"},
 		 {NULL, "You can go IN TEMPLE now!"}});
@@ -448,7 +451,6 @@ NPC* SetupWorld() {
 	tunnels->setStation();
 
 	//Create NPCs and items MARK: make npcs, items, etc.
-	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", limbo, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
 	self->addRecruitedDialogue("Huh?");
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -1184,7 +1186,7 @@ NPC* SetupWorld() {
 	//Rich Guy Richie is the summoner MARK: Richie
 	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(5, 0, 15, 0, 0, 14, 9), Stats(1, 0, 1, 0, 0, 1, 0));
 	Conversation richrej = {{richie, "No, everyone in this city is either rich and trying to get me to join some BURGER cult,"}, {richie, "or not rich and trying to rob me."}, {richie, "No offense but I don't really trust you."}};
-	shared_ptr<Conversation> richrej2 = make_shared(Conversation({{self, "Hey you wanna help me fight these BURGER guys?"},
+	shared_ptr<Conversation> richrej2 = make_shared<Conversation>(Conversation({{self, "Hey you wanna help me fight these BURGER guys?"},
 		{richie, "In that building over there?"},
 		{self, "Yea."},
 		{richie, "You know we have like these advanced security systems in this neighborhood right?"},
@@ -1279,8 +1281,8 @@ NPC* SetupWorld() {
 	baton->afterdesc = " with its baton";
 	Attack* pepperspray = new Attack("PEPPER SPRAY", "sprayed pepper spray at", false, 7, 10, 0, 1, 1, 1);
 	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 3, 0, 0.5f, 0.75f);
-	baton->addEffect(pepperspray);
-	guardbot->addSpecialAttack(protectandserve);
+	pepperspray->addEffect(peppersprayed);
+	guardbot->addSpecialAttack(pepperspray);
 	Attack* protectandserve = new Attack("PROTECT AND SERVE", "is protecting", false, 10, 0, 0, 1, 1, 1, true);
 	protectandserve->protect = true;
 	guardbot->addSpecialAttack(protectandserve);
@@ -1451,7 +1453,7 @@ NPC* SetupWorld() {
 	//so I had to save her.
 	//REALLY?
 	//THIS TRULY SADDENS ME.
-	//SUCH CORRPUTION IN MY OWN COMPANY?
+	//SUCH CORRUPTION IN MY OWN COMPANY?
 	//I MUST THANK YOU, THEN.
 	//FOR DEALING WITH IT FOR ME.
 	//The CEO guy said you told him to do that though?
@@ -1465,9 +1467,10 @@ NPC* SetupWorld() {
 	//A TOKEN OF MY GRATITUDE.
 	//Oh thanks.
 
+	//The BURGER MAN grabs you by the neck.
 	//YOU HAVE BEEN MAKING QUITE THE MESS.
 	//YOU THOUGHT I WOULDN'T NOTICE?
-	//I wasn't thinking about you.
+	//self, I wasn't thinking about you.
 	//The BURGER MAN knocks you unconscious.
 	//...
 	//...
@@ -1476,8 +1479,7 @@ NPC* SetupWorld() {
 	//WOW.
 	//YOU WANT TO DEFEAT ME?
 	//AFTER I GAVE YOU A BURGER ON THE HOUSE?
-	//I don't believe you anymore.
-	//I WILL NOT TOLERATE THIS NEW QUEST OF YOURS.
+	//self, I don't believe you anymore.
 	//The BURGER MAN knocks you unconscious.
 	//...
 	//...
@@ -1622,33 +1624,34 @@ NPC* SetupWorld() {
 	parry->parry = true;
 	Item* parryguide = new EducationItem("PARRYING GUIDE", "An in depth guide on how to PARRY enemy attacks.", limbo, parry);
 	developer->setGift(parryguide);
-	/*burgerman->setLink(developer);
-	burgerman->addLinkedConvo(self, "Yo developer man.");
-	burgerman->addLinkedConvo(developer, "Hey what's up?");
-	burgerman->addLinkedConvo(self, "So I was wondering,");
-	burgerman->addLinkedConvo(self, "what's up with all the parallel universes in the first game?");
-	burgerman->addLinkedConvo(self, "Also who was the other BURGER MAN?");
-	burgerman->addLinkedConvo(developer, "Oh uhhhhh... honestly idk maybe I'll just retcon that.");
-	burgerman->addLinkedConvo(developer, "Wait no I got this.");
-	burgerman->addLinkedConvo(developer, "So the parallel universes are just the same universe but going through them increments the number.");
-	burgerman->addLinkedConvo(developer, "Wait that makes no sense because of the news.");
-	burgerman->addLinkedConvo(developer, "Uhhhhhhhhhhhh...");
-	burgerman->addLinkedConvo(developer, "Well I've edited this conversation in the future and I've decided that it's the same universe,");
-	burgerman->addLinkedConvo(developer, "but it's different subtly such as the news due to quantumn superposition.");
-	burgerman->addLinkedConvo(developer, "So going to a different universe is actually the same universe,");
-	burgerman->addLinkedConvo(developer, "except you're viewing a different quantumn state of the timeline/universe,");
-	burgerman->addLinkedConvo(developer, "which is why you see subtle differences such as the news.");
-	burgerman->addLinkedConvo(self, "Oh I see that makes perfect sense!");
-	burgerman->addLinkedConvo(developer, "Anyway tying into the other BURGER MAN,");
-	burgerman->addLinkedConvo(developer, "I guess universe -1 was some sort of prison for the final boss guy.");
-	burgerman->addLinkedConvo(developer, "And then he invented BURGERs,");
-	burgerman->addLinkedConvo(developer, "and you know how Henry Jerry's company invented time travel?");
-	burgerman->addLinkedConvo(self, "Uh huh.");
-	burgerman->addLinkedConvo(developer, "Yeah so using a bootstrap paradox,");
-	burgerman->addLinkedConvo(developer, "the BURGER MAN tempted Henry Jerry into finding the BURGER,");
-	burgerman->addLinkedConvo(developer, "and time traveled back to the future once all was said and done.");
-	burgerman->addLinkedConvo(developer, "So he ordered the BURGER from himself.");
-	burgerman->addLinkedConvo(self, "Dang that's crazy.");*/
+
+	/*{{self, "Yo developer man."},
+	 {developer, "Hey what's up?"},
+	 {self, "wdym ???"},
+	 {self, "So I was wondering,"},
+	 {self, "what's up with all the parallel universes in the first game?"},
+	 {self, "Also who was the other BURGER MAN?"},
+	 {developer, "Oh uhhhhh... honestly idk maybe I'll just retcon that."},
+	 {developer, "Wait no I got this."},
+	 {developer, "So the parallel universes are just the same universe but going through them increments the number."},
+	 {developer, "Wait that makes no sense because of the news."},
+	 {developer, "Uhhhhhhhhhhhh..."},
+	 {developer, "Well I've edited this conversation in the future and I've decided that it's the same universe,"},
+	 {developer, "but it's different subtly such as the news due to quantumn superposition."},
+	 {developer, "So going to a different universe is actually the same universe,"},
+	 {developer, "except you're viewing a different quantumn state of the timeline/universe,"},
+	 {developer, "which is why you see subtle differences such as the news."},
+	 {self, "Oh I see that makes perfect sense!"},
+	 {developer, "Anyway tying into the other BURGER MAN,"},
+	 {developer, "I guess universe -1 was some sort of prison for the final boss guy."},
+	 {developer, "And then he invented BURGERs,"},
+	 {developer, "and you know how Henry Jerry's company invented time travel?"},
+	 {self, "Uh huh."},
+	 {developer, "Yeah so using a bootstrap paradox,"},
+	 {developer, "the BURGER MAN tempted Henry Jerry into finding the BURGER,"},
+	 {developer, "and time traveled back to the future once all was said and done."},
+	 {developer, "So he ordered the BURGER from himself."},
+	 {self, "Dang that's crazy."}};
 	
 	//talk about the game after beating final boss
 	//and dlc plans, crowbars
@@ -1697,7 +1700,7 @@ NPC* SetupWorld() {
 	//ascii art time
 	{{developer, "Have you noticed how nobody actually says your name?"},
 	 {developer, "They all say \"kiddo\", \"kid\", etc."},
-	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};
+	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};*/
 
 	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
 	pshrimplebeam->instakill = true;
@@ -1726,6 +1729,10 @@ NPC* SetupWorld() {
 
 	Item* mhcover1 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano2, coverthrow, sewerentrance1, DOWN);
 	Item* mhcover2 = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", volcano6, coverthrow, sewer2, DOWN);
+
+	Item* memcover = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", leftstreet5, coverthrow, limbo, DOWN);
+	memcover->setTakable(false);
+	memcover->setDenial("The MANHOLE COVER is completely sealed. You need to wait until a future DLC to be able to open it!");
 
 	Item* switch1 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom);
 	Item* switch2 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom2);
@@ -1794,7 +1801,7 @@ NPC* SetupWorld() {
 	
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo, burgabtconv, burghint);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
-	BURGER->setFreebie({{burgerman, "I BELIEVE EVERYONE SHOULD HAVE ACCESS TO BURGERS."}, {burgerman, "HERE, HAVE A BURGER ON THE HOUSE!"}});
+	BURGER->setFreebie({{burgerman, "YOU CAN'T AFFORD A BURGER?"}, {burgerman, "I BELIEVE THERE SHOULD BE NO FINANCIAL BARRIERS TO ENJOYING A BURGER."}, {burgerman, "HERE, HAVE ONE ON THE HOUSE!"}, {self, "Oh thanks!"}});
 
 	//The BURGER MENACE has been subdued.
 	//All around the world, all the BURGERs fade to ashes.
@@ -1820,24 +1827,28 @@ NPC* SetupWorld() {
 	//self, "..."
 	//self, "Wait how are we supposed to get back?"
 
+	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant and owner of the desert store. He really wants your monies.", limbo, 12);
+	merchant->setDialogue("Welcome, my friend, to my store.");
+	merchant->addRejectionDialogue("No I want to sell things.");
+
 	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
 	skateboard->setTakable();
-	desertshopfixed->setStock(skateboard, 1, 100, {{merro, "Thank you for your monies."}});
+	desertshopfixed->setStock(skateboard, 1, 100, {{merchant, "Thank you for your monies."}});
 
 	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", {{NULL, "You applied the sunscreen."}, {NULL, "No amount of radiation should bother you now!"}}, limbo, HEAT, true);
 	KeyItem* _sunscreen = (KeyItem*)sunscreen;
 	_sunscreen->setTarget(volcanoentrance);
-	desertshopfixed->setStock(sunscreen, 1, 20, {{merro, "Thank you for your monies."}});
+	desertshopfixed->setStock(sunscreen, 1, 20, {{merchant, "Thank you for your monies."}});
 
 	Item* vitaminb = new SpItem("VITAMIN B", "A small supplement bottle of pure Vitamin B. (Restores 15 SP)", limbo, 15);
-	desertshopfixed->setStock(vitaminb, 2147483647, 20, {{merro, "Thank you for your monies."}});
+	desertshopfixed->setStock(vitaminb, 2147483647, 20, {{merchant, "Thank you for your monies."}});
 	Item* iron = new SpItem("IRON", "A small bottle of iron supplement. (Restores 30 SP)", limbo, 30);
-	desertshopfixed->setStock(iron, 2147483647, 40, {{merro, "Thank you for your monies."}});
+	desertshopfixed->setStock(iron, 2147483647, 40, {{merchant, "Thank you for your monies."}});
 	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 2147483647);
-	desertshopfixed->setStock(magnesium, 2147483647, 100, {{merro, "Thank you for your monies."}});
+	desertshopfixed->setStock(magnesium, 2147483647, 100, {{merchant, "Thank you for your monies."}});
 
 	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 2147483647);
-	desertshopfixed->setStock(reviveroot, 2147483647, 300, {{merro, "Thank you for your monies."}});
+	desertshopfixed->setStock(reviveroot, 2147483647, 300, {{merchant, "Thank you for your monies."}});
 	
 	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", burgstore, 10);
 
@@ -1845,8 +1856,8 @@ NPC* SetupWorld() {
 	Item* memorycrowbar1 = new MaterialItem("MYSTERY EGG", "This egg is containing a special item and will hatch in a future update.", limbo);
 	Item* memorycrowbar2 = new MaterialItem("MYSTERY EGG", "This egg is containing a special item and will hatch in a future update.", limbo);
 
-	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", burgboiler, 0, {crowbar});
-	factchest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
+	Item* burgchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", burgboiler, 0, {crowbar});
+	burgchest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 
 	NPC* hotdogguy = new NPC("HOT DOG VENDOR", "HARRY", "Manager of the lucrative BURGERSBURG hot dog stand.", coolstreet3, 14);
 	hotdogguy->addConversation({{self, "Hey!"},
@@ -1971,24 +1982,24 @@ NPC* SetupWorld() {
 	child->addDismissalDialogue({{self, "Actually can you just stay here a little longer?"}, {child, "Okay."}, {NULL, "JILLY hides behind some boxes."}});
 	child->addRecruitedDialogue("I can't wait to get back home!");
 	child->setBlockMessage({{child, "Uhhh I don't want to go there."}, {child, "I thought we were going back to my mom? :("}});
-	child->addBlocker(BURGERSBURG, SOUTH); //can't leave the city with Jilly
-	child->addBlocker(tunnels, TO_THE_VILLAGE);
-	child->addBlocker(tunnels, TO_THE_DESERT);
-	child->addBlocker(tunnels, TO_THE_HIGHLANDS);
-	child->addBlocker(tunnels, TO_THE_BASEMENT);
-	child->addBlocker(richneighborhood4, NORTH);
-	child->addBlocker(coolstreet2, INSIDE); //can't go in weird places with Jilly
-	child->addBlocker(rightstreet5, INSIDE);
-	child->addBlocker(newstreet2, INSIDE);
-	child->addBlocker(leftstreet4, INSIDE);
-	child->addBlocker(mainstreet5, INSIDE);
-	child->addBlocker(mainstreet4, DOWN);
-	child->addBlocker(coolstreet4, IN_ALLEY);
-	child->addBlocker(newstreet3, IN_ALLEY);
-	child->addBlocker(elevator, TO_THE_TOP); //can't bring Jilly to the restaurant
-	child->addBlocker(elevatorbottom, TO_THE_TOP);
-	child->addBlocker(elevator, TO_THE_BOTTOM); //if you bring her this far just fully bring her home at that point, I did specifically say "when you're ready"
-	child->addBlocker(elevatorentrance, IN_ELEVATOR);
+	child->addBlock(BURGERSBURG, SOUTH); //can't leave the city with Jilly
+	child->addBlock(tunnels, TO_THE_VILLAGE);
+	child->addBlock(tunnels, TO_THE_DESERT);
+	child->addBlock(tunnels, TO_THE_HIGHLANDS);
+	child->addBlock(tunnels, TO_THE_BASEMENT);
+	child->addBlock(richneighborhood4, NORTH);
+	child->addBlock(coolstreet2, INSIDE); //can't go in weird places with Jilly
+	child->addBlock(rightstreet5, INSIDE);
+	child->addBlock(newstreet2, INSIDE);
+	child->addBlock(leftstreet4, INSIDE);
+	child->addBlock(mainstreet5, INSIDE);
+	child->addBlock(mainstreet4, DOWN);
+	child->addBlock(coolstreet4, IN_ALLEY);
+	child->addBlock(newstreet3, IN_ALLEY);
+	child->addBlock(elevator, TO_THE_TOP); //can't bring Jilly to the restaurant
+	child->addBlock(elevatorbottom, TO_THE_TOP);
+	child->addBlock(elevator, TO_THE_BOTTOM); //if you bring her this far just fully bring her home at that point, I did specifically say "when you're ready"
+	child->addBlock(elevatorentrance, IN_ELEVATOR);
 	child->setRecruitable(true);
 	child->setRecruitCondition(SAVINGJILLY);
 	child->setFifth(true);
@@ -2025,8 +2036,7 @@ NPC* SetupWorld() {
 	matilda->setTalkMakeChanges(false);
 	matilda->setWorldCondition(JILLYQUEST);
 	matilda->addRecruitLink(forestknight); //this works just fine because you can never have already saved Jilly if you just start the quest to do that
-	matilda->addRecruitLink(theratman, BEATRATMAN); //we can just add both for many possible conditions :D
-	matilda->addRecruitLink(theratman, BEATMARGE);
+	//there are some ratman recruit links but they're done below when ratman is actually defined
 	Conversation matrej1 = {{self, "Hey wanna join my BURGER QUEST?"},
 							{matilda, "..."},
 							{matilda, "BURGERs aren't good, you know."},
@@ -2064,7 +2074,7 @@ NPC* SetupWorld() {
 
 	WorldChange jillivery; //jilly delivery
 
-	{{child, "MOM!"}, {matilda, "JILLY!"},
+	/*{{child, "MOM!"}, {matilda, "JILLY!"},
 	 {NULL, "Jilly flies into Matilda's arms."},
 	 {NULL, "Tears of joy flow from Matilda's eyes.!"},
 	 {matilda, "Oh thank you so much!"},
@@ -2074,7 +2084,7 @@ NPC* SetupWorld() {
 	 {child, "I made you this drawing!"},
 	 {NULL, "Jilly hands you a drawing of her uppercutting you."},
 	 {NULL, "You got the JILLY'S DRAWING!"},
-	 {self, "Oh thanks."}};
+	 {self, "Oh thanks."}};*/
 
 	//I have just finished fighting the CEO
 	//I should be getting close!
@@ -2148,7 +2158,7 @@ NPC* SetupWorld() {
 	franklin->addConversation({{franklin, "Say, I had a very good view of your fight with Viola."},
 							   {franklin, "I simply must thank you for saving our humble town!"},
 							   {franklin, "Here, have this desert delicacy!"},
-							   {self, "Oh thanks."}});
+							   {self, "Oh thanks!"}});
 	Item* desertdelicacy = new HpItem("DESERT DELICACY", "A very nice desert pie, featuring rare desert fruit. (heals all HP)", limbo, 2147483647);
 	franklin->setGift(desertdelicacy);
 	franklin->addConversation({{franklin, "I don't like sand."},
@@ -2167,10 +2177,6 @@ NPC* SetupWorld() {
 							   {franklin, "I'll bring it up with the HOA."}});
 	franklin->addRejectionDialogue("I must watch over the town, I'm afraid I haven't got time for adventuring.");
 	franklin->setDialogue("I'm happy to see this town back in its lively state!");
-
-	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant and owner of the desert store. He really wants your monies.", limbo, 12);
-	merchant->setDialogue("Welcome, my friend, to my store.");
-	merchant->addRejectionDialogue("No I want to sell things.");
 
 	/*NPC* olivia = new NPC("", "OLIVIA", "Lady who lives in this house.", limbo, 7);
 	olivia->setDialogue({})*/
@@ -2812,7 +2818,7 @@ NPC* SetupWorld() {
 	burgbasew->setExit(SOUTH, burgbasesw);
 	burgbasew->setExit(EAST, burgbasec);
 	burgbasew->setExit(IN_ROOM, burgboiler);
-	burgbasec->setExit(NORTH, burgbasen);
+	burgbasec->setExit(NORTH, burgerbasement);
 	burgbasec->setExit(SOUTH, burgbases);
 	burgbasec->setExit(EAST, burgbasee);
 	burgbasec->setExit(WEST, burgbasew);
@@ -2829,9 +2835,9 @@ NPC* SetupWorld() {
 	burgbasese->setExit(NORTH, burgbasee);
 	burgbasese->setExit(DOWNSTAIRS, burgplatn);
 	burgplatn->setExit(UPSTAIRS, burgbasese);
-	burgplatn->setExit(EAST, bugplate);
+	burgplatn->setExit(EAST, burgplate);
 	burgplatn->setExit(SOUTH, burgplats);
-	burgplats->setExit(NORTHEAST, bugplate);
+	burgplats->setExit(NORTHEAST, burgplate);
 	burgplats->setExit(NORTH, burgplatn);
 	burgplats->setExit(IN_ROOM, BURGERPRISON);
 	burgplate->setExit(WEST, burgplatn);
@@ -3771,7 +3777,7 @@ NPC* SetupWorld() {
 	govguard->addConversation({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Most impressive."}, {ninjachief, "Now, fight me as your final test."}}); //just so he says that before the fight
 	govguard->addRejectionDialogue("I must continue to govern the ninja village.");
 	govguard->addLinkedDialogue(govguard, {{govguard, "Well done, young one."}, {govguard, "You are a most impressive ninja."}});
-	govguard->addLinkedConvo(govguard, {{govguard, "Well done, young one."}, {govguard, "You are a most impressive ninja."}, {govguard, "You've earned yourself access to our most secret ninja scroll."}, {self, "Oh thanks. :D"}});
+	govguard->addLinkedConvo(govguard, {{govguard, "Well done, young one."}, {govguard, "You are a most impressive ninja."}, {govguard, "You've earned yourself access to our most secret ninja scroll."}, {self, "Oh thanks :D"}});
 	govguard->setTalkOnDefeat();
 	Item* ninjascroll = new EducationItem("ADVANCED NINJA SCROLL", "An old golden scroll detailing advanced ninja techniques. Most ninjas never even see this scroll their whole lives.", limbo, smokebomb);
 	EducationItem* _ninjascroll = (EducationItem*)ninjascroll;
@@ -4405,6 +4411,7 @@ NPC* SetupWorld() {
 	gamblongo->setDialogue({{gamblongo, "ahahaha i am gamblongo the gamble monster"}});
 
 	NPC* evilgrandma = new NPC(*grandma);
+	
 	evilgrandma->setLeader(true, 22, rightstreet3, false);
 	evilgrandma->setMask("GRANDMA", "MARGE", "She looks like a poor grandma getting beat up and robbed by Ratman.");
 	evilgrandma->setTalkOnDefeat();
@@ -4420,13 +4427,7 @@ NPC* SetupWorld() {
 										  {ratman, "But now she's going straight to the BURGERSBURG asylum."},
 										  {ratman, "Because I'm Ratman."},
 										  {NULL, "RATMAN grappling hooks away carrying a tied up MARGE."}});
-	evilgrandma->addDeleaderLink(theratman);
-	evilgrandma->addRoamLink(theratman);
-	evilgrandma->addDefeatRoom(grandma, limbo);
-	evilgrandma->setWorldCondition(BEATMARGE);
-	evilgrandma->addLinkedDesc(theratman, "The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
-	evilgrandma->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
-
+	
 	NPC* theratman = new NPC(*ratman); //MARK: Ratman
 	theratman->setLeader(true, 22, rightstreet3);
 	theratman->setDialogue("I'm Ratman.");
@@ -4449,9 +4450,9 @@ NPC* SetupWorld() {
 										  {ratman, "Because I'm Ratman."},
 										  {self, "T_T"},
 										  {NULL, "RATMAN grappling hooks away."}});
-	theratman->addDeleaderLink(theratman);
+	theratman->addDeleaderLink(theratman); //if you fight Ratman
 	theratman->addRoamLink(theratman);
-	theratman->addDefeatRoom(grandma, limbo);
+	theratman->addDefeatRoom(evilgrandma, limbo);
 	theratman->setWorldCondition(BEATRATMAN);
 	theratman->addLinkedDesc(theratman, "The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
 	theratman->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
@@ -4459,7 +4460,14 @@ NPC* SetupWorld() {
 	theratman->addBlock(elevatorbottom, TO_THE_TOP);
 	theratman->setBlockMessage({{theratman, "I thought we weren't just going to get fast food."}, {theratman, "I got serious buiness to attend to, kid."}, {theratman, "Because I'm Ratman."}});
 	theratman->setBlockUnless(TEMPLEQUEST);
-	
+	evilgrandma->addDeleaderLink(theratman); //if you fight Marge
+	evilgrandma->addRoamLink(theratman);
+	evilgrandma->addDefeatRoom(grandma, limbo);
+	evilgrandma->setWorldCondition(BEATMARGE);
+	evilgrandma->addLinkedDesc(theratman, "The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
+	evilgrandma->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
+	matilda->addRecruitLink(theratman, BEATRATMAN); //we can just add both for many possible conditions :D
+	matilda->addRecruitLink(theratman, BEATMARGE);
 	theratman->addRejectionDialogue({{self, "Hey rat man wanna join me on my BURGER QUEST?"},
 									 {ratman, "I don't have time to get a BURGER, kid."},
 									 {ratman, "I have a city to protect."},
@@ -4489,12 +4497,12 @@ NPC* SetupWorld() {
 	batrec2->alt = batrec3;
 	theratman->addDismissalDialogue({{ratman, "I shall continue to protect the city."}, {ratman, "Because I'm Ratman."}, {NULL, "RATMAN grappling hooks away."}});
 	theratman->setRoamRooms({mainstreet1, mainstreet2, mainstreet3, mainstreet4, mainstreet5, coolstreet1, coolstreet2, coolstreet3, coolstreet4, coolstreet5, rightstreet1, rightstreet2, rightstreet3, rightstreet4, rightstreet5});
-	rightstreet3->setWelcome({ {grandma, "AHHHHHHHH!"},
+	rightstreet3->setWelcome({{grandma, "AHHHHHHHH!"},
 							  {grandma, "HELP ME, DEARIE!"},
 							  {grandma, "This bad man is beating me up!"},
 							  {grandma, "And stealing my purse!"},
 							  {self, "Why are you beating up this grandma? >:|"},
-							  {ratman, "Because I'm Ratman."} });
+							  {ratman, "Because I'm Ratman."}});
 
 	NPC* burgerguards = new NPC(*burgeragent);
 	burgerguards->setLeader(true, 23, richneighborhood4, false);
@@ -4622,7 +4630,7 @@ NPC* SetupWorld() {
 									  {NULL, "UNIHORN - *grateful neigh*"},
 									  {NULL, "The unihorn jumps at the wall and passes through."},
 									  {NULL, "It left behind a UNIHORN CORN in gratitude."}});
-	{{burgerscientist, "I see you have the child with you."},
+	/*{{burgerscientist, "I see you have the child with you."},
 	 {NULL, "JILLY hides behind you."},
 	 {burgerscientist, "She was going to be my next subject after the unihorn."},
 	 {burgerscientist, "We detected unusual signs of latent energy production from within her."},
@@ -4639,7 +4647,7 @@ NPC* SetupWorld() {
 	 {burgerscientist, "rendering successful attempts at capturing you improbable."},
 	 {burgerscientist, "With this in mind, I will offer you 1,000,000,000 monies in exchange for bringing the child to me."},
 	 {self, "No. >:|"},
-	 {burgerscientist, "Very well."}};
+	 {burgerscientist, "Very well."}};*/
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -5077,7 +5085,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			}
 		}
 		if (banker) { //if we found a banker do the banking
-			npc->depositMonies(mony);
+			banker->depositMonies(mony);
 			return; //return so we don't print error saying "There is no BANK here!"
 		}
 	}
@@ -5135,12 +5143,12 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	//beats the game until I rework this
 	} else if (!strcmp(item->getType(), "BURGER")) {
 		BURGERItem* boiga = (BURGERItem*)item; //get BURGER as BURGERItem
-		printConversation(boiga->getConfirmText(), false);
+		printConversation(&boiga->getConfirmText(), false);
 		if (!AOrB(NULL, "YES", "NO")) {
 			return;
 		}
-		printConversation(boiga->getUseText(), true);
-		printConversation(boiga->getHintText(), true);
+		printConversation(&boiga->getUseText(), true);
+		printConversation(&boiga->getHintText(), true);
 		if (!AOrB("Would you like to keep playing? (YES or NO)", "YES", "NO")) {
 			cout << "\nAlright then cya!\n";
 			exit(0);

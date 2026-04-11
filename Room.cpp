@@ -223,7 +223,7 @@ void Room::setStation(bool stat) {
 void Room::setGym(bool _gym) {
 	gym = _gym;
 }
-void Room::setTempleEntrance(const char* exit, Room* temple, Conversation opentext) {
+void Room::setTempleEntrance(const char* exit, Room* temple, const Conversation& opentext) {
 	templeentrance = true;
 	templesettings = {exit, temple};
 	templeopenconvo = opentext;
@@ -239,7 +239,7 @@ void Room::setWelcome(Conversation text) {
 	welcomeText = text;
 	welcome = true;
 }
-void Room::setStock(Item* item, int amount, int price, const char* buydesc) {
+void Room::setStock(Item* item, int amount, int price, const Conversation& buydesc) {
 	item->setStock(amount, price, buydesc);
 	stock.push_back(item);
 }
@@ -253,7 +253,7 @@ void Room::setBackup(Item* item) {
 //make the temple enterable if this is a temple entrance
 void Room::openTemple() {
 	this->setExit(templesettings.first, templesettings.second);
-	printConversation(templeopenconvo, false);
+	printConversation(&templeopenconvo, false);
 	templeentrance = false; //so we can't do all this again
 }
 void Room::switchConveyor() { //swaps the altRoom and the FORWARD exit, effectively reversing the conveyor movement

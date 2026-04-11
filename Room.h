@@ -58,10 +58,10 @@ public:
 	void setStation(bool stat = true); //sets if this room is a station
 	void setGym(bool _gym = true); //sets if this room is a gym
 	void setConveyor(Room* altroom, const char* conveyorexit); //sets if this room is a conveyor + references the FORWARD exit in conveyor rooms
-	void setTempleEntrance(const char* exit, Room* temple, Conversation opentext); //makes this room a temple entrance, so we can ASK NICELY to open it
+	void setTempleEntrance(const char* exit, Room* temple, const Conversation& opentext); //makes this room a temple entrance, so we can ASK NICELY to open it
 	void setDescription(const char* _description); //reset the description, used by items that change things
 	void setWelcome(Conversation text); //set welcome text for the area
-	void setStock(Item* item, int stock, int price, const char* buydesc = ""); //adds an item for sale
+	void setStock(Item* item, int stock, int price, const Conversation& buydesc); //adds an item for sale
 	void removeStock(Item* item); //removes an item from sale
 	void setBackup(Item* item); //sets a backup item for the room
 	void openTemple(); //set the temple entrance if this is a temple entrance
@@ -106,7 +106,7 @@ private:
 	pair<const char*, Room*> templesettings = {NULL, NULL};
 	Conversation templeopenconvo; //text that is printed when the temple is opened
 
-	pair<size_t> enterchangecondition = {NEVER, NEVER}; //stuff that happens if you enter this room and the first condition is true but not the second one
+	//pair<size_t> enterchangecondition = {NEVER, NEVER}; //stuff that happens if you enter this room and the first condition is true but not the second one
 	WorldChange enterchange;
 	Conversation enterchangetext; //prints this when it happens, easier to manage than welcome text because I didn't have a way to remove welcomes
 

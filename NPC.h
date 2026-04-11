@@ -198,8 +198,8 @@ public: //you need to set stats on creation
 	void setTalkMakeChanges(bool miscworks = true); //set if the npc should make changes by ASKing, not FIGHTing, also variable asking if miscellaneous dialogue other than normal convos should work
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
-	void addRecruitLink(NPC* npc, size_t condition = NEVER);
-	void addDecruitLink(NPC* npc, size_t condition = NEVER);
+	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER);
+	void addDecruitLink(NPC* npc, size_t condition = Helper::NEVER);
 	void addDefeatRoom(NPC* npc, Room* room);
 	void addLinkedDialogue(NPC* speaker, const Conversation& dialogue);
 	void addLinkedTitle(NPC* npc, const char* title);
@@ -302,7 +302,7 @@ protected:
 	bool fifth = false; //if this is a bonus fifth teammate
 
 	vector<pair<Room*, const char*>> blockers; //this npc does not like going in this direction in these rooms and doesn't let you go there if recruited
-	size_t blockunless = NEVER; //actually don't block those directions if this condition is true
+	size_t blockunless = Helper::NEVER; //actually don't block those directions if this condition is true
 	Conversation blockreason; //says why they don't wanna go there
 
 	bool quantumn = false; //if it's pretending to be there but actually does nothing and can't be interacted with
@@ -369,7 +369,7 @@ protected:
 	bool loopLastChange = false; //if we should loop the last change every single defeat for respawning enemies, as opposed to only do the changes once
 	bool talktochange = false; //if we should make changes when asking the npc instead of when they are defeated
 	bool miscdoeschange = false; //if non-normal conversations should work for the talktochange thing
-	int recruitcondition = NEVER; //does NOT mean condition needed to recruit them, but rather condition that gets affected when this npc is recruited/dismissed
+	int recruitcondition = Helper::NEVER; //does NOT mean condition needed to recruit them, but rather condition that gets affected when this npc is recruited/dismissed
 
 	bool roaming = false; //if this npc roams
 	vector<Room*> roamrooms; //which rooms this npc roams between

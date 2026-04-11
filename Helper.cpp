@@ -222,15 +222,8 @@ namespace Helper {
 	void printConversation(const Conversation* _convo, bool finalpause) { //pass a pointer so it's easier to do all the alt stuff
 		cout << "\n";
 		const Conversation* current = _convo;
-		for (bool continuing = true; continuing;) { //keep going until we didn't find a new alt conversation
-			continuing = false; //assume we don't switch to start
-			for (size_t condition : current->skipcondition) { //check all the conditions
-				if (WorldState[condition]) {
-					current = current->alt.get(); //go to the alt
-					continuing = true; //we have to keep checking to check if we need to go to the alt's alt
-					break; //break because we found the condition so no need to do all that again
-				}
-			}
+		while (current->goToAlt()) { //keep going until we didn't find a new alt conversation
+			current = current->alt.get(); //go to the alt
 		}
 		const vector<pair<NPC*, const char*>>& convo = current->lines;
 		for (int i = 0; i < convo.size(); i++) { //prints all the dialogue in the conversation
@@ -298,10 +291,10 @@ namespace Helper {
 			pair<NPC*, size_t>& data = changes.conditionalRecruits.front();
 			if (WorldState[data.second]) {
 				data.first->setRecruitable(true);
-				if (npc->getLeader()) {
-					npc->setLeader(false);
-					npc->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
-					npc->undefeat();
+				if (data.first->getLeader()) {
+					data.first->setLeader(false);
+					data.first->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
+					data.first->undefeat();
 				}
 			}
 			changes.conditionalRecruits.pop();
