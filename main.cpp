@@ -136,9 +136,9 @@ NPC* SetupWorld() {
 	Room* deerclearing = new Room("in the deer clearing, where deer frequently gather."); //talk to the deer to get the key
 	Room* ninjaland = new Room("underneath the ninja village. It's probably supposed to be hidden but you looked up and there it was.");
 	Room* ninjavillage = new Room("in the ninja village. There's no bridges connecting the houses, you must simply jump between them like a true ninja.");
-	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many weapons and scrolls up on the walls.");
+	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many ninja weapons and scrolls up on the walls.");
 	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of ninjaberries and ninjasteak and ninjafish and the diet isn't actually that strict.");
-	Room* ninjaforge = new Room("in the ninja forge. There are many molds for making weapons here.");
+	Room* ninjaforge = new Room("in the ninja forge. There are many ninja weapons and molds on the wall.");
 	Room* foresttempleentrance = new Room("in the sunny glade, at the sealed entrance of the ancient forest temple.");
 	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
 	foresttempleentrance->setTempleEntrance(IN_TEMPLE, foresttemplestairs,
@@ -443,7 +443,7 @@ NPC* SetupWorld() {
 	Room* burgplatn = new Room("on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories endlessly churning out BURGERs.");
 	Room* burgplate = new Room("next to the BURGER assembly line. There's some BURGER cultists cursing BURGERs as they pass by.");
 	Room* burgplats = new Room("on the platform. There's some diagrams here and a room to the side.");
-	Room* BURGERPRISON = new Room("in the BURGER PRISON. There one singular damp cell. It smells like BURGERs.");
+	Room* BURGERPRISON = new Room("in the BURGER PRISON, full of cells and torture devices.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
 	basestation->setStation();
 
@@ -513,6 +513,11 @@ NPC* SetupWorld() {
 	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", false, 0, 0, 0, 1, 1, 9, false, 25);
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
+	Attack* spacetimeslice = new Attack("SPACETIME SLICE", "sliced", false, 25, 0, 0, 1, 1, 1, true);
+	spacetimeslice->afterdesc = "'s spacetime into two";
+	spacetimeslice->copyamount = 1;
+	spacetimeslice->addDescription("Slice a teammate's spacetime into two, duplicating them for the duration of the battle.");
+	Item* kosmickatana = new WeaponItem("KOSMIC KATANA", "A katana beautifully forged from the corn of a unihorn, sparkling like the stars of the cosmos.\nIt's so sharp it can slice through the spacetime continuum.", limbo, spacetimeslice);
 
 	//Flower Girl Floria is primarily a healer with some other stuff for variety as well MARK: Floria
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 0));
@@ -1347,13 +1352,60 @@ NPC* SetupWorld() {
 
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
 	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER.\nHe wears a formal business suit and a traumatized expression.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
-	//self, "WHAT!?!?"
-	//self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"
-	//hj, "Yeah that's my name."
+	//something about bright light and lighning or something
+	//{NULL, "The BURGER MAN's BURGERy shell fades to ashes."},
+	//{NULL, "You can make out a figure left behind in the cloud..."},
+	//{NULL, "..."},
+	//{self, "WHAT!?!?"},
+	//{self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"},
+	//{hj, "Yeah that's my name."},
+	//{NULL, "You feel a heavy rumbling in the restaurant..."},
+	//{NULL, "*rumbling*"},
+	//{NULL, "BURGER TENDRILS shoot up around the BURGER RESTAURANT from deep below!"},
+	//{NULL, "The BURGER TENDRILS wrap around the restaurant until you can see them out the window."},
+	//{NULL, "The BURGER RESTAURANT gets jerked downwards!"},
+	//{NULL, "You all slam against the roof."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "You fall below the cloud level."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "You see the city skyline and the ground pass by outside."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "The rock outside starts glowing redder and redder."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "Suddenly, the outside goes pitch black!"},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "The BURGER RESTAURANT crashes onto solid ground!"},
+	//{NULL, "You all faceplant violently."},
+	//{NULL, "You have arrived at your destination."}
+	
+	//{hj, "Shoot, bro."},
+	//{hj, "The news guy looks so much older than I remember."},
+	//{hj, "And my house is so decayed..."},
+	//{hj, "How many years did I miss?"},
+	//{self, "Probably like 67."},
+	//{hj, "Hahahahaha 67"},
+	//{self, Hahahhahaha},
+	//{hj, Hahahhahaha},
+	//{self, Hahahhahaha},
+	//{self, 67},
+	//{hj, Hahahhahaha},
 
-	//You know, there's an ANTI-SKELETON DEVICE lying around in my old office.
-	//Shame the portal's busted because we could probably actually pick it up now
-	//with this game's brand new multi-word parsing.
+	//{hj, "You know, there's an ANTI-SKELETON DEVICE lying around in my old office."},
+	//{hj, "Shame the portal's busted because we could probably actually pick it up now,"},
+	//{hj, "with this game's brand new multi-word parsing."}
 
 	//briefbase
 	
@@ -1443,29 +1495,31 @@ NPC* SetupWorld() {
 	burgerman->setLeader(true, 0, NULL, false);
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
+	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
 
-	//HELLO! WELCOME TO MY BURGER RESTAURANT!
-	//HOW MAY I TAKE YOUR ORDER?
+	{{burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
+	 {self, "I'm sorry :("},
+	 {self, "But like your employees kidnapped this kid,"},
+	 {self, "so I had to save her."},
+	 {burgerman, "REALLY?"},
+	 {burgerman, "THIS TRULY SADDENS ME."},
+	 {burgerman, "SUCH CORRUPTION IN MY OWN COMPANY?"},
+	 {burgerman, "I MUST THANK YOU, THEN."},
+	 {burgerman, "FOR DEALING WITH IT FOR ME."},
+	 {self, "The CEO guy said you told him to do that though?"},
+	 {burgerman, "WOW."},
+	 {burgerman, "NOT ONLY DOES HE ORDER THE KIDNAPPING OF A CHILD,"},
+	 {burgerman, "BUT HE SHIFTS THE BLAME TO ME?"},
+	 {burgerman, "YOU CAN'T TRUST THE WORD OF A KIDNAPPER..."},
+	 {burgerman, "REST ASSURED, I WILL FIND BETTER EMPLOYEES,"},
+	 {burgerman, "TO ENSURE A MOST POSITIVE EXPERIENCE FOR ALL."},
+	 {burgerman, "HERE, HAVE A BURGER ON THE HOUSE."},
+	 {burgerman, "A TOKEN OF MY GRATITUDE."},
+	 {self, "Oh thanks."}};
 
-	//YOU HAVE BEEN MAKING QUITE THE MESS.
-	//I'm sorry :(
-	//But like your employees kidnapped this kid,
-	//so I had to save her.
-	//REALLY?
-	//THIS TRULY SADDENS ME.
-	//SUCH CORRUPTION IN MY OWN COMPANY?
-	//I MUST THANK YOU, THEN.
-	//FOR DEALING WITH IT FOR ME.
-	//The CEO guy said you told him to do that though?
-	//WOW.
-	//NOT ONLY DOES HE ORDER THE KIDNAPPING OF A CHILD,
-	//BUT HE SHIFTS THE BLAME TO ME?
-	//YOU CAN'T TRUST THE WORD OF A KIDNAPPER...
-	//REST ASSURED, I WILL FIND BETTER EMPLOYEES,
-	//TO ENSURE A MOST POSITIVE EXPERIENCE FOR ALL.
-	//HERE, HAVE A BURGER ON THE HOUSE.
-	//A TOKEN OF MY GRATITUDE.
-	//Oh thanks.
+	//MARK: custom fight deny text, deny links
+	//A fight with the BURGER MAN would end in surefire defeat.
+	//Use THE PLOT DEVICE!
 
 	//The BURGER MAN grabs you by the neck.
 	//YOU HAVE BEEN MAKING QUITE THE MESS.
@@ -1492,8 +1546,107 @@ NPC* SetupWorld() {
 	//  <<< YOU FORGOR THE DEVICE  >>>
 	
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
-	burgerprisoner->setDialogue("Hi how are you doing?");
-	burgerprisoner->addRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
+	//burgerprisoner->setDialogue("Hi how are you doing?");
+	//burgerprisoner->addRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
+	{{burgerprisoner, "Hm?"},
+	 {self, "Hi what are you doing in prison?"},
+	 {burgerprisoner, "I haven't seen anybody in ages..."},
+	 {burgerprisoner, "Nobody concerned for my well-being, at least."},
+	 {burgerprisoner, "I was put here for resisting the global domination of BURGER."},
+	 {self, "Global domination?"},
+	 {burgerprisoner, "Yes, they're much more than their fast food facade."},
+	 {burgerprisoner, "I'm sure you can tell from this basement."},
+	 {self, "I mean... yeah."},
+	 {burgerprisoner, "So how'd you even get down here?"},
+	 {self, "Well I was going on a BURGER QUEST,"},
+	 {self, "but then I started saving this kid that was kidnapped,"},
+	 {self, "so then I went to their headquarters,"},
+	 {self, "and I found this button there,"},
+	 {self, "which looked like the BURGER RESTAURANT's"},
+	 {self, "so I put the button in the wall and I came down here."},
+	 {burgerprisoner, "Well, surely you can see what this company truly is by now."},
+	 {self, "I guess..."},
+	 {burgerprisoner, "All the BURGER corporation is, is an extension of the BURGER MAN"},
+	 {burgerprisoner, "which he uses to bring people to his restaurant."},
+	 {burgerprisoner, "BURGER has the world in a chokehold and it doesn't even realize."},
+	 {burgerprisoner, "I'm sure you know about the dying forests and the growing wastelands."},
+	 {self, "Yeah."}
+	 {burgerprisoner, "That's all BURGER's fault."},
+	 {burgerprisoner, "Parching the land to guide the people to the city by thirst and hunger,"},
+	 {burgerprisoner, "where they will be more easily tempted by the BURGER RESTAURANT."},
+	 {self, "Oh."},
+	 {burgerprisoner, "Or how about the volcanic highlands surrounding the city?"},
+	 {burgerprisoner, "All BURGER."},
+	 {self, "Were they why the lava level was so high?"},
+	 {burgerprisoner, "Probably."}
+	 {burgerprisoner, "They don't even care if the people get a BURGER."},
+	 {burgerprisoner, "As long as they idolize BURGER, it makes them stray from God."},
+	 {burgerprisoner, "Even if they die on the way,"},
+	 {burgerprisoner, "that just means they have less time to realize the damage BURGER causes,"},
+	 {burgerprisoner, "and repent from that path."},
+	 {self, "..."},
+	 {burgerprisoner, "But there is hope, I tell you."},
+	 {burgerprisoner, "They didn't put me in here for holding up a protest sign."},
+	 {burgerprisoner, "I know a way to deal a heavy blow against BURGER's grasp on the world."},
+	 {burgerprisoner, "You had to fight through much to get here."},
+	 {burgerprisoner, "I know you'd be capable of doing it."},
+	 {burgerprisoner, "If you're willing, I can tell you how."},
+	 {NULL, "\nYou are on a quest to get a BURGER."},
+	 {NULL, "But now you have the opportunity to change your quest."}, //You have the opportunity to change your quest now.
+	 {NULL, "Do you want to accept this DESTROY BURGER QUEST? (YES or NO)"}};
+	
+	{{self, "No,"},
+	 {self, "I'm sorry."},
+	 {self, "I just want a BURGER."},
+	 {burgerprisoner, "Well,"},
+	 {burgerprisoner, "I respect your free will."},
+	 {burgerprisoner, "But if you change your mind,"},
+	 {burgerprisoner, "you know where to find me."}};
+
+	{{self, "..."},
+	 {self, "Alright I'll do it."},
+	 {burgerprisoner, "Okay!"},
+	 {burgerprisoner, "You know the BURGER MAN, right?"},
+	 {burgerprisoner, "At the top of the restaurant?"},
+	 {burgerprisoner, "BURGERs arrived at the same time he did."},
+	 {burgerprisoner, "He's the one in charge of the whole operation."},
+	 {burgerprisoner, "I'm sure that if you cut it off at the source,"},
+	 {burgerprisoner, "the rest of the corporation will fall like dominoes."},
+	 {self, "That's it?"},
+	 {burgerprisoner, "No."},
+	 {burgerprisoner, "Just wanna be clear,"},
+	 {burgerprisoner, "DO NOT try to fight the BURGER MAN."},
+	 {burgerprisoner, "No worldly force can beat him."},
+	 {burgerprisoner, "Only with God's help would anyone stand a chance."},
+	 {burgerprisoner, "That's why you have to get a special device,"},
+	 {burgerprisoner, "specially engineered to do God's will."},
+	 {burgerprisoner, "In other words, it does whatever the plot requires."},
+	 {burgerprisoner, "It's..."},
+	 {NULL, "<<< THE PLOT DEVICE! >>>"},
+	 {self, "The plot device?"},
+	 {burgerprisoner, "Yeah!"},
+	 {burgerprisoner, "Now it's not possible to be destroyed,"},
+	 {burgerprisoner, "but it was disassembled long ago,"},
+	 {burgerprisoner, "and scattered across three temples."},
+	 {self, "You mean the ancient temples?"},
+	 {self, "They're sealed shut by ancient technology!"},
+	 {self, "No matter what anybody's tried, they've never made it inside!"},
+	 {burgerprisoner, "Oh to open them you just gotta ASK NICELY."},
+	 {self, "Oh I see."},
+	 {burgerprisoner, "Well, putting the components together is a long lost craft,"},
+	 {burgerprisoner, "but I believe I know how to do so."},
+	 {burgerprisoner, "So once you're done just bring them to me!"},
+	 {self, "Sounds good."}};
+
+	{{burgerprisoner, "..."},
+	 {burgerprisoner, "Hang on, you said they kidnapped a kid right?"},
+	 {self, "Yeah."},
+	 {burgerprisoner, "Well did you save them yet?"},
+	 {self, "Not really."},
+	 {burgerprisoner, "Well, I'd say you go do that first."},
+	 {burgerprisoner, "That kid's safety is important,"},
+	 {burgerprisoner, "especially when dealing with a company of this nature."},
+	 {burgerprisoner, "The temples aren't going anywhere, anyway."}}};
 
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
@@ -1795,9 +1948,9 @@ NPC* SetupWorld() {
 	burghint.skipcondition = {JILLYQUEST, TEMPLEQUEST};
 	burghint2->skipcondition = {JILLYSAVED, TEMPLEQUEST};
 	burghint3->skipcondition = {TEMPLEQUEST};
-	burghint.alt = burgabtconv2;
-	burghint2->alt = burgabtconv3;
-	burghint3->alt = burgabtconv4;
+	burghint.alt = burghint2;
+	burghint2->alt = burghint3;
+	burghint3->alt = burghint4;
 	
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo, burgabtconv, burghint);
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
@@ -2387,6 +2540,10 @@ NPC* SetupWorld() {
 	ninjavillage->setExit(IN_HOUSE_1, ninjapantry);
 	ninjavillage->setExit(IN_HOUSE_2, ninjaforge);
 	ninjavillage->setExit(IN_HOUSE_3, ninjacapitol);
+	ninjapantry->setExit(OUTSIDE, ninjavillage);
+	ninjaforge->setExit(OUTSIDE, ninjavillage);
+	ninjacapitol->setExit(OUTSIDE, ninjavillage);
+	ninjavillage->setExit(DOWN, ninjaland);
 	foresttempleentrance->setExit(SOUTHWEST, forestleft);
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
 	foresttempleentrance->setExit(NORTHWEST, flowerfield);
@@ -4616,10 +4773,92 @@ NPC* SetupWorld() {
 	ceo->setWorldCondition(BEATCEO);
 
 	NPC* unihorn = new NPC("", "UNIHORN", "A mythical and majestic unihorn, restrained by quantumn chains.", burglab, 24, Stats(100, 30, 30, 40, 40, 50, 9));
+	unihorn->setDialogue({{NULL, "UNIHORN - *pained neighs*"}});
+	unihorn->addRejectionDialogue({{NULL, "UNIHORN - *pained neighs*"}});
+
+	Item* releaseswitch = new MaterialItem("RELEASE SWITCH", "A switch for releasing the quantumn chains around that unihorn.", burglab); //fake functionality because you can never use it
+
+	Item* unihorncorn = new MaterialItem("UNIHORN CORN", "An exotic metal corn cob made of dark teal metal with extraordinary properties.\nIt was given to you in gratitude by the unihorn.", limbo);
+
+	NPC* ninjasmith = new NPC("", "NINJA SMITH", "An expert smith and ninja, maker of all the ninja's fine weapons.", ninjaforge, 20, Stats(61, 21, 43, 32, 50, 30, 9));
+	Conversation smithconv = {{ninjasmith, "I have made many weapon here."},
+		{ninjasmith, "But there is one I wish to make that has eluded me whole life."},
+		{ninjasmith, "I have plan to make Kosmic Katana,"},
+		{ninjasmith, "so sharp it cut through space itself."},
+		{self, "Oh wow."},
+		{ninjasmith, "To be so sharp, forging material need to be corn of unihorn."},
+		{ninjasmith, "You ever see one?"},
+		{self, "no"},
+		{ninjasmith, "This is the problem."},
+		{ninjasmith, "Unihorn very rare creature."},
+		{ninjasmith, "No like to be seen."},
+		{ninjasmith, "I hope to find one someday,"},
+		{ninjasmith, "make Kosmic Katana."},
+		{self, "Well I guess I'll be on the lookout for a unihorn."},
+		{ninjasmith, "Thank you very much."}};
+	shared_ptr<Conversation> smithconv2 = make_shared<Conversation>(Conversation({{ninjasmith, "I have made many weapon here."},
+		 {ninjasmith, "But there is one I wish to make that has eluded me whole life."},
+		 {ninjasmith, "I have plan to make Kosmic Katana,"},
+		 {ninjasmith, "so sharp it cut through space itself."},
+		 {self, "Oh wow."},
+		 {ninjasmith, "To be so sharp, forging material need to be corn of unihorn."},
+		 {ninjasmith, "You ever see one?"},
+		 {self, "Yeah in some basement."},
+		 {ninjasmith, "What?"},
+		 {ninjasmith, "You have seen one?"},
+		 {ninjasmith, "Unihorn no like to be seen."},
+		 {ninjasmith, "You are very fortunate to have seen it."},
+		 {ninjasmith, "If you happened to get corn of the unihorn,"},
+		 {ninjasmith, "Please bring it to forge."},
+		 {ninjasmith, "I very much hope to make Kosmic Katana."}}));
+	smithconv.skipcondition = SEENUNIHORN;
+	smithconv.alt = smithconv2;
+	smithconv2->skipcondition = MADEKATANA;
+	ninjasmith->addConversation(smithconv);
+	ninjasmith->setDialogue({{ninjasmith, "If you ever see unihorn, please ask for unihorn corn."}, {ninjasmith, "I very much hope to make Kosmic Katana."}});
+	ninjasmith->setTalkOnDefeat();
+	ninjasmith->addRejectionDialogue("I no abandon ninja way.");
+	ninjasmith->guardItem(ninjaberry);
+
+	//{{ninjasmith, "If you ever get unihorn corn,"}, {ninjasmith, "please bring here to forge."}, {ninjasmith, "I very much hope to make Kosmic Katana."}}
+
+	Item* ninjafurnace = new BlenderItem("NINJA FORGE", "Forge of the ninja tribes for smithing the finest tools and weapons with very hot heat.", ninjaforge, 
+		{{ninjasmith, "You have unihorn corn?"},
+		 {self, "Yep."},
+		 {ninjasmith, "Amazing!"},
+		 {ninjasmith, "Never in life I expect to be able to make Kosmic Katana."},
+		 {ninjasmith, "But here is unihorn corn we need."},
+		 {NULL, "You hand the UNIHORN CORN over to the NINJA SMITH."},
+		 {NULL, "He turns the heat of the NINJA FORGE up to the max."},
+		 {NULL, "Many hours pass as as he carefully shapes the metal of the corn."},
+		 {NULL, "You stay to watch him artistically forge the Kosmic Katana."},
+		 {NULL, "Many hours later..."},
+		 {ninjasmith, "I have finish."},
+		 {NULL, "The NINJA SMITH admires the KOSMIC KATANA, holding it up."},
+		 {ninjasmith, "It is beautiful."},
+		 {ninjasmith, "I never could have imagine how it turn out."},
+		 {ninjasmith, "..."},
+		 {ninjasmith, "Here, you take katana."},
+		 {self, "Really?"},
+		 {ninjasmith, "Yes."},
+		 {ninjasmith, "I only want to make the katana."},
+		 {ninjasmith, "I have no use for it beyond wall decoration."},
+		 {NULL, "The NINJA SMITH hands over the KOSMIC KATANA to you."},
+		 {self, "Oh wow thank you!"},
+		 {ninjasmith, "In finding the unihorn corn, you have earned it."},
+		 {ninjasmith, "I know you will make good use of it."}},
+		{"UNIHORN CORN"}, kosmickatana);
+	WorldChange& forgechanges = ((BlenderItem*)ninjafurnace)->getChanges();
+	forgechanges.linkedDialogue.push({ninjasmith, {{ninjasmith, "I am very happy with how kosmic katana turn out."}, {ninjasmith, "Thank you for helping me accomplish dream."}}});
+	forgechanges.worldcon = MADEKATANA;
 
 	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats(150, 20, 30, 35, 45, 30, 9));
 	burgerscientist->setNoFight(); //FIGHT or ASK does the same thing and you can't actually fight him
 	burgerscientist->setLeader(true, 29);
+	burgerscientist->setTalkMakeChanges();
+	burgerscientist->addDefeatRoom(unihorn, limbo);
+	burgerscientist->addLinkedItem(unihorncorn, burglab);
+	burgerscientist->guardItem(releaseswitch);
 	burgerscientist->addConversation({{self, "Hey what are you doing to this unihorn? >:|"},
 									  {burgerscientist, "..."},
 									  {burgerscientist, "Take it, I don't care."},
@@ -4630,7 +4869,18 @@ NPC* SetupWorld() {
 									  {NULL, "UNIHORN - *grateful neigh*"},
 									  {NULL, "The unihorn jumps at the wall and passes through."},
 									  {NULL, "It left behind a UNIHORN CORN in gratitude."}});
-	/*{{burgerscientist, "I see you have the child with you."},
+	burgerscientist->setDialogue({{burgerscientist, "..."}, {NULL, "IVOR is toiling away at some sort of quantumn machinery."}});
+	burgerscientist->addRejectionDialogue({{self, "Hey wanna join my team?"}, {burgerscientist, "..."}, {NULL, "IVOR is toiling away at some sort of quantumn machinery and does not care about your offer."}});
+	Conversation bsjconv = {{burgerscientist, "I see you've found the child."},
+	 {burgerscientist, "She was going to be my next subject after the unihorn."},
+	 {burgerscientist, "We detected unusual signs of latent energy production from within her."},
+	 {burgerscientist, "You are a similar case, though you were far too developed at the time of detection,"},
+	 {burgerscientist, "rendering successful attempts at capturing you improbable."},
+	 {burgerscientist, "I understand you intend to return her to her mother."},
+	 {burgerscientist, "I will offer you 1,000,000,000 monies in exchange for leaving the child to me."},
+	 {self, "No. >:|"},
+	 {burgerscientist, "Very well."}};
+	shared_ptr<Conversation> bsjconv2 = make_shared<Conversation>(Conversation({{burgerscientist, "I see you have the child with you."},
 	 {NULL, "JILLY hides behind you."},
 	 {burgerscientist, "She was going to be my next subject after the unihorn."},
 	 {burgerscientist, "We detected unusual signs of latent energy production from within her."},
@@ -4638,16 +4888,20 @@ NPC* SetupWorld() {
 	 {burgerscientist, "rendering successful attempts at capturing you improbable."},
 	 {burgerscientist, "With this in mind, I will offer you 1,000,000,000 monies in exchange for the child."},
 	 {self, "No. >:|"},
-	 {burgerscientist, "Very well."}};
-	
-	{{burgerscientist, "I see you've taken the child back to her mother."},
+	 {burgerscientist, "Very well."}}));
+	shared_ptr<Conversation> bsjconv3 = make_shared<Conversation>(Conversation({{burgerscientist, "I see you've taken the child back to her mother."},
 	 {burgerscientist, "She was going to be my next subject after the unihorn."},
 	 {burgerscientist, "We detected unusual signs of latent energy production from within her."},
 	 {burgerscientist, "You are a similar case, though you were far too developed at the time of detection,"},
 	 {burgerscientist, "rendering successful attempts at capturing you improbable."},
 	 {burgerscientist, "With this in mind, I will offer you 1,000,000,000 monies in exchange for bringing the child to me."},
 	 {self, "No. >:|"},
-	 {burgerscientist, "Very well."}};*/
+	 {burgerscientist, "Very well."}}));
+	bsjconv.skipcondition = SAVINGJILLY;
+	bsjconv.alt = bsjconv2;
+	bsjconv2->skipcondition = JILLYSAVED;
+	bsjconv2->alt = bsjconv3;
+	jbchanges.linkedConversations.push({burgerscientist, bsjconv});
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");

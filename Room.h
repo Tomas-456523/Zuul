@@ -65,6 +65,7 @@ public:
 	void removeStock(Item* item); //removes an item from sale
 	void setBackup(Item* item); //sets a backup item for the room
 	void openTemple(); //set the temple entrance if this is a temple entrance
+	void setEnterChanges(WorldChange changes, size_t condition = Helper::NEVER); //set changes that occur when walking into this room when this condition is true, unlesss it's never then it always happens
 
 	void switchConveyor(); //switches the direction of the conveyor
 
@@ -106,9 +107,8 @@ private:
 	pair<const char*, Room*> templesettings = {NULL, NULL};
 	Conversation templeopenconvo; //text that is printed when the temple is opened
 
-	//pair<size_t> enterchangecondition = {NEVER, NEVER}; //stuff that happens if you enter this room and the first condition is true but not the second one
-	WorldChange enterchange;
-	Conversation enterchangetext; //prints this when it happens, easier to manage than welcome text because I didn't have a way to remove welcomes
+	WorldChange enterchange; //stuff that happens if you enter this room and the first condition is true but not the second one
+	size_t enterchangecondition = Helper::NEVER; //what must be true in order for the changes to happen, except never means always here
 
 	Item* backup; //item that is placed here only if the player doesn't have one already
 };

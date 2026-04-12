@@ -520,6 +520,8 @@ void NPC::roam() { //roam to a random room out of the rooms we roam to
 //if not knowing where to go, prefer going to the center
 //if not knowing which way to go to the center, prefer the way that goes via the center column
 //after losing track of the player, go to the middle top room to camp the elevator until player is seen again
+//lets player go in elevator but blocks moving from there with special elevator blocking text
+//the special blocking text happens if the burger man is outside the elevator at all, including if he was right behind the playerw
 
 //spawn location
 //default location
