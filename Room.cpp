@@ -78,6 +78,12 @@ Item* Room::popBackup() {
 	backup = NULL; //make gift NULL because we only give one gift
 	return _backup;
 }
+//do changes that are done when entering the room
+void Room::doEnterChanges() { //don't do the change if it has none or if the condition isn't met and we have a condition set to something other than NEVER
+	if (!hasenterchanges || !WorldState[enterchangecondition] && enterchangecondition != NEVER) return;
+	applyWorldChange(enterchange);
+	hasenterchanges = false; //don't do it again
+}
 //prints all the exits from this room; I tried just returning the map, but it was annoying because of the custom comparator so I just do this
 void Room::printExits() {
 	cout << "\nExits: ";
@@ -174,11 +180,10 @@ void Room::printBlock(const char* direction) {
 	cout << "\nThe " << direction << " exit is " << blockReason[direction];
 }
 void Room::printWelcome() {
-	if (!welcome) {
-		return;
-	}
-	printConversation(&welcomeText, true);
+	if (!welcome) return;
 	welcome = false; //we only do the welcome once
+	if (welcomeText.getOutdated()) return; //don't do outdated welcomes
+	printConversation(&welcomeText, true);
 }
 void Room::setItem(Item* item) {
 	getItems().push_back(item);
@@ -243,8 +248,8 @@ void Room::setStock(Item* item, int amount, int price, const Conversation& buyde
 	item->setStock(amount, price, buydesc);
 	stock.push_back(item);
 }
-void Room::removeStock(Item* item) { //we uncatalogue the item when it runs out
-	cout << "You bought the last " << item->getName() << "! It's sold out!"; //lets the player know it's sold out
+void Room::removeStock(Item* item, bool printmessage) { //we uncatalogue the item when it runs out
+	if (printmessage) cout << "You bought the last " << item->getName() << "! It's sold out!"; //lets the player know it's sold out
 	stock.erase(remove(stock.begin(), stock.end(), item), stock.end()); //remove it from the list of stock
 }
 void Room::setBackup(Item* item) {
@@ -255,6 +260,11 @@ void Room::openTemple() {
 	this->setExit(templesettings.first, templesettings.second);
 	printConversation(&templeopenconvo, false);
 	templeentrance = false; //so we can't do all this again
+}
+void Room::setEnterChanges(const WorldChange& changes, size_t condition = Helper::NEVER) {
+	enterchange = changes;
+	enterchangecondition = condition;
+	hasenterchanges = true;
 }
 void Room::switchConveyor() { //swaps the altRoom and the FORWARD exit, effectively reversing the conveyor movement
 	swap(altRoom, exits[conveyorExit]);

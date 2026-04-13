@@ -24,7 +24,7 @@ using namespace std;
 using namespace Helper; //my Helper namespace has a bunch of helpful functions that I also use in other files
 
 //sets up the entire game world, including rooms, npcs, and items, and returns the player character
-NPC* SetupWorld() {
+NPC* SetupWorld(vector<Item*>* inventory) {
 	//set up directions MARK: make directions
 	const char* NORTH = "NORTH";
 	const char* SOUTH = "SOUTH";
@@ -411,7 +411,9 @@ NPC* SetupWorld() {
 							 {NULL, "The elevator dings."},
 							 {NULL, "You have arrived at your destination."}});
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
-	BURGERRESTAURANT->setWelcome({{NULL, "BURGER MAN - \"HELLO VALUED CUSTOMER!\""}, {NULL, "BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT!\""}});
+	Conversation burgwelcome = {{NULL, "BURGER MAN - \"HELLO VALUED CUSTOMER!\""}, {NULL, "BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT!\""}};
+	burgwelcome->skipcondition = BEATCEO;
+	BURGERRESTAURANT->setWelcome(burgwelcome);
 	Room* elevatorbottom = new Room("in the elevator, deep down in the restricted level of the BURGER RESTAURANT.");
 	elevatorbottom->shareItems(elevator);
 	elevatorbottom->setWelcome({{NULL, "The elevator shoots downwards."},
@@ -473,13 +475,13 @@ NPC* SetupWorld() {
 	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
 	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
-	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK PER HIT)");
+	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
 	self->addSpecialAttack(punchflurry);
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
 	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
 	Item* shurikens = new WeaponItem("SHURIKENS", "A bundle of ninja shurikens with a note attached:\n\"Congratulations on defeating our ninja scout. Take these shurikens and train in the ninja ways,\nand maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
 	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", false, 10, 8, 5, 5, 6, 1);
-	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 6 hits)");
+	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 5-6 hits)");
 	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
 	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", false, 15, 25, 0, 2, 2, 1); //no contact because the scarf stretches far from Bernard
 	scarfsmack->afterdesc = "with his scarf";
@@ -518,6 +520,20 @@ NPC* SetupWorld() {
 	spacetimeslice->copyamount = 1;
 	spacetimeslice->addDescription("Slice a teammate's spacetime into two, duplicating them for the duration of the battle.");
 	Item* kosmickatana = new WeaponItem("KOSMIC KATANA", "A katana beautifully forged from the corn of a unihorn, sparkling like the stars of the cosmos.\nIt's so sharp it can slice through the spacetime continuum.", limbo, spacetimeslice);
+	Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 7, 15, 0, 1, 1, 1);
+	uppercut->afterdesc = " into the air";
+	Effect* uppercutted = new Effect("UPPERCUTTED", 0);
+	uppercutted->remove = true;
+	uppercutted->falldamage = 10;
+	uppercut->addEffect(uppercutted);
+	uppercut->addDescription("Uppercut the target into the air, interrupting non-bosses' turn if it hits them before they move. (15 ATTACK)");
+	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
+	pshrimplebeam->instakill = true;
+	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (100 ATTACK, 100 PIERCE)");
+	Item* shrimplegun = new WeaponItem("SHRIMPLE GUN", "An advanced red water gun granting non-shrimp wielders the ability to use the SHRIMPLE BEAM.", mountainlake, pshrimplebeam);
+	Attack* parry = new Attack("PARRY", "is preparing to parry", 7, 0, 0, 1, 1, 1);
+	parry->parry = true;
+	Item* parryguide = new EducationItem("PARRYING GUIDE", "An in depth guide on how to PARRY enemy attacks.", limbo, parry);
 
 	//Flower Girl Floria is primarily a healer with some other stuff for variety as well MARK: Floria
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 0));
@@ -1488,62 +1504,66 @@ NPC* SetupWorld() {
 	Item* cake = new HpItem("HEALTHY CAKE", "A cake your mom made to commemorate your BURGER QUEST. (heals 100 HP)", limbo, 100);
 	mango->setGift(cake);
 
-	//burger customers
-	//
+	NPC* burgcustomer = new NPC("BURGER CUSTOMER", "CHARLY", "A frequent customer of the BURGER RESTAURANT, wearing BURGER merchandise.", elevatorentrance, 5);
+	burgcustomer->addConversation({{burgcustomer, "Man I just love BURGERs!"},
+								   {burgcustomer, "I'm so glad to live in the same city as it."},
+								   {burgcustomer, "You should see my son, though."},
+								   {burgcustomer, "He's an even bigger fan than me!"}});
+	burgcustomer->setDialogue("BURGERs are so cool!");
+	burgcustomer->addRejectionDialogue({{burgcustomer, "I mean I like BURGERs,"},
+										{burgcustomer, "but I just got one."},
+										{burgcustomer, "I just kind of want to go home."}});
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, Stats(2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647));
 	burgerman->setLeader(true, 0, NULL, false);
 	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
 	burgerman->setBasicAttack(burgpunch);
 	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
-
-	{{burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
-	 {self, "I'm sorry :("},
-	 {self, "But like your employees kidnapped this kid,"},
-	 {self, "so I had to save her."},
-	 {burgerman, "REALLY?"},
-	 {burgerman, "THIS TRULY SADDENS ME."},
-	 {burgerman, "SUCH CORRUPTION IN MY OWN COMPANY?"},
-	 {burgerman, "I MUST THANK YOU, THEN."},
-	 {burgerman, "FOR DEALING WITH IT FOR ME."},
-	 {self, "The CEO guy said you told him to do that though?"},
-	 {burgerman, "WOW."},
-	 {burgerman, "NOT ONLY DOES HE ORDER THE KIDNAPPING OF A CHILD,"},
-	 {burgerman, "BUT HE SHIFTS THE BLAME TO ME?"},
-	 {burgerman, "YOU CAN'T TRUST THE WORD OF A KIDNAPPER..."},
-	 {burgerman, "REST ASSURED, I WILL FIND BETTER EMPLOYEES,"},
-	 {burgerman, "TO ENSURE A MOST POSITIVE EXPERIENCE FOR ALL."},
-	 {burgerman, "HERE, HAVE A BURGER ON THE HOUSE."},
-	 {burgerman, "A TOKEN OF MY GRATITUDE."},
-	 {self, "Oh thanks."}};
+	Conversation burgdeciet = {{burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
+							   {self, "I'm sorry :("},
+							   {self, "But like your employees kidnapped this kid,"},
+							   {self, "so I had to save her."},
+							   {burgerman, "REALLY?"},
+							   {burgerman, "THIS TRULY SADDENS ME."},
+							   {burgerman, "SUCH CORRUPTION IN MY OWN COMPANY?"},
+							   {burgerman, "I MUST THANK YOU, THEN."},
+							   {burgerman, "FOR DEALING WITH IT FOR ME."},
+							   {self, "The CEO guy said you told him to do that though?"},
+							   {burgerman, "WOW."},
+							   {burgerman, "NOT ONLY DOES HE ORDER THE KIDNAPPING OF A CHILD,"},
+							   {burgerman, "BUT HE SHIFTS THE BLAME TO ME?"},
+							   {burgerman, "YOU CAN'T TRUST THE WORD OF A KIDNAPPER..."},
+							   {burgerman, "REST ASSURED, I WILL FIND BETTER EMPLOYEES,"},
+							   {burgerman, "TO ENSURE A MOST POSITIVE EXPERIENCE FOR ALL."},
+							   {burgerman, "HERE, HAVE A BURGER ON THE HOUSE."},
+							   {burgerman, "A TOKEN OF MY GRATITUDE."},
+							   {self, "Oh thanks."}};
+	burgdeciet->skipcondition = {TEMPLEQUEST};
 
 	//MARK: custom fight deny text, deny links
 	//A fight with the BURGER MAN would end in surefire defeat.
 	//Use THE PLOT DEVICE!
-
-	//The BURGER MAN grabs you by the neck.
-	//YOU HAVE BEEN MAKING QUITE THE MESS.
-	//YOU THOUGHT I WOULDN'T NOTICE?
-	//self, I wasn't thinking about you.
-	//The BURGER MAN knocks you unconscious.
-	//...
-	//...
-	//...
-
-	//WOW.
-	//YOU WANT TO DEFEAT ME?
-	//AFTER I GAVE YOU A BURGER ON THE HOUSE?
-	//self, I don't believe you anymore.
-	//The BURGER MAN knocks you unconscious.
-	//...
-	//...
-	//...
-	
-	//YOU ARE REALLY STUPID.
-	//YOU CAME BACK WITHOUT THE PLOT DEVICE?
-	//<<< BURGER QUEST COMPLETE  T_T >>>
-	//  <<<    ENDING ACHIEVED:    >>>
-	//  <<< YOU FORGOR THE DEVICE  >>>
+	Conversation burgcatch = {{burgerman, "The BURGER MAN grabs you by the neck."},
+							  {burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
+							  {burgerman, "YOU THOUGHT I WOULDN'T NOTICE?"},
+							  {self, "I wasn't thinking about you."},
+							  {burgerman, "The BURGER MAN knocks you unconscious."},
+							  {NULL, "..."},
+							  {NULL, "..."},
+							  {NULL, "..."},
+							  {NULL, "You wake up, disoriented."},
+							  {NULL, "Your hands are in chains and you're lying on hard concrete."}};
+	shared_ptr<Conversation> burgcatch2 = make_shared<Conversation>(Conversation({{burgerman, "The BURGER MAN grabs you by the neck."},
+							  {burgerman, "WOW."},
+							  {burgerman, "YOU WANT TO DEFEAT ME?"},
+							  {burgerman, "AFTER I GAVE YOU A BURGER ON THE HOUSE?"},
+							  {self, "I don't believe you anymore."},
+							  {burgerman, "The BURGER MAN knocks you unconscious."},
+							  {NULL, "..."},
+							  {NULL, "..."},
+							  {NULL, "..."},
+							  {NULL, "You wake up, disoriented."},
+							  {NULL, "Your hands are in chains and you're lying on hard concrete."}}));
 	
 	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
 	//burgerprisoner->setDialogue("Hi how are you doing?");
@@ -1602,6 +1622,14 @@ NPC* SetupWorld() {
 	 {burgerprisoner, "I respect your free will."},
 	 {burgerprisoner, "But if you change your mind,"},
 	 {burgerprisoner, "you know where to find me."}};
+	
+	{{burgerprisoner, "Well have you changed your mind?"},
+	 {NULL, "\nYou are on a quest to get a BURGER."},
+	 {NULL, "But now you have the opportunity to change your quest."},
+	 {NULL, "Do you want to accept this DESTROY BURGER QUEST? (YES or NO)"}};
+
+	{{self, "No sorry."},
+	 {burgerprisoner, "Alright."}};
 
 	{{self, "..."},
 	 {self, "Alright I'll do it."},
@@ -1647,6 +1675,28 @@ NPC* SetupWorld() {
 	 {burgerprisoner, "That kid's safety is important,"},
 	 {burgerprisoner, "especially when dealing with a company of this nature."},
 	 {burgerprisoner, "The temples aren't going anywhere, anyway."}}};
+
+	shared_ptr<WorldChange> templequest = make_shared<WorldChange>();
+	templequest->worldcon = TEMPLEQUEST;
+	templequest->linkedDegifts.push({burgerman, freeboiga});
+	templequest->removeStock.push({BURGERRESTAURANT, BURGER});
+	templequest->linkedConversations.push({{burgerman, {burgerman, "YOU ARE REALLY STUPID."},
+													   {burgerman, "YOU CAME BACK WITHOUT THE PLOT DEVICE?"},
+													   {NULL, "\nThe BURGER MAN punches through your head."},
+													   {NULL, "\n<<< BURGER QUEST COMPLETE T_T >>>"},
+													   {NULL,   "<<<      ENDING ACHIEVED:     >>>"},
+													   {NULL,   "<<<   YOU FORGOR THE DEVICE   >>>"}}});
+	templequest->linkedConversations.push({{burgerman, {burgerman, "YOU ARE REALLY STUPID."},
+													   {burgerman, "YOU CAME BACK WITHOUT THE PLOT DEVICE?"},
+													   {NULL, "\nThe BURGER MAN punches through your head."},
+													   {NULL, "\n<<< BURGER QUEST COMPLETE T_T >>>"},
+													   {NULL,   "<<<      ENDING ACHIEVED:     >>>"},
+													   {NULL,   "<<<   YOU FORGOR THE DEVICE   >>>"}}});
+	templequest->exitBlocks.push(make_tuple(BURGERRESTAURANT, IN_ELEVATOR, ENEMY, "sealed shut by the BURGER RESTAURANT controls."));
+	templequest->recruitLinks.push(forestknight);
+	templequest->recruitLinks.push(richie);
+	templequest->recruitLinks.push(theratman);
+	
 
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
@@ -1773,9 +1823,6 @@ NPC* SetupWorld() {
 	developer->addConversation({{self, "Can I recruit TECH DEMO MAN?"},
 								{developer, "No."}});
 	developer->addRejectionDialogue("No I don't think that would make sense.");
-	Attack* parry = new Attack("PARRY", "is preparing to parry", 7, 0, 0, 1, 1, 1);
-	parry->parry = true;
-	Item* parryguide = new EducationItem("PARRYING GUIDE", "An in depth guide on how to PARRY enemy attacks.", limbo, parry);
 	developer->setGift(parryguide);
 
 	/*{{self, "Yo developer man."},
@@ -1828,7 +1875,16 @@ NPC* SetupWorld() {
 	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
 	//have you fought greer yet
 	//can you give me feedback (and say link to form)
-	//the funny thing with defend
+	{{developer, "Idk if you've encountered teammates with defend attack,"},
+	 {developer, "like they tank hits for someone else after using a defend move,"},
+	 {developer, "but something funny about that is when I was making that type of move,"},
+	 {developer, "I realized they wouldn't check if it was a beneficial attack,"},
+	 {developer, "so like if for example a teammate was going to heal someone,"},
+	 {developer, "but that someone was being defended by another teammate,"},
+	 {developer, "the defender would like get in the way of the attack and be like,"},
+	 {NULL, "DEFENDER - \"NOOOOOOO! I WILL DEFEND YOU, SOMEONE!\""},
+	 {developer, "And then they would take the heal for the person they're defending."},
+	 {self, "How silly behavior."}}
 	//save system stuff
 	//commentary about the world
 	//commentary about character designs nobody will ever see cause it's text based (link to see picture?)
@@ -1848,17 +1904,11 @@ NPC* SetupWorld() {
 	//burger all caps lore
 	//kept thinking michelin is named jim
 	//viola after fire fight
-	//development time
 	//so nice seeing game systems evolve
 	//ascii art time
 	{{developer, "Have you noticed how nobody actually says your name?"},
 	 {developer, "They all say \"kiddo\", \"kid\", etc."},
 	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};*/
-
-	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
-	pshrimplebeam->instakill = true;
-	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (100 ATTACK, 100 PIERCE)");
-	Item* shrimplegun = new WeaponItem("SHRIMPLE GUN", "An advanced red water gun granting non-shrimp wielders the ability to use the SHRIMPLE BEAM.", mountainlake, pshrimplebeam);
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
@@ -1953,6 +2003,7 @@ NPC* SetupWorld() {
 	burghint3->alt = burghint4;
 	
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo, burgabtconv, burghint);
+	Item* freeboiga = new BURGERItem(*(BURGERItem*)(reviveroot));
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
 	BURGER->setFreebie({{burgerman, "YOU CAN'T AFFORD A BURGER?"}, {burgerman, "I BELIEVE THERE SHOULD BE NO FINANCIAL BARRIERS TO ENJOYING A BURGER."}, {burgerman, "HERE, HAVE ONE ON THE HOUSE!"}, {self, "Oh thanks!"}});
 
@@ -2106,6 +2157,7 @@ NPC* SetupWorld() {
 							{fr, "Safe travels! My prayers are with you!"}}));
 	frrej4->alt = frrej5;
 	fr->addRejectionDialogue(frrej1);
+	fr->setDialogue(); //MARK: SET THIS
 
 	Item* cloakingdevice = new WorldChangeItem("CLOAKING DEVICE", "Specialized cloaking device for getting past advanced security systems.", limbo, {{NULL, "You equipped the CLOAKING DEVICE."}, {NULL, "No security system can spot you now!"}});
 	cloakingdevice->setTakable(true);
@@ -2117,7 +2169,6 @@ NPC* SetupWorld() {
 	cloakingchange.worldcon = CLOAKED;
 	
 	NPC* child = new NPC("", "JILLY", "The daughter of Matilda who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3, Stats(10, 2, 8, 3, 0, 7, 9));
-	//The daughter of Matilda who you saved from the BURGER corporation, with very good potential in combat.
 	Attack* dillydally = new Attack("DILLYDALLY", "is watching you battle", false, -5, 0, 0, 0, 0, 0);
 	Attack* flyingkick = new Attack("FLYING KICK", "flew at", true, 6, 20, 0, 1, 1, 1);
 	flyingkick->afterdesc = " with a kick";
@@ -2227,29 +2278,41 @@ NPC* SetupWorld() {
 
 	WorldChange jillivery; //jilly delivery
 
-	/*{{child, "MOM!"}, {matilda, "JILLY!"},
-	 {NULL, "Jilly flies into Matilda's arms."},
-	 {NULL, "Tears of joy flow from Matilda's eyes.!"},
-	 {matilda, "Oh thank you so much!"},
-	 {matilda, "Thank you so much for reuniting me with my Jilly!"},
-	 {matilda, "I'm sorry, I wish I had something to repay you with."},
-	 {child, "Thank you mister for saving me!"},
-	 {child, "I made you this drawing!"},
-	 {NULL, "Jilly hands you a drawing of her uppercutting you."},
-	 {NULL, "You got the JILLY'S DRAWING!"},
-	 {self, "Oh thanks."}};*/
+	Item* jillydrawing = new MaterialItem("JILLY'S DRAWING", "A masterfully crafted crayon drawing depicting when you found Jilly.", limbo);
 
-	//I have just finished fighting the CEO
-	//I should be getting close!
-	//Oh.
+	shared_ptr<WorldChange> jillyreunion = make_shared<WorldChange>(); //when Jilly and Matilda are reunited!
+	jillyreunion->linkedTitles.push({matilda, ""}); //she is no longer worried
+	jillyreunion->linkedDescriptions.push({matilda, "A frequent churchgoer filled with joy after you saved her Jilly."});
+	jillyreunion->linkedDescriptions.push({child, "The daughter of Matilda who you saved from the BURGER corporation, with very good potential in combat."});
+	jillyreunion->linkedDescriptions.push({matilda, {{matilda, "Oh I'm so happy to be reunited with my Jilly!"}, {matilda, "Thank you so much!"}}});
+	jillyreunion->decruitLinks.push(child);
+	jillyreunion->dismissLinks.push(child);
+	jillyreunion->linkedDialogue.push({child, {{child, "Thank you for bringing me back to my mom, mister!"}, {child, "I hope you like my drawing!"}}});
+	jillyreunion->dismissLinks.push({self->getParty(), child});
+	jillyreunion->inventoryLinks.push({inventory, jillydrawing});
+	jillyreunion->linkedAttacks.push({self, uppercut});
+	jillyreunion->conditionalDecruits.push({forestknight, TEMPLEQUEST});
+	jillyreunion->conditionalDecruits.push({richie, TEMPLEQUEST});
+	jillyreunion->conditionalDecruits.push({theratman, TEMPLEQUEST});
 
-	Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 7, 25, 0, 1, 1, 1);
-	uppercut->afterdesc = " into the air";
-	Effect* uppercutted = new Effect("UPPERCUTTED", 0);
-	uppercutted->remove = true;
-	uppercutted->falldamage = 10;
-	uppercut->addEffect(uppercutted);
-	uppercut->addDescription("Uppercut the target into the air, interrupting their turn if it hits them before they move. (25 ATTACK)");
+	WorldChange jillylockin; //lock in because you now HAVE to save Jilly to progress cause you've decided to do that
+	jillylockin.clingyLinks.push(child);
+	jillylockin.linkedEnterChanges.push({burgchurch, jillyreunion});
+	jillylockin.linkedWelcomes.push({burgchurch, {{child, "MOM!"}, {matilda, "JILLY!"},
+												  {NULL, "Jilly flies into Matilda's arms."},
+												  {NULL, "Tears of joy flow from Matilda's eyes.!"},
+												  {matilda, "Oh thank you so much!"},
+												  {matilda, "Thank you so much for reuniting me with my Jilly!"},
+												  {matilda, "I'm sorry, I wish I had something to repay you with."},
+												  {child, "Thank you mister for saving me!"},
+												  {child, "I made you this drawing!"},
+												  {NULL, "Jilly hands you a drawing of her uppercutting you."},
+												  {NULL, "You got the JILLY'S DRAWING!"},
+												  {self, "Oh thanks."}}});
+	//MARK: make sure you also can't dismiss Jilly when the BURGER MAN appears
+
+	elevator->setEnterChanges(jillylockin, SAVINGJILLY);
+	tunnels->setEnterChanges(jillylockin, SAVINGJILLY);
 
 	Item* jillybag = new WorldChangeItem("SACK", "A tied-up sack with something wriggling inside.\nYou should untie it by USE-ing it.", burgstorage, 
 		{{NULL, "You untie the SACK."},
@@ -2463,13 +2526,7 @@ NPC* SetupWorld() {
 								  {firefighter, "but I myself don't care enough to try anymore."}});
 	firefighter->setDialogue("What's even the point of anything?");
 	firefighter->addRejectionDialogue({{firefighter, "For what?"}, {firefighter, "I can't do anything to help you."}});
-	
-	//for the two elevators the hose gets caught on the hose and can't close
-	//fast travel pulls you off the lobster
-	//and the hose is just fully extended at the gate of BB
-	//still can't use elevators if the hose is dropped in the elevator
-	//if hose is in elevator and you go around to other end of elevator, can't go in because elevator is stuck due to hose
-	
+		
 	Attack* hosedown = new Attack("HOSE DOWN", "hosed down", false, 0, 20, 15, 1, 1, 1);
 	hosedown->afterdesc = " with the fire hose";
 	Effect* soaked = new Effect("SOAKED", 3, 0, 0, 1, 1, 1, 1, 0.5f);
@@ -2504,6 +2561,111 @@ NPC* SetupWorld() {
 	WorldChange hstakeburgele; //changes if you take the hose from the restaurant elevator
 	hstakeburgele.exitUnblocks.push({burgerbasement, IN_ELEVATOR});
 	hose->addDropChange(elevator, hstakeburgele);
+
+	NPC* ninjasmith = new NPC("", "NINJA SMITH", "An expert smith and ninja, maker of all the ninja's fine weapons.", ninjaforge, 20, Stats(61, 21, 43, 32, 50, 30, 9));
+	Conversation smithconv = {{ninjasmith, "I have made many weapon here."},
+		{ninjasmith, "But there is one I wish to make that has eluded me whole life."},
+		{ninjasmith, "I have plan to make Kosmic Katana,"},
+		{ninjasmith, "so sharp it cut through space itself."},
+		{self, "Oh wow."},
+		{ninjasmith, "To be so sharp, forging material need to be corn of unihorn."},
+		{ninjasmith, "You ever see one?"},
+		{self, "no"},
+		{ninjasmith, "This is the problem."},
+		{ninjasmith, "Unihorn very rare creature."},
+		{ninjasmith, "No like to be seen."},
+		{ninjasmith, "I hope to find one someday,"},
+		{ninjasmith, "make Kosmic Katana."},
+		{self, "Well I guess I'll be on the lookout for a unihorn."},
+		{ninjasmith, "Thank you very much."}};
+	shared_ptr<Conversation> smithconv2 = make_shared<Conversation>(Conversation({{ninjasmith, "I have made many weapon here."},
+		 {ninjasmith, "But there is one I wish to make that has eluded me whole life."},
+		 {ninjasmith, "I have plan to make Kosmic Katana,"},
+		 {ninjasmith, "so sharp it cut through space itself."},
+		 {self, "Oh wow."},
+		 {ninjasmith, "To be so sharp, forging material need to be corn of unihorn."},
+		 {ninjasmith, "You ever see one?"},
+		 {self, "Yeah in some basement."},
+		 {ninjasmith, "What?"},
+		 {ninjasmith, "You have seen one?"},
+		 {ninjasmith, "Unihorn no like to be seen."},
+		 {ninjasmith, "You are very fortunate to have seen it."},
+		 {ninjasmith, "If you happened to get corn of the unihorn,"},
+		 {ninjasmith, "Please bring it to forge."},
+		 {ninjasmith, "I very much hope to make Kosmic Katana."}}));
+	smithconv.skipcondition = SEENUNIHORN;
+	smithconv.alt = smithconv2;
+	smithconv2->skipcondition = MADEKATANA;
+	ninjasmith->addConversation(smithconv);
+	ninjasmith->setDialogue({{ninjasmith, "If you ever see unihorn, please ask for unihorn corn."}, {ninjasmith, "I very much hope to make Kosmic Katana."}});
+	ninjasmith->setTalkOnDefeat();
+	ninjasmith->addRejectionDialogue("I no abandon ninja way.");
+	ninjasmith->guardItem(ninjaberry);
+
+	NPC* unihorn = new NPC("", "UNIHORN", "A mythical and majestic unihorn, dark bluish with pale hair, restrained by quantumn chains.", burglab, 24, Stats(100, 30, 30, 40, 40, 50, 9));
+	unihorn->setDialogue({{NULL, "UNIHORN - *pained neighs*"}});
+	unihorn->addRejectionDialogue({{NULL, "UNIHORN - *pained neighs*"}});
+	WorldChange seeunihorn; //when you go in the lab you have seen the unihorn
+	seeunihorn.worldcon = SEENUNIHORN;
+	//this could theoretically replace the ninjafurnace's ninja smith linked dialogue, except you need to see the unihorn to use the furnace so it actually doesn't matter
+	seeunihorn.linkedDialogue.push({ninjasmith, {{ninjasmith, "If you ever get unihorn corn,"}, {ninjasmith, "please bring here to forge."}, {ninjasmith, "I very much hope to make Kosmic Katana."}}});
+	burglab->setEnterChanges(seeunihorn);
+
+	Item* releaseswitch = new MaterialItem("RELEASE SWITCH", "A switch for releasing the quantumn chains around that unihorn.", burglab); //fake functionality because you can never use it
+
+	Item* unihorncorn = new MaterialItem("UNIHORN CORN", "An exotic metal corn cob made of dark teal metal with extraordinary properties.\nIt was given to you in gratitude by the unihorn.", limbo);
+
+	Item* ninjafurnace = new BlenderItem("NINJA FORGE", "Forge of the ninja tribe for smithing the finest tools and weapons with very hot heat.", ninjaforge, 
+		{{ninjasmith, "You have unihorn corn?"},
+		 {self, "Yep."},
+		 {ninjasmith, "Amazing!"},
+		 {ninjasmith, "Never in life I expect to be able to make Kosmic Katana."},
+		 {ninjasmith, "But here is unihorn corn we need."},
+		 {NULL, "You hand the UNIHORN CORN over to the NINJA SMITH."},
+		 {NULL, "He turns the heat of the NINJA FORGE up to the max."},
+		 {NULL, "Many hours pass as as he carefully shapes the metal of the corn."},
+		 {NULL, "You stay to watch him artistically forge the Kosmic Katana."},
+		 {NULL, "Many hours later..."},
+		 {ninjasmith, "I have finish."},
+		 {NULL, "The NINJA SMITH admires the KOSMIC KATANA, holding it up."},
+		 {ninjasmith, "It is beautiful."},
+		 {ninjasmith, "I never could have imagine how it turn out."},
+		 {ninjasmith, "..."},
+		 {ninjasmith, "Here, you take katana."},
+		 {self, "Really?"},
+		 {ninjasmith, "Yes."},
+		 {ninjasmith, "I only want to make the katana."},
+		 {ninjasmith, "I have no use for it beyond wall decoration."},
+		 {NULL, "The NINJA SMITH hands over the KOSMIC KATANA to you."},
+		 {self, "Oh wow thank you!"},
+		 {ninjasmith, "In finding the unihorn corn, you have earned it."},
+		 {ninjasmith, "I know you will make good use of it."}},
+		{"UNIHORN CORN"}, kosmickatana);
+	WorldChange& forgechanges = ((BlenderItem*)ninjafurnace)->getChanges();
+	forgechanges.linkedDialogue.push({ninjasmith, {{ninjasmith, "I am very happy with how kosmic katana turn out."}, {ninjasmith, "Thank you for helping me accomplish dream."}}});
+	forgechanges.worldcon = MADEKATANA;
+
+	Item* elevatorbutton = new WorldChangeItem("ELEVATOR BUTTON", "The button for calling the elevator of the BURGER RESTAURANT.", elevatorentrance,
+		{{NULL, "You call the elevator with the ELEVATOR BUTTON."},
+		 {NULL, "The display above the elevator door shows an arrow going up."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {self, ":|"},
+		 {NULL, "You press the button again for a slightly longer duration."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "You hear an intensifying magnetic hum."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "..."},
+		 {NULL, "You see the elevator rise from the ground!"},
+		 {NULL, "The elevator dings."},
+		 {NULL, "You can go IN ELEVATOR now!"}});
+	WorldChange& ebchanges = ((WorldChangeItem*)elevatorbutton)->getChanges();
+	ebchanges.exitPavings.push(make_tuple(elevatorentrance, elevator, IN_ELEVATOR, OUT));
+	ebchanges.roomChanges.push({elevatorentrance, "in the entrance of the BURGER RESTAURANT. It has glass walls curving up and BURGER furniture."});
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -3006,28 +3168,6 @@ NPC* SetupWorld() {
 	basestation->setExit(NORTH, BURGERPRISON);
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
-
-	Item* elevatorbutton = new WorldChangeItem("ELEVATOR BUTTON", "The button for calling the elevator of the BURGER RESTAURANT.", elevatorentrance,
-		{{NULL, "You call the elevator with the ELEVATOR BUTTON."},
-		 {NULL, "The display above the elevator door shows an arrow going up."},
-		 {NULL, "..."},
-		 {NULL, "..."},
-		 {NULL, "..."},
-		 {self, ":|"},
-		 {NULL, "You press the button again for a slightly longer duration."},
-		 {NULL, "..."},
-		 {NULL, "..."},
-		 {NULL, "..."},
-		 {NULL, "You hear an intensifying magnetic hum."},
-		 {NULL, "..."},
-		 {NULL, "..."},
-		 {NULL, "..."},
-		 {NULL, "You see the elevator rise from the ground!"},
-		 {NULL, "The elevator dings."},
-		 {NULL, "You can go IN ELEVATOR now!"}});
-	WorldChange& ebchanges = ((WorldChangeItem*)elevatorbutton)->getChanges();
-	ebchanges.exitPavings.push(make_tuple(elevatorentrance, elevator, IN_ELEVATOR, OUT));
-	ebchanges.roomChanges.push({elevatorentrance, "in the entrance of the BURGER RESTAURANT. It has glass walls curving up and BURGER furniture."});
 
 	//set up enemies enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
@@ -4719,7 +4859,7 @@ NPC* SetupWorld() {
 	NPC* enzo = new NPC(*ceo);
 	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
 	enzo->setLeader(true, 30, ceoroom, false);
-	ceo->blockExit(IN_SAFE, ENEMY, "guarded by ENZO.");
+	enzo->blockExit(IN_SAFE, ENEMY, "guarded by ENZO.");
 	enzo->addConversation({{self, "Why'd you guys kidnap that kid? >:|"},
 						   {ceo, "So that's what you busted into this joint for?"},
 						   {ceo, "Over some kid? Hah hah hah hah!"},
@@ -4761,104 +4901,29 @@ NPC* SetupWorld() {
 							   {NULL, "The top of the BURGER headquarters went flying in pieces!"},
 							   {self, "O_O"}});
 	enzo->setTalkOnDefeat();
-	ceo->setDialogue({{ceo, "You got a screw loose if ya think you can beat me!"}, {ceo, "HAH HAH HAH HAH!"}});
-	ceo->addRejectionDialogue("You're asking me to join ya? Are ya crazy?");
-	ceo->addLinkedRoom(ceoroom, "in the BURGER CEO's office, now missing the roof and walls.\nThe BURGER SAFE is still intact.");
-	ceo->addLinkedRoom(ballroom, "in the BURGER ballroom. The action has died down and the room is pretty quiet.");
-	ceo->addLinkedRoom(ceolobby, "in the ornate lobby of the building, featuring both an elevator and fancy stairs.\nThe yearly RICH PEOPLE reunion has concluded.");
-	ceo->addLinkedRoom(ceolobby2, "on the second floor of the building, still the lobby.");
-	ceo->addLinkedRoom(richneighborhood4, "at the doorway of the BURGER corporation's headquarters.");
-	ceo->setForceBattle();
-	ceo->setEscapable(false);
-	ceo->setWorldCondition(BEATCEO);
-
-	NPC* unihorn = new NPC("", "UNIHORN", "A mythical and majestic unihorn, restrained by quantumn chains.", burglab, 24, Stats(100, 30, 30, 40, 40, 50, 9));
-	unihorn->setDialogue({{NULL, "UNIHORN - *pained neighs*"}});
-	unihorn->addRejectionDialogue({{NULL, "UNIHORN - *pained neighs*"}});
-
-	Item* releaseswitch = new MaterialItem("RELEASE SWITCH", "A switch for releasing the quantumn chains around that unihorn.", burglab); //fake functionality because you can never use it
-
-	Item* unihorncorn = new MaterialItem("UNIHORN CORN", "An exotic metal corn cob made of dark teal metal with extraordinary properties.\nIt was given to you in gratitude by the unihorn.", limbo);
-
-	NPC* ninjasmith = new NPC("", "NINJA SMITH", "An expert smith and ninja, maker of all the ninja's fine weapons.", ninjaforge, 20, Stats(61, 21, 43, 32, 50, 30, 9));
-	Conversation smithconv = {{ninjasmith, "I have made many weapon here."},
-		{ninjasmith, "But there is one I wish to make that has eluded me whole life."},
-		{ninjasmith, "I have plan to make Kosmic Katana,"},
-		{ninjasmith, "so sharp it cut through space itself."},
-		{self, "Oh wow."},
-		{ninjasmith, "To be so sharp, forging material need to be corn of unihorn."},
-		{ninjasmith, "You ever see one?"},
-		{self, "no"},
-		{ninjasmith, "This is the problem."},
-		{ninjasmith, "Unihorn very rare creature."},
-		{ninjasmith, "No like to be seen."},
-		{ninjasmith, "I hope to find one someday,"},
-		{ninjasmith, "make Kosmic Katana."},
-		{self, "Well I guess I'll be on the lookout for a unihorn."},
-		{ninjasmith, "Thank you very much."}};
-	shared_ptr<Conversation> smithconv2 = make_shared<Conversation>(Conversation({{ninjasmith, "I have made many weapon here."},
-		 {ninjasmith, "But there is one I wish to make that has eluded me whole life."},
-		 {ninjasmith, "I have plan to make Kosmic Katana,"},
-		 {ninjasmith, "so sharp it cut through space itself."},
-		 {self, "Oh wow."},
-		 {ninjasmith, "To be so sharp, forging material need to be corn of unihorn."},
-		 {ninjasmith, "You ever see one?"},
-		 {self, "Yeah in some basement."},
-		 {ninjasmith, "What?"},
-		 {ninjasmith, "You have seen one?"},
-		 {ninjasmith, "Unihorn no like to be seen."},
-		 {ninjasmith, "You are very fortunate to have seen it."},
-		 {ninjasmith, "If you happened to get corn of the unihorn,"},
-		 {ninjasmith, "Please bring it to forge."},
-		 {ninjasmith, "I very much hope to make Kosmic Katana."}}));
-	smithconv.skipcondition = SEENUNIHORN;
-	smithconv.alt = smithconv2;
-	smithconv2->skipcondition = MADEKATANA;
-	ninjasmith->addConversation(smithconv);
-	ninjasmith->setDialogue({{ninjasmith, "If you ever see unihorn, please ask for unihorn corn."}, {ninjasmith, "I very much hope to make Kosmic Katana."}});
-	ninjasmith->setTalkOnDefeat();
-	ninjasmith->addRejectionDialogue("I no abandon ninja way.");
-	ninjasmith->guardItem(ninjaberry);
-
-	//{{ninjasmith, "If you ever get unihorn corn,"}, {ninjasmith, "please bring here to forge."}, {ninjasmith, "I very much hope to make Kosmic Katana."}}
-
-	Item* ninjafurnace = new BlenderItem("NINJA FORGE", "Forge of the ninja tribes for smithing the finest tools and weapons with very hot heat.", ninjaforge, 
-		{{ninjasmith, "You have unihorn corn?"},
-		 {self, "Yep."},
-		 {ninjasmith, "Amazing!"},
-		 {ninjasmith, "Never in life I expect to be able to make Kosmic Katana."},
-		 {ninjasmith, "But here is unihorn corn we need."},
-		 {NULL, "You hand the UNIHORN CORN over to the NINJA SMITH."},
-		 {NULL, "He turns the heat of the NINJA FORGE up to the max."},
-		 {NULL, "Many hours pass as as he carefully shapes the metal of the corn."},
-		 {NULL, "You stay to watch him artistically forge the Kosmic Katana."},
-		 {NULL, "Many hours later..."},
-		 {ninjasmith, "I have finish."},
-		 {NULL, "The NINJA SMITH admires the KOSMIC KATANA, holding it up."},
-		 {ninjasmith, "It is beautiful."},
-		 {ninjasmith, "I never could have imagine how it turn out."},
-		 {ninjasmith, "..."},
-		 {ninjasmith, "Here, you take katana."},
-		 {self, "Really?"},
-		 {ninjasmith, "Yes."},
-		 {ninjasmith, "I only want to make the katana."},
-		 {ninjasmith, "I have no use for it beyond wall decoration."},
-		 {NULL, "The NINJA SMITH hands over the KOSMIC KATANA to you."},
-		 {self, "Oh wow thank you!"},
-		 {ninjasmith, "In finding the unihorn corn, you have earned it."},
-		 {ninjasmith, "I know you will make good use of it."}},
-		{"UNIHORN CORN"}, kosmickatana);
-	WorldChange& forgechanges = ((BlenderItem*)ninjafurnace)->getChanges();
-	forgechanges.linkedDialogue.push({ninjasmith, {{ninjasmith, "I am very happy with how kosmic katana turn out."}, {ninjasmith, "Thank you for helping me accomplish dream."}}});
-	forgechanges.worldcon = MADEKATANA;
+	enzo->setDialogue({{ceo, "You got a screw loose if ya think you can beat me!"}, {ceo, "HAH HAH HAH HAH!"}});
+	enzo->addRejectionDialogue("You're asking me to join ya? Are ya crazy?");
+	enzo->addLinkedRoom(ceoroom, "in the BURGER CEO's office, now missing the roof and walls.\nThe BURGER SAFE is still intact.");
+	enzo->addLinkedRoom(ballroom, "in the BURGER ballroom. The action has died down and the room is pretty quiet.");
+	enzo->addLinkedRoom(ceolobby, "in the ornate lobby of the building, featuring both an elevator and fancy stairs.\nThe yearly RICH PEOPLE reunion has concluded.");
+	enzo->addLinkedRoom(ceolobby2, "on the second floor of the building, still the lobby.");
+	enzo->addLinkedRoom(richneighborhood4, "at the doorway of the BURGER corporation's headquarters.");
+	enzo->addDefeatRoom(burgcustomer, limbo);
+	enzo->addLinkedConvo(burgerman, burgdeciet);
+	enzo->addLinkedGift(burgerman, freeboiga);
+	enzo->setForceBattle();
+	enzo->setEscapable(false);
+	enzo->setWorldCondition(BEATCEO);
 
 	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats(150, 20, 30, 35, 45, 30, 9));
+	//MARK: unafilliated scientist
 	burgerscientist->setNoFight(); //FIGHT or ASK does the same thing and you can't actually fight him
 	burgerscientist->setLeader(true, 29);
 	burgerscientist->setTalkMakeChanges();
 	burgerscientist->addDefeatRoom(unihorn, limbo);
 	burgerscientist->addLinkedItem(unihorncorn, burglab);
 	burgerscientist->guardItem(releaseswitch);
+	burgerscientist->addLinkedItem(releaseswitch, limbo);
 	burgerscientist->addConversation({{self, "Hey what are you doing to this unihorn? >:|"},
 									  {burgerscientist, "..."},
 									  {burgerscientist, "Take it, I don't care."},
@@ -5831,12 +5896,13 @@ int main() {
 			"\n> " << fixed << setprecision(2);
 	
 	srand(time(NULL)); //seeds random
-		
-	//sets up the game world and places the player at the current room
-	NPC* self = SetupWorld();
-	Room* currentRoom = self->getHome(); //sets the current room to the player's starting position
 
 	vector<Item*>* inventory = new vector<Item*>; //the inventory of items
+		
+	//sets up the game world and places the player at the current room
+	NPC* self = SetupWorld(inventory);
+	Room* currentRoom = self->getHome(); //sets the current room to the player's starting position
+	
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
 	int mony = 0; //monies are the currency in the BURGER QUEST universe.

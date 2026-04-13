@@ -232,7 +232,7 @@ namespace Helper {
 			} else {
 				cout << convo[i].second;
 			}
-			if ((finalpause && !current->branch1.first) || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards (AND we don't have branching paths)) we do a pause, so the last one lets the player type
+			if ((finalpause && !current->branch1.first && !next) || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards (AND we don't have branching paths)) we do a pause, so the last one lets the player type
 				CinPause();
 			}
 		}
@@ -242,6 +242,8 @@ namespace Helper {
 			} else {
 				printConversation(current->branch2.second.get(), finalpause);
 			}
+		} else if (Conversation* next = current->next.get()) {
+			printConversation(next, finalpause);
 		}
 		if (shared_ptr<Conversation> relay = current->relay.second.lock()) { //relay the relaying conversation to the npc
 			current->relay.first->addConversation(*relay);
@@ -286,6 +288,12 @@ namespace Helper {
 				npc->undefeat();
 			}
 			changes.recruitLinks.pop();
+		}
+		while (!changes.dismissLinks.empty()) {
+			pair<vector<NPC*>*, NPC*>& data = changes.dismissLinks.front();
+			data.first->erase(remove(data.first->begin(), data.first->end(), data.second), data.first->end());
+			npc->Dismiss();
+			changes.dismissLinks.pop();
 		}
 		while (!changes.conditionalRecruits.empty()) { //make unrecruitable all the npcs unless the condition paired to them is true
 			pair<NPC*, size_t>& data = changes.conditionalRecruits.front();
@@ -343,8 +351,19 @@ namespace Helper {
 		while (!changes.removeAttacks.empty()) { //change all changing stats
 			pair<NPC*, Attack*>& data = changes.removeAttacks.front();
 			data.first->removeSpecialAttack(data.second);
-			changes.removeAttacks.pop();
 			data.first->calculateWeights(); //we just removed a move so we have to recalculate the weights to account for it
+			changes.removeAttacks.pop();
+		}
+		while (!changes.linkedAttacks.empty()) { //change all changing stats
+			pair<NPC*, Attack*>& data = changes.linkedAttacks.front();
+			data.first->addSpecialAttack(data.second);
+			if (data.first->getPlayerness()) { //print what the new attack does if it's the player
+				cout << "\n" << npc->getName() << " learned " << att->name << "!\n" << att->name << " - " << att->trueDesc;
+				CinPause();
+			} else { //we just added a move so we have to recalculate the weights to account for it
+				data.first->calculateWeights();
+			}
+			changes.linkedAttacks.pop();
 		}
 		while (!changes.guardedItems.empty()) { //unguard all the items
 			changes.guardedItems.front()->setGuard(NULL);
@@ -393,6 +412,11 @@ namespace Helper {
 			data.first->setRoom(data.second);
 			changes.linkedItems.pop();
 		}
+		while (!changes.inventoryLinks.empty()) {
+			pair<vector<Item*>*, Item*>& data = changes.inventoryLinks.front();
+			data.first->push_back(data.second);
+			changes.inventoryLinks.pop();
+		}
 		while (!changes.roamLinks.empty()) { //this is assuming we previously set roamrooms prior to setting roaming
 			NPC* npc = changes.roamLinks.front();
 			npc->setRoaming();
@@ -413,6 +437,16 @@ namespace Helper {
 			NPC* data = changes.linkedDegifts.front();
 			data->setGift(NULL); //gifts don't know they're gifts so we don't have to edit their logic and stuff after setting the gift to NULL
 			changes.linkedDegifts.pop();
+		}
+		while (!changes.linkedEnterChanges.empty()) {
+			pair<Room*, shared_ptr<WorldChange>>& data = changes.linkedEnterChanges.front();
+			data.first->setEnterChanges(*data.second);
+			changes.linkedEnterChanges.pop();
+		}
+		while (!changes.removeStock.empty()) { //remove gifts
+			pair<Room*, Item*>& data = changes.removeStock.front();
+			data.first->removeStock(data.second, false); //remove the item and don't print we did that
+			changes.removeStock.pop();
 		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;

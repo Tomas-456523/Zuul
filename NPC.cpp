@@ -888,6 +888,9 @@ void NPC::addDeleaderLink(NPC* npc) {
 void NPC::addRoamLink(NPC* npc) {
 	changes.back().roamLinks.push(npc);
 }
+void NPC::addLinkedGift(NPC* npc, Item* item) {
+	changes.back().linkedGifts.push({npc, item});
+}
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }
