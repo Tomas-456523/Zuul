@@ -92,7 +92,7 @@ void NPC::printBlockDialogue(bool finalpause) {
 }
 void NPC::printCatchDialogue(bool special) {
 	if (special) printConversation(&specialcatchtext, true);
-	else         printConversation(&catchtext, true);
+	printConversation(&catchtext, true); //special catch text is just an "intro" so we also print the normal
 }
 bool NPC::getRecruited() { //returns if in the player team
 	return recruited;
@@ -163,11 +163,14 @@ NPC* NPC::getPursuer() {
 NPC* NPC::getPursuing() {
 	return pursuing;
 }
-pair<Room*, const char*>& getSpecial() {
+pair<Room*, const char*>& NPC::getSpecial() {
 	return specialroom;
 }
+pair<Room*, const char*>& NPC::getPurPlayerData() {
+	return playerdata;
+}
 //get coordinates relative to the pursuit grid
-pair<size_t, size_t> getPurPos(Room* room) {
+pair<int, int> NPC::getPurPos(Room* room) {
 	for (int i = 0; i < pursueRooms.size(); i++) {
 		for (int j = 0; j < pursueRooms.size(); j++) {
 			if (room == pursueRooms[i][j]) {
@@ -175,6 +178,13 @@ pair<size_t, size_t> getPurPos(Room* room) {
 			}
 		}
 	}
+	return {-1, -1}
+}
+//coordinates to room, clamps to grid
+Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
+	pos.first = Clamp(pos.first, 0, pursueRooms.size());
+	pos.second = Clamp(pos.second, 0, pursueRooms[0].size());
+	return pursueRooms[pos.first][pos.second];
 }
 bool NPC::getLeader() {
 	return isLeader;
@@ -535,23 +545,6 @@ void NPC::roam() { //roam to a random room out of the rooms we roam to
 	}
 	setRoom(target);
 }
-//roam logic - 
-//detect last direction saw player moving
-//move every time player travel()s
-//only move in cardinal directions
-//if player goes in non-cardinal direction, the pursuer teleports to and stays in the room outside
-//if not knowing where to go, prefer going to the center
-//if not knowing which way to go to the center, prefer the way that goes via the center column
-//after losing track of the player, go to the middle top room to camp the elevator until player is seen again
-//lets player go in elevator but blocks moving from there with special elevator blocking text
-//the special blocking text happens if the burger man is outside the elevator at all, including if he was right behind the playerw
-
-//spawn location
-//default location
-//last direction target seen going
-//last direction target seen in
-//camping exit
-//internal coordinates
 void NPC::setHome(Room* room) {
 	home = room;
 }
@@ -928,7 +921,9 @@ void NPC::setPursueSpecial(Room* special, const char* dir, const Conversation& t
 	specialroom = {special, dir};
 	specialcatchtext = text;
 }
-pair<size_t, size_t> getPurPos(Room* room); //get coordinates relative to the pursuit grid
+void NPC::doCatchChanges() {
+	applyWorldChange(catchchanges);
+}
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
 }

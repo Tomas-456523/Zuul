@@ -107,8 +107,10 @@ public: //you need to set stats on creation
 	void popWave();
 	NPC* getPursuer();
 	NPC* getPursuing();
-	pair<Room*, const char*>& getSpecial();
-	pair<size_t, size_t> getPurPos(Room* room); //get coordinates relative to the pursuit grid
+	pair<Room*, const char*>& getSpecial(); //get special pursuit room stuff
+	pair<Room*, const char*>& getPurPlayerData(); //get a reference to the player data
+	pair<int, int> getPurPos(Room* room); //get coordinates relative to the pursuit grid
+	Room* getPurRoom(pair<size_t, size_t>& pos); //coordinates to room
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -200,10 +202,12 @@ public: //you need to set stats on creation
 	void setRoamRooms(initializer_list<Room*> rooms);
 	void roam();
 	void setTalkMakeChanges(bool miscworks = true); //set if the npc should make changes by ASKing, not FIGHTing, also variable asking if miscellaneous dialogue other than normal convos should work
-	void setPursuer(NPC* npc, const vector<vector<Room*>>& rooms, const WorldChange& catchange);
+	void setPursuer(NPC* npc);
+	void setPursueStuff(const vector<vector<Room*>>& rooms, const WorldChange& catchange);
 	void setPursuing(NPC* npc);
 	void setCatchText(const Conversation& text);
 	void setPursueSpecial(Room* special, const char* dir, const Conversation& text);
+	void doCatchChanges();
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER);
@@ -390,6 +394,7 @@ protected:
 	WorldChange catchchanges; //changes that happen when the pursuer catched the pursuing
 	Conversation catchtext;
 	pair<Room*, const char*> specialroom = {NULL, NULL}; //special stuff related to this room and also that direction
+	pair<Room*, const char*> playerdata = {NULL, NULL}; //last seen location and direction of the player
 	Conversation specialcatchtext; //special catch text related to the special room
 
 	NPC* pursuer = NULL; //npc pursuing this npc in the overworld

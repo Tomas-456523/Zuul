@@ -1675,7 +1675,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {burgerprisoner, "Well, I'd say you go do that first."},
 	 {burgerprisoner, "That kid's safety is important,"},
 	 {burgerprisoner, "especially when dealing with a company of this nature."},
-	 {burgerprisoner, "The temples aren't going anywhere, anyway."}}};
+	 {burgerprisoner, "The temples aren't going anywhere, anyway."}};
 
 	shared_ptr<WorldChange> templequest = make_shared<WorldChange>();
 	templequest->worldcon = TEMPLEQUEST;
@@ -5097,7 +5097,7 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 	//we print an error message based on the reason roomCanidate is NULL
 	if (roomCanidate == NULL) {
 		//if the player gave a direction that doesn't match the commonly given ones, we call it an invalid direction
-		if (strcmp(direction, "NORTH") && strcmp(direction, "SOUTH") && strcmp(direction, "EAST") && strcmp(direction, "WEST") && strcmp(direction, "NORTHEAST") && strcmp(direction, "NORTHWEST") && strcmp(direction, "SOUTHEAST") && strcmp(direction, "SOUTHWEST") && strcmp(direction, "UP") && strcmp(direction, "DOWN")) {
+		if (!getCardinal(direction)) {
 			cout << "\nInvalid direction \"" << direction << "\".";
 		} else { //if there was a valid direction
 			cout << "\nThere is no exit in that direction.";
@@ -5128,9 +5128,44 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 		}
 	}
 	if (npcblocky) return; //don't return cause a teammate is blocking moving
-
-	//MARK: handle pursuers
-
+	if (NPC* pursuer = (*party)[0]->getPursuer()) { //handle pursuers, move every time player travel()s
+		NPC* self = (*party)[0]; //get player for convenience
+		if (!getCardinal(direction)) pursuer->setRoom(currentRoom); //pursuer teleports to outside room if you go in a side room
+		//because of that, when you go in the elevator, the pursuer is guaranteed to be right outside
+		//MARK: pursuer should not move if player is moving towards them
+		pair<Room*, const char*>& special = pursuer->getSpecial();
+		//catch the player when they're going up in the elevator
+		if (currentRoom == special.first && direction == special.second) {
+			pursuer->printCatchDialogue(true);
+			pursuer->doCatchChanges();
+			return;
+		//catch the player if they're in the same room and trying to leave BUT let them go into the elevator for false hope or something
+		} if (pursuer->getRoom() == currentRoom && roomCanidate != special.first) {
+			pursuer->printCatchDialogue();
+			pursuer->doCatchChanges();
+			return;
+		} //pursuer movement logic
+		pair<int, int> pcoords = pursuer->getPurPos(currentRoom);
+		pair<int, int> bcoords = pursuer->getPurPos(pursuer->getRoom());
+		bool aligned = pcoords.first == bcoords.first || pcoords.second == bcoords.second;
+		pair<Room*, const char*>& pdat = pursuer->getPurPlayerData();
+		if (aligned) { //detect last player location seen and direction saw player moving
+			pdat = {currentRoom, direction};
+		} else if (pursuer->getRoom() == pdat.first) { //reset player data if the pursuer gets to the place they last saw the player
+			pdat = {NULL, NULL};
+		}
+		if (pdat == {NULL, NULL}) { //pursuer lost track of player, go guard elevator
+			if (bcoords.first == 0) pursuer->setRoom(pursuer->getRoom()->getExit("EAST")); //go to center column if not there
+			else if (bcoords.first == 2) pursuer->setRoom(pursuer->getRoom()->getExit("WEST"));
+			else if (bcoords.second != 0) pursuer->setRoom(pursuer->getRoom()->getExit("NORTH")); //go north if not at elevator entrance
+		} else if (pursuer->getRoom() != roomCanidate) { //move towards the player they aren't moving to the pursuer's room (for some reason), just let them get there if so
+			pair<int int> dcoords = pursuer->getPurPos(pdat.first); //get last know player pos as coordinates
+			if (bcoords.first < dcoords.first) pursuer->setRoom(pursuer->getRoom()->getExit("EAST")); //these are all mutually exclusive due to how this is set up
+			if (bcoords.first > dcoords.first) pursuer->setRoom(pursuer->getRoom()->getExit("WEST"));
+			if (bcoords.second < dcoords.second) pursuer->setRoom(pursuer->getRoom()->getExit("SOUTH"));
+			if (bcoords.second > dcoords.second) pursuer->setRoom(pursuer->getRoom()->getExit("NORTH"));
+		}
+	}
 	//rooms may redirect you to go somewhere else
 	if (roomCanidate->getRedirect() != NULL) {
 		roomCanidate = roomCanidate->getRedirect();
@@ -5168,6 +5203,8 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 	//we move ourself to the next room
 	currentRoom = roomCanidate;
 	PrintRoomData(currentRoom); //prints the data of the current room
+
+	//print pursuer data
 }
 
 //initiates battle with an npc MARK: fight
