@@ -374,7 +374,14 @@ protected:
 
 	bool roaming = false; //if this npc roams
 	vector<Room*> roamrooms; //which rooms this npc roams between
+	
 	NPC* pursuing = NULL; //which npc the roaming npc is pursuing
+	vector<vector<Room*>> pursueRooms; //3x3 grid of rooms to pursue in
+
+	WorldChange catchchanges; //changes that happen when the pursuer catched the pursuing
+	Conversation catchtext;
+	pair<Room*, const char*> specialroom = {NULL, NULL}; //special stuff related to this room and also that direction
+	Conversation specialcatchtext; //special catch text related to the special room
 
 	NPC* pursuer = NULL; //npc pursuing this npc in the overworld
 

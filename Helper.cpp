@@ -452,6 +452,10 @@ namespace Helper {
 			WorldState[changes.worldcon] = true;
 		}
 	}
+	//get if the direction given is a cardinal direction
+	bool getCardinal(const char* direction) {
+		return !strcmp(direction, "NORTH") || !strcmp(direction, "SOUTH") || !strcmp(direction, "EAST") || !strcmp(direction, "WEST"); //never seat eoggy waffles
+	}
 
 	//map to find the opposite of the given direction (eg. ReverseDirection[SOUTH] == NORTH)
 	map<const char*, const char*> ReverseDirection;

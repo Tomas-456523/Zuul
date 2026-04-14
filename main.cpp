@@ -432,8 +432,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 								{NULL, "The elevator dings."}});
 	Room* burgerbasement = new Room("at the entrance of the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
 	Room* burgbasenw = new Room("in a sort of BURGER storage room, on a metal platform above a pit of BURGERs.");
-	Room* burgbasene = new Room("at the entrance of a storage room.");
-	Room* burgbasew = new Room("at the entrance of the basement cooler room.");
+	Room* burgbasene = new Room("at the entrance of a storage room. There is no physical door, just the doorway with a metallic outline.");
+	Room* burgbasew = new Room("at the entrance of a basement room, labeled the cooler room.");
 	Room* burgbasec = new Room("in the middle of the BURGER BASEMENT, featuring many control panels and security cameras.\nYou'd like to press all the buttons but they all need key access.");
 	Room* burgbasee = new Room("at a side room of the basement, with a window overlooking the BURGER assembly line.");
 	Room* burgbasesw = new Room("at an unremarkable corner of the BURGER BASEMENT.");
@@ -444,8 +444,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* burglab = new Room("in the BURGER LABORATORY. There's many nasty looking needles and contraptions.\nThere's a UNIHORN here in quantumn chains.");
 	Room* burgplatn = new Room("on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories endlessly churning out BURGERs.");
 	Room* burgplate = new Room("next to the BURGER assembly line. There's some BURGER cultists cursing BURGERs as they pass by.");
-	Room* burgplats = new Room("on the platform. There's some diagrams here and a room to the side.");
+	Room* burgplats = new Room("on the platform. There's some diagrams describing BURGERs here and a room to the side.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON, full of cells and torture devices.");
+	BURGERPRISON->setStation();
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
 	basestation->setStation();
 
@@ -1648,7 +1649,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {burgerprisoner, "Only with God's help would anyone stand a chance."},
 	 {burgerprisoner, "That's why you have to get a special device,"},
 	 {burgerprisoner, "specially engineered to do God's will."},
-	 {burgerprisoner, "In other words, it does whatever the plot requires."},
+	 {burgerprisoner, "In other words, it does whatever the plot requires."}, 
 	 {burgerprisoner, "It's..."},
 	 {NULL, "<<< THE PLOT DEVICE! >>>"},
 	 {self, "The plot device?"},
@@ -3975,9 +3976,25 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ceo->addSpecialAttack(bombard);
 	ceo->addSpecialAttack(megagun);
 
-	//burger warden
+	NPC* burgerwarden = new NPC("", "BURGER WARDEN", "Burly masked man with a BURGER insignia tasked with guarding the BURGER BASEMENT.", limbo, 0, Stats(300, 25, 23, 40, 30, 10, 9));
+	burgerwarden->setBoss(true);
+	Attack* spikedfists = new Attack("SPIKED FISTS", "punched", true, -5, 20, 30, 1, 1, 1);
+	spikedfists->afterdesc = " with a heavy spiked fist";
+	Attack* whip = new Attack("SCOURGE", "whipped", false, 5, 30, 40, 1, 1, 1);
+	whip->afterdesc = " with a scourge";
+	Effect* whipped = new Effect("SCOURGED", 2);
+	whipped->tiring = true;
+	whip->addEffect(whipped);
+	Attack* guillotine = new Attack("GUILLOTINE", "flung a guillotine blade at", false, 7, 100, 100, 1, 1, 1);
+	guillotine->instakill = true;
+	burgerwarden->setBasicAttack(spikedfists);
+	burgerwarden->addSpecialAttack(whip);
+	burgerwarden->addSpecialAttack(guillotine);
 
-	//burger man
+	NPC* burgercultist = new NPC("", "BURGER CULTIST", "Worshipper of BURGER aligned with its evil values. They wear a yellow robe and triangular hood.", limbo, 0, Stats(50, 15, 35, 5, 60, 0, 9));
+	//burger magic (damage)
+	//sorcery (sp leak)
+	//curse (very heavy dot)
 
 	//entering temples requires having max size party
 	//temples scale to your level
@@ -4918,12 +4935,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats(150, 20, 30, 35, 45, 30, 9));
 	//MARK: unafilliated scientist
 	burgerscientist->setNoFight(); //FIGHT or ASK does the same thing and you can't actually fight him
-	burgerscientist->setLeader(true, 29);
+	burgerscientist->setLeader(true, 29, burglab);
 	burgerscientist->setTalkMakeChanges();
 	burgerscientist->addDefeatRoom(unihorn, limbo);
 	burgerscientist->addLinkedItem(unihorncorn, burglab);
 	burgerscientist->guardItem(releaseswitch);
 	burgerscientist->addLinkedItem(releaseswitch, limbo);
+	burgerscientist->addLinkedRoom(burglab, "in the BURGER LABORATORY. There's many nasty looking needles and contraptions.");
 	burgerscientist->addConversation({{self, "Hey what are you doing to this unihorn? >:|"},
 									  {burgerscientist, "..."},
 									  {burgerscientist, "Take it, I don't care."},
@@ -4967,6 +4985,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	bsjconv2->skipcondition = JILLYSAVED;
 	bsjconv2->alt = bsjconv3;
 	jbchanges.linkedConversations.push({burgerscientist, bsjconv});
+
+	NPC* basementguard = new NPC(*burgerwarden);
+	basementguard->setLeader(true, 28, burgbasese);
+	basementguard->blockExit(DOWNSTAIRS, "guarded by the BURGER WARDEN.");
+	basementguard->setDialogue("...");
+	basementguard->addRejectionDialogue("...");
+
+	NPC* burgercultists = new NPC(*burgercultist);
+	burgercultists->setMask("", "BURGER CULTISTS", "A group of hooded figures in yellow robes cursing the BURGERs on the assembly line.");
+	burgercultists->setLeader(true, 25, burgplate);
+	burgercultists->setParty({burgercultist, burgercultist, burgercultist, burgercultist});
+	burgercultists->setDialogue("...");
+	burgercultists->addRejectionDialogue("...");
+	burgercultists->addLinkedRoom(burgplate, "");
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -5057,7 +5089,7 @@ void PrintRoomData(Room* currentRoom) {
 //move the player and co. to a new room based on direction, or also just teleopring to forceDest if given MARK: travel
 void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vector<Item*>* inventory, bool forceTravel = false, Room* forceDest = NULL) {
 	Room* roomCanidate = NULL; //the room we're trying to go to
-	if (forceDest != NULL) { //we just teleoprt to this room if given
+	if (forceDest != NULL) { //we just teleport to this room if given
 		roomCanidate = forceDest;
 	} else { //if no teleport destination is given, we try to get the room in the given direction
 		roomCanidate = currentRoom->getExit(direction);
@@ -5096,6 +5128,9 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 		}
 	}
 	if (npcblocky) return; //don't return cause a teammate is blocking moving
+
+	//MARK: handle pursuers
+
 	//rooms may redirect you to go somewhere else
 	if (roomCanidate->getRedirect() != NULL) {
 		roomCanidate = roomCanidate->getRedirect();
@@ -5119,7 +5154,7 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 			if (npc->getLobster() && !npc->getLeader()) {
 				npc->setRoom(roomCanidate); //move the lobster
 				break; //break because there's only one lobster
-			} //make roaming npcs roam
+			} //also make roaming npcs roam
 			if (npc->getRoaming() && !npc->getRecruited() && !npc->getLeader()) {
 				npc->roam();
 			}
@@ -5128,7 +5163,8 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 	Item* roomgift = roomCanidate->popBackup(); //check if the item hasa gift
 	if (roomgift && !getItemInVector(*inventory, roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
 		roomCanidate->setItem(roomgift); //put the item in the room
-	}
+	} //do any changes the room might have to make
+	roomCanidate->doEnterChanges();
 	//we move ourself to the next room
 	currentRoom = roomCanidate;
 	PrintRoomData(currentRoom); //prints the data of the current room
