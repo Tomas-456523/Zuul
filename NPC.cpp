@@ -90,6 +90,10 @@ void NPC::printOpeningDialogue() {
 void NPC::printBlockDialogue(bool finalpause) {
 	printConversation(&blockreason, finalpause);
 }
+void NPC::printCatchDialogue(bool special) {
+	if (special) printConversation(&specialcatchtext, true);
+	else         printConversation(&catchtext, true);
+}
 bool NPC::getRecruited() { //returns if in the player team
 	return recruited;
 }
@@ -152,6 +156,25 @@ vector<NPC*>* NPC::getParty() { //gets the npc's party for leader npcs
 }
 void NPC::popWave() {
 	party.pop();
+}
+NPC* NPC::getPursuer() {
+	return pursuer;
+}
+NPC* NPC::getPursuing() {
+	return pursuing;
+}
+pair<Room*, const char*>& getSpecial() {
+	return specialroom;
+}
+//get coordinates relative to the pursuit grid
+pair<size_t, size_t> getPurPos(Room* room) {
+	for (int i = 0; i < pursueRooms.size(); i++) {
+		for (int j = 0; j < pursueRooms.size(); j++) {
+			if (room == pursueRooms[i][j]) {
+				return {i, j};
+			}
+		}
+	}
 }
 bool NPC::getLeader() {
 	return isLeader;
@@ -888,6 +911,24 @@ void NPC::addDeleaderLink(NPC* npc) {
 void NPC::addRoamLink(NPC* npc) {
 	changes.back().roamLinks.push(npc);
 }
+void NPC::setPursuer(NPC* npc) {
+	pursuer = vector<NPC*> npcs;
+}
+void NPC::setPursuing(NPC* npc) {
+	pursuing = npc;
+}
+void NPC::setPursueStuff(const vector<vector<Room*>>& rooms, const WorldChange& catchange) {
+	pursueRooms = rooms;
+	catchchanges = catchange;
+}
+void NPC::setCatchText(const Conversation& text) {
+	catchtext = text;
+}
+void NPC::setPursueSpecial(Room* special, const char* dir, const Conversation& text) {
+	specialroom = {special, dir};
+	specialcatchtext = text;
+}
+pair<size_t, size_t> getPurPos(Room* room); //get coordinates relative to the pursuit grid
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
 }

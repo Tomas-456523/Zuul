@@ -105,6 +105,10 @@ public: //you need to set stats on creation
 	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
 	bool moreWaves(); //get if there's more waves to fight other than the current one
 	void popWave();
+	NPC* getPursuer();
+	NPC* getPursuing();
+	pair<Room*, const char*>& getSpecial();
+	pair<size_t, size_t> getPurPos(Room* room); //get coordinates relative to the pursuit grid
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -196,6 +200,10 @@ public: //you need to set stats on creation
 	void setRoamRooms(initializer_list<Room*> rooms);
 	void roam();
 	void setTalkMakeChanges(bool miscworks = true); //set if the npc should make changes by ASKing, not FIGHTing, also variable asking if miscellaneous dialogue other than normal convos should work
+	void setPursuer(NPC* npc, const vector<vector<Room*>>& rooms, const WorldChange& catchange);
+	void setPursuing(NPC* npc);
+	void setCatchText(const Conversation& text);
+	void setPursueSpecial(Room* special, const char* dir, const Conversation& text);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER);
@@ -225,6 +233,7 @@ public: //you need to set stats on creation
 	void printDismissalRejection();
 	void printOpeningDialogue(); //print battle start dialogue for the npc
 	void printBlockDialogue(bool finalpause = false); //print the reason this npc doesn't want to go in a certain direction
+	void printCatchDialogue(bool special = false);
 
 	void printDamage(int damage, const char* status = NULL);
 	void printEffects();
