@@ -7,7 +7,7 @@ namespace Helper {
 	enum WorldCondition {
 		ISBERNARD,
 		RECOILED,
-		VIOLADEF,
+		TAMEDLOBSTER,
 		VALVEUSED,
 		SWITCHUSED,
 		LAVADRAINED,

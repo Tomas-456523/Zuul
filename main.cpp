@@ -68,6 +68,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	const char* TO_THE_BOTTOM = "TO THE BOTTOM";
 	const char* TO_FLOOR_1 = "TO FLOOR 1";
 	const char* TO_FLOOR_2 = "TO FLOOR 2";
+	const char* IN_THE_HOLE = "IN THE HOLE";
 	//fast travel directions
 	const char* TO_THE_VILLAGE = "TO THE VILLAGE";
 	const char* TO_THE_DESERT = "TO THE DESERT";
@@ -447,7 +448,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* burgplats = new Room("on the platform. There's some diagrams describing BURGERs here and a room to the side.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON, full of cells and torture devices.");
 	BURGERPRISON->setStation();
-	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. Where do trains need to go this deep?");
+	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. The rock is very hot here.");
 	basestation->setStation();
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
@@ -1570,33 +1571,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgermanappear.worldcon = BURGERCHASE;
 	burgermanappear.pursueLinks.push({burgerman, self});
 	burgbasese->setEnterChanges(burgermanappear, TEMPLEQUEST);
-	/*florian->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
-	florian->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
-	florian->addLinkedDesc(florian, "Your big pet crustacean who inhabits the tunnels below.");
-	florian->addLinkedDialogue(florian, {{NULL, "You pet your lobster."}, {self, ":D"}, {florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)."}});*/
-
-	//MARK: account for players calling the lobster THEN just walking out normally
-	//MARK: and also remember to tie escape changes to something, prolly just the lobster
-	//MARK: make lobster block OUT exit of prison
-
-	{{NULL, "You feel the ground rumbling..."},
-	 {NULL, "[Your tunnel lobster] burst through the wall!"},
-	 {NULL, "Your chains were broken into pieces!"},
-	 {florian, "HHHhHHHhHHhHHhHHhHh (triumphant lobster noises)"},
-	 {self, "My lobster!!!"},
-	 {self, "Who's a good boy!"},
-	 {NULL, "You aggresively pet your lobster."},
-	 {florian, "HHHHHHhHhHhHhHHhHHhhHh (happy lobster noises)."}}};
-
-	{{NULL, "You feel the ground rumbling..."},
-	 {NULL, "A TUNNEL LOBSTER burst through the wall!"},
-	 {NULL, "Your chains were broken into pieces!"},
-	 {self, "Let's go!"},
-	 {florian, "HHHHhhhhhHHhHHHhHHhhHHHHhhHh (angry lobster noises)"},
-	 {self, "Oh shoot O_O"}}; //battle begin! but it's really easy at this point
 	
 	//final questgiver
-	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man in chains for resisting the global domination of BURGER.", BURGERPRISON, 35);
+	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A prisoner gray with age, chained to the wall for resisting the global domination of BURGER.", BURGERPRISON, 35);
 	burgerprisoner->setDialogue({{burgerprisoner, "I may not be able to assist physically,"}, {burgerprisoner, "but I will be praying for you from here."}});
 	Conversation prisrej = {{burgerprisoner, "Well,"},
 							{burgerprisoner, "I can't really leave here."},
@@ -1623,10 +1600,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 											{burgerprisoner, "Though, it was covered up by your wall, there, long ago..."},
 											{burgerprisoner, "Probably something to do with security,"},
 											{burgerprisoner, "and also a lobster infestation that occured around that time."},
+											{burgerprisoner, "Maybe if we could somehow access those tunnels..."}
 											{self, "..."},
 											{self, "Train tunnels and lobsters, you say?"}});
 	burgcatchanges.linkedDialogue.push({burgerprisoner, {burgerprisoner, "..."}, {burgerprisoner, "So what is it you had to say about train tunnels and lobsters?"}}); //MARK: alternate if not chained anymore??? prolly not but remember to replace this
 	burgcatchanges.linkedBackups.push(make_tuple(BURGERPRISON, backupcaller5, inventory)); //if the player never got any lobster caller we do have to make sure they can get one (less cool moment if they need this one, but oh well such is life)
+	burgcatchanges.worldcon = IMPRISONED;
 	burgerman->setCatchText(burgcatch);
 	burgerman->setPursueStuff({{burgbasenw, burgbasew, burgbasesw}, {burgerbasement, burgbasec, burgbases}, {burgbasene, burgbasee, burgbasese}}, burgcatchanges);
 	burgerman->setPursueSpecial(elevatorbottom, OUT, {{NULL, "You press the button to go up."},
@@ -1753,6 +1732,21 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	prisfollowup->skipcondition = {JILLYSAVED};
 	prisyes->next = prisfollowup;
 
+	shared_ptr<WorldChange> baseescape = make_shared<WorldChange>();
+	baseescape->worldcon = ESCAPEDBASE;
+	baseescape->dismissableLinks.push({child, SAVINGJILLY}); //when you escape you can dismiss jilly now unless you were already saving her (this is if you weren't saving her and then you go back to save her after escaping the basement)
+	baseescape->defeatRooms.push({burgerman, BURGERRESTAURANT});
+	baseescape->pursueLinks.push({burgerman, NULL}); //this also updates player's pursuer to NULL
+
+	WorldChange lobappearchange;
+	Conversation lobsavedialogue = {{burgerprisoner, "Well, I see what you meant now."}};
+	shared_ptr<Conversation> lobsavedialogue2 = make_shared<Conversation>(Conversation({{burgerprisoner, "I may not be able to assist physically,"}, {burgerprisoner, "but I will be praying for you from here."}})); //just the original dialogue again
+	lobsavedialogue.skipcondition = TAMEDLOBSTER;
+	lobsavedialogue.alt = lobsavedialogue2;
+	lobappearchange.linkedDialogue.push({burgerprisoner, lobsavedialogue});
+	lobappearchange.exitPavings.push(make_tuple(BURGERPRISON, basestation, IN_THE_HOLE, OUT));
+	lobappearchange.roomChanges.push({BURGERPRISON, "in the BURGER PRISON, full of cells and torture devices, and now featuring a huge hole in the wall."});
+
 	shared_ptr<WorldChange> templequest = make_shared<WorldChange>();
 	templequest->worldcon = TEMPLEQUEST;
 	templequest->linkedDegifts.push({burgerman, freeboiga});
@@ -1764,13 +1758,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	templequest->recruitLinks.push(theratman);
 	templequest->clingyLinks.push({child, NEVER});
 	templequest->defeatRooms.push({burgerman, burgbasene});
-	prisyes->convochanges = templequest;
-
-	WorldChange baseescape;
-	baseescape.worldcon = ESCAPEDBASE;
-	baseescape.dismissableLinks.push({child, SAVINGJILLY}); //when you escape you can dismiss jilly now unless you were already saving her (this is if you weren't saving her and then you go back to save her after escaping the basement)
-	baseescape.defeatRooms.push({burgerman, BURGERRESTAURANT});
-	baseescape.pursueLinks.push({burgerman, NULL}); //this also updates player's pursuer to NULL
 	Conversation forgorending = {{burgerman, {burgerman, "YOU ARE REALLY STUPID."},
 											 {burgerman, "YOU CAME BACK WITHOUT THE PLOT DEVICE?"},
 											 {NULL, "\nThe BURGER MAN punches through your head."},
@@ -1782,6 +1769,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	forgorchanges->defeatRooms.push({self, elevatortop});
 	forgorending.convochanges = forgorchanges;
 	forgorending.linkedConversations.push(forgorending);
+	templequest->linkedDialogue.push({burgerman, forgorending}); //cannot be heard in the basement because he just catches you if you ASK him
+	templequest->linkedEnterChanges.push({villagestation, })
+	prisyes->convochanges = templequest;
 
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
@@ -4353,10 +4343,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	florian->setTunnelDirection(volcanostation, TO_THE_HIGHLANDS);
 	florian->setTunnelDirection(burgstation, TO_BURGERSBURG);
 	florian->setTunnelDirection(basestation, TO_THE_BASEMENT);
-	florian->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
-	florian->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
+	florian->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises)");
+	florian->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no)");
 	florian->addLinkedDesc(florian, "Your big pet crustacean who inhabits the tunnels below.");
-	florian->addLinkedDialogue(florian, {{NULL, "You pet your lobster."}, {self, ":D"}, {florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)."}});
+	florian->addLinkedDialogue(florian, {{NULL, "You pet your lobster."}, {self, ":D"}, {florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)"}});
+	florian->setWorldCondition(TAMEDLOBSTER);
 
 	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
 	desertstation->setBackup(lobstercaller);
@@ -4417,7 +4408,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
-	viola->setWorldCondition(VIOLADEF);
 
 	NPC* springguard = new NPC(*greer);
 	springguard->setLeader(true, 20, NULL, false);
@@ -5242,6 +5232,10 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 			}
 		}
 	}
+	if (WorldState[IMPRISONED]) { 
+		cout << "\nYou tried to leave but got pulled back by your chains.";
+		return;
+	}
 	bool npcblocky = false; //if a teammate is blocking the movement
 	for (NPC* npc : *party) {
 		if (npc->getBlocked(currentRoom, direction)) {
@@ -5439,7 +5433,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			AllCaps(&name[0]); //capitalizes the name
 			
 			if (!strcmp(name, "")) { //Bernard really wanted to name the lobster so he expresses his disappointment if the player just ENTERed immediately and didn't type a name
-				cout << "SELF - \"Ok nevermind I guess I won't name you.\"";
+				cout << (*party)[0]->getName() << " - \"Ok nevermind I guess I won't name you.\"";
 				CinPause();
 			} else { //if the player did give a name, we set the lobster's title and name to TUNNEL LOBSTER [name]
 				npc->setName(name);
@@ -5461,6 +5455,20 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			//gives instructions on how to use your new pet lobster, should be understandable enough
 			cout << "\nUtilize the abandoned train tunnels by USE-ing " << npc->getName() << ".";
 			CinPause();
+
+			if (WorldState[IMPRISONED]) { //if this is the escape sequence
+				WorldState[IMPRISONED] = false;
+				if (strlen(name)) cout << "\n" << name;
+				else cout << "\nYour new pet lobster";
+				cout << name << " snips off your shackles.";
+				CinPause();
+				printConversation({{(*party)[0], "Nice!"},
+					{(*party)[0], "Hey are you coming?"},
+					{NULL, "ARCHIBALD - \"No,\""},
+					{NULL, "ARCHIBALD - \"I don't want to attract unnecessary attention from the BURGER MAN.\""},
+					{NULL, "ARCHIBALD - \"Just focus on your quest; don't worry about me!\""},
+					{(*party)[0], "Alright."}}, true);
+			}
 			
 			CinIgnoreAll(); //clear extra text and potential error flags
 
@@ -5696,13 +5704,45 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 				return;
 			} //moves the lobster to the station
 			npc->setRoom(currentRoom);
-			cout << "\n" << npc->getName() << " burst out of the rubble!"; //flavor text
+			if (WorldState[IMPRISONED]) { //your tamed lobster saves you if you're imprisoned
+				cout << "\nYou feel the ground rumbling..."; //these aren't part of the conversation so we can print the lobster name
+				CinPause();
+				cout << npc->getName() << " burst through the wall!";
+				CinPause();
+				printConversation({{NULL, "You all get sent flying along with the rubble."},
+					{NULL, "You're no longer chained to the wall!"},
+					{npc, "HHHhHHHhHHhHHhHHhHh (triumphant lobster noises)"},
+					{(*party)[0], "MY LOBSTER!!!! :D"}}, true);
+				if (strcmp(npc->getName(), "TUNNEL LOBSTER")) cout << npc->getName();
+				else cout << "Your TUNNEL LOBSTER";
+				cout << " snips off your shackles.";
+				CinPause();
+				printConversation({{(*party)[0], "Nice!"},
+					{(*party)[0], "Hey are you coming?"},
+					{NULL, "ARCHIBALD - \"No,\""},
+					{NULL, "ARCHIBALD - \"I don't want to attract unnecessary attention from the BURGER MAN.\""},
+					{NULL, "ARCHIBALD - \"Just focus on your quest; don't worry about me!\""},
+					{(*party)[0], "Alright."}}, true);
+				npc->doLobsterChanges(); //make the prison reflect the fact that a big lobster just burst through the wall
+				WorldState[IMPRISONED] = false;
+			} else cout << "\n" << npc->getName() << " burst out of the rubble!"; //flavor text
 		} else { //if the lobster is still untamed (undefeated)
 			if (npc->getRoom() == currentRoom) { //if the lobster is already here prints flavor text
 				cout << "\n" << npc->getName() << " shrieked angrily!";
 			} else { //moves the lobster here if not here
 				npc->setRoom(currentRoom);
-				cout << "\nA " << npc->getName() << " angrily burst out of the rubble!";
+				if (WorldState[IMPRISONED]) {
+					cout << "\nYou feel the ground rumbling...";
+					CinPause();
+					cout << "\nA " << npc->getName() << " angrily burst through the wall!";
+					CinPause();
+					printConversation({{NULL, "You all get sent flying along with the rubble."},
+					{NULL, "You're no longer chained to the wall!"},
+					{(*party)[0], "Let's go!"},
+					{npc, "HHHHhHHHhHHhHhHHhHHhHh (angry lobster noises)"},
+					{(*party)[0], "Oh shoot :|"}}, false); //no final pause cause we do one down there
+					npc->doLobsterChanges(); //make the prison reflect the fact that a big lobster just burst through the wall
+				} else cout << "\nA " << npc->getName() << " angrily burst out of the rubble!";
 			}
 			CinPause(); //the caller initiates a battle if lobster is untamed
 			fight(currentRoom, party, inventory, npc->getName(), mony);

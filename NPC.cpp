@@ -620,6 +620,12 @@ void NPC::setLobster(Room* tunnels, bool lobster) { //sets that it's the lobster
 	isLobster = lobster;
 	home = tunnels; //lobster lives in the tunnels
 }
+void NPC::setLobsterChanges(const WorldChange& changes) { //set lobster changes for that one scene
+	lobstersavechanges = changes;	
+}
+void NPC::doLobsterChanges() { //does the lobster changes
+	applyWorldChange(lobstersavechanges);
+}
 void NPC::setBoss(bool boss) {
 	isBoss = boss;
 }

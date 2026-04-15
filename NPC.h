@@ -252,6 +252,8 @@ public: //you need to set stats on creation
 
 	bool getLobster(); //get if it's the lobster
 	void setLobster(Room* tunnels, bool lobster = true); //set if it's a lobster plus set its home to the tunnels since it actually starts somewhere else
+	void setLobsterChanges(const WorldChange& changes); //set lobster changes for that one scene
+	void doLobsterChanges(); //does the lobster changes
 
 	const char* getTunnelDirection(Room* room); //gets the direction back to the given room from the tunnels (for lobster only)
 	void setTunnelDirection(Room* room, const char* direction); //sets tunnel directions (for lobster only)
@@ -328,6 +330,8 @@ protected:
 	NPC* taking = NULL; //if this npc has kidnapped another npc during battle
 
 	bool isLobster = false; //if it's the lobster
+	WorldChange lobsterchanges; //changes that happen when the lobster appears after being captured
+
 	bool isShark = false; //if this is a shark
 	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
 
