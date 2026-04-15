@@ -277,13 +277,20 @@ Item* WeaponItem::Duplicate() { //returns a new weapon item as an Item*
 }
 
 //caller items, for summoning npcs to the current room
-CallerItem::CallerItem(const char* _name, const char* _description, Room* _room, NPC* npc) : Item(_name, _description, _room, true) {
+CallerItem::CallerItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, NPC* npc) : Item(_name, _description, _room, true) {
 	npc_called = npc;
 	type = "caller"; //sets the type
+	useText = _useText;
 }
 //returns the npc this caller calls
 NPC* CallerItem::getCalledNPC() {
 	return npc_called;
+}
+const Conversation& CallerItem::getUseText() const {
+	return useText;
+}
+Item* CallerItem::Duplicate() { //returns a new caller item as an Item*
+	return new CallerItem(*this);
 }
 
 //key items, for unlocking and unblocking blocked exits

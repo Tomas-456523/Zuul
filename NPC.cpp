@@ -352,7 +352,8 @@ bool NPC::getBlocked(Room* room, const char* direction) {
 	}
 	return false;
 }
-bool NPC::getNoFight() {
+bool NPC::popNoFight() {
+	if (resetnofight) npc->setLeader(false); //set leader to false so you can't try again
 	return nofight;
 }
 void NPC::depositMonies(int& monies) { //mony depositing system for the banker
@@ -692,8 +693,9 @@ void NPC::setBlockMessage(Conversation why) {
 void NPC::setBlockUnless(size_t condition) {
 	blockunless = condition;
 }
-void NPC::setNoFight() {
+void NPC::setNoFight(bool clarify) {
 	nofight = true;
+	resetnofight = clarify;
 }
 void NPC::setThief() {
 	thief = true;
@@ -905,7 +907,7 @@ void NPC::addRoamLink(NPC* npc) {
 	changes.back().roamLinks.push(npc);
 }
 void NPC::setPursuer(NPC* npc) {
-	pursuer = vector<NPC*> npcs;
+	pursuer = npc;
 }
 void NPC::setPursuing(NPC* npc) {
 	pursuing = npc;

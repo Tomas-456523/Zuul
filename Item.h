@@ -182,11 +182,15 @@ private:
 //caller items for calling the lobster
 class CallerItem : public Item {
 public:
-	CallerItem(const char* _name, const char* _description, Room* _room, NPC* npc);
+	CallerItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, NPC* npc);
 
 	NPC* getCalledNPC(); //get the npc it calls
+	const Conversation& getUseText() const; //gets the text printed by using it
+
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	NPC* npc_called; //the npc you're calling
+	Conversation useText; //the text printed by using it
 };
 
 //toll items for paying monies

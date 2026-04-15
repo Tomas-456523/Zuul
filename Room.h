@@ -65,7 +65,7 @@ public:
 	void setWelcome(Conversation text); //set welcome text for the area
 	void setStock(Item* item, int stock, int price, const Conversation& buydesc); //adds an item for sale
 	void removeStock(Item* item, bool printmessage = true); //removes an item from sale
-	void setBackup(Item* item); //sets a backup item for the room
+	void setBackup(Item* item, bool onlyone = true); //sets a backup item for the room and optionally if it should run out or not
 	void openTemple(); //set the temple entrance if this is a temple entrance
 	void setEnterChanges(const WorldChange& changes, size_t condition = Helper::NEVER); //set changes that occur when walking into this room when this condition is true, unlesss it's never then it always happens
 
@@ -114,5 +114,6 @@ private:
 	bool hasenterchanges = false;
 
 	Item* backup; //item that is placed here only if the player doesn't have one already
+	bool onebackup = true; //if there is only one backup as opposed to infinite
 };
 #endif

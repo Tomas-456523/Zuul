@@ -1515,10 +1515,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 										{burgcustomer, "but I just got one."},
 										{burgcustomer, "I just kind of want to go home."}});
 
-	NPC* burgerman = new NPC("", "BURGER MAN", "The manager of the BURGER RESTAURANT. He has a BURGER for a head and an uncanny stature.", BURGERRESTAURANT, 2147483647, Stats(2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647, 2147483647));
-	burgerman->setLeader(true, 0, NULL, false);
-	Attack* burgpunch = new Attack("BURGER PUNCH", "punched", true, 1, 99999);
-	burgerman->setBasicAttack(burgpunch);
+	NPC* burgerman = new NPC("", "BURGER MAN", "The manager and mascot of BURGERs. He has a BURGER for a head and a stick figure body.", BURGERRESTAURANT, 10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0));
+	//burgerman->setLeader(true, 0, BURGERRESTAURANT, false);
+	burgerman->setNoFight(false); //you can kind of fight the BURGER MAN but not really, leader status won't reset if trying to account for try to fight without THE PLOT DEVICE and then you get bad ending, then try to fight in the true ending
 	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
 	Conversation burgdeciet = {{burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
 							   {self, "I'm sorry :("},
@@ -1540,14 +1539,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							   {burgerman, "A TOKEN OF MY GRATITUDE."},
 							   {self, "Oh thanks."}};
 	burgdeciet->skipcondition = {TEMPLEQUEST};
-
-	//MARK: custom fight deny text, deny links
-	//A fight with the BURGER MAN would end in surefire defeat.
-	//Use THE PLOT DEVICE!
+	shared_ptr<WorldChange> freeburgchange = make_shared<WorldChange>();
+	freeburgchange->worldcon = FREEBURGER;
+	burgdeciet.convochanges = freeburgchange; //update BURGER MAN catch dialogue to account for the free BURGER he gave the player
 	Conversation burgcatch = {{burgerman, "The BURGER MAN grabs you by the neck."},
 							  {burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
 							  {burgerman, "YOU THOUGHT I WOULDN'T NOTICE?"},
-							  {self, "I wasn't thinking about you."},
+							  {self, "I wasn't thinking about you :|"},
 							  {burgerman, "The BURGER MAN knocks you unconscious."},
 							  {NULL, "..."},
 							  {NULL, "..."},
@@ -1558,146 +1556,232 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							  {burgerman, "WOW."},
 							  {burgerman, "YOU WANT TO DEFEAT ME?"},
 							  {burgerman, "AFTER I GAVE YOU A BURGER ON THE HOUSE?"},
-							  {self, "I don't believe you anymore."},
+							  {self, "I don't believe you anymore >:|"},
 							  {burgerman, "The BURGER MAN knocks you unconscious."},
 							  {NULL, "..."},
 							  {NULL, "..."},
 							  {NULL, "..."},
 							  {NULL, "You wake up, disoriented."},
 							  {NULL, "Your hands are in chains and you're lying on hard concrete."}}));
-	
-	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man imprisoned for resisting the global domination of BURGER.", BURGERPRISON, 35);
-	//burgerprisoner->setDialogue("Hi how are you doing?");
-	//burgerprisoner->addRejectionDialogue("I would love to join you on your quest. But as long as the BURGER MENACE endures, so shall these bars you see in front of me.");
-	{{burgerprisoner, "Hm?"},
-	 {self, "Hi what are you doing in prison?"},
-	 {burgerprisoner, "I haven't seen anybody in ages..."},
-	 {burgerprisoner, "Nobody concerned for my well-being, at least."},
-	 {burgerprisoner, "I was put here for resisting the global domination of BURGER."},
-	 {self, "Global domination?"},
-	 {burgerprisoner, "Yes, they're much more than their fast food facade."},
-	 {burgerprisoner, "I'm sure you can tell from this basement."},
-	 {self, "I mean... yeah."},
-	 {burgerprisoner, "So how'd you even get down here?"},
-	 {self, "Well I was going on a BURGER QUEST,"},
-	 {self, "but then I started saving this kid that was kidnapped,"},
-	 {self, "so then I went to their headquarters,"},
-	 {self, "and I found this button there,"},
-	 {self, "which looked like the BURGER RESTAURANT's"},
-	 {self, "so I put the button in the wall and I came down here."},
-	 {burgerprisoner, "Well, surely you can see what this company truly is by now."},
-	 {self, "I guess..."},
-	 {burgerprisoner, "All the BURGER corporation is, is an extension of the BURGER MAN"},
-	 {burgerprisoner, "which he uses to bring people to his restaurant."},
-	 {burgerprisoner, "BURGER has the world in a chokehold and it doesn't even realize."},
-	 {burgerprisoner, "I'm sure you know about the dying forests and the growing wastelands."},
-	 {self, "Yeah."}
-	 {burgerprisoner, "That's all BURGER's fault."},
-	 {burgerprisoner, "Parching the land to guide the people to the city by thirst and hunger,"},
-	 {burgerprisoner, "where they will be more easily tempted by the BURGER RESTAURANT."},
-	 {self, "Oh."},
-	 {burgerprisoner, "Or how about the volcanic highlands surrounding the city?"},
-	 {burgerprisoner, "All BURGER."},
-	 {self, "Were they why the lava level was so high?"},
-	 {burgerprisoner, "Probably."}
-	 {burgerprisoner, "They don't even care if the people get a BURGER."},
-	 {burgerprisoner, "As long as they idolize BURGER, it makes them stray from God."},
-	 {burgerprisoner, "Even if they die on the way,"},
-	 {burgerprisoner, "that just means they have less time to realize the damage BURGER causes,"},
-	 {burgerprisoner, "and repent from that path."},
-	 {self, "..."},
-	 {burgerprisoner, "But there is hope, I tell you."},
-	 {burgerprisoner, "They didn't put me in here for holding up a protest sign."},
-	 {burgerprisoner, "I know a way to deal a heavy blow against BURGER's grasp on the world."},
-	 {burgerprisoner, "You had to fight through much to get here."},
-	 {burgerprisoner, "I know you'd be capable of doing it."},
-	 {burgerprisoner, "If you're willing, I can tell you how."},
-	 {NULL, "\nYou are on a quest to get a BURGER."},
-	 {NULL, "But now you have the opportunity to change your quest."}, //You have the opportunity to change your quest now.
-	 {NULL, "Do you want to accept this DESTROY BURGER QUEST? (YES or NO)"}};
-	
-	{{self, "No,"},
-	 {self, "I'm sorry."},
-	 {self, "I just want a BURGER."},
-	 {burgerprisoner, "Well,"},
-	 {burgerprisoner, "I respect your free will."},
-	 {burgerprisoner, "But if you change your mind,"},
-	 {burgerprisoner, "you know where to find me."}};
-	
-	{{burgerprisoner, "Well have you changed your mind?"},
-	 {NULL, "\nYou are on a quest to get a BURGER."},
-	 {NULL, "But now you have the opportunity to change your quest."},
-	 {NULL, "Do you want to accept this DESTROY BURGER QUEST? (YES or NO)"}};
+	burgcatch.skipcondition = FREEBURGER;
+	burgcatch.alt = burgcatch2;
+	WorldChange burgermanappear; //when you encounter the BURGER MAN in the basement
+	burgermanappear.ignorecon = ESCAPEDBASE; //player could theoretically go to the station before encountering the BURGER MAN if they know what they're doing so we gotta account for that
+	burgermanappear.worldcon = BURGERCHASE;
+	burgermanappear.pursueLinks.push({burgerman, self});
+	burgbasese->setEnterChanges(burgermanappear, TEMPLEQUEST);
+	/*florian->setDialogue("HHhHHHhhHHhHhhHhHHhHhHHh (angry lobster noises).");
+	florian->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no).");
+	florian->addLinkedDesc(florian, "Your big pet crustacean who inhabits the tunnels below.");
+	florian->addLinkedDialogue(florian, {{NULL, "You pet your lobster."}, {self, ":D"}, {florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)."}});*/
 
-	{{self, "No sorry."},
-	 {burgerprisoner, "Alright."}};
+	//MARK: account for players calling the lobster THEN just walking out normally
+	//MARK: and also remember to tie escape changes to something, prolly just the lobster
+	//MARK: make lobster block OUT exit of prison
 
-	{{self, "..."},
-	 {self, "Alright I'll do it."},
-	 {burgerprisoner, "Okay!"},
-	 {burgerprisoner, "You know the BURGER MAN, right?"},
-	 {burgerprisoner, "At the top of the restaurant?"},
-	 {burgerprisoner, "BURGERs arrived at the same time he did."},
-	 {burgerprisoner, "He's the one in charge of the whole operation."},
-	 {burgerprisoner, "I'm sure that if you cut it off at the source,"},
-	 {burgerprisoner, "the rest of the corporation will fall like dominoes."},
-	 {self, "That's it?"},
-	 {burgerprisoner, "No."},
-	 {burgerprisoner, "Just wanna be clear,"},
-	 {burgerprisoner, "DO NOT try to fight the BURGER MAN."},
-	 {burgerprisoner, "No worldly force can beat him."},
-	 {burgerprisoner, "Only with God's help would anyone stand a chance."},
-	 {burgerprisoner, "That's why you have to get a special device,"},
-	 {burgerprisoner, "specially engineered to do God's will."},
-	 {burgerprisoner, "In other words, it does whatever the plot requires."}, 
-	 {burgerprisoner, "It's..."},
-	 {NULL, "<<< THE PLOT DEVICE! >>>"},
-	 {self, "The plot device?"},
-	 {burgerprisoner, "Yeah!"},
-	 {burgerprisoner, "Now it's not possible to be destroyed,"},
-	 {burgerprisoner, "but it was disassembled long ago,"},
-	 {burgerprisoner, "and scattered across three temples."},
-	 {self, "You mean the ancient temples?"},
-	 {self, "They're sealed shut by ancient technology!"},
-	 {self, "No matter what anybody's tried, they've never made it inside!"},
-	 {burgerprisoner, "Oh to open them you just gotta ASK NICELY."},
-	 {self, "Oh I see."},
-	 {burgerprisoner, "Well, putting the components together is a long lost craft,"},
-	 {burgerprisoner, "but I believe I know how to do so."},
-	 {burgerprisoner, "So once you're done just bring them to me!"},
-	 {self, "Sounds good."}};
+	{{NULL, "You feel the ground rumbling..."},
+	 {NULL, "[Your tunnel lobster] burst through the wall!"},
+	 {NULL, "Your chains were broken into pieces!"},
+	 {florian, "HHHhHHHhHHhHHhHHhHh (triumphant lobster noises)"},
+	 {self, "My lobster!!!"},
+	 {self, "Who's a good boy!"},
+	 {NULL, "You aggresively pet your lobster."},
+	 {florian, "HHHHHHhHhHhHhHHhHHhhHh (happy lobster noises)."}}};
 
-	{{burgerprisoner, "..."},
-	 {burgerprisoner, "Hang on, you said they kidnapped a kid right?"},
-	 {self, "Yeah."},
-	 {burgerprisoner, "Well did you save them yet?"},
-	 {self, "Not really."},
-	 {burgerprisoner, "Well, I'd say you go do that first."},
-	 {burgerprisoner, "That kid's safety is important,"},
-	 {burgerprisoner, "especially when dealing with a company of this nature."},
-	 {burgerprisoner, "The temples aren't going anywhere, anyway."}};
+	{{NULL, "You feel the ground rumbling..."},
+	 {NULL, "A TUNNEL LOBSTER burst through the wall!"},
+	 {NULL, "Your chains were broken into pieces!"},
+	 {self, "Let's go!"},
+	 {florian, "HHHHhhhhhHHhHHHhHHhhHHHHhhHh (angry lobster noises)"},
+	 {self, "Oh shoot O_O"}}; //battle begin! but it's really easy at this point
+	
+	//final questgiver
+	NPC* burgerprisoner = new NPC("BURGER PRISONER", "ARCHIBALD", "A man in chains for resisting the global domination of BURGER.", BURGERPRISON, 35);
+	burgerprisoner->setDialogue({{burgerprisoner, "I may not be able to assist physically,"}, {burgerprisoner, "but I will be praying for you from here."}});
+	Conversation prisrej = {{burgerprisoner, "Well,"},
+							{burgerprisoner, "I can't really leave here."},
+							{NULL, "ARCHIBALD shakes his chains for emphasis."}};
+	shared_ptr<Conversation> prisrej2 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest."},
+							  {burgerprisoner, "But I think you can see I'm not going anywhere..."},
+							  {NULL, "ARCHIBALD shakes his chains for emphasis."}}));
+	prisrej.skipcondition = TEMPLEQUEST;
+	prisrej.alt = prisrej2;
+	burgerprisoner->addRejectionDialogue(prisrej);
+
+	//set up catching stuff which is used later in the basement part
+	WorldChange burgcatchanges;
+	burgcatchanges.defeatRooms.push({self, BURGERPRISON});
+	burgcatchanges.linkedConversations.push({burgerprisoner, {burgerprisoner, "You're finally awake."}, {burgerprisoner, "You had me worried for a moment, there."},
+											{self, "Dang."}, {self, "Guess we gotta wait for a new protagonist :|"},
+											{burgerprisoner, "Don't give up yet!"}, {burgerprisoner, "You've gotten this far!"},
+											{self, "No sorry I was joking mostly."},
+											{burgerprisoner, "Yeah. Well..."},
+											{burgerprisoner, "..."},
+											{burgerprisoner, "I know there's tunnels near this room."},
+											{burgerprisoner, "I got here long ago when they were still finishing the restaurant,"},
+											{burgerprisoner, "and I remember trains arriving here with materials."},
+											{burgerprisoner, "Though, it was covered up by your wall, there, long ago..."},
+											{burgerprisoner, "Probably something to do with security,"},
+											{burgerprisoner, "and also a lobster infestation that occured around that time."},
+											{self, "..."},
+											{self, "Train tunnels and lobsters, you say?"}});
+	burgcatchanges.linkedDialogue.push({burgerprisoner, {burgerprisoner, "..."}, {burgerprisoner, "So what is it you had to say about train tunnels and lobsters?"}}); //MARK: alternate if not chained anymore??? prolly not but remember to replace this
+	burgcatchanges.linkedBackups.push(make_tuple(BURGERPRISON, backupcaller5, inventory)); //if the player never got any lobster caller we do have to make sure they can get one (less cool moment if they need this one, but oh well such is life)
+	burgerman->setCatchText(burgcatch);
+	burgerman->setPursueStuff({{burgbasenw, burgbasew, burgbasesw}, {burgerbasement, burgbasec, burgbases}, {burgbasene, burgbasee, burgbasese}}, burgcatchanges);
+	burgerman->setPursueSpecial(elevatorbottom, OUT, {{NULL, "You press the button to go up."},
+													  {NULL, "The elevator doors start closing."},
+													  {NULL, "..."},
+													  {NULL, "The BURGER MAN puts his foot in the door."},
+													  {NULL, "The elevator door catches on the BURGER MAN's foot."},
+													  {NULL, "The doors open again."},
+													  {self, ":|"}});
+
+	//MARK: custom fight deny text, deny links
+	//A fight with the BURGER MAN would end in surefire defeat.
+	//Use THE PLOT DEVICE!
+
+	Conversation priscon = {{burgerprisoner, "Hm?"},
+							{self, "Hi what are you doing in prison?"},
+							{burgerprisoner, "I haven't seen anybody in ages..."},
+							{burgerprisoner, "Nobody concerned for my well-being, at least."},
+							{burgerprisoner, "I was put here for resisting the global domination of BURGER."},
+							{self, "Global domination?"},
+							{burgerprisoner, "Yes, they're much more than their fast food facade."},
+							{burgerprisoner, "I'm sure you can tell from this basement."},
+							{self, "I mean... yeah."},
+							{burgerprisoner, "So how'd you even get down here?"},
+							{self, "Well I was going on a BURGER QUEST,"},
+							{self, "but then I started saving this kid that was kidnapped,"},
+							{self, "so then I went to their headquarters,"},
+							{self, "and I found this button there,"},
+							{self, "which looked like the BURGER RESTAURANT's"},
+							{self, "so I put the button in the wall and I came down here."},
+							{burgerprisoner, "Well, surely you can see what this company truly is by now."},
+							{self, "I guess..."},
+							{burgerprisoner, "All the BURGER corporation is, is an extension of the BURGER MAN"},
+							{burgerprisoner, "which he uses to bring people to his restaurant."},
+							{burgerprisoner, "BURGER has the world in a chokehold and it doesn't even realize."},
+							{burgerprisoner, "I'm sure you know about the dying forests and the growing wastelands."},
+							{self, "Yeah."},
+							{burgerprisoner, "That's all BURGER's fault."},
+							{burgerprisoner, "Parching the land to guide the people to the city by thirst and hunger,"},
+							{burgerprisoner, "where they will be more easily tempted by the BURGER RESTAURANT."},
+							{self, "Oh."},
+							{burgerprisoner, "Or how about the volcanic highlands surrounding the city?"},
+							{burgerprisoner, "All BURGER."},
+							{self, "Were they why the lava level was so high?"},
+							{burgerprisoner, "Probably."},
+							{burgerprisoner, "They don't even care if the people get a BURGER."},
+							{burgerprisoner, "As long as they idolize BURGER, it makes them stray from God."},
+							{burgerprisoner, "Even if they die on the way,"},
+							{burgerprisoner, "that just means they have less time to realize the damage BURGER causes,"},
+							{burgerprisoner, "and repent from that path."},
+							{self, "..."},
+							{burgerprisoner, "But there is hope, I tell you."},
+							{burgerprisoner, "They didn't put me in here for holding up a protest sign."},
+							{burgerprisoner, "I know a way to deal a heavy blow against BURGER's grasp on the world."},
+							{burgerprisoner, "You had to fight through much to get here."},
+							{burgerprisoner, "I know you'd be capable of doing it."},
+							{burgerprisoner, "If you're willing, I can tell you how."},
+							{NULL, "\nYou are on a quest to get a BURGER."},
+							{NULL, "But now you have the opportunity to change your quest."}, //You have the opportunity to change your quest now.
+							{NULL, "Do you want to accept this DESTROY BURGER QUEST? (YES or NO)"}};
+	shared_ptr<Conversation> prisyes = make_shared<Conversation>(Conversation({{self, "..."},
+							{self, "Alright I'll do it."},
+							{burgerprisoner, "Okay!"},
+							{burgerprisoner, "You know the BURGER MAN, right?"},
+							{burgerprisoner, "At the top of the restaurant?"},
+							{burgerprisoner, "BURGERs arrived at the same time he did."},
+							{burgerprisoner, "He's the one in charge of the whole operation."},
+							{burgerprisoner, "I'm sure that if you cut it off at the source,"},
+							{burgerprisoner, "the rest of the corporation will fall like dominoes."},
+							{self, "That's it?"},
+							{burgerprisoner, "No."},
+							{burgerprisoner, "Just wanna be clear,"},
+							{burgerprisoner, "DO NOT try to fight the BURGER MAN."},
+							{burgerprisoner, "No worldly force can beat him."},
+							{burgerprisoner, "Only with God's help would anyone stand a chance."},
+							{burgerprisoner, "That's why you have to get a special device,"},
+							{burgerprisoner, "specially engineered to do God's will."},
+							{burgerprisoner, "In other words, it does whatever the plot requires."}, 
+							{burgerprisoner, "It's..."},
+							{NULL, "<<< THE PLOT DEVICE! >>>"},
+							{self, "The plot device?"},
+							{burgerprisoner, "Yeah!"},
+							{burgerprisoner, "Now it's not possible to be destroyed,"},
+							{burgerprisoner, "but it was disassembled long ago,"},
+							{burgerprisoner, "and scattered across three temples."},
+							{self, "You mean the ancient temples?"},
+							{self, "They're sealed shut by ancient technology!"},
+							{self, "No matter what anybody's tried, they've never made it inside!"},
+							{burgerprisoner, "Oh to open them you just gotta ASK NICELY."},
+							{self, "Oh I see."},
+							{burgerprisoner, "Well, putting the components together is a long lost craft,"},
+							{burgerprisoner, "but I believe I know how to do so."},
+							{burgerprisoner, "So once you're done just bring them to me!"},
+							{self, "Sounds good."}}));
+	shared_ptr<Conversation> prisno = make_shared<Conversation>(Conversation({{self, "No,"},
+																			  {self, "I'm sorry."},
+																			  {self, "I just want a BURGER."},
+																			  {burgerprisoner, "Well,"},
+																			  {burgerprisoner, "I respect your free will."},
+																			  {burgerprisoner, "But if you change your mind,"},
+																			  {burgerprisoner, "you know where to find me."}}));
+	priscon.branch1 = {"YES", prisyes};
+	priscon.branch2 = {"NO", prisno};
+	shared_ptr<Conversation> prisnoagain = make_shared<Conversation>(Conversation({{self, "No sorry."}, {burgerprisoner, "Alright."}}));
+	shared_ptr<Conversation> prisagain = make_shared<Conversation>(Conversation({{burgerprisoner, "Well have you changed your mind, then?"},
+																			   {NULL, "\nYou are on a quest to get a BURGER."},
+																			   {NULL, "But now you have the opportunity to change your quest."},
+																			   {NULL, "Do you want to accept this DESTROY BURGER QUEST? (YES or NO)"}}));
+	prisagain->branch1 = {"YES", prisyes};
+	prisagain->branch2 = {"NO", prisnoagain};
+	prisno->relay = {fr, prisagain};
+	prisnoagain->relay = {fr, prisagain};
+	relaysH.push_back(prisagain); //make sure this conversation don't expire
+	burgerprisoner->addConversation(priscon);
+	shared_ptr<Conversation> prisfollowup = make_shared<Conversation>(Conversation({{burgerprisoner, "..."}, //remind the player they were saving Jilly
+		{burgerprisoner, "Hang on, you said they kidnapped a kid right?"},
+		{self, "Yeah."},
+		{burgerprisoner, "Well did you save them yet?"},
+		{self, "Not really."},
+		{burgerprisoner, "Well, I'd say you go do that first."},
+		{burgerprisoner, "That kid's safety is important,"},
+		{burgerprisoner, "especially when dealing with a company of this nature."},
+		{burgerprisoner, "The temples aren't going anywhere, anyway."}}));
+	prisfollowup->skipcondition = {JILLYSAVED};
+	prisyes->next = prisfollowup;
 
 	shared_ptr<WorldChange> templequest = make_shared<WorldChange>();
 	templequest->worldcon = TEMPLEQUEST;
 	templequest->linkedDegifts.push({burgerman, freeboiga});
 	templequest->removeStock.push({BURGERRESTAURANT, BURGER});
-	templequest->linkedConversations.push({{burgerman, {burgerman, "YOU ARE REALLY STUPID."},
-													   {burgerman, "YOU CAME BACK WITHOUT THE PLOT DEVICE?"},
-													   {NULL, "\nThe BURGER MAN punches through your head."},
-													   {NULL, "\n<<< BURGER QUEST COMPLETE T_T >>>"},
-													   {NULL,   "<<<      ENDING ACHIEVED:     >>>"},
-													   {NULL,   "<<<   YOU FORGOR THE DEVICE   >>>"}}});
-	templequest->linkedConversations.push({{burgerman, {burgerman, "YOU ARE REALLY STUPID."},
-													   {burgerman, "YOU CAME BACK WITHOUT THE PLOT DEVICE?"},
-													   {NULL, "\nThe BURGER MAN punches through your head."},
-													   {NULL, "\n<<< BURGER QUEST COMPLETE T_T >>>"},
-													   {NULL,   "<<<      ENDING ACHIEVED:     >>>"},
-													   {NULL,   "<<<   YOU FORGOR THE DEVICE   >>>"}}});
 	templequest->exitBlocks.push(make_tuple(BURGERRESTAURANT, IN_ELEVATOR, ENEMY, "sealed shut by the BURGER RESTAURANT controls."));
+	templequest->linkedDescriptions.push({burgerman, "The manager and mascot of BURGER. He has a BURGER for a head and an uncanny stature."});
 	templequest->recruitLinks.push(forestknight);
 	templequest->recruitLinks.push(richie);
 	templequest->recruitLinks.push(theratman);
-	
+	templequest->clingyLinks.push({child, NEVER});
+	templequest->defeatRooms.push({burgerman, burgbasene});
+	prisyes->convochanges = templequest;
+
+	WorldChange baseescape;
+	baseescape.worldcon = ESCAPEDBASE;
+	baseescape.dismissableLinks.push({child, SAVINGJILLY}); //when you escape you can dismiss jilly now unless you were already saving her (this is if you weren't saving her and then you go back to save her after escaping the basement)
+	baseescape.defeatRooms.push({burgerman, BURGERRESTAURANT});
+	baseescape.pursueLinks.push({burgerman, NULL}); //this also updates player's pursuer to NULL
+	Conversation forgorending = {{burgerman, {burgerman, "YOU ARE REALLY STUPID."},
+											 {burgerman, "YOU CAME BACK WITHOUT THE PLOT DEVICE?"},
+											 {NULL, "\nThe BURGER MAN punches through your head."},
+											 {NULL, "\n<<< BURGER QUEST COMPLETE T_T >>>"},
+											 {NULL,   "<<<      ENDING ACHIEVED:     >>>"},
+											 {NULL,   "<<<   YOU FORGOR THE DEVICE   >>>"}}};
+	shared_ptr<WorldChange> forgorchanges = make_shared<WorldChange>(); //to mark the game as ended and move the player outside the restaurant so they're not softlocked
+	forgorchanges->worldcon = GAMEEND;
+	forgorchanges->defeatRooms.push({self, elevatortop});
+	forgorending.convochanges = forgorchanges;
+	forgorending.linkedConversations.push(forgorending);
 
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
@@ -2184,7 +2268,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	child->addSpecialAttack(juppercut);
 	child->setDialogue({{child, "Are we going back home, mister?"}, {self, "Yeah just a second."}});
 	child->addRecruitmentDialogue({{self, "Alright I'm taking you back to your mom now."}, {child, "YAY!"}, {child, "Thank you mister!"}});
-	child->addDismissalDialogue({{self, "Actually can you just stay here a little longer?"}, {child, "Okay."}, {NULL, "JILLY hides behind some boxes."}});
+	child->addDismissalDialogue({{self, "Actually can you just stay here a little longer?"}, {child, "Okay."}, {NULL, "JILLY went to a hiding spot in the storage room."}});
+	Conversation jdr = {{child, "What?"}, {child, "But you said you'd take me back to my mom!"}, {child, "Come on! It's not too far away!"}};
+	shared_ptr<Conversation> jdr2 = make_shared<Conversation>(Conversation({{self, "Actually can you just stay here a little longer?"}, {child, "Okay."}, {NULL, "JILLY went to a hiding spot in the storage room."}, {NULL, "..."}, {NULL, "JILLY came back!"}, {child, "O_O"}}));
+	shared_ptr<Conversation> jdr3 = make_shared<Conversation>(Conversation({{child, "No way!"}, {child, "I don't wanna go with that monster!"}}));
+	shared_ptr<Conversation> jdr4 = make_shared<Conversation>(Conversation({{child, "No way!"}, {child, "I am not going back with that monster!"}, {child, "Come on! My mom's not too far away!"}}));
+	jdr.skipcondition = TEMPLEQUEST;
+	jdr2->skipcondition = BURGERCHASE;
+	jdr3->skipcondition = ESCAPEDBASE;
+	jdr.alt = jdr2;
+	jdr2->alt = jdr3;
+	jdr3->alt = jdr4;
+	child->addDismissalRejection(jdr);
 	child->addRecruitedDialogue("I can't wait to get back home!");
 	child->setBlockMessage({{child, "Uhhh I don't want to go there."}, {child, "I thought we were going back to my mom? :("}});
 	child->addBlock(BURGERSBURG, SOUTH); //can't leave the city with Jilly
@@ -2297,7 +2392,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	jillyreunion->conditionalDecruits.push({theratman, TEMPLEQUEST});
 
 	WorldChange jillylockin; //lock in because you now HAVE to save Jilly to progress cause you've decided to do that
-	jillylockin.clingyLinks.push(child);
+	jillylockin.clingyLinks.push({child, NEVER});
 	jillylockin.linkedEnterChanges.push({burgchurch, jillyreunion});
 	jillylockin.linkedWelcomes.push({burgchurch, {{child, "MOM!"}, {matilda, "JILLY!"},
 												  {NULL, "Jilly flies into Matilda's arms."},
@@ -2667,6 +2762,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	WorldChange& ebchanges = ((WorldChangeItem*)elevatorbutton)->getChanges();
 	ebchanges.exitPavings.push(make_tuple(elevatorentrance, elevator, IN_ELEVATOR, OUT));
 	ebchanges.roomChanges.push({elevatorentrance, "in the entrance of the BURGER RESTAURANT. It has glass walls curving up and BURGER furniture."});
+	
+	Item* outputantenna = new MaterialItem("OUTPUT ANTENNA OF HUMILITY", "A component of THE PLOT DEVICE; humbly carries out the will of God.", limbo);
+	Item* bigredbutton = new MaterialItem("BIG RED BUTTON OF HOPE", "A component of THE PLOT DEVICE which the user must press with hope that God's will be done.", limbo);
+	Item* plotometer = new MaterialItem("PLOTOMETER OF PATIENCE", "A component of THE PLOT DEVICE; patiently waits for the right time to act.", limbo);
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -4266,7 +4365,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* backupcaller2 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
 	burgstation->setBackup(backupcaller2);
 	Item* backupcaller3 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
-	basestation->setBackup(backupcaller3);
+	burgplats->setBackup(backupcaller3); //this one is for the escape sequence if they never got a whistle
+	Item* backupcaller4 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", limbo, florian);
+	basestation->setBackup(backupcaller4, false); //this one is endless because it's the only way to leave the basement after beating the game
+	Item* backupcaller5 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.\nYou have this because I have to account for players such as yourself,\nwho've ignored all the train stations, and even the whistle before the prison.", limbo, florian);
 
 	//set up teammate viola MARK: Viola
 	NPC* viola = new NPC(*tkviola);
@@ -4796,7 +4898,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{self, "No they're actually evil and stuff."},
 							{self, "They're like trying to destroy all the forests and stuff."},
 							{self, "And also they kidnapped a child."},
-							{self, "And also "}, //MARK: put the reason
+							{self, "And also they like secretly took over the world."},
 							{ratman, "I stand corrected."},
 							{ratman, "This sounds like serious business."},
 							{ratman, "I will help you destroy BURGERs"},
@@ -5076,7 +5178,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 }
 
 //prints all the properties of the given room MARK: print room data
-void PrintRoomData(Room* currentRoom) {
+void PrintRoomData(Room* currentRoom, NPC* player = NULL) {
 	currentRoom->printWelcome(); //some rooms have messages they print on arrival
 	cout << "\nYou are " << currentRoom->getDescription();
 	currentRoom->printExits();
@@ -5084,10 +5186,31 @@ void PrintRoomData(Room* currentRoom) {
 	currentRoom->printItems();
 	currentRoom->printStock(); //prints buyable items in this room
 	currentRoom->printBlocks(); //prints which exits are blocked
+	if (player && player->getPursuer()) { //print pursuer logic if needed
+		NPC* pursuer = player->getPursuer();
+		pair<int, int> pcoords = pursuer->getPurPos(currentRoom);
+		if (pcoords.first < 0 || pcoords.second < 0) return; //don't give hint if not in the main grid (so no spoilers)
+		pair<int, int> bcoords = pursuer->getPurPos(pursuer->getRoom());
+		bool aligned = pcoords.first == bcoords.first || pcoords.second == bcoords.second;
+		if (!aligned) { //vague reminder
+			cout << "\nThe " << pursuer->getName() << " is near.";
+			return;
+		} //clear when direct line of sight
+		int dist;
+		const char* direction;
+		if (pcoords.first != bcoords.first) {
+			dist = bcoords.first - pcoords.first;
+			direction = (dist < 0 ? "WEST" : "EAST");
+		} else if (pcoords.second != bcoords.second) {
+			dist = bcoords.second - pcoords.second;
+			direction = (dist < 0 ? "NORTH" : "SOUTH");
+		} else return; //when the pursuer is HERE that gets printing in printNPCs so printing it here would be redundant
+		cout << "\nThe " << pursuer->getName() << " is " << abs(dist) << " room" << (abs(dist) > 1 ? "s" : "") << " to the " << direction << ".";
+	}
 }
 
 //move the player and co. to a new room based on direction, or also just teleopring to forceDest if given MARK: travel
-void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vector<Item*>* inventory, bool forceTravel = false, Room* forceDest = NULL) {
+void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vector<Item*>* inventory, bool forceTravel = false, Room* forceDest = NULL) {
 	Room* roomCanidate = NULL; //the room we're trying to go to
 	if (forceDest != NULL) { //we just teleport to this room if given
 		roomCanidate = forceDest;
@@ -5159,7 +5282,7 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 			else if (bcoords.first == 2) pursuer->setRoom(pursuer->getRoom()->getExit("WEST"));
 			else if (bcoords.second != 0) pursuer->setRoom(pursuer->getRoom()->getExit("NORTH")); //go north if not at elevator entrance
 		} else if (pursuer->getRoom() != roomCanidate) { //move towards the player they aren't moving to the pursuer's room (for some reason), just let them get there if so
-			pair<int int> dcoords = pursuer->getPurPos(pdat.first); //get last know player pos as coordinates
+			pair<int, int> dcoords = pursuer->getPurPos(pdat.first); //get last know player pos as coordinates
 			if (bcoords.first < dcoords.first) pursuer->setRoom(pursuer->getRoom()->getExit("EAST")); //these are all mutually exclusive due to how this is set up
 			if (bcoords.first > dcoords.first) pursuer->setRoom(pursuer->getRoom()->getExit("WEST"));
 			if (bcoords.second < dcoords.second) pursuer->setRoom(pursuer->getRoom()->getExit("SOUTH"));
@@ -5176,7 +5299,7 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 	if (roomCanidate->getGym()) {
 		roomCanidate->scaleNPCs((*party)[0]->getLevel()-1);
 	}
-	//we move our party to the room
+	//we move our party to the room, including the player
 	for (NPC* npc : (*party)) {
 		npc->setRoom(roomCanidate);
 	}
@@ -5195,16 +5318,12 @@ void travel(Room*& currentRoom, const char* direction, vector<NPC*>* party, vect
 			}
 		}
 	}
-	Item* roomgift = roomCanidate->popBackup(); //check if the item hasa gift
+	Item* roomgift = roomCanidate->popBackup(); //check if the item has a gift
 	if (roomgift && !getItemInVector(*inventory, roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
 		roomCanidate->setItem(roomgift); //put the item in the room
 	} //do any changes the room might have to make
 	roomCanidate->doEnterChanges();
-	//we move ourself to the next room
-	currentRoom = roomCanidate;
-	PrintRoomData(currentRoom); //prints the data of the current room
-
-	//print pursuer data
+	PrintRoomData(currentRoom, (*party)[0]); //prints the data of the current room
 }
 
 //initiates battle with an npc MARK: fight
@@ -5221,6 +5340,11 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		cout << "\nThere is nobody named \"" << name << "\" here.";
 		return;
 	}
+	if (npc->getPursuing()) { //if trying to fight the pursuer they just catch the player
+		pursuer->printCatchDialogue();
+		pursuer->doCatchChanges();
+		return;
+	}
 	if (npc->getPlayerness()) { //you can't fight yourself
 		cout << "\n" << name << " - \"Uhhhh you want me to fight myself?\"";
 		return;
@@ -5233,8 +5357,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		npc->printDialogue(true);
 		cout << "\n";
 	}
-	if (npc->getNoFight()) { //fakeout fight
-		npc->setLeader(false); //set leader to false so you can't try again
+	if (npc->popNoFight()) { //fakeout fight, also removes leader status if marked as doing that
 		return;
 	}
 	NPC* roamio = NULL; //add roaming npc to the party if one is here
@@ -5435,7 +5558,7 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 }
 
 //uses an item, with functionality based on type MARK: use item
-void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, const char* itemname, int& mony) {
+void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, const char* itemname, int& mony) {
 	//in addition to items, you can also USE the tunnel lobster for fast travel
 	//it's probably bad practice to have this here, but it's functional practice! :)
 	NPC* lobster = NULL; //we loop through the rooms npcs to find the lobster. We don't use the getNPCInVector function because then you can't use it if the lobster name matches an npc name
@@ -5536,15 +5659,10 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 	} else if (!strcmp(item->getType(), "BURGER")) {
 		BURGERItem* boiga = (BURGERItem*)item; //get BURGER as BURGERItem
 		printConversation(&boiga->getConfirmText(), false);
-		if (!AOrB(NULL, "YES", "NO")) {
-			return;
-		}
+		if (!AOrB(NULL, "YES", "NO")) return;
 		printConversation(&boiga->getUseText(), true);
 		printConversation(&boiga->getHintText(), true);
-		if (!AOrB("Would you like to keep playing? (YES or NO)", "YES", "NO")) {
-			cout << "\nAlright then cya!\n";
-			exit(0);
-		}
+		WorldState[GAMEEND] = true; //mark that the game ended because this item ends the game
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass
@@ -5570,6 +5688,7 @@ void useItem(Room*& currentRoom, vector<Item*>* inventory, vector<NPC*>* party, 
 			return;
 		} //converts to the corresponding subclass
 		CallerItem* caller = (CallerItem*)item;
+		printConversation(&caller->getUseText(), true); //prints what the caller did
 		npc = caller->getCalledNPC(); //makes the npc easier to reference
 		if (!npc->getLeader()) { //if the lobster is tamed
 			if (npc->getRoom() == currentRoom) { //if the lobster is already here he just dances
@@ -5857,6 +5976,11 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		//error message if no such npc is in the current room
 		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
+	} 
+	if (npc->getPursuing()) { //if trying to ask the pursuer they just catch the player
+		pursuer->printCatchDialogue();
+		pursuer->doCatchChanges();
+		return;
 	} //tells the npc to print their dialogue normally
 	npc->printDialogue(false);
 	
@@ -5974,7 +6098,6 @@ int main() {
 		
 	//sets up the game world and places the player at the current room
 	NPC* self = SetupWorld(inventory);
-	Room* currentRoom = self->getHome(); //sets the current room to the player's starting position
 	
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
@@ -6057,7 +6180,7 @@ int main() {
 
 	CinIgnoreAll(); //clears extra characters or invalid input
 
-	PrintRoomData(currentRoom); //prints the data of the starting room
+	PrintRoomData(self->getRoom()); //prints the data of the starting room
 
 	bool continuing = true; //we continue until continuing is set to false (when the player quits)
 	while (continuing) { //the main loop!
@@ -6071,6 +6194,8 @@ int main() {
 		AllCaps(command); //capitalizes the command for easier parsing
 
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
+
+		Room* currentRoom = self->getRoom(); //sets the current room to the player's position
 
 		if (currentRoom->getGym()) { //if we're in a gym, update all the traning teammates' levels before doing the action
 			currentRoom->scaleNPCs(self->getLevel()-1);
@@ -6097,7 +6222,7 @@ int main() {
 		} else if (!strcmp(commandWord, "ATTACKS")) { //for printing the player's attacks
 			printAttacks(self);
 		} else if (!strcmp(commandWord, "ROOM")) { //for reprinting the contents of the current room (it was annoying having to scroll back up after doing a bunch of stuff in order to check the room data)
-			PrintRoomData(currentRoom);
+			PrintRoomData(currentRoom, self);
 		} else if (!strcmp(commandWord, "ANALYZE")) { //for getting the data of an item or npc
 			analyze(currentRoom, &commandExtension[0], party, inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) { //for initiating battle with npcs
@@ -6115,10 +6240,12 @@ int main() {
 		}
 
 		CinIgnoreAll(); //clears extra or faulty input
+
+		if (WorldState[GAMEEND]) continuing = false; //if we got an ending, we quit the game
 	}
 	
-	//gives a friendly farewell to the player
-	cout << "\nCya!\n";
+	//gives a friendly farewell to the player unless the player got an ending, so that we can give custom farewells for those
+	if (!WorldState[GAMEEND]) cout << "\nCya!\n";
 	
 	//deletes all the rooms
 	for (Room* room : roomsH) {

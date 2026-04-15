@@ -98,7 +98,7 @@ public: //you need to set stats on creation
 	bool getBanker();
 	bool getThief();
 	bool getShark();
-	bool getNoFight();
+	bool popNoFight();
 	bool getFifth();
 	bool getBlocked(Room* room, const char* direction); //get if the npc doesn't want to go in this direction
 	void depositMonies(int& monies);
@@ -111,6 +111,7 @@ public: //you need to set stats on creation
 	pair<Room*, const char*>& getPurPlayerData(); //get a reference to the player data
 	pair<int, int> getPurPos(Room* room); //get coordinates relative to the pursuit grid
 	Room* getPurRoom(pair<size_t, size_t>& pos); //coordinates to room
+	Room* getPrison();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -192,7 +193,7 @@ public: //you need to set stats on creation
 	void setBanker();
 	void setThief(); //set if you lose all monies after beating this npc
 	void setShark(); //set if this is a shark
-	void setNoFight();
+	void setNoFight(bool clarify = true);
 	void setFifth(bool isfifth = true);
 	void addBlock(Room* room, const char* direction);
 	void setBlockMessage(Conversation why);
@@ -294,7 +295,7 @@ protected:
 	queue<Conversation> rejectionDialogue; //dialogue that the npc says when rejecting recruitment offer
 	queue<Conversation> recruitmentDialogue; //dialogue that the npc says when recruited
 	queue<Conversation> dismissalDialogue; //dialogue that the npc says when dismissed
-	queue<Conversation> dismissalRejection;
+	queue<Conversation> dismissalRejection; //dialogue that the npc says when saying no to being dismissed
 	queue<Conversation> gymDialogue; //dialogue the character says when at the gym
 	queue<Conversation> openingDialogue; //dialogue when starting battle
 
@@ -333,6 +334,7 @@ protected:
 	bool banker = false; //if its a banker we can withdraw or deposit monies
 	bool thief = false; //if its a thief you lose all your monies after beating them
 	bool nofight = false; //if it looks like you can fight the npc but you can't
+	bool resetnofight = true; //if you can only try to fight nofight npcs once, then after that it just says you can't fight them
 	int depositedmonies = 0;
 	time_t deposittime; //track time monies were deposited so we can add interest
 

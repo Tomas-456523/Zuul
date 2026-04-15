@@ -248,6 +248,9 @@ namespace Helper {
 		if (shared_ptr<Conversation> relay = current->relay.second.lock()) { //relay the relaying conversation to the npc
 			current->relay.first->addConversation(*relay);
 		}
+		if (shared_ptr<WorldChange> convochanges = current->convochanges) { //do changes that the conversation makes
+			applyWorldChange(*convochanges);
+		}
 	}
 	//print the level up data tracked by this npc
 	void printLvlUpData(NPC* npc) {
@@ -279,6 +282,7 @@ namespace Helper {
 	}
 	//changes the world based on the instructions passed, also the item/npc's world changes will be drained as we pass by reference
 	void applyWorldChange(WorldChange& changes) {
+		if (WorldState[changes.ignorecon]) return; //don't do these changes if the game is progressed enough we should ignore this
 		while (!changes.recruitLinks.empty()) {
 			NPC* npc = changes.recruitLinks.front();
 			npc->setRecruitable(true);
@@ -334,8 +338,14 @@ namespace Helper {
 		}
 		while (!changes.defeatRooms.empty()) {
 			pair<NPC*, Room*>& data = changes.defeatRooms.front();
-			data.first->setRoom(data.second);
-			data.first->setHome(data.second);
+			if (data.first->getPlayerness()) { //if it's the player, move the whole party
+				for (NPC* npc : (*data.first->getParty())) {
+					npc->setRoom(roomCanidate);
+				}
+			} else { //if it's not the player, move them and also set their home room to that
+				data.first->setRoom(data.second);
+				data.first->setHome(data.second);
+			}
 			changes.defeatRooms.pop();
 		}
 		while (!changes.redirectRooms.empty()) {
@@ -423,9 +433,27 @@ namespace Helper {
 			npc->roam();
 			changes.roamLinks.pop();
 		}
+		while (!changes.pursueLinks.empty()) {
+			pair<NPC*, NPC*>& data = changes.pursueLinks.front();
+			if (NPC* pursued = data.first->getPursuing()) { //nullify the pursuer because they're no longer pursuing this one
+				pursued->setPursuer(NULL);
+			}
+			data.first->setPursuing(data.second); //first npc pursues second npc
+			if (data.second) data.second->setPursuer(data.first); //if there was a second npc, tell it it's being pursued by the first one
+			changes.pursueLinks.pop();
+		}
+		while (!changes.dismissableLinks.empty()) {
+			pair<NPC*, size_t>& data = changes.dismissableLinks.front();
+			if (!WorldState[data.second]) {
+				npc->setDismissable(true);
+			}
+			changes.dismissableLinks.pop();
+		}
 		while (!changes.clingyLinks.empty()) {
-			NPC* npc = changes.clingyLinks.front();
-			npc->setDismissable(false);
+			pair<NPC*, size_t>& data = changes.clingyLinks.front();
+			if (!WorldState[data.second]) {
+				data.->setDismissable(false);
+			}
 			changes.clingyLinks.pop();
 		}
 		while (!changes.linkedGifts.empty()) { //give gifts
@@ -437,6 +465,13 @@ namespace Helper {
 			NPC* data = changes.linkedDegifts.front();
 			data->setGift(NULL); //gifts don't know they're gifts so we don't have to edit their logic and stuff after setting the gift to NULL
 			changes.linkedDegifts.pop();
+		}
+		while (!changes.linkedBackups.empty()) { //place an item in the room if it's not in the inventory
+			tuple<Room*, Item* vector<Item*>*>>& data = changes.linkedBackups.front();
+			if (!getItemInVector(*get<2>(data), get<1>(data)->getName())) {
+				get<0>(data)->setItem(get<1>(data));
+			}
+			changes.linkedBackups.pop();
 		}
 		while (!changes.linkedEnterChanges.empty()) {
 			pair<Room*, shared_ptr<WorldChange>>& data = changes.linkedEnterChanges.front();

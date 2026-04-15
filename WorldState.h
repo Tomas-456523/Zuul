@@ -17,13 +17,18 @@ namespace Helper {
 		JILLYQUEST,
 		CLOAKED,
 		BEATCEO,
+		FREEBURGER,
 		SEENUNIHORN,
 		MADEKATANA,
 		SAVINGJILLY,
 		JILLYSAVED,
 		TEMPLEQUEST, //otherwise known as DESTROY BURGER QUEST
+		BURGERCHASE,
+		IMPRISONED,
+		ESCAPEDBASE,
 		BURGERMANDEF,
 		BURGERMENDEF,
+		GAMEEND, //when the player reaches an ending
 		NEVER //never set never to true
 	};
 

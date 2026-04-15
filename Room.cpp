@@ -74,8 +74,13 @@ const char* Room::getBlockReason(const char* direction) { //get why it's blocked
 	return NULL; //null because it's not actually blocked
 }
 Item* Room::popBackup() {
-	Item* _backup = backup;
-	backup = NULL; //make gift NULL because we only give one gift
+	Item* _backup;
+	if (onebackup) { //if there is only one backup
+		_backup = backup;
+		backup = NULL; //make gift NULL because we only give one gift
+	} else if (!getItemInVector(items, backup->getName())) { //if there is endless backups (and there isn't one just lying on the floor), give a copy of the backup
+		_backup = backup.Duplicate();
+	}
 	return _backup;
 }
 //do changes that are done when entering the room
@@ -252,8 +257,9 @@ void Room::removeStock(Item* item, bool printmessage) { //we uncatalogue the ite
 	if (printmessage) cout << "You bought the last " << item->getName() << "! It's sold out!"; //lets the player know it's sold out
 	stock.erase(remove(stock.begin(), stock.end(), item), stock.end()); //remove it from the list of stock
 }
-void Room::setBackup(Item* item) {
+void Room::setBackup(Item* item, bool onlyone) {
 	backup = item;
+	onebackup = onlyone;
 }
 //make the temple enterable if this is a temple entrance
 void Room::openTemple() {
@@ -261,7 +267,7 @@ void Room::openTemple() {
 	printConversation(&templeopenconvo, false);
 	templeentrance = false; //so we can't do all this again
 }
-void Room::setEnterChanges(const WorldChange& changes, size_t condition = Helper::NEVER) {
+void Room::setEnterChanges(const WorldChange& changes, size_t condition) {
 	enterchange = changes;
 	enterchangecondition = condition;
 	hasenterchanges = true;
