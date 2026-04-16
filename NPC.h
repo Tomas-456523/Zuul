@@ -19,6 +19,14 @@ using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
 class Item;
+class NPC; //forward declare itself so we can make this effect struct immediately after
+
+struct NPCEffect { //effect instances so we don't have a mess of copied effects
+	Effect* effect;
+	size_t duration; //how much is left
+	size_t stacks = 1;
+	vector<NPC*> affectors; //ppl who set the effect, for lifesteal, etc. stuff that needs it
+};
 
 class NPC {
 public: //you need to set stats on creation
@@ -111,7 +119,7 @@ public: //you need to set stats on creation
 	pair<Room*, const char*>& getPurPlayerData(); //get a reference to the player data
 	pair<int, int> getPurPos(Room* room); //get coordinates relative to the pursuit grid
 	Room* getPurRoom(pair<size_t, size_t>& pos); //coordinates to room
-	Room* getPrison();
+	NPC* getParent();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -209,6 +217,7 @@ public: //you need to set stats on creation
 	void setCatchText(const Conversation& text);
 	void setPursueSpecial(Room* special, const char* dir, const Conversation& text);
 	void doCatchChanges();
+	void setParent(NPC* npc);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER);
@@ -276,6 +285,8 @@ protected:
 	int id; //npc's index in npcsH
 
 	queue<vector<NPC*>> party; //the npc's party if it is a leader (and supports multiple waves)
+
+	NPC* parent = NULL; //npc that summoned this one in battle
 
 	Attack* standard_attack = NULL; //the npc's normal attack for generating sp
 	vector<Attack*> special_attacks; //the npc's special attacks that cost sp

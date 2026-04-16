@@ -79,7 +79,7 @@ Item* Room::popBackup() {
 		_backup = backup;
 		backup = NULL; //make gift NULL because we only give one gift
 	} else if (!getItemInVector(items, backup->getName())) { //if there is endless backups (and there isn't one just lying on the floor), give a copy of the backup
-		_backup = backup.Duplicate();
+		_backup = backup->Duplicate();
 	}
 	return _backup;
 }

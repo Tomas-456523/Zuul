@@ -35,7 +35,7 @@ public:
 	bool playerTurn(NPC* plr); //the player chooses what to do here
 	void npcTurn(NPC* npc); //the npc chooses an attack to do
 	
-	void addNPC(NPC* npc); //creates a new npc mid-battle
+	void addNPC(NPC* npc, NPC* parent = NULL); //creates a new npc mid-battle
 
 	int getXpReward(); //gets how much xp was earned as a result of a victory
 	int getMonyReward(); //gets how many monies were earned as a result of a victory
@@ -47,6 +47,8 @@ private:
 	vector<NPC*> everyone; //a list of everyone involved in the battle
 
 	vector<Item*>* inventory; //pointer to the player's inventory
+
+	vector<tuple<NPC*, NPC*, Effect*>> bonds; //effects given to npc 1 to npc 2 so when npc 1 is incapacitated, we know to remove the effect from npc 2
 
 	NPC* player; //the original player object
 

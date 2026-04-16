@@ -97,7 +97,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	}
 }
 //creates a new npc and adds it to the battle MARK: add npc
-void Battle::addNPC(NPC* npc) {
+void Battle::addNPC(NPC* npc, NPC* parent) {
 	vector<NPC*>* team = NULL; //gets which side the enemy is on
 	if (npc->getEnemy()) { //we must manually set enemy earlier or else EVERY new npc will go to the player team
 		team = &enemyTeam;
@@ -123,6 +123,7 @@ void Battle::addNPC(NPC* npc) {
 		newguy->addSuffix(suffix); //apply the suffix
 	}
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
+	newguy->setParent(parent);
 	team->push_back(newguy);
 	everyone.push_back(newguy);
 }
@@ -579,10 +580,10 @@ void Battle::npcTurn(NPC* npc) {
 
 
 
-
-
-
-
+	//this?
+	//  |
+	//  |
+	//  V
 
 	//MARK: if the target has no basic attack, just choose a special attack using pure rng, no weights
 

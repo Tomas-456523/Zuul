@@ -232,7 +232,7 @@ namespace Helper {
 			} else {
 				cout << convo[i].second;
 			}
-			if ((finalpause && !current->branch1.first && !next) || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards (AND we don't have branching paths)) we do a pause, so the last one lets the player type
+			if ((finalpause && !current->branch1.first && !current->next) || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards (AND we don't have branching paths)) we do a pause, so the last one lets the player type
 				CinPause();
 			}
 		}
@@ -282,7 +282,6 @@ namespace Helper {
 	}
 	//changes the world based on the instructions passed, also the item/npc's world changes will be drained as we pass by reference
 	void applyWorldChange(WorldChange& changes) {
-		if (WorldState[changes.ignorecon]) return; //don't do these changes if the game is progressed enough we should ignore this
 		while (!changes.recruitLinks.empty()) {
 			NPC* npc = changes.recruitLinks.front();
 			npc->setRecruitable(true);
@@ -296,7 +295,7 @@ namespace Helper {
 		while (!changes.dismissLinks.empty()) {
 			pair<vector<NPC*>*, NPC*>& data = changes.dismissLinks.front();
 			data.first->erase(remove(data.first->begin(), data.first->end(), data.second), data.first->end());
-			npc->Dismiss();
+			data.second->Dismiss();
 			changes.dismissLinks.pop();
 		}
 		while (!changes.conditionalRecruits.empty()) { //make unrecruitable all the npcs unless the condition paired to them is true
@@ -340,7 +339,7 @@ namespace Helper {
 			pair<NPC*, Room*>& data = changes.defeatRooms.front();
 			if (data.first->getPlayerness()) { //if it's the player, move the whole party
 				for (NPC* npc : (*data.first->getParty())) {
-					npc->setRoom(roomCanidate);
+					npc->setRoom(data.second);
 				}
 			} else { //if it's not the player, move them and also set their home room to that
 				data.first->setRoom(data.second);
@@ -368,7 +367,7 @@ namespace Helper {
 			pair<NPC*, Attack*>& data = changes.linkedAttacks.front();
 			data.first->addSpecialAttack(data.second);
 			if (data.first->getPlayerness()) { //print what the new attack does if it's the player
-				cout << "\n" << npc->getName() << " learned " << att->name << "!\n" << att->name << " - " << att->trueDesc;
+				cout << "\n" << data.first->getName() << " learned " << data.second->name << "!\n" << data.second->name << " - " << data.second->trueDesc;
 				CinPause();
 			} else { //we just added a move so we have to recalculate the weights to account for it
 				data.first->calculateWeights();
@@ -445,14 +444,14 @@ namespace Helper {
 		while (!changes.dismissableLinks.empty()) {
 			pair<NPC*, size_t>& data = changes.dismissableLinks.front();
 			if (!WorldState[data.second]) {
-				npc->setDismissable(true);
+				data.first->setDismissable(true);
 			}
 			changes.dismissableLinks.pop();
 		}
 		while (!changes.clingyLinks.empty()) {
 			pair<NPC*, size_t>& data = changes.clingyLinks.front();
 			if (!WorldState[data.second]) {
-				data.->setDismissable(false);
+				data.first->setDismissable(false);
 			}
 			changes.clingyLinks.pop();
 		}
@@ -467,7 +466,7 @@ namespace Helper {
 			changes.linkedDegifts.pop();
 		}
 		while (!changes.linkedBackups.empty()) { //place an item in the room if it's not in the inventory
-			tuple<Room*, Item* vector<Item*>*>>& data = changes.linkedBackups.front();
+			tuple<Room*, Item*, vector<Item*>*>& data = changes.linkedBackups.front();
 			if (!getItemInVector(*get<2>(data), get<1>(data)->getName())) {
 				get<0>(data)->setItem(get<1>(data));
 			}
@@ -482,6 +481,10 @@ namespace Helper {
 			pair<Room*, Item*>& data = changes.removeStock.front();
 			data.first->removeStock(data.second, false); //remove the item and don't print we did that
 			changes.removeStock.pop();
+		}
+		while (!changes.linkedStations.empty()) { //make the linked stations be stations
+			changes.linkedStations.front()->setStation();
+			changes.linkedStations.pop();
 		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;

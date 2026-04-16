@@ -25,7 +25,7 @@ struct Conversation {
 
 	std::pair<NPC*, std::weak_ptr<Conversation>> relay{NULL, {}}; //give this conversation to the npc here after hearing this conversation, weak_ptr cause this might eventually point back to itself
 
-	std::shared_ptr<Conversation>> next; //this conversation gets printed immediately after this one, we use this so we can have seperate chunks having their own skip conditions
+	std::shared_ptr<Conversation> next; //this conversation gets printed immediately after this one, we use this so we can have seperate chunks having their own skip conditions
 
 	std::shared_ptr<WorldChange> convochanges; //world change that happens when this conversation is heard
 

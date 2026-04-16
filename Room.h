@@ -6,8 +6,8 @@
 #include <vector>
 #include <map>
 #include <cstring>
-#include "NPC.h"
-#include "Item.h"
+#include "Conversation.h"
+#include "WorldChange.h"
 using namespace std;
 
 class NPC;

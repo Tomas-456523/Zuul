@@ -7,6 +7,7 @@
 #include <iostream>
 #include <utility>
 #include "NPC.h"
+#include "Item.h"
 #include "Helper.h"
 #include "Conversation.h"
 using namespace std;
@@ -178,7 +179,10 @@ pair<int, int> NPC::getPurPos(Room* room) {
 			}
 		}
 	}
-	return {-1, -1}
+	return {-1, -1};
+}
+NPC* NPC::getParent() {
+	return parent;
 }
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
@@ -353,7 +357,7 @@ bool NPC::getBlocked(Room* room, const char* direction) {
 	return false;
 }
 bool NPC::popNoFight() {
-	if (resetnofight) npc->setLeader(false); //set leader to false so you can't try again
+	if (resetnofight) setLeader(false); //set leader to false so you can't try again
 	return nofight;
 }
 void NPC::depositMonies(int& monies) { //mony depositing system for the banker
@@ -621,10 +625,10 @@ void NPC::setLobster(Room* tunnels, bool lobster) { //sets that it's the lobster
 	home = tunnels; //lobster lives in the tunnels
 }
 void NPC::setLobsterChanges(const WorldChange& changes) { //set lobster changes for that one scene
-	lobstersavechanges = changes;	
+	lobsterchanges = changes;	
 }
 void NPC::doLobsterChanges() { //does the lobster changes
-	applyWorldChange(lobstersavechanges);
+	applyWorldChange(lobsterchanges);
 }
 void NPC::setBoss(bool boss) {
 	isBoss = boss;
@@ -932,6 +936,9 @@ void NPC::setPursueSpecial(Room* special, const char* dir, const Conversation& t
 void NPC::doCatchChanges() {
 	applyWorldChange(catchchanges);
 }
+void NPC::setParent(NPC* npc) {
+	parent = npc;
+}
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
 }
@@ -1082,6 +1089,14 @@ void NPC::removeEffect(Effect& effect, bool announce) { //removes an effect from
 }
 //calculate attack weights
 void NPC::calculateWeights() {
+	if (!standard_attack) { //if we don't have a basic attack just weight every special attack equally (if we don't pull a special attack when choosing one just reroll)
+		for (Attack* attack : special_attacks) {
+			if (level >= attack->minLevel) {
+				attackWeight[attack] = 100/special_attacks.size();
+			}
+		}
+		return;
+	} //and then the normal process from here
 	int maxWeight = 90; //maximum weight that all attacks' cumulative weights add up to (out of 100)
 	int totalSpCost = 0; //total cost of all attacks
 	for (Attack* attack : special_attacks) { //add the cost of every special attack to the total

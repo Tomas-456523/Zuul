@@ -17,7 +17,7 @@ struct Attack;
 
 struct WorldChange {
     std::queue<NPC*> recruitLinks; //these npcs are set to recruitable
-	std::queue<std::pair<std::vector<NPC*>*, NPC*> dismissLinks; //these npcs are dismissed from this party if recruited
+	std::queue<std::pair<std::vector<NPC*>*, NPC*>> dismissLinks; //these npcs are dismissed from this party if recruited
 	std::queue<std::pair<NPC*, size_t>> conditionalRecruits; //these npcs are set to recruitable if the given world condition is true
 	std::queue<std::pair<NPC*, Conversation>> linkedConversations; //we add these conversations to the npc
 	std::queue<std::pair<NPC*, Conversation>> linkedDialogue; //we set the linked npcs' dialogue to this
@@ -46,11 +46,11 @@ struct WorldChange {
 	std::queue<NPC*> deleaderLinks; //these npc are not leaders anymore without being set to recruitable
 
 	std::queue<std::pair<Item*, Room*>> linkedItems; //items that change rooms
-	std::queue<std::pair<std::vector<Item*>*, Item*> inventoryLinks; //items that are put into the inventory on this change
+	std::queue<std::pair<std::vector<Item*>*, Item*>> inventoryLinks; //items that are put into the inventory on this change
 
 	std::queue<std::pair<NPC*, Item*>> linkedGifts; //give gift to npc for them to give to player
 	std::queue<NPC*> linkedDegifts; //remove gift from npc so they don't give to player
-	std::queue<std::tuple<Room*, Item* vector<Item*>*>> linkedBackups; //place these items in these rooms unless they're in this inventory
+	std::queue<std::tuple<Room*, Item*, std::vector<Item*>*>> linkedBackups; //place these items in these rooms unless they're in this inventory
 
 	std::queue<NPC*> roamLinks; //these npcs are set to roaming
 	std::queue<std::pair<NPC*, NPC*>> pursueLinks; //first npc pursues second npc
@@ -61,9 +61,9 @@ struct WorldChange {
 	std::queue<std::pair<Room*, std::shared_ptr<WorldChange>>> linkedEnterChanges; //put these enter changes on these rooms
 
 	std::queue<std::pair<Room*, Item*>> removeStock; //remove this stock from these rooms
+	std::queue<Room*> linkedStations; //these rooms are set to stations
 
 	size_t worldcon = Helper::NEVER; //world condition that this affects, unless it's NEVER then it doesn't do anything
-	size_t ignorecon = Helper::NEVER; //actually don't do these changes if this condition is true
 };
 
 #endif

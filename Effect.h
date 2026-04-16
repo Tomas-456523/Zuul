@@ -54,6 +54,8 @@ struct Effect {
 
 	Effect* attackeffect = NULL; //what attack effect to give to the target
 
+	bool bond = false; //if this is something we should remove from the affected npc when the affector is incapacitated
+
 	Effect() {} //default constructor to avoid random errors
 
 	//constructs the effect
