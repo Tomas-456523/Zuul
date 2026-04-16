@@ -46,6 +46,8 @@ private:
 	vector<NPC*> enemyTeam; //all the opponents
 	vector<NPC*> everyone; //a list of everyone involved in the battle
 
+	vector<NPCEffect*> alleffects; //a list of all the effects affecting their npcs
+
 	vector<Item*>* inventory; //pointer to the player's inventory
 
 	vector<tuple<NPC*, NPC*, Effect*>> bonds; //effects given to npc 1 to npc 2 so when npc 1 is incapacitated, we know to remove the effect from npc 2

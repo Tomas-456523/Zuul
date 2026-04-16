@@ -101,23 +101,28 @@ namespace Helper {
 		return NULL; //no valid item was found so return null
 	}
 	//prints the data of the given npc
-	void printNPCData(NPC* npc) {
+	void printNPCData(NPC* npc, bool battle) {
 		cout << "\n" << npc->getTitle(); //prints the title of the npc if they have one
 		if (strlen(npc->getTitle()) > 0) {
-			cout << " "; //seperae the title and the name with a space if there is a title
+			cout << " "; //seperate the title and the name with a space if there is a title
 		} //prints the name and description of the npc plus their level
 		cout << npc->getName() << " - " << npc->getDescription() << "\n  LEVEL " << npc->getLevel();
 		if (npc->getRecruited()) { //prints the xp to level up for recruited npcs. Non-recruitable npcs don't level up anyway
 			cout << " (" << npc->xpForNextLevel() << " xp to LEVEL UP)";
 		} //prints any effects the npc may have (eg. "POISON")
 		npc->printEffects();
-		cout << "\n  HEALTH - " << npc->getHealthMax(); //prints all the stats of the npc
-		cout << "\t  DEFENSE - " << npc->getDefense();
-		cout << "\n  ATTACK - " << npc->getAttack();
-		cout << "\t  TOUGHNESS - " << npc->getToughness();
-		cout << "\n  PIERCE - " << npc->getPierce();
-		cout << "\t  SPEED - " << npc->getSpeed();
-		cout << "\n  MAX SP - " << npc->getSPMax();
+		//prints all the stats of the npc
+		cout << "\n  HEALTH - ";
+		if (battle) cout << npc->getHealth() << "/";
+		cout << npc->getHealthMax();
+		cout << "\t  DEFENSE - " << npc->getDefense() * npc->getDefMultiplier();
+		cout << "\n  ATTACK - " << npc->getAttack() * npc->getAttMultiplier();
+		cout << "\t  TOUGHNESS - " << npc->getToughness() * npc->getToughMultiplier();
+		cout << "\n  PIERCE - " << npc->getPierce() * npc->getPierceMultiplier();
+		cout << "\t  SPEED - " << npc->getSpeed() * npc->getSpeedMultiplier();
+		cout << "\n  SP - ";
+		if (battle) cout << npc->getSP() << "/";
+		cout << npc->getSPMax();
 	}
 	//prints the data of the given item, usually just the name and description
 	void printItemData(Item* item) {

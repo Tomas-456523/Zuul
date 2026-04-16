@@ -1298,7 +1298,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(40, 0, 16, 0, 8, 13, 9));
 	Effect* swatshield = new Effect("SWAT SHIELD", 2147483647);
 	swatshield->guardset = 1;
-	guardbot->setEffect(swatshield, false);
+	guardbot->setEffect(swatshield);
 	Attack* baton = new Attack("BATON", "thwacked", true, -5, 15, 0, 1, 1, 1);
 	baton->afterdesc = " with its baton";
 	Attack* pepperspray = new Attack("PEPPER SPRAY", "sprayed pepper spray at", false, 7, 10, 0, 1, 1, 1);
@@ -2206,7 +2206,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {self, "How silly behavior."}}
 	//save system stuff
 	//commentary about the world
-	//commentary about character designs nobody will ever see cause it's text based (link to see picture?)
+	//{{developer, "It's weird how I have a very specific vision for how the world looks,"},
+	//{developer, "like I have character designs and everything,"},
+	//{developer, "but nobody will ever see them cause it's a text-based game :|"}}
 	//scope creep
 	//future projects
 	//saying dancing
@@ -3346,7 +3348,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	jimshady->setBasicAttack(shrimplebeam);
 	Effect* engarde = new Effect("EN GARDE!", 2147483647);
 	engarde->guardset = 1;
-	jimshady->setEffect(engarde, false);
+	jimshady->setEffect(engarde);
 
 	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 15, 9));
 	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied all over", true, 0, 5, 0, 3, 4, 1);
@@ -3413,7 +3415,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", limbo, 0, Stats(5, 0, 30, 0, 30, 15, 9));
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
 	shieldup->guardset = 5;
-	skeleviking->setEffect(shieldup, false);
+	skeleviking->setEffect(shieldup);
 	Attack* vslash = new Attack("VIKING SLASH", "hit", true, -5, 5, 0, 1, 1, 1);
 	vslash->afterdesc = " with his sword";
 	skeleviking->setBasicAttack(vslash);
@@ -4069,7 +4071,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	megagun->selfeffect = assaultmode;
 	megagun->selfcancel = defensemode;
 	megagun->affectselfbeforeattack = true;
-	ceo->setEffect(defensemode, false);
+	ceo->setEffect(defensemode);
 	ceo->setBasicAttack(lockon);
 	ceo->addSpecialAttack(minigun);
 	ceo->addSpecialAttack(flamethrower);
@@ -4136,6 +4138,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	Attack* ragebait;
 	//self - {{firewithfire, ""}}
+	//self - {{firewithfire, ""}} (viola recruited)
 	//floria - {{firewithfire, ""}}
 	//egadwick - {{firewithfire, ""}}
 	//absolom - {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {firewithfire, "At least he's not all dead like-"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! >:("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}}
@@ -4147,7 +4150,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//plum - {{firewithfire, ""}}
 	//graham - {{firewithfire, ""}}
 	//richie - {{firewithfire, ""}}
-	//ratman - {{firewithfire, ""}}
+	//ratman - {{firewithfire, ""}, {ratman, "I will not tolerate this slander.}, {ratman, "Because I'm Ratman}}
 	Effect* wrath;
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)

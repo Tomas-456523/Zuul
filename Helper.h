@@ -25,7 +25,7 @@ namespace Helper {
 	NPC* getNPCInVector(std::vector<NPC*>& the_vector, const char* npcname); //returns the npc in the given vector that has the given name
 	Item* getItemInVector(std::vector<Item*>& the_vector, const char* itemname); //returns the item in the given vector that has the given name
 	Item* getItemTypeInVector(std::vector<Item*>& the_vector, const char* itemtype); //returns the item in the given vector that has the given type
-	void printNPCData(NPC* npc); //prints the data of the npc
+	void printNPCData(NPC* npc, bool battle = false); //prints the data of the npc
 	void printItemData(Item* item); //prints the data of the item
 	void printAttacks(NPC* npc); //prints the attacks that the given npc has
 	void deleteItem(Room* currentRoom, std::vector<Item*>* inventory, Item* item); //deletes the item and removes it from the inventory or current room based on where it was

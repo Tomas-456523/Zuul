@@ -8,6 +8,7 @@
 #include <queue>
 #include <utility>
 #include <map>
+#include <set>
 #include "Room.h"
 #include "Effect.h"
 #include "Attack.h"
@@ -23,9 +24,11 @@ class NPC; //forward declare itself so we can make this effect struct immediatel
 
 struct NPCEffect { //effect instances so we don't have a mess of copied effects
 	Effect* effect;
+	NPC* affected;
 	size_t duration; //how much is left
 	size_t stacks = 1;
-	vector<NPC*> affectors; //ppl who set the effect, for lifesteal, etc. stuff that needs it
+	set<NPC*> affectors; //ppl who set the effect, for lifesteal, etc. stuff that needs it
+	NPCEffect(Effect* _effect, NPC* npc, NPC* parent) : effect(_effect), affected(npc), duration(effect->duration), affectors({parent}) {}
 };
 
 class NPC {
@@ -84,12 +87,13 @@ public: //you need to set stats on creation
 	float getDefMultiplier();
 	float getToughMultiplier();
 	float getPierceMultiplier();
+	float getSpeedMultiplier();
 	float getSPUseMultiplier();
 	float getDamageMultiplier();
 	time_t getGymStart();
 	int getGuard();
 	bool getAway();
-	Effect* getEffect(const char* effect); //find the effect with that name in the npc
+	NPCEffect* getEffect(const char* effect); //check the npc's data relating to this effect
 	vector<NPC*> getGuardians();
 	NPC* getGuarding();
 	NPC* getParrying();
@@ -178,8 +182,8 @@ public: //you need to set stats on creation
 	void addSuffix(const char* suffix); //add suffix to end of npc name
 	void setGuard(int _guard); //set guard to block attacks
 	void setGift(Item* item, bool fightfirst = false); //item to give when talking
-	void setEffect(Effect* effect, bool battle = true); //add an effect to the npc
-	void removeEffect(Effect& effect, bool announce = true);
+	void setEffect(Effect* effect, NPC* affector = NULL); //add an effect to the npc
+	void removeEffect(Effect* effect, bool announce = true);
 	void setBoss(bool boss);
 	void setExtraXP(int xp);
 	void setExtraMonies(int monies);
@@ -188,8 +192,6 @@ public: //you need to set stats on creation
 	void removeGuardian(NPC* npc);
 	void setGuarding(NPC* npc);
 	void setParrying(NPC* _parrying);
-	void setInvincible(bool _invincible);
-	void setEvasive(bool _evasive);
 	void addExtraLives(int howmany);
 	void setAttackEffect(Effect* effect);
 	void setGymStart(time_t start);
@@ -298,7 +300,9 @@ protected:
 
 	Effect* targeteffect = NULL; //prioritize hitting targets with this effect
 
-	vector<Effect> effects; //the effects affecting this npc
+	vector<Effect*> effects; //the effects affecting this npc
+	map<Effect*, NPCEffect> npceffects; //map of effect to the data this npc has on the effect relating to how it's being affected by the effect
+
 	map<Attack*, int> attackWeight; //the weight of the npc's attacks
 
 	queue<Conversation> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
@@ -363,11 +367,12 @@ protected:
 	float defenseMultiplier = 1;
 	float pierceMultiplier = 1;
 	float toughMultiplier = 1;
+	float speedMultiplier = 1;
 	float spUseMultiplier = 1; //multiplies sp cost
 	float damageMultiplier = 1; //multiplies damage taken
 
-	bool invincible = false;
-	bool evasive = false;
+	int invincibility = 0;
+	int evasion = 0;
 	NPC* parrying = NULL; //who we parrying
 
 	int extralives = 0; //how many extra lives this npc has

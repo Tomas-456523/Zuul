@@ -436,7 +436,7 @@ void Battle::printEnemies() {
 void Battle::analyze(const char* name) {
 	NPC* npc = getNPCInVector(everyone, name); //finds the npc in the list of everyone
 	if (npc != NULL) { //prints the data!
-		printNPCData(npc);
+		printNPCData(npc, true);
 		return;
 	} //finds the item in the inventory, no ground items here!
 	Item* item = getItemInVector(*inventory, name);

@@ -38,12 +38,9 @@ struct Effect {
 
 	int guardset = 0; //if this effect sets guard on the target
 
-	NPC* npc = NULL; //the affected npc, used by instances
-
 	float lifesteal = 0; //what % of damage taken is given to the attacker
 	float spsteal = 0; //what % of sp taken is given to the attacker
-	NPC* absorber = NULL; //who takes the lifestolen hp
-	bool turntick = false; //if we tick after the npc turn as opposed to at the start of each round
+	//bool turntick = false; //if we tick after the npc turn as opposed to at the start of each round
 
 	bool invincible = false; //if this effect makes the affected npc invincible
 	bool evasive = false; //invincible but due to amazing dodging skills
