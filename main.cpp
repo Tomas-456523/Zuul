@@ -804,14 +804,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	depthcharge->recoilatt = dcrecoil;
 	depthcharge->recoilchance = 2.0/3;
 	mike->addSpecialAttack(depthcharge);
-	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 35, 10, 20, 12, 12, 1, false, 20);
+	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 29, 10, 20, 12, 12, 1, false, 20);
 	minesweeper->focushits = false;
 	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", false, 0, 10, 20, 3, 3, 1);
 	minesweeper->recoilatt = mrecoil;
 	minesweeper->recoilchance = 1;
 	mike->addSpecialAttack(minesweeper);
-
-	//and make him say "Oops."
 
 	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
 	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
@@ -1156,6 +1154,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* nat7 = new Attack("DICE ROLL", "rolled a 7", false, 0, 0, 0, 0, 0, 0); //7 - give enemy team an icosahedrongus
 	nat7->summon = icosahedrongus;
 	nat7->enemysummon = true;
+	nat7->summonamount = 1;
 	graham->addSpecialAttack(nat7);
 	Attack* nat8 = new Attack("DICE ROLL", "rolled an 8!", false, 0, 0, 0, 1, 1, 1, true); //8 - fling teammate into the air
 	nat8->afterdesc = " was surged up into the sky";
@@ -1190,6 +1189,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	graham->addSpecialAttack(nat15);
 	Attack* nat16 = new Attack("DICE ROLL", "rolled a 16!", false, 0, 0, 0, 0, 0, 0, true); //16 - summon icosahedrongus for team
 	nat16->summon = icosahedrongus;
+	nat16->summonamount = 1;
 	graham->addSpecialAttack(nat16);
 	Attack* nat17 = new Attack("DICE ROLL", "rolled a 17!", false, 0, -9999999, 0, 1, 1, 1, true); //17 - teammate gets fully healed
 	nat17->afterdesc = " was fully healed";
@@ -1321,15 +1321,19 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richie->setBasicAttack(throwmoney);
 	Attack* buydrone = new Attack("AMAZON PRIME", "bought a DRONE on Amazon", false, 5, 0, 0, 0, 0, 0);
 	buydrone->summon = drone;
+	buydrone->summonamount = 1;
 	richie->addSpecialAttack(buydrone);
 	Attack* buyheal = new Attack("AMAZON PRIME", "bought a HEAL SPRINKLER on Amazon", false, 10, 0, 0, 0, 0, 0);
 	buyheal->summon = healsprinkler;
+	buyheal->summonamount = 1;
 	richie->addSpecialAttack(buyheal);
 	Attack* buybot = new Attack("AMAZON PRIME", "bought a ROBOCOP on Amazon", false, 15, 0, 0, 0, 0, 0);
 	buybot->summon = guardbot;
+	buybut->summonamount = 1;
 	richie->addSpecialAttack(nat7);
 	Attack* buymech = new Attack("AMAZON PRIME", "bought a MARINE MECH on Amazon", false, 20, 0, 0, 0, 0, 0);
 	buymech->summon = marinemech;
+	buymech->summonamount = 1;
 	richie->addSpecialAttack(buymech);
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
@@ -3763,7 +3767,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* popbomb = new Attack("POPULATION BOMB", "pooped some eggs at the team", false, -5, 20, 0, 2, 2, 1);
 	popbomb->focushits = false;
 	popbomb->summon = hatchling;
-	popbomb->summonamount = 1;
+	popbomb->summonamount = 2;
 	bewlizard->setBasicAttack(popbomb);
 	Attack* bsod = new Attack("BURST STREAM OF DESTRUCTION", "fired a stream of destruction at", false, 25, 30, 50, 1, 1, 3);
 	bsod->afterdesc = " from its mouth";
@@ -3885,9 +3889,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	updraft->addEffect(updrafted);
 	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 4, 30, 0, 1, 1, 7);
 	Attack* supercell = new Attack("SUPERCELL", "called down another twister from a supercell", false, 12, 0, 0, 0, 0, 0);
-	supercell->summon = naturaldisaster;
-	supercell->summonamount = 1;
-	supercell->matchsummonhealth = true; //so you don't have to fight another natural disaster all over again
+	supercell->copyamount = 1; //duplicates itself to match the health so you don't have to fight another natural disaster all over again
+	supercell->targetself = true;
 	naturaldisaster->setOpener(tailwind);
 	naturaldisaster->setBasicAttack(thingfling);
 	naturaldisaster->addSpecialAttack(updraft);
@@ -4108,19 +4111,19 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//you can also REPENT if you haven't defeated them all yet
 	//then you get the antenna
 
-	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 9));
 	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
 	carnplant->setBasicAttack(bite);
-	carnplant->addSpecialAttack(nutrientabsorb);*/
+	carnplant->addSpecialAttack(nutrientabsorb);
 
-	//smogfish
+	NPC* smogfish = new NPC("", "SMOGFISH", "Floating fish of smog, who typically fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
 	//copycat (turn into random teammate, not player)
 
-	//junglenaut
+	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle with vines round about and smog seeping through its helmet.", limbo, 0, Stats());
 	//constrict
 	//some other attacks
 
-	NPC* thedark = new NPC("", "THE DARK", "", limbo, 0, Stats(), Stats());
+	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(), Stats());
 	//temple of hope in the desert, gives big red button of hope
 	//you get seperated from your teammates and you have to fight enemies that decay your stats
 	//probably some hard puzzles
@@ -4129,6 +4132,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//and when stats are low enough it can tempt teammates into despair
 	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
 	//after that you get the button
+
+	//REMEMBER, the player is alone when fighting these! account for that!
 	
 	//shadow creature (attacks that chip stats)
 
@@ -4138,7 +4143,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//floating pyramid attacks
 	//hypnotize or something
 
-	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves to get people mad.", limbo, 0, Stats(), Stats());
+	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(), Stats());
 	//temple of patience in the volcano area, gives plotometer of patience
 	//you do puzzles and fight fire enemies
 	//then you fight fire with fire
@@ -5003,6 +5008,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richpeople->setForceBattle();
 	richpeople->addLinkedRoom(ballroom, "in the BURGER ballroom, full of incapacitated rich people.");
 	richpeople->addLinkedItem(keycard, ballroom); //beat the rich people to get the keycard
+	richpeople->setEscapable(false);
 
 	NPC* enzo = new NPC(*ceo);
 	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
@@ -6021,7 +6027,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 	if (!npc->getRecruited()) {
 		cout << "\n" << npcname << " is not in your party...";
 		return;
-	} //you can't dismiss the npc if I said so
+	} //you can't dismiss the npc because I said so
 	if (!npc->getDismissable()) {
 		npc->printDismissalRejection();
 		cout << "\n" << npcname << " was not dismissed.";
@@ -6265,16 +6271,19 @@ int main() {
 
 	PrintRoomData(self->getRoom()); //prints the data of the starting room
 
-	bool continuing = true; //we continue until continuing is set to false (when the player quits)
-	while (continuing) { //the main loop!
+	bool promptline = true; //if the prompting > should be in a newline, only false for typing nothing
+	while (bool continuing = true) { //the main loop! we continue until continuing is set to false (when the player quits or gets an ending)
 		char command[255] = ""; //the charray that the player inputs into
 
 		char commandWord[255]; //the first word of the player input (the command)
 		char commandExtension[255]; //the rest of the player's command (minus the space)
 
-		cout << "\n> "; //The > signifies it's time to type in a command. If there is no >, it's a cutscene or dialogue or something like that and you just have to ENTER until you get to the >.
+		if (promptline) cout << "\n";
+		cout << "> "; //The > signifies it's time to type in a command. If there is no >, it's a cutscene or dialogue or something like that and you just have to ENTER until you get to the >.
 		cin.getline(command, 255);
 		AllCaps(command); //capitalizes the command for easier parsing
+
+		promptline = true; //make sure the next > will probably be in a new line
 
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
 
@@ -6318,7 +6327,9 @@ int main() {
 			//continuing = saveWorld(currentRoom, inventory, party, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game
 			continuing = false;
-		} else { //prints an error message if the player typed something that isn't an actual command //if (strcmp(commandWord, "")) 
+		} else if (!strlen(command)) { //don't print error if the player just entered nothing
+			promptline = false;
+		} else { //prints an error message if the player typed something that isn't an actual command
 			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
 		}
 

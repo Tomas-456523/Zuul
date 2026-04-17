@@ -736,15 +736,17 @@ void NPC::blockExit(const char* _exitBlocking, const char* type, const char* rea
 void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
 	if (stats.hpmax <= 999) damage = min(damage, 999); //cap damage printing at 999, unless we actually have reason to print that high
 	if (damage > 0) {
-		cout << "\n" << name << " took " << damage << " damage!";
+		cout << "\n" << name << " took " << damage << " damage";
 	} else if (damage < 0) {
-		cout << "\n" << name << " recovered " << -damage << " HP!";
+		cout << "\n" << name << " recovered " << -damage << " HP";
 	} else {
-		cout << "\n" << name << " was not affected.";
+		cout << "\n" << name << " was not affected";
 	}
 	if (status != NULL) { //prints the status that caused it
 		cout << " due to " << status;
 	}
+	if (damage) cout << "!";
+	else cout << ".";
 	cout << "\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
 	if (health <= 0) { //says that the npc is incapacitated if it now has 0 hp
 		CinPause();
@@ -770,37 +772,28 @@ void NPC::printEffects() { //prints the effects this npc has
 	cout << "\n";
 }
 //damages the npc and returns the total damage
-int NPC::damage(double power, double pierce, int hits) {
+int NPC::damage(double power, double pierce) {
 	double damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
-	int totalhits = Clamp(hits - guard, 0, 999); //how many times the attack landed
-	guard = Clamp(guard - hits, 0, 99999); //hits lower guard
-	double defenseD = stats.defense; //converts stats to doubles for easier damage calculation
+	int oldguard = guard; //record what the guard was before
+	if (damage > 0) guard--; //hits lower guard
+	double defenseD = (power > 0 ? stats.defense : 0); //converts stats to doubles for easier damage calculation, also don't defend against heals!
 	double toughnessD = stats.toughness;
 	//calculates the damage
-	int damage = (int)ceil(power * (10.0f/(10.0f + ClampD(defenseD - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessD)),0,defenseF)))) * totalhits;
+	int damage = Round(power * (10.0f/(10.0f + ClampD(defenseD - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessD)),0,defenseF)))) * totalhits;
 	int totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
-	if (hits > 1) { //prints how many times it was hit if it was hit a nonstandard amount of times
-		cout << "\n" << name << " was hit " << hits << " times!";
-	}
-	if (hits < 1) {
-		cout << "\nThe attack missed!";
-	}
-	if (totalhits < hits) { //prints how many hits were blocked by the guard
-		int blocks = hits - totalhits;
-		cout << "\n" << name;
-		if (blocks == 1) {
-			cout << " blocked the attack!";
-		} else {
-			cout << " blocked " << blocks << " hits!";
-		}
+	
+	if (oldguard > 0) { //block attacks if we have guard
+		cout <<  "\nThe attack was blocked by " << name << "'s guard!";
+		CinPause();
 		if (guard <= 0) { //prints if the guard is now down
-			cout << "\n" << name << "'s guard was broken!";
+			cout << name << "'s guard was broken!";
+			CinPause();
 		}
-	}
-	if (totalhits > 0) { //subtract the damage and print how much was done
+	} else { //subtract the damage and print how much was done
 		health -= totalDamage;
 		printDamage(damage);
 	}
+
 	return totalDamage;
 }
 //directly applies damage while ignoring defense and all that
@@ -947,7 +940,7 @@ void NPC::setForceBattle(bool force) { //set if the npc forces battle after talk
 	forcebattle = force;
 }
 //sets an effect on the npc, affected by the given affector. Affector is also treated as the way to know if it's in battle or not
-void NPC::setEffect(Effect* effect, NPC* affector) {
+NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	bool stacking = false;
 	for (Effect* _effect : effects) { //check if we already have the effect
 		if (effect == _effect) { //if we have the effect, assume we have the corresponding npceffect
@@ -1027,6 +1020,8 @@ void NPC::setEffect(Effect* effect, NPC* affector) {
 		if (effect->damagebuff != 1) cout << "\n" << name << " now takes " << damageMultiplier << " times as much damage!";
 		if (effect->spusage != 1) cout << "\n" << name << "'s moves now use " << spUseMultiplier << " times SP!";
 	}
+	
+	return &npceffects[effect]; //return a reference to the npc's manager of this effect
 }
 //removes an effect from the npc, specifically from the affector in cases of stacking, ans affector is also used like the "in battle" and "announce changes" bool
 void NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clarify an affector it just removes all the stacks of the effect

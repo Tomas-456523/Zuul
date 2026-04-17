@@ -36,23 +36,26 @@ public:
 	bool runAway(); //try to escape the battle
 	void checkEffects(); //checks all the tracked effects for if they're at duration 0
 	void hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos); //hit the target, and surroundings if needed
-	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target); //affects the given target based on the given attack
+	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil = false); //affects the given target based on the given attack
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 2); //interpret and carry out an attack command given by the player
 	bool playerTurn(NPC* plr); //the player chooses what to do here
 	void npcTurn(NPC* npc); //the npc chooses an attack to do
 	
-	void addNPC(NPC* npc, NPC* parent = NULL); //creates a new npc mid-battle
+	void addNPC(NPC* npc, NPC* parent = NULL, bool altteam = false); //creates a new npc mid-battle
 
 	int getXpReward(); //gets how much xp was earned as a result of a victory
 	int getMonyReward(); //gets how many monies were earned as a result of a victory
 
-	void reorder(queue<NPC*>& orderly_fashion); //puts all the npcs in the queue in order of speed
+	void speedSort(NPC* npc); //handle speed changing logic, and also
+	void reorder(); //reput all the npcs into the turn queue, reset stuff for start of round
 private:
 	vector<NPC*> playerTeam; //the npcs in the player's team
 	vector<NPC*> enemyTeam; //all the opponents
 	vector<NPC*> everyone; //a list of everyone involved in the battle
 
 	priority_queue<NPC*, vector<NPC*>, speedComparer> turn; //queue for finding whose turn it is
+	map<NPC*, int> knownspeeds; //maps npcs to their speed so we can detect if the speed has changed, and not do the turn if it's a different speed
+	set<NPC*> went; //everyone who already went this round, in order to account for speed shenanigans and also multiposition
 
 	vector<NPCEffect*> alleffects; //a list of all the effects affecting their npcs
 	vector<tuple<NPC*, NPC*, Effect*>> bonds; //effects given to npc 1 to npc 2 so when npc 1 is incapacitated, we know to remove the effect from npc 2

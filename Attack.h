@@ -40,7 +40,7 @@ struct Attack {
 
 	int minLevel; //must be at least this level to use the attack
 
-	float lifesteal; //what % of damage dealt is stolen and added to the npc's health
+	double lifesteal; //what % of damage dealt is stolen and added to the npc's health
 	int spleak; //how much sp the attack removes from the target
 
 	Effect* appliedeffect = NULL; //targets get affected by this effect when hit
@@ -53,17 +53,15 @@ struct Attack {
 	bool affectselfbeforeattack = false; //if we should apply self stat changes before the attack as opposed to as a result of it afterwards
 
 	Attack* recoilatt = NULL;
-	float recoilchance = 0;
+	double recoilchance = 0;
 
 	NPC* summon = NULL; //the npc that the attack summons
-	int summonamount = 1; //how many of the summon to summon
-	bool matchsummonhealth; //if the summons should match their health to the summoner's
+	int summonamount = 0; //how many of the summon to summon
 	bool enemysummon = false; //if the summon goes to the enemy team
 
 	int copyamount = 0; //how many times the target gets duplicated
 
 	bool contact; //if the attacker makes contact with the target
-	bool beneficial = false; //if you want to get hit by this
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated
 	bool targetself = false; //self-explanatory
 	bool targetshark = false; //if this attack should only target sharks
@@ -78,7 +76,7 @@ struct Attack {
 
 	//constructs the attack
 	//default stats are for testing purposes
-	Attack(const char* _name, const char* _description, bool _contact, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, float _lifesteal = 0) {
+	Attack(const char* _name, const char* _description, bool _contact, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {
 		name = _name;
 		description = _description;
 		contact = _contact;
