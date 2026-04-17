@@ -25,10 +25,12 @@ class NPC; //forward declare itself so we can make this effect struct immediatel
 struct NPCEffect { //effect instances so we don't have a mess of copied effects
 	Effect* effect;
 	NPC* affected;
-	size_t duration; //how much is left
+	int duration; //how much is left
 	size_t stacks = 1;
 	set<NPC*> affectors; //ppl who set the effect, for lifesteal, etc. stuff that needs it
-	NPCEffect(Effect* _effect, NPC* npc, NPC* parent) : effect(_effect), affected(npc), duration(effect->duration), affectors({parent}) {}
+	NPCEffect(Effect* _effect, NPC* npc, NPC* parent) : effect(_effect), affected(npc), duration(_effect->duration) {
+		if (parent) affectors.insert(parent);
+	}
 };
 
 class NPC {
@@ -70,31 +72,31 @@ public: //you need to set stats on creation
 	Attack* getGuardAttack();
 	Attack* getOpener();
 	vector<Attack*> getSpecialAttacks();
-	map<Attack*, int> getWeights();
+	int getWeight();
 	bool getLevelUp(); //if we leveled up recently
 	Stats getStatChanges(); //the stat changes from the last level up
 	vector<Attack*> getNewAttacks();
 	bool getDefeated(); //if npc has been defeated since entering the room
 	Item* takeGift(); //return and nullify the gift item
-	vector<Effect>& getEffects();
+	vector<Effect*> getEffects();
 	int getHypnotized(); //hypnosis amount
 	int getFrozen(); //freeze amount
 	int getRecovering(); //recovery amount
 	int getConvoSize(); //how many conversations are left to say
 	bool getRespawn(); //if they should respawn
 	bool getBoss();
-	float getAttMultiplier();
-	float getDefMultiplier();
-	float getToughMultiplier();
-	float getPierceMultiplier();
-	float getSpeedMultiplier();
-	float getSPUseMultiplier();
-	float getDamageMultiplier();
+	double getAttMultiplier();
+	double getDefMultiplier();
+	double getToughMultiplier();
+	double getPierceMultiplier();
+	double getSpeedMultiplier();
+	double getSPUseMultiplier();
+	double getDamageMultiplier();
 	time_t getGymStart();
 	int getGuard();
 	bool getAway();
-	NPCEffect* getEffect(const char* effect); //check the npc's data relating to this effect
-	vector<NPC*> getGuardians();
+	NPCEffect* getEffect(const char* effect, bool getfinished); //check the npc's data relating to this effect
+	vector<NPC*>& getGuardians();
 	NPC* getGuarding();
 	NPC* getParrying();
 	bool getInvincible();
@@ -164,7 +166,7 @@ public: //you need to set stats on creation
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false, int instant = 0);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
-	int damage(float power, float pierce, int hits = 1);
+	int damage(double power, double pierce, int hits = 1);
 	void directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
@@ -183,7 +185,8 @@ public: //you need to set stats on creation
 	void setGuard(int _guard); //set guard to block attacks
 	void setGift(Item* item, bool fightfirst = false); //item to give when talking
 	void setEffect(Effect* effect, NPC* affector = NULL); //add an effect to the npc
-	void removeEffect(Effect* effect, bool announce = true);
+	void removeEffect(Effect* effect, NPC* affector);
+	void tickEffect(Effect* effect);
 	void setBoss(bool boss);
 	void setExtraXP(int xp);
 	void setExtraMonies(int monies);
@@ -303,7 +306,7 @@ protected:
 	vector<Effect*> effects; //the effects affecting this npc
 	map<Effect*, NPCEffect> npceffects; //map of effect to the data this npc has on the effect relating to how it's being affected by the effect
 
-	map<Attack*, int> attackWeight; //the weight of the npc's attacks
+	map<Attack*, int> attackWeights; //the weight of the npc's attacks
 
 	queue<Conversation> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
 
@@ -363,13 +366,13 @@ protected:
 	Stats scale; //how much each stat increases (minimum) each level up
 	int health; //current health
 	int sp; //sp stands for skill points
-	float attackMultiplier = 1; //multipliers
-	float defenseMultiplier = 1;
-	float pierceMultiplier = 1;
-	float toughMultiplier = 1;
-	float speedMultiplier = 1;
-	float spUseMultiplier = 1; //multiplies sp cost
-	float damageMultiplier = 1; //multiplies damage taken
+	double attackMultiplier = 1; //multipliers
+	double defenseMultiplier = 1;
+	double pierceMultiplier = 1;
+	double toughMultiplier = 1;
+	double speedMultiplier = 1;
+	double spUseMultiplier = 1; //multiplies sp cost
+	double damageMultiplier = 1; //multiplies damage taken
 
 	int invincibility = 0;
 	int evasion = 0;

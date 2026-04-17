@@ -12,6 +12,13 @@
 class NPC;
 class Item;
 
+//custom comparator used by the turn queue to sort all the fighters by speed
+struct speedComparer {
+	bool operator()(NPC* a, NPC* b) const {
+		return a->getSpeed()*a->getSpeedMultiplier() > b->getSpeed()*b->getSpeedMultiplier();
+	}
+};
+
 class Battle {
 public:
 	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable = true);
@@ -27,8 +34,7 @@ public:
 	void analyze(const char* name); //print the data of the given item or npc
 	void printHelp(); //print the valid command words and extensions
 	bool runAway(); //try to escape the battle
-	void tickEffect(Effect& effect); //ticks the given effect
-	void tickEffects(); //ticks all effects on every npc
+	void checkEffects(); //checks all the tracked effects for if they're at duration 0
 	void hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos); //hit the target, and surroundings if needed
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target); //affects the given target based on the given attack
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 2); //interpret and carry out an attack command given by the player
@@ -46,11 +52,12 @@ private:
 	vector<NPC*> enemyTeam; //all the opponents
 	vector<NPC*> everyone; //a list of everyone involved in the battle
 
+	priority_queue<NPC*, vector<NPC*>, speedComparer> turn; //queue for finding whose turn it is
+
 	vector<NPCEffect*> alleffects; //a list of all the effects affecting their npcs
+	vector<tuple<NPC*, NPC*, Effect*>> bonds; //effects given to npc 1 to npc 2 so when npc 1 is incapacitated, we know to remove the effect from npc 2
 
 	vector<Item*>* inventory; //pointer to the player's inventory
-
-	vector<tuple<NPC*, NPC*, Effect*>> bonds; //effects given to npc 1 to npc 2 so when npc 1 is incapacitated, we know to remove the effect from npc 2
 
 	NPC* player; //the original player object
 

@@ -173,8 +173,8 @@ namespace Helper {
 		}
 		return num; //the number is actually perfectly fine so we return it as-is
 	}
-	//returns the given float from min to max, seperate from the above one for convenience
-	float ClampF(float num, float min, float max) {
+	//returns the given double from min to max, seperate from the above one for convenience
+	double ClampD(double num, double min, double max) {
 		if (num < min) { //return the minimum if below it
 			return min;
 		}
@@ -182,6 +182,10 @@ namespace Helper {
 			return max;
 		}
 		return num; //the number is actually perfectly fine so we return it as-is
+	}
+	//rounds the given double to the nearest integer
+	int Round(double num) {
+		return (int)round(num);
 	}
 	//returns if a is faster than b
 	bool speedCompare(NPC* a, NPC* b) {

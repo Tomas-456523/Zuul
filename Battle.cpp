@@ -127,45 +127,17 @@ void Battle::addNPC(NPC* npc, NPC* parent) {
 	team->push_back(newguy);
 	everyone.push_back(newguy);
 }
-//ticks an effect (if it does anything every turn, it does that, and decrements its duration) MARK: tick effect
-void Battle::tickEffect(Effect& effect) {
-	NPC* npc = effect.npc; //gets the affected npc
-	//decrement even if the npc is unconscious because a fire will eventually go out if you're on fire even if you're asleep
-	if (--effect.duration <= 0) {
-		return;
-	}
-	if (!npc->getHealth()) { //we don't affect the npc if they're unconscious
-		return;
-	} //applies damage (or healing)
-	if (effect.damage != 0) {
-		npc->directDamage(effect.damage, effect.name);
-	} //applies sp alterations
-	if (effect.spleak != 0) {
-		npc->alterSp(-effect.spleak, effect.name);
-	} //applies the guard
-	if (effect.guardset != 0) {
-		npc->setGuard(effect.guardset);
-	}
-}
-//ticks all the effects that everyone has MARK: tick all effects
-void Battle::tickEffects() {
-	for (NPC* npc : everyone) { //ticks everyone's effects
-		for (Effect& effect : npc->getEffects()) {
-			tickEffect(effect);
-		}
-	}
+//checks all the effects that everyone has for if they've run out MARK: check effects
+void Battle::checkEffects() {
 	//checks everyone's effects to see if they wore off
-	for (NPC* npc : everyone) { //we must delete them here in order to not create dangling pointers
-		vector<Effect>& effects = npc->getEffects(); //gets reference to the npc's effects
-		for (int i = 0; i < effects.size();) {
-			if (effects[i].duration <= 0) {
-				cout << npc->getName() << "'s " << effects[i].name << " wore off!";
-				npc->removeEffect(effects[i]); //removes the effect
-				CinPause();
-				continue; //skip the increment because the rest of the vector just shifted left from deleting the current effect
-			}
-			i++;
+	for (int i = 0; i < alleffects.size();) {
+		NPCEffect* npceffect = alleffects[i];
+		if (npceffect.duration <= 0) {
+			npceffect->affected->removeEffect(npceffect->effect); //removes the effect
+			alleffects.erase(remove(alleffects.begin(), alleffects.end(), npceffect), alleffects.end());
+			continue; //skip the increment because the rest of the vector just shifted left from removing the current effect
 		}
+		i++;
 	}
 }
 //hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
@@ -187,7 +159,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			if (attack->spbomb) { //sp bombs don't get multipliers
 				effectiveAttack = attack->power;
 			} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
-				effectiveAttack = effectivePierce = 2147483647; //just send as much damage as possible
+				effectiveAttack = effectivePierce = 2147483647; //just send as much damage as possible MARK: actually no, send damage equal to the health (direct damage)
 			} else if (/*attack->synergy && reciever->getEffect(attack->synergy->name)*/ false) { //double attack power if the attack synergizes with the effect
 				effectiveAttack *= 2;
 			} else {
@@ -195,7 +167,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				effectivePierce = attack->pierce * attacker->getPierce() * attacker->getPierceMultiplier() / 10;
 			} //damages the target
 			int hits = 1; //some moves hit a random amount of times within a certain range
-			if (attack->focushits) rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits;
+			if (attack->focushits) hits = rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits;
 			for (int j = 0; j < hits; j++) {
 				float randmultiplier = 0.9f + fmod(rand(), 0.2f); //randomly vary attack power of every hit by 10%
 				if (!(rand()%20)) { //5% chance to crit
@@ -211,7 +183,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			}
 			if (attack->cancel != NULL) { //removes the effect this attack cancels out
 				if (Effect* canceled = reciever->getEffect(attack->cancel->name))
-				reciever->removeEffect(*canceled, false); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
+				reciever->removeEffect(*canceled, NULL); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
 			}
 			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 				attacker->damage(attack->recoil * attacker->getAttack() * attacker->getAttMultiplier() / 10, 0, 1);
@@ -229,6 +201,22 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 		}
 	}
 }
+
+//MARK: before finishing this, make sure every time you use multipliers evrrywhere in the whole game, it rounds to the nearest int.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //carries out the attack (makes it hit the target) MARK: carry out attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target) {
 	attacker->alterSp(-attack->cost); //removes sp from the attacker
@@ -570,33 +558,17 @@ void Battle::npcTurn(NPC* npc) {
 	int r = rand()%100; //we choose a random number from 0 to 99
 	int limit = 0; //the limit from 0 to 100 that the total attack weight must add up to
 	Attack* attack = NULL; //the attack that was chosen
-	
-
-	//MARK: IMPLEMENT THIS
-
-
-
-
-
-
-
-	//this?
-	//  |
-	//  |
-	//  V
-
-	//MARK: if the target has no basic attack, just choose a special attack using pure rng, no weights
 
 	for (Attack* _attack : npc->getSpecialAttacks()) { //checks each attack for if we should choose it
-		if (_attack->cost > npc->getSP()) { //if it's too expensive with the current sp we move on to the next attack
+		if (Round(_attack->cost*npc->getSPUseMultiplier) > npc->getSP()) { //if it's too expensive with the current sp we move on to the next attack
 			continue;
 		}
 		if (_attack->minLevel > npc->getLevel()) { //if the npc isn't experienced enough to use the move, we don't count it
 			continue;
 		}
 		//we add the weight of the attack to the limit
-		limit += npc->getWeights()[_attack];
-		if (r <= limit) { //we check if the limit has reached r. If so, that's the attack we choose
+		limit += npc->getWeight(_attack);
+		if (r < limit) { //we check if the limit has passed r. If so, that's the attack we choose
 			attack = _attack;
 			break; //break because we chose the attack
 		}
@@ -691,18 +663,33 @@ int Battle::FIGHT() {
 	cout << "\n<<< VERSUS >>>";
 	printTeam(enemyTeam);
 	CinPause(); //gives the player time to orient themselves
-	//MARK: make this a priority queue
-	queue<NPC*> turn; //queue for finding whose turn it is
+	
 	NPC* current; //the current npc whose turn it is
+
+	set<NPC*> went; //everyone who already went this turn, in order to account for speed changes and also multiposition
 
 	bool continuing = true; //continues until this is set to false, only if the player successfully runs away
 	while (continuing) { //the main battle loop!
 		if (turn.size() <= 0) { //we put everyone in order again if the turn queue is empty
 			reorder(turn);
-			tickEffects(); //we also tick effects once every round
+			checkEffects(); //we also check if there are any 0-duration effects to stop tracking
 		}
 
 		current = turn.front(); //gets the npc whose turn it is at the front of the queue
+		turn.pop(); //removes the npc from the front of the queue so the next npc is in line the next turn
+
+		if (went.find(current) != went.end()) {
+			continue;
+		}
+
+		//every round, check if there's any remaining 0 duration npceffects left, stop tracking them if so, and tell their npcs to remove that effect
+		//after every npc turn, tick their effects
+
+		//MARK: IMPORTANT:
+		//if we apply a 0 duration effect and the same effect gets added again, it will create a dangling pointer on the battle side.
+		//actually this is automatically handled as long as we reget the pointer to the NPCEffect from npc->getEffect(effect) every time we setEffect
+
+		
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk
 		} else if (current->getFrozen()) { //prints how the npc wanted to move but couldn't due to freezing
@@ -717,8 +704,11 @@ int Battle::FIGHT() {
 		} else { //does the npc's turn
 			npcTurn(current);
 		}
+
+		for (Effect* effect : current->getEffects()) { //tick all the npc's effects AFTER their turn (this makes durations more intuitive)
+			current->tickEffect(effect);
+		}
 		
-		turn.pop(); //removes the npc from the front of the queue because their turn is over!
 		//check the player team and enemy team for if they've lost all hp, and returns win or loss based on that result
 		if (aliveCount(playerTeam) <= 0) {
 			return 0; //lose

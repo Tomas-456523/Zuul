@@ -21,13 +21,13 @@ struct Effect {
 	int spleak; //how much sp this effect leaks per tick
 
 	//buffs (multiplicative)
-	float attackbuff;
-	float defensebuff;
-	float toughbuff;
-	float piercebuff;
-	float spusage = 1; //multiplies sp needed to use moves
-	float damagebuff = 1; //buffs overall damage TAKEN, so we take that much more
-	float speedbuff = 1;
+	double attackbuff;
+	double defensebuff;
+	double toughbuff;
+	double piercebuff;
+	double spusage = 1; //multiplies sp needed to use moves
+	double damagebuff = 1; //buffs overall damage TAKEN, so we take that much more
+	double speedbuff = 1;
 
 	bool freeze = false; //if the effect causes the target to get frozen
 	bool hypnotize = false; //if the effect causes the target to get hypnotized (attack own party)
@@ -38,25 +38,24 @@ struct Effect {
 
 	int guardset = 0; //if this effect sets guard on the target
 
-	float lifesteal = 0; //what % of damage taken is given to the attacker
-	float spsteal = 0; //what % of sp taken is given to the attacker
-	//bool turntick = false; //if we tick after the npc turn as opposed to at the start of each round
+	double lifesteal = 0; //what % of damage taken is given to the attacker
+	double spsteal = 0; //what % of sp taken is given to the attacker
 
 	bool invincible = false; //if this effect makes the affected npc invincible
 	bool evasive = false; //invincible but due to amazing dodging skills
 
 	bool stacks = false; //if the effect stacks instead of just being extended when reapplied
 
-	int multipositioning = 0; //how many shallow copies of the affected npc to make in battle, used by the SUPERSMOOTHIE
+	int multipositioning = 0; //how many shallow copies of the affected npc to make in battle (not handled by NPC, but rather by Battle), used by the SUPERSMOOTHIE
 
 	Effect* attackeffect = NULL; //what attack effect to give to the target
 
-	bool bond = false; //if this is something we should remove from the affected npc when the affector is incapacitated
+	bool bond = false; //if this is something we should remove from the affected npc when the affector is incapacitated, only used in opening attacks (also handled by Battle)
 
 	Effect() {} //default constructor to avoid random errors
 
 	//constructs the effect
-	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, float _attackbuff = 1, float _defensebuff = 1, float _toughbuff = 1, float _piercebuff = 1, float _speedbuff = 1) {
+	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, double _attackbuff = 1, double _defensebuff = 1, double _toughbuff = 1, double _piercebuff = 1, double _speedbuff = 1) {
 		name = _name;
 		duration = _duration;
 		damage = _damage;

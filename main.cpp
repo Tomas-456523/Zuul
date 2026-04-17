@@ -490,7 +490,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
 	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, {bigscarf});
 	Attack* energize = new Attack("ENERGIZE", "energized", false, 14, 0, 0, 1, 1, 1, true, 15);
-	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 2.0f, 0, 0, 0);
+	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 2.0, 0, 0, 0);
 	energize->addEffect(energized);
 	energize->addDescription("Imbue yourself or an teammate with energy, doubling attack for one turn.");
 	Attack* smokebomb = new Attack("SMOKE BOMB", "threw two smoke bombs, bringing SMOKEMEN into the battle", false, 13, 0, 0, 0, 0, 0);
@@ -506,7 +506,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	pacupunctuken->addDescription("Throw precise shurikens at the target's pressure points, rendering them immobile for three turns. (2 ATTACK, 15 PIERCE, 4 hits)");
 	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 15, 10, 20, 5, 5, 3);
 	pdeadlyspinferno->afterdesc = " in a flaming inferno";
-	Effect* onfire = new Effect("ON FIRE", 3, 5, 0, 1, 0.8f);
+	Effect* onfire = new Effect("ON FIRE", 3, 5, 0, 1, 0.8);
 	pdeadlyspinferno->addEffect(onfire);
 	pdeadlyspinferno->addDescription("Fly at the target and their surroundings in a deadly flaming tornado, also leaving them on fire. (10 ATTACK, 20 PIERCE, 5 hits)");
 	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", false, 12, 35, 15, 1, 1, 1, false, 12);
@@ -580,11 +580,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
 	aprilshower->addEffect(spshower);
 	floria->addSpecialAttack(aprilshower);
-	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -2147483648, 20, 1, 1, 1, true, 12);
+	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -9999999, 20, 1, 1, 1, true, 12);
 	nitroheal->afterdesc = " to peak health";
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
-	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 25, -2147483648, 20, 1, 1, 1, true, 15);
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 25, -9999999, 20, 1, 1, 1, true, 15);
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
@@ -643,12 +643,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	egadwick->addSpecialAttack(vitamins);
 	Attack* overclock = new Attack("OVERCLOCK", "overclocked", false, 8, 0, 0, 0, 0, 0, true, 5);
 	overclock->addDescription("Overclock a teammate, boosting their attack and speed.");
-	Effect* overclocked = new Effect("OVERCLOCKED", 3, 0, 0, 1.5f, 1, 1, 1, 1.5f);
+	Effect* overclocked = new Effect("OVERCLOCKED", 3, 0, 0, 1.5, 1, 1, 1, 1.5);
 	overclock->addEffect(overclocked);
 	egadwick->addSpecialAttack(overclock);
 	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", false, 4, 0, 0, 0, 0, 0, false, 8);
 	shieldacid->addDescription("Throw a beaker of shield-melting acid at the target.");
-	Effect* acidified = new Effect("ACIDIFIED", 3, 10, 0, 1, 0.5f, 0.5f);
+	Effect* acidified = new Effect("ACIDIFIED", 3, 10, 0, 1, 0.5, 0.5);
 	shieldacid->addEffect(acidified);
 	egadwick->addSpecialAttack(shieldacid);
 	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 20, 20, 1, 1, 3, false, 10, 20);
@@ -656,7 +656,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	egadwick->addSpecialAttack(emp);
 	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 0, 0, 0, true, 12);
 	hyperclock->addDescription("Over-overclock a teammate, greatly boosting their attack and speed.");
-	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0f, 1, 1, 1, 2.0f);
+	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0, 1, 1, 1, 2.0);
 	hyperclock->addEffect(hyperclocked);
 	egadwick->addSpecialAttack(hyperclock);
 	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", false, 20, 10, 20, 4, 8, 3, false, 15);
@@ -669,7 +669,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	egadwick->addSpecialAttack(weatherforecast);
 	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", false, 16, 0, 0, 0, 0, 0, true, 20);
 	uberclock->addDescription("Over-over-overclock a teammate, very greatly boosting their attack and speed.");
-	Effect* uberclocked = new Effect("UBERCLOCKED", 3, 0, 0, 4.0f, 1, 1, 1, 4.0f);
+	Effect* uberclocked = new Effect("UBERCLOCKED", 3, 0, 0, 4.0, 1, 1, 1, 4.0);
 	uberclock->addEffect(uberclocked);
 	egadwick->addSpecialAttack(uberclock);
 	Attack* orbitalstrike = new Attack("ORBITAL STRIKE", "called down an orbital beam towards", false, 30, 70, 100, 1, 1, 7, false, 25);
@@ -724,11 +724,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
 	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 7, true, 15);
-	Effect* galvanized = new Effect("GALVANIZED", 5, 0, 0, 2.0f, 2.0f);
+	Effect* galvanized = new Effect("GALVANIZED", 5, 0, 0, 2.0, 2.0);
 	warcry->addEffect(galvanized);
 	forestknight->addSpecialAttack(warcry);
 	Attack* enrootf = new Attack("ENROOT", "rooted into the soil", false, 10, 0, 0, 0, 0, 0, true, 18);
-	Effect* rootedf = new Effect("ROOTED", 5, -10, 0, 0, 3.0f, 3.0f);
+	Effect* rootedf = new Effect("ROOTED", 5, -10, 0, 0, 3.0, 3.0);
 	enrootf->addEffect(rootedf);
 	forestknight->addSpecialAttack(enrootf);
 	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 18, 50, 5, 1, 1, 1, false, 20);
@@ -767,7 +767,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mdynamite->focushits = false;
 	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", false, 0, 10, 20, 1, 1, 1);
 	mdynamite->recoilatt = drecoil;
-	mdynamite->recoilchance = 0.3333f;
+	mdynamite->recoilchance = 1.0/3;
 	mike->setBasicAttack(mdynamite);
 	Attack* flashbang = new Attack("FLASHBANG", "threw a flashbang at", false, 8, 10, 20, 1, 1, 1);
 	Effect* stunned = new Effect("STUNNED", 3);
@@ -777,32 +777,32 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	frecoil->afterdesc = " as well";
 	frecoil->addEffect(stunned);
 	flashbang->recoilatt = frecoil;
-	flashbang->recoilchance = 0.3333f;
+	flashbang->recoilchance = 1.0/3;
 	mike->addSpecialAttack(flashbang);
 	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", false, 13, 40, 20, 1, 1, 3);
 	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", false, 0, 20, 20, 1, 1, 1);
 	brecoil->afterdesc = " in the process";
 	bigbundle->recoilatt = brecoil;
-	bigbundle->recoilchance = 0.3333f;
+	bigbundle->recoilchance = 1.0/3;
 	mike->addSpecialAttack(bigbundle);
 	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", false, 11, 30, 100, 1, 1, 1, false, 8);
 	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", false, 0, 30, 100, 1, 1, 1);
 	bunkerbuster->recoilatt = bbrecoil;
-	bunkerbuster->recoilchance = 0.3333f;
+	bunkerbuster->recoilchance = 1.0/3;
 	mike->addSpecialAttack(bunkerbuster);
 	Attack* dedefenser = new Attack("DEDEFENSER", "threw a heavy charge at", false, 15, 10, 20, 1, 1, 1, false, 12);
-	Effect* dedefensed = new Effect("DEDEFENSED", 10, 0, 0, 1, 0.5f, 0.25f, 1, 0.5f);
+	Effect* dedefensed = new Effect("DEDEFENSED", 10, 0, 0, 1, 0.5, 0.25, 1, 0.5);
 	dedefenser->addEffect(dedefensed);
 	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", false, 0, 10, 20, 1, 1, 1);
 	ddrecoil->addEffect(dedefensed);
 	dedefenser->recoilatt = ddrecoil;
-	dedefenser->recoilchance = 0.3333f;
+	dedefenser->recoilchance = 1.0/3;
 	mike->addSpecialAttack(dedefenser);
 	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", false, 20, 60, 35, 1, 1, 5, false, 17);
-	Attack* dcrecoil = new Attack("LOOSE DYNAMITE", "accidentally included", false, 0, 30, 25, 1, 1, 1);
-	dcrecoil->afterdesc = " in charge's radius";
+	Attack* dcrecoil = new Attack("MISINPUT", "accidentally included", false, 0, 30, 25, 1, 1, 1);
+	dcrecoil->afterdesc = " in the charge's radius";
 	depthcharge->recoilatt = dcrecoil;
-	depthcharge->recoilchance = 0.67f;
+	depthcharge->recoilchance = 2.0/3;
 	mike->addSpecialAttack(depthcharge);
 	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 35, 10, 20, 12, 12, 1, false, 20);
 	minesweeper->focushits = false;
@@ -833,10 +833,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	cacty->addSpecialAttack(plantlifeplant);
 	Attack* spinewave = new Attack("SPINE WAVE", "popped a wave of spines at", false, 7, 6, 15, 3, 3, 3);
 	cacty->addSpecialAttack(spinewave);
-	Attack* cactcarpet = new Attack("CACTUS CARPET", "threw a carpet of cactus at", false, 8, 15, 15, 1, 1, 3, false, 14, 0, 0.34f);
+	Attack* cactcarpet = new Attack("CACTUS CARPET", "threw a carpet of cactus at", false, 8, 15, 15, 1, 1, 3, false, 14, 0, 0.34);
 	Effect* spinyfloor = new Effect("SPINY FLOOR", 4, 15);
 	cactcarpet->addEffect(spinyfloor);
-	cactcarpet->lifesteal = 0.34f;
+	cactcarpet->lifesteal = 0.34;
 	cacty->addSpecialAttack(cactcarpet);
 	Attack* acupuncture = new Attack("ACUPUNCTURE", "expertly healed", false, 7, -8, 15, 3, 3, 1, true);
 	acupuncture->afterdesc = " with spines";
@@ -897,7 +897,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* radiberry = new MaterialItem("RADIBERRY", "Special radioactive berry that glows neon green. Might wanna handle this one quickly.", factorygarden);
 	Item* ninjaberry = new MaterialItem("NINJABERRY", "Special black berry pertaining to the ninjas, complete with a natural belt.", berryroom);
 
-	Effect* multiposition = new Effect("MULTIPOSITION", 2147483647, 0, 0, 2.0f, 0.5f, 0.5f, 2.0f, 7.0f);
+	Effect* multiposition = new Effect("MULTIPOSITION", 2147483647, 0, 0, 2.0, 0.5, 0.5, 2.0, 7.0);
 	multiposition->multipositioning = 3;
 	Item* SUPERSMOOTHIE = new EffectItem("SUPERSMOOTHIE", "Prismatic smoothie blended from three special berries. Not really meant for consumption, it might have some multipositional effects.", limbo, multiposition);
 
@@ -936,16 +936,16 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	michelin->setBasicAttack(castiron);
 	Attack* qualitymeal = new Attack("5 STAR MEAL", "prepared a 5-star meal for", false, 5, -25, 0, 1, 1, 1, true);
 	michelin->addSpecialAttack(qualitymeal);
-	Effect* marinated = new Effect("MARINATED", 5, 0, 0, 1, 0.5f);
+	Effect* marinated = new Effect("MARINATED", 5, 0, 0, 1, 0.5);
 	Attack* flambe = new Attack("FLAMBE'", "bonked", true, 7, 20, 5, 1, 1, 1);
 	flambe->afterdesc = " with a flaming pan";
-	Effect* flambed = new Effect("FLAMBE'D", 5, 5, 0, 1, 0.8f);
+	Effect* flambed = new Effect("FLAMBE'D", 5, 5, 0, 1, 0.8);
 	flambe->addEffect(flambed);
 	flambe->synergies.push_back(marinated);
 	flambe->cancel = marinated;
 	michelin->addSpecialAttack(flambe);
 	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 0, 0, 1, 1, 1, true, 11);
-	Effect* hotsauced = new Effect("HOT SAUCED", 5, 0, 0, 1.25f, 0.75f);
+	Effect* hotsauced = new Effect("HOT SAUCED", 5, 0, 0, 1.25, 0.75);
 	hotsauce->addEffect(hotsauced);
 	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
@@ -996,7 +996,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	trojan->addEffect(infected);
 	carlos->addSpecialAttack(trojan);
 	Attack* stacksmash = new Attack("STACK SMASH", "stack smashed", false, 14, 25, 30, 1, 1, 1);
-	Effect* overflow = new Effect("OVERFLOW", 4, 0, 0, 1, 0.5f);
+	Effect* overflow = new Effect("OVERFLOW", 4, 0, 0, 1, 0.5);
 	stacksmash->addEffect(overflow);
 	carlos->addSpecialAttack(stacksmash);
 	Attack* socialengineering = new Attack("SOCIAL ENGINEERING", "socially engineered", false, 14, 0, 0, 1, 1, 1, false, 12);
@@ -1044,7 +1044,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	racket->afterdesc = " with her tennis racket";
 	plum->setBasicAttack(racket);
 	Attack* bigmushroom = new Attack("BIG MUSHROOM", "gave a red embiggening mushroom to", false, 8, 0, 0, 0, 0, 0, true);
-	Effect* supermushroom = new Effect("SUPER", 3, 0, 0, 2.0f, 2.0f);
+	Effect* supermushroom = new Effect("SUPER", 3, 0, 0, 2.0, 2.0);
 	bigmushroom->addEffect(supermushroom);
 	plum->addSpecialAttack(bigmushroom);
 	Attack* turtleshell = new Attack("TURTLE SHELL", "kicked a green turtle shell towards", false, 6, 30, 0, 1, 1, 1);
@@ -1057,18 +1057,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* bobbybomb = new Attack("BOBBY BOMB", "threw a Bobby Bomb at", false, 10, 40, 20, 1, 1, 3, false, 7);
 	plum->addSpecialAttack(bobbybomb);
 	Attack* metalhat = new Attack("METAL HAT", "gave a metal hat to", false, 14, 0, 0, 0, 0, 0, true, 10);
-	Effect* metallic = new Effect("METAL", 3, 0, 0, 5.0f, 2.5f);
+	Effect* metallic = new Effect("METAL", 3, 0, 0, 5.0, 2.5);
 	metalhat->addEffect(metallic);
 	plum->addSpecialAttack(metalhat);
 	Attack* lightning = new Attack("LIGHTNING", "used a lightning bolt to shock the enemy team", false, 22, 30, 30, 1, 1, 7, 14);
 	lightning->focushits = false;
-	Effect* mini = new Effect("MINI", 3, 0, 0, 0.5f, 0.5f);
+	Effect* mini = new Effect("MINI", 3, 0, 0, 0.5, 0.5);
 	lightning->addEffect(mini);
 	plum->addSpecialAttack(lightning);
 	Attack* blueshell = new Attack("BLUE TURTLE SHELL", "threw a winged blue turtle shell, which went flying at", false, 20, 80, 40, 1, 1, 3, false, 16);
 	plum->addSpecialAttack(blueshell);
 	Attack* superstar = new Attack("SUPER STAR", "gave a super star to", false, 25, 0, 0, 0, 0, 0, true, 18);
-	Effect* invincible = new Effect("INVINCIBLE", 3, 0, 0, 1, 2.0f);
+	Effect* invincible = new Effect("INVINCIBLE", 3, 0, 0, 1, 2.0);
 	invincible->invincible = true;
 	superstar->addEffect(invincible);
 	plum->addSpecialAttack(superstar);
@@ -1132,7 +1132,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	nat1->targetself = true;
 	nat1->instakill = true;
 	graham->addSpecialAttack(nat1);
-	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -2147483648, 0, 1, 1, 1); //2 - enemy gets fully healed
+	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -9999999, 0, 1, 1, 1); //2 - enemy gets fully healed
 	nat2->afterdesc = " was fully healed";
 	graham->addSpecialAttack(nat2);
 	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 7, true); //3 - freeze team
@@ -1145,7 +1145,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	graham->addSpecialAttack(nat4);
 	Attack* nat5 = new Attack("DICE ROLL", "rolled a 5!", false, 0, 0, 0, 1, 1, 1); //5 - buff opponent
 	nat5->afterdesc = " turned into gold";
-	Effect* golden = new Effect("GOLDEN", 5, 0, 0, 2.75f, 2.75f);
+	Effect* golden = new Effect("GOLDEN", 5, 0, 0, 2.75, 2.75);
 	nat5->addEffect(golden);
 	graham->addSpecialAttack(nat5);
 	Attack* nat6 = new Attack("DICE ROLL", "rolled a 6! An anvil appeared over", false, 0, 0, 0, 1, 1, 1, true); //6 - put anvil over teammate, will hit in 2 turns
@@ -1191,12 +1191,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* nat16 = new Attack("DICE ROLL", "rolled a 16!", false, 0, 0, 0, 0, 0, 0, true); //16 - summon icosahedrongus for team
 	nat16->summon = icosahedrongus;
 	graham->addSpecialAttack(nat16);
-	Attack* nat17 = new Attack("DICE ROLL", "rolled a 17!", false, 0, -2147483648, 0, 1, 1, 1, true); //17 - teammate gets fully healed
+	Attack* nat17 = new Attack("DICE ROLL", "rolled a 17!", false, 0, -9999999, 0, 1, 1, 1, true); //17 - teammate gets fully healed
 	nat17->afterdesc = " was fully healed";
 	graham->addSpecialAttack(nat17);
 	Attack* nat18 = new Attack("DICE ROLL", "rolled an 18! A big burst of energy appeared at", false, 0, 30, 50, 1, 1, 3); //18 - big bomb
 	graham->addSpecialAttack(nat18);
-	Attack* nat19 = new Attack("DICE ROLL", "rolled a 19!", false, 25, 0, 0, 0, 0, 0, true); //19 - make teammate invincible
+	Attack* nat19 = new Attack("DICE ROLL", "rolled a 19!", false, 0, 0, 0, 0, 0, 0, true); //19 - make teammate invincible
 	nat19->afterdesc = " is invincible";
 	nat19->addEffect(invincible); //from plum's move, also buffs attack cause there's no teammate buff roll anyway
 	graham->addSpecialAttack(nat19);
@@ -1302,7 +1302,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* baton = new Attack("BATON", "thwacked", true, -5, 15, 0, 1, 1, 1);
 	baton->afterdesc = " with its baton";
 	Attack* pepperspray = new Attack("PEPPER SPRAY", "sprayed pepper spray at", false, 7, 10, 0, 1, 1, 1);
-	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 3, 0, 0.5f, 0.75f);
+	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 3, 0, 0.5, 0.75);
 	pepperspray->addEffect(peppersprayed);
 	guardbot->addSpecialAttack(pepperspray);
 	Attack* protectandserve = new Attack("PROTECT AND SERVE", "is protecting", false, 10, 0, 0, 1, 1, 1, true);
@@ -2021,12 +2021,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->addRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 
-	Effect* minibuff = new Effect("MINIBUFF", 4, 0, 0, 1.25f, 1.25f, 1.25f, 1.25f);
-	Effect* buff = new Effect("BUFF", 4, 0, 0, 1.5f, 1.5f, 1.5f, 1.5f);
-	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 2.0f, 2.0f, 2.0f, 2.0f);
-	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5f, 2.5f, 2.5f, 2.5f);
+	Effect* minibuff = new Effect("MINIBUFF", 4, 0, 0, 1.25, 1.25, 1.25, 1.25);
+	Effect* buff = new Effect("BUFF", 4, 0, 0, 1.5, 1.5, 1.5, 1.5);
+	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 2.0, 2.0, 2.0, 2.0);
+	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5, 2.5, 2.5, 2.5);
 	
-	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 2147483647); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
+	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 9999999); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
 
 	//tent store stock
 	Item* apple = new HpItem("HEALTHY APPLE", "A healthy red apple. (heals 10 HP)", limbo, 10);
@@ -2317,7 +2317,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 2147483647);
 	desertshopfixed->setStock(magnesium, 2147483647, 100, {{merchant, "Thank you for your monies."}});
 
-	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 2147483647);
+	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 9999999);
 	desertshopfixed->setStock(reviveroot, 2147483647, 300, {{merchant, "Thank you for your monies."}});
 	
 	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", burgstore, 10);
@@ -2473,7 +2473,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							   {franklin, "I simply must thank you for saving our humble town!"},
 							   {franklin, "Here, have this desert delicacy!"},
 							   {self, "Oh thanks!"}});
-	Item* desertdelicacy = new HpItem("DESERT DELICACY", "A very nice desert pie, featuring rare desert fruit. (heals all HP)", limbo, 2147483647);
+	Item* desertdelicacy = new HpItem("DESERT DELICACY", "A very nice desert pie, featuring rare desert fruit. (heals all HP)", limbo, 9999999);
 	franklin->setGift(desertdelicacy);
 	franklin->addConversation({{franklin, "I don't like sand."},
 							   {franklin, "It's coarse and rough and irritating and it gets everywhere."},
@@ -2511,7 +2511,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
 
 	Attack* cooldown = new Attack("COOL DOWN", "poured sand coolant on", false, 0, 0, 0, 1, 1, 1);
-	Effect* cooled = new Effect("COOLED", 6, 0, 0, 1, 1, 1, 1, 0.75f);
+	Effect* cooled = new Effect("COOLED", 6, 0, 0, 1, 1, 1, 1, 0.75);
 	cooldown->addEffect(cooled);
 	Attack* polevault = new Attack("POLE VAULT", "pole vaulted into the air", false, 0, 0, 0, 0, 0, 0); //dodge move!
 	Effect* polevaulting = new Effect("POLE VAULTING", 0);
@@ -2627,7 +2627,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 		
 	Attack* hosedown = new Attack("HOSE DOWN", "hosed down", false, 0, 20, 15, 1, 1, 1);
 	hosedown->afterdesc = " with the fire hose";
-	Effect* soaked = new Effect("SOAKED", 3, 0, 0, 1, 1, 1, 1, 0.5f);
+	Effect* soaked = new Effect("SOAKED", 3, 0, 0, 1, 1, 1, 1, 0.5);
 	hosedown->addEffect(soaked);
 
 	Item* firehose = new HoseItem("FIRE HOSE", "A hose for spraying water at fires, powered by the water tank back at the fire station.", {{NULL, "You sprayed water at the fire."}, {NULL, "The fire has been put out!"}}, firedepartment, FIRE, false, hosedown);
@@ -3290,7 +3290,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	grassman->addSpecialAttack(lawnmower);
 
 	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 9));
-	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 2.0f, 2.0f, 2.0f);
+	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 2.0, 2.0, 2.0);
 	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", false, 10, 0, 0, 1, 1, 5, true);
 	buffgrassman->setBasicAttack(grassstrike);
 	buffgrassman->addSpecialAttack(benchpress);
@@ -3321,7 +3321,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -30, 0, 1, 1, 7, true);
 	ninjachef->addSpecialAttack(ninjafeast);
 	Attack* ninjasmoothie = new Attack("NINJA SMOOTHIE", "prepared a ninja smoothie for", false, 3, 20, 5, 1, 1, 1, true, 11);
-	Effect* smoothied = new Effect("SMOOTHIED", 3, 0, 0, 1.5f, 1, 1, 1.5f);
+	Effect* smoothied = new Effect("SMOOTHIED", 3, 0, 0, 1.5, 1, 1, 1.5);
 	ninjasmoothie->addEffect(smoothied);
 	ninjachef->addSpecialAttack(ninjasmoothie);
 
@@ -3356,22 +3356,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	/*Effect* flinch = new Effect("FLINCH", 1);
 	shrimpleshimmy->addEffect(flinch);*/
 
-	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
-	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
-	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", false, 10, 10, 5, 1, 1, 1, 0.5f);
-	carnplant->setBasicAttack(bite);
-	carnplant->addSpecialAttack(nutrientabsorb);*/
-
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
 	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -6, 10, 0, 1, 1, 1);
 	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 2, 18, 7, 1, 1, 1);
-	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0f);
+	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0);
 	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", false, 15, 10, 5, 1, 1, 1, true, 10);
+	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", false, 10, 10, 5, 1, 1, 1, true, 10, 0, 0.5);
 	flowerempower->addEffect(flowerpower);
 	Attack* solarbeam = new Attack("SOLAR BEAM", "used its petals to channel solar light towards", false, 18, 30, 10, 1, 1, 10, false, 10);
 	flowerfiend->setBasicAttack(vinewhip);
 	flowerfiend->addSpecialAttack(crunch);
-	//flowerfiend->addSpecialAttack(nutrientabsorb);
+	flowerfiend->addSpecialAttack(nutrientabsorb);
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
@@ -3384,7 +3379,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
 	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 10, 20, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 7);
-	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5f);
+	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5);
 	savageroar->addEffect(intimidated);
 	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 7);
 	savagehog->setBasicAttack(charge);
@@ -3402,15 +3397,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mimic->setBoss(true);
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
-	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5f, .5f);
+	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5, .5);
 	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, -3, 5, 0, 1, 1, 1);
 	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
 	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, 1, 12, 0, 1, 1, 1);
 	sandman->setBasicAttack(sandthrow);
 	sandman->addSpecialAttack(sandpunch);
-
-	//NPC* pyramid = new NPC("", "PYRAMON", "Floa");
 
 	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", limbo, 0, Stats(5, 0, 30, 0, 30, 15, 9));
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
@@ -3434,12 +3427,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(15, 30, 5, 20, 0, 2, 9));
 	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 20, 0, 1, 1, 1);
-	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5f, 1.5f, 1.5f, 1, 50.0f);
+	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5, 1.5, 1.5, 1, 50.0);
 	rocknroll->selfeffect = jamming;
 	Attack* saltcure = new Attack("SALT CURE", "coughed up crystals of curing salt onto", false, 15, 5, 0, 1, 1, 1);
 	Effect* saltcured = new Effect("SALT CURED", 2147483647);
-	saltcured->spusage = 2.0f; //salt cured means you take double damage and use double sp
-	saltcured->damagebuff = 2.0f;
+	saltcured->spusage = 2.0; //salt cured means you take double damage and use double sp
+	saltcured->damagebuff = 2.0;
 	saltcure->addEffect(saltcured);
 	rockbug->setBasicAttack(rocknroll);
 	rockbug->addSpecialAttack(saltcure);
@@ -3522,7 +3515,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	tkviola->addSpecialAttack(forcefield);
 	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", false, 15, 0, 0, 0, 0, 7, false, 17);
 	intensegravity->addDescription("Intensify gravity around the enemy team, halving their defense.");
-	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5f);
+	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5);
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
 	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 35, 100, 1, 1, 7, false, 20);
@@ -3549,7 +3542,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	scaldingsteam->addEffect(scalded);
 	greer->addSpecialAttack(scaldingsteam);
 
-	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 10, 0, 1, 0.65f);
+	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 10, 0, 1, 0.65);
 	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 0, 1); //contact attacks for the lavamen
 	burn->addEffect(onfire);
 	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 0, 1);
@@ -3594,11 +3587,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats(15, 10, 30, 10, 10, 20, 9));
 	Attack* poiscurry = new Attack("SCURRY", "poisonously scurried all around the team", true, -5, 10, 0, 2, 3, 1);
-	Effect* poisoned = new Effect("POISONED", 5, 10, 0, 1, 0.75f);
+	Effect* poisoned = new Effect("POISONED", 5, 10, 0, 1, 0.75);
 	poiscurry->addEffect(poisoned);
 	poiscurry->focushits = false;
 	Attack* poisomit = new Attack("POISOMIT", "coughed up a ball of sticky corrosive sludge at", false, 2, 15, 30, 1, 1, 1);
-	Effect* sludged = new Effect("SLUDGED", 10, 5, 0, 1, 0.75f, 0.5f, 1, 0.25f);
+	Effect* sludged = new Effect("SLUDGED", 10, 5, 0, 1, 0.75, 0.5, 1, 0.25);
 	poisomit->addEffect(sludged);
 	poizard->setBasicAttack(poiscurry);
 	poizard->addSpecialAttack(poisomit);
@@ -3636,7 +3629,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	furnaceblast->addEffect(onfire);
 	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 30, 30, 1, 1, 7);
 	exhaust->focushits = false;
-	Effect* smogged = new Effect("SMOGGED", 5, 8, 0, 0.75f, 0.75f);
+	Effect* smogged = new Effect("SMOGGED", 5, 8, 0, 0.75, 0.75);
 	exhaust->addEffect(smogged);
 	factgolem->setBasicAttack(swing);
 	factgolem->addSpecialAttack(fistcannon);
@@ -3644,7 +3637,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	factgolem->addSpecialAttack(exhaust);
 
 	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, big from a healthy diet of ores.", limbo, 0, Stats(40, 20, 25, 30, 25, 15, 9));
-	Effect* ouchie = new Effect("OUCHIE", 2, 0, 0, 1, 0.8f);
+	Effect* ouchie = new Effect("OUCHIE", 2, 0, 0, 1, 0.8);
 	Attack* cbite = new Attack("BITE", "bit down on", true, -5, 15, 15, 1, 1, 1);
 	cbite->addEffect(ouchie);
 	lavadile->setBasicAttack(cbite);
@@ -3654,7 +3647,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats(150, 25, 35, 35, 35, 20, 9));
 	lavagator->setBoss(true); //miniboss
-	Effect* gcrunched = new Effect("CRUNCHED", 3, 0, 0, 1, 0.6f);
+	Effect* gcrunched = new Effect("CRUNCHED", 3, 0, 0, 1, 0.6);
 	Attack* gcrunch = new Attack("CRUNCH", "crunched down on", true, -5, 20, 20, 1, 1, 1);
 	gcrunch->addEffect(gcrunched);
 	lavagator->setBasicAttack(gcrunch);
@@ -3694,7 +3687,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
 	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
 	askew->afterdesc = " askew";
-	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8f);
+	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8);
 	askew->addEffect(offbalance);
 	newtab->setBasicAttack(askew);
 	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 10, 0, 4, 5, 1);
@@ -3711,7 +3704,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	browser->setBasicAttack(medge);
 	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
 	gsearch->afterdesc = "'s weaknesses";
-	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5f);
+	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5);
 	gsearch->addEffect(searched);
 	browser->addSpecialAttack(gsearch);
 	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
@@ -3727,7 +3720,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	iexplorer->addEffect(buffering);
 	browser->addSpecialAttack(iexplorer);
 	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
-	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5f);
+	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5);
 	firefox->addEffect(foxfire);
 	browser->addSpecialAttack(firefox);
 	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
@@ -3756,7 +3749,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* hatchling = new NPC("", "HATCHLING", "Just-hatched lizard with an instant parental bond and fighting instincts.", limbo, 0, Stats(10, 0, 7, 0, 1, 17, 4));
 	Attack* filialinstinct = new Attack("FILIAL INSTINCT", "instinctually aided", false, 0, 0, 0, 1, 1, 1, true, 10);
-	Effect* mcbond = new Effect("MOTHER-CHILD BOND", 2147483647, 0, 0, 1.125f);
+	Effect* mcbond = new Effect("MOTHER-CHILD BOND", 2147483647, 0, 0, 1.125);
 	mcbond->bond = true; //so we can check to remove the effect when the hatchling is incapacitated
 	filialinstinct->addEffect(mcbond);
 	filialinstinct->prioritizeleader = true;
@@ -3786,7 +3779,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* axeman = new NPC("", "AXEMAN", "A really deranged human whose head was exchanged for the head of an axe.", limbo, 0, Stats(40, 15, 35, 18, 50, 30, 9));
 	Attack* chop = new Attack("CHOP", "swung his head at", true, -5, 15, 20, 1, 1, 1);
-	Effect* chopped = new Effect("CHOPPED", 2147483647, 0, 0, 1, 1, 0.5f, 1, 0.5f);
+	Effect* chopped = new Effect("CHOPPED", 2147483647, 0, 0, 1, 1, 0.5, 1, 0.5);
 	Attack* karatechop = new Attack("KARATE CHOP", "karate chopped", true, 2, 5, 0, 1, 1, 1);
 	karatechop->afterdesc = "'s neck";
 	karatechop->addEffect(chopped);
@@ -3797,8 +3790,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* disamalg = new NPC("", "DISEASE AMALGAMATION", "Writhing mass of pathogens featuring many colors.", limbo, 0, Stats(100, 40, 5, 5, 30, 0, 9));
 	Effect* tetanus = new Effect("TETANUS", 5, 8);
-	Effect* commoncold = new Effect("COMMON COLD", 3, 2, 0, 1, 0.8f);
-	Effect* asthenia = new Effect("ASTHENIA", 5, 0, 0, 0.75f, 0.5f);
+	Effect* commoncold = new Effect("COMMON COLD", 3, 2, 0, 1, 0.8);
+	Effect* asthenia = new Effect("ASTHENIA", 5, 0, 0, 0.75, 0.5);
 	Effect* brainbug = new Effect("BRAIN BUG", 5, 0, 5);
 	Effect* bedridden = new Effect("BEDRIDDEN", 3);
 	bedridden->tiring = true;
@@ -3878,7 +3871,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	paveshark->addSpecialAttack(breach);
 
 	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Twister with an abnormally long lifespan and a collection of junk from all across BURGERSBURG.", limbo, 0, Stats(100, 30, 30, 0, 30, 50, 9));
-	Effect* tailwinded = new Effect("TAILWIND", 2147483647, 0, 0, 1, 1, 1, 1, 2.5f);
+	Effect* tailwinded = new Effect("TAILWIND", 2147483647, 0, 0, 1, 1, 1, 1, 2.5);
 	Attack* tailwind = new Attack("TAILWIND", "is boosting its team's speed", false, 0, 0, 0, 1, 1, 9, true);
 	tailwind->focushits = false;
 	tailwind->addEffect(tailwinded);
@@ -3976,7 +3969,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* brassknuckles = new Attack("BRASS KNUCKLES", "swung at", true, -5, 20, 0, 1, 1, 1);
 	brassknuckles->afterdesc = " with brass knuckles";
 	Attack* chairthrow = new Attack("CHAIR", "threw a nearby chair at", false, 6, 40, 0, 1, 1, 1);
-	Effect* ouchknees = new Effect("OUCH MY KNEES", 2, 0, 0, 1, 0.9f);
+	Effect* ouchknees = new Effect("OUCH MY KNEES", 2, 0, 0, 1, 0.9);
 	Attack* canecrunch = new Attack("CANE CRUNCH", "hit", true, 15, 30, 0, 1, 1, 1);
 	canecrunch->afterdesc = "'s knees with his rich person cane";
 	richperson->setBasicAttack(brassknuckles);
@@ -4044,8 +4037,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* lockedon = new Effect("LOCKED ON", 4); //does nothing
 	Attack* lockon = new Attack("LOCK ON", "locked onto", false, -5, 0, 0, 1, 1, 1);
 	lockon->addEffect(lockedon);
-	Effect* defensemode = new Effect("DEFENSE MODE", 2147483647, 1, 2.0f);
-	Effect* assaultmode = new Effect("ASSAULT MODE", 2147483647, 2.0f, 1);
+	Effect* defensemode = new Effect("DEFENSE MODE", 2147483647, 1, 2.0);
+	Effect* assaultmode = new Effect("ASSAULT MODE", 2147483647, 2.0, 1);
 	Attack* minigun = new Attack("MINIGUN", "gunned down", false, 4, 6, 15, 6, 6, 1);
 	minigun->afterdesc = " with his minigun";
 	minigun->synergies.push_back(lockedon);
@@ -4115,6 +4108,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//you can also REPENT if you haven't defeated them all yet
 	//then you get the antenna
 
+	/*NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 10));
+	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
+	carnplant->setBasicAttack(bite);
+	carnplant->addSpecialAttack(nutrientabsorb);*/
+
+	//smogfish
+	//copycat (turn into random teammate, not player)
+
+	//junglenaut
+	//constrict
+	//some other attacks
+
 	NPC* thedark = new NPC("", "THE DARK", "", limbo, 0, Stats(), Stats());
 	//temple of hope in the desert, gives big red button of hope
 	//you get seperated from your teammates and you have to fight enemies that decay your stats
@@ -4124,6 +4129,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//and when stats are low enough it can tempt teammates into despair
 	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
 	//after that you get the button
+	
+	//shadow creature (attacks that chip stats)
+
+	//masky
+
+	//NPC* pyramid = new NPC("", "PYRAMON", "Floa");
+	//floating pyramid attacks
+	//hypnotize or something
 
 	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves to get people mad.", limbo, 0, Stats(), Stats());
 	//temple of patience in the volcano area, gives plotometer of patience
@@ -4135,6 +4148,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//fwf increases in heat up to two times after getting wrathfully hit enough, and in the third phase all attacks add to his attack (so you can't just attack wrathfully with no consequences then)
 	//teammates calm down naturally after a few turns (and increase wrath meter less), but you can CALM DOWN them so they calm down faster (5 by default probably)
 	//then you get the plotometer
+
+	//something related to the outside
+
+	//something like the boss
+
+	//something that gets angry when you hit it
 
 	Attack* ragebait;
 	//self - {{firewithfire, ""}}

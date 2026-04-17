@@ -30,7 +30,8 @@ namespace Helper {
 	void printAttacks(NPC* npc); //prints the attacks that the given npc has
 	void deleteItem(Room* currentRoom, std::vector<Item*>* inventory, Item* item); //deletes the item and removes it from the inventory or current room based on where it was
 	int Clamp(int num, int min, int max); //returns num with a minimum return value of min and a maximum of max
-	float ClampF(float num, float min, float max); //same as Clamp but for floats instead of ints
+	double ClampD(double num, double min, double max); //same as Clamp but for floats instead of ints
+	int Round(double num); //do (int)round(num), so I don't have to write that everywhere
 	void sortBySpeed(std::vector<NPC*>& team); //sorts the vector of npcs by speed
 	int aliveCount(std::vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
