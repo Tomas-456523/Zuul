@@ -35,7 +35,7 @@ struct Attack {
 	int targuard = 0; //set guard on the target
 
 	bool spbomb = false;
-	bool protect = false; //if this is the move that makes the mover start defending the target
+	bool protect = false; //if this is a move that makes the mover start defending the target
 	bool parry = false; //if this is the parry move and we have to tell the attacker to start parrying the target
 
 	int minLevel; //must be at least this level to use the attack

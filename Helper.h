@@ -34,6 +34,7 @@ namespace Helper {
 	int Round(double num); //do (int)round(num), so I don't have to write that everywhere
 	void sortBySpeed(std::vector<NPC*>& team); //sorts the vector of npcs by speed
 	int aliveCount(std::vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
+	vector<NPC*> getAlive(const vector<NPC*>& team); //get vector with only the npcs above 0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
 	void printConversation(const Conversation* _convo, bool finalpause); //print a conversation in conversation order
 	void printLvlUpData(NPC* npc); //print the level up data of the given npc

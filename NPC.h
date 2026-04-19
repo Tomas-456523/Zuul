@@ -109,6 +109,7 @@ public: //you need to set stats on creation
 	const char* getHiddenDescription();
 	bool getQuantumn();
 	bool getRoaming();
+	Effect* getTargetEffect();
 	bool getBanker();
 	bool getThief();
 	bool getShark();
@@ -166,7 +167,7 @@ public: //you need to set stats on creation
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false, int instant = 0);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
-	int damage(double power, double pierce);
+	void damage(double power, double pierce);
 	void directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
@@ -182,7 +183,7 @@ public: //you need to set stats on creation
 	void alterSp(int amount, const char* status = NULL);
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char* suffix); //add suffix to end of npc name
-	void setGuard(int _guard); //set guard to block attacks
+	void setGuard(int _guard, bool additive); //set guard to block attacks
 	void setGift(Item* item, bool fightfirst = false); //item to give when talking
 	NPCEffect* setEffect(Effect* effect, NPC* affector = NULL); //add an effect to the npc and return a pointer to the associated npceffect
 	void removeEffect(Effect* effect, NPC* affector);

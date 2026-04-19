@@ -338,6 +338,9 @@ bool NPC::getQuantumn() {
 bool NPC::getRoaming() {
 	return roaming;
 }
+Effect* NPC::getTargetEffect() { //get the effect this npc like to prioritize when targeting
+	return targeteffect;
+}
 bool NPC::getBanker() {
 	return banker;
 }
@@ -671,10 +674,9 @@ void NPC::setGymStart(time_t start) {
 	gymStart = start;
 }
 void NPC::setTaking(NPC* npc) {
-	taking = npc;
-	if (taking) {
-		taking->setAway(true);
-	}
+	if (taking) taking->setAway(false); //untake the old taking
+	taking = npc; //set new taking
+	if (taking) taking->setAway(true); //make new taking be set to away
 }
 void NPC::setAway(bool isaway) {
 	away = isaway;
@@ -771,18 +773,18 @@ void NPC::printEffects() { //prints the effects this npc has
 	}
 	cout << "\n";
 }
-//damages the npc and returns the total damage
-int NPC::damage(double power, double pierce) {
+//damages the npc
+void NPC::damage(double power, double pierce) {
 	double damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
 	int oldguard = guard; //record what the guard was before
-	if (damage > 0) guard--; //hits lower guard
 	double defenseD = (power > 0 ? stats.defense : 0); //converts stats to doubles for easier damage calculation, also don't defend against heals!
 	double toughnessD = stats.toughness;
 	//calculates the damage
 	int damage = Round(power * (10.0f/(10.0f + ClampD(defenseD - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessD)),0,defenseF)))) * totalhits;
+	if (damage > 0) guard--; //hits lower guard
 	int totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	
-	if (oldguard > 0) { //block attacks if we have guard
+	if (oldguard > 0 && guard < oldguard) { //block attacks if we have guard
 		cout <<  "\nThe attack was blocked by " << name << "'s guard!";
 		CinPause();
 		if (guard <= 0) { //prints if the guard is now down
@@ -791,7 +793,7 @@ int NPC::damage(double power, double pierce) {
 		}
 	} else { //subtract the damage and print how much was done
 		health -= totalDamage;
-		printDamage(damage);
+		printDamage(totalDamage);
 	}
 
 	return totalDamage;
@@ -845,8 +847,9 @@ void NPC::setEscapable(bool _escapable) {
 void NPC::setLevelUp(bool _leveledUp) { //set if we leveled up
 	leveledUp = _leveledUp;
 }
-void NPC::setGuard(int _guard) {
-	guard = _guard;
+void NPC::setGuard(int _guard, bool additive) {
+	if (additive && guard > 0) guard += _guard; //add to the current guard (if current guard is less than 0, though, we just set it to the given amount anyway)
+	else if (_guard > guard) guard = _guard; //set to the new guard if it's more than before
 }
 //all the changes editors edit the most recently added changes object and should only be called on world setup lest we segfault due to a lack of thing in queue
 void NPC::addRecruitLink(NPC* npc, size_t condition) { //links this npc to be set to recuritable later
@@ -939,8 +942,13 @@ void NPC::setTalkOnDefeat(bool talk) {
 void NPC::setForceBattle(bool force) { //set if the npc forces battle after talking
 	forcebattle = force;
 }
-//sets an effect on the npc, affected by the given affector. Affector is also treated as the way to know if it's in battle or not
+//sets an effect on the npc, affected by the given affector. Affector is also treated as the way to know if it's in battle or not MARK: set effect
 NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
+	if (isBoss && (effect->remove || effect->hypnotize)) { //usually attacks that set these are filtered out for bosses before being launched, but we check for it here in case the player did that
+		cout <<"\n" << name << " was not affected by the attack's " << effect->name << "!";
+		CinPause();
+		return;
+	}
 	bool stacking = false;
 	for (Effect* _effect : effects) { //check if we already have the effect
 		if (effect == _effect) { //if we have the effect, assume we have the corresponding npceffect
@@ -1023,7 +1031,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	
 	return &npceffects[effect]; //return a reference to the npc's manager of this effect
 }
-//removes an effect from the npc, specifically from the affector in cases of stacking, ans affector is also used like the "in battle" and "announce changes" bool
+//removes an effect from the npc, specifically from the affector in cases of stacking, ans affector is also used like the "in battle" and "announce changes" bool MAKR: remove effect
 void NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clarify an affector it just removes all the stacks of the effect
 	for (Effect* _effect : effects) {
 		if (effect == _effect) {
@@ -1099,7 +1107,7 @@ void NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clar
 		}
 	}
 }
-//called by Battle to tick this npc's effects, not all at once to allow for fine tuning, please do not call while iterating probably
+//called by Battle to tick this npc's effects, not all at once to allow for fine tuning, please do not call while iterating probably MARK: tick effects
 void NPC::tickEffect(Effect* effect) {
 	NPCEffect& npceffect = npceffects[effect]; //get the npceffect for convenience
 	if (getHealth()) { //we don't affect the npc if they're unconscious
@@ -1120,7 +1128,7 @@ void NPC::tickEffect(Effect* effect) {
 			}
 		}
 		if (effect->guardset) { //applies the guard
-			setGuard(effect->guardset);
+			setGuard(effect->guardset, false);
 		}
 	}
 	//decrement even if the npc is unconscious because a fire will eventually go out if you're on fire even if you're asleep

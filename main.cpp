@@ -1206,7 +1206,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	graham->addSpecialAttack(nat20);
 
 	//Rich Guy Richie is the summoner MARK: Richie
-	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(5, 0, 15, 0, 0, 14, 9), Stats(1, 0, 1, 0, 0, 1, 0));
+	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(10, 0, 15, 0, 0, 14, 9), Stats(1, 0, 1, 0, 0, 1, 0));
 	Conversation richrej = {{richie, "No, everyone in this city is either rich and trying to get me to join some BURGER cult,"}, {richie, "or not rich and trying to rob me."}, {richie, "No offense but I don't really trust you."}};
 	shared_ptr<Conversation> richrej2 = make_shared<Conversation>(Conversation({{self, "Hey you wanna help me fight these BURGER guys?"},
 		{richie, "In that building over there?"},
@@ -1329,7 +1329,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richie->addSpecialAttack(buyheal);
 	Attack* buybot = new Attack("AMAZON PRIME", "bought a ROBOCOP on Amazon", false, 15, 0, 0, 0, 0, 0);
 	buybot->summon = guardbot;
-	buybut->summonamount = 1;
+	buybot->summonamount = 1;
 	richie->addSpecialAttack(nat7);
 	Attack* buymech = new Attack("AMAZON PRIME", "bought a MARINE MECH on Amazon", false, 20, 0, 0, 0, 0, 0);
 	buymech->summon = marinemech;
@@ -1341,6 +1341,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richie->setGuardian(buford);
 	buford->setGuarding(richie);
 	buford->setDialogue("...");
+	buford->addGymDialogue("...");
 	buford->addRejectionDialogue({{buford, "..."}, {NULL, "BUFORD is already recruited by RICHIE!"}});
 	Attack* counter = new Attack("COUNTER", "counterattacked", false, -5, 10, 0, 1, 1, 1); //this very much is a contact move but it has to be marked as non-contact lest there be an infinite recoil loop
 	buford->setRecoilAttack(counter);
@@ -2126,7 +2127,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{developer, "Don't worry you will always truly be BERNARD."},
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
-							{self, "Yoooo nice thanks.\n\n\n"}};
+							{self, "Yoooo nice thanks.\n\n\n"}}; //MARK: is there a reason there's three newlines here?
 	devconvo.skipcondition = {ISBERNARD};
 	shared_ptr<Conversation> devconvo2 = make_shared<Conversation>(Conversation({{developer, "Ayy BERNARD how's it going?"},
 							{self, "Pretty good!"},
@@ -2134,7 +2135,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{developer, "Yo nice."},
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
-							{self, "Yoooo nice thanks.\n\n\n"}}));
+							{self, "Yoooo nice thanks.\n\n\n"}})); //MARK: is there a reason there's three newlines here?
 	devconvo.alt = devconvo2;
 	developer->addConversation(devconvo);
 	developer->addConversation({{self, "Yo developer man."},
@@ -2215,7 +2216,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//{developer, "but nobody will ever see them cause it's a text-based game :|"}}
 	//scope creep
 	//future projects
-	//saying dancing
+	{{developer, "Hey check it out I can say dancing!"},
+	 {NULL, ""}
+
+\O/		 O/
+ |		/|
+/ \		
+
+ _/										    \_		  \ /		 _/										    \_		  \ /		 _/										    \_		  \ /		 _/	
+  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O
+  / \		    \	 // \\		  /  	  / \		  / \		  / \		    \	 // \\		  /  	  / \		  / \		  / \		    \	 // \\		  /  	  / \		  / \		  / \
+	{developer, "He's breakdancing!"}}
 	//favorite game
 	//talk about the mountain {developer, ""}
 	{{developer, "You know there was going to be a \"BIG CAT\" as the first enemy on the mountain,"},
@@ -3398,7 +3409,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mimic->setBasicAttack(chomp);
 	mimic->addSpecialAttack(stomp);
 	mimic->addSpecialAttack(monymeteor);
-	mimic->setBoss(true);
+	mimic->setBoss(true); //of the mini variety
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
 	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5, .5);
@@ -3968,7 +3979,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	sharkrepellant->selfcancel = shrouded;
 	ratman->addSpecialAttack(explosivegel);
 
-	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his money.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
+	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his monies.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
 	Attack* brassknuckles = new Attack("BRASS KNUCKLES", "swung at", true, -5, 20, 0, 1, 1, 1);
 	brassknuckles->afterdesc = " with brass knuckles";
 	Attack* chairthrow = new Attack("CHAIR", "threw a nearby chair at", false, 6, 40, 0, 1, 1, 1);
@@ -4143,7 +4154,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//floating pyramid attacks
 	//hypnotize or something
 
-	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(), Stats());
+	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(5000, 15, 15, 0, 15, 14, 9), Stats(1, 0, 1, 0, 1, 1, 0));
 	//temple of patience in the volcano area, gives plotometer of patience
 	//you do puzzles and fight fire enemies
 	//then you fight fire with fire
@@ -4154,27 +4165,40 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//teammates calm down naturally after a few turns (and increase wrath meter less), but you can CALM DOWN them so they calm down faster (5 by default probably)
 	//then you get the plotometer
 
+	//burny burn
+
+	//firefight "fought"" with fire"
+	//ragebait
+
+	//firefight
+	//spark "flicked an explosive spark at"
+	//ragebait
+
+	//spark
+	//ragebait
+	//flame
+
 	//something related to the outside
 
 	//something like the boss
 
 	//something that gets angry when you hit it
 
+	//floria would just heal more? prolly don't allow beneficial moves
 	Attack* ragebait;
-	//self - {{firewithfire, ""}}
-	//self - {{firewithfire, ""}} (viola recruited)
-	//floria - {{firewithfire, ""}}
-	//egadwick - {{firewithfire, ""}}
+	//self - {{firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate."}, {self, "SHUT UP >:|"}}
+	//floria - {{firewithfire, "Hey Floria your hat looks stupid."}, {firewithfire, "You're stupid."}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}}
+	//egadwick - {{firewithfire, "Who let this fossil into the team?"}, {firweithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd..."}, {egadwick, "You don't understand the marvelousness of science!"}}
 	//absolom - {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {firewithfire, "At least he's not all dead like-"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! >:("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}}
-	//viola - {{firewithfire, ""}}
-	//mike - {{firewithfire, ""}}
+	//viola - {{firewithfire, ""}} comment about kidnapping
+	//mike - {{firewithfire, ""}} taunt about mine collapse?
 	//cacty - {{NULL, "FIRE WITH FIRE - *insults Cacty's mother in cactus language*"}, {NULL, "CACTY - *furious cactus noises*"}}
-	//michelin - {{firewithfire, ""}}
-	//carlos - {{firewithfire, ""}}
-	//plum - {{firewithfire, ""}}
-	//graham - {{firewithfire, ""}}
-	//richie - {{firewithfire, ""}}
-	//ratman - {{firewithfire, ""}, {ratman, "I will not tolerate this slander.}, {ratman, "Because I'm Ratman}}
+	//michelin - {{firewithfire, ""}} insults chef abilities
+	//carlos - {{firewithfire, ""}} insults failure to hack mircosoft
+	//plum - {{firewithfire, "Oh you must be the famous fungus princess."}} etc.
+	//graham - {{firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA"}, {graham, "Hey.... you shut up! >:("}}
+	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "Even if you did for you it's the same as donating penny shavings..."}, {richie, "STOP! >:("}}
+	//ratman - {{firewithfire, "Ratman!"}, {firewithfire, "..."}, {firewithfire, "Yeah you're just a weirdo in a rat costume."}, {ratman, "I will not tolerate this slander."}, {ratman, "Because I'm Ratman."}}
 	Effect* wrath;
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)
@@ -4307,13 +4331,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	flowerguard->addRejectionDialogue({{NULL, "FLOWER FIEND - *flowery shriek*"}});
 
 	NPC* mimic1 = new NPC(*mimic);
-	mimic1->setLeader(true, 30, NULL);
+	mimic1->setLeader(true, 30, NULL, false);
 	mimic1->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}}); //you see it's funny because chests have hinges
 	mimic1->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
 	mimic1->setEscapable(false);
 	mimic1->setForceBattle();
 	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
-	mimic1->setBoss(true); //of the mini variety
 
 	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, {}, mimic1);
 	fakechest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
@@ -4606,22 +4629,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	crocguardn->addRejectionDialogue({{NULL, "LAVADILE - *growllllll*"}});
 
 	NPC* mimic2 = new NPC(*mimic);
-	mimic1->setLeader(true, 50, NULL);
-	mimic1->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
-	mimic1->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
-	mimic1->setEscapable(false);
-	mimic1->setForceBattle();
-	mimic1->setExtraMonies(1500); //you get lots of monies for beating the mimic
-	mimic1->setBoss(true); //mini
+	mimic2->setLeader(true, 50, NULL, false);
+	mimic2->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic2->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic2->setEscapable(false);
+	mimic2->setForceBattle();
+	mimic2->setExtraMonies(1500); //you get lots of monies for beating the mimic
 
 	NPC* mimic3 = new NPC(*mimic);
-	mimic1->setLeader(true, 50, NULL);
-	mimic1->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
-	mimic1->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
-	mimic1->setEscapable(false);
-	mimic1->setForceBattle();
-	mimic1->setExtraMonies(1500); //you get lots of monies for beating the mimic
-	mimic1->setBoss(true); //mini
+	mimic3->setLeader(true, 50, NULL, false);
+	mimic3->setDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic3->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
+	mimic3->setEscapable(false);
+	mimic3->setForceBattle();
+	mimic3->setExtraMonies(1500); //you get lots of monies for beating the mimic
 
 	Item* fakechest1 = new TreasureItem("TREASURE CHEST 1", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic2);
 	Item* fakechest2 = new TreasureItem("TREASURE CHEST 2", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic3);
@@ -5860,7 +5881,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
 		cout << "\n" << info->getText(); //prints the info
-	//treasure chest items either give money or are trapped and start a battle
+	//treasure chest items either give monies or are trapped and start a battle
 	} else if (!strcmp(item->getType(), "treasure")) {
 		TreasureItem* treasure = (TreasureItem*)item; //converts to the corresponding subclass
 		cout << "\nYou opened the " << itemname << "...";

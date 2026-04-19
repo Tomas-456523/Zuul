@@ -199,11 +199,19 @@ namespace Helper {
 	int aliveCount(vector<NPC*>& team) {
 		int i = 0; //starts at 0 and adds 1 every time someone has >0 hp
 		for (NPC* npc : team) {
-			if (npc->getHealth() > 0 && npc->getBasicAttack()) { //they also don't count if they have no attacks (e.g. a life plant, it doesn't do anything so it doesn't count)
+			if (npc->getHealth() > 0 && (npc->getBasicAttack() || !npc->getSpecialAttacks()->empty())) { //they also don't count if they have no attacks (e.g. a life plant, it doesn't do anything so it doesn't count)
 				i++;
 			}
 		}
 		return i; //returns the found count
+	}
+	//get new vector with only the npcs above 0 hp
+	vector<NPC*> getAlive(const vector<NPC*>& team) {
+		vector<NPC*> alive; //*capacitated
+		for (NPC* npc : team) { //push all the npcs above 0 hp into the thingy
+			if (npc->getHealth() > 0) alive.push_back(npc);
+		}
+		return alive;
 	}
 	//loops until the player chooses either option A or B, and returns true if A was chosen and false if B was chosen
 	bool AOrB(const char* prompt, const char* A, const char* B) {
