@@ -95,7 +95,7 @@ public: //you need to set stats on creation
 	time_t getGymStart();
 	int getGuard();
 	bool getAway();
-	NPCEffect* getEffect(const char* effect, bool getfinished); //check the npc's data relating to this effect
+	NPCEffect* getEffect(Effect* effect, bool getfinished); //check the npc's data relating to this effect
 	vector<NPC*>& getGuardians();
 	NPC* getGuarding();
 	NPC* getParrying();

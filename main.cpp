@@ -2211,21 +2211,34 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {self, "How silly behavior."}}
 	//save system stuff
 	//commentary about the world
-	//{{developer, "It's weird how I have a very specific vision for how the world looks,"},
-	//{developer, "like I have character designs and everything,"},
-	//{developer, "but nobody will ever see them cause it's a text-based game :|"}}
+	{{developer, "It's weird how I have a very specific vision for how the world looks,"},
+	 {developer, "like I have character designs and everything,"},
+	 {developer, "but nobody will ever see them cause it's a text-based game :|"}}
 	//scope creep
 	//future projects
 	{{developer, "Hey check it out I can say dancing!"},
-	 {NULL, ""}
-
-\O/		 O/
- |		/|
-/ \		
-
- _/										    \_		  \ /		 _/										    \_		  \ /		 _/										    \_		  \ /		 _/	
-  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O
-  / \		    \	 // \\		  /  	  / \		  / \		  / \		    \	 // \\		  /  	  / \		  / \		  / \		    \	 // \\		  /  	  / \		  / \		  / \
+	 {NULL, " _/\n  \\O\n  / \\"},
+	 {NULL, "\n_|_O\n    \\"},
+	 {NULL, "\n   O\n /' '\\"},
+	 {NULL, "\n   O_|_\n  /"},
+	 {NULL, "    \\_\n   O/\n  / \\"},
+	 {NULL, "  \\ /\n   O\n  / \\"},
+	 {NULL, " _/\n  \\O\n  / \\"},
+	 {NULL, "\n_|_O\n    \\"},
+	 {NULL, "\n   O\n /' '\\"},
+	 {NULL, "\n   O_|_\n  /"},
+	 {NULL, "    \\_\n   O/\n  / \\"},
+	 {NULL, "  \\ /\n   O\n  / \\"},
+	 {NULL, " _/\n  \\O\n  / \\"},
+	 {NULL, "\n_|_O\n    \\"},
+	 {NULL, "\n   O\n /' '\\"},
+	 {NULL, "\n   O_|_\n  /"},
+	 {NULL, "    \\_\n   O/\n  / \\"},
+	 {NULL, "  \\ /\n   O\n  / \\"},
+	 {NULL, " _/\n  \\O\n  / \\"},
+/*	 _/										    \_		  \ /		 _/										    \_		  \ /		 _/										    \_		  \ /		 _/	
+	  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O
+	  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \ * /
 	{developer, "He's breakdancing!"}}
 	//favorite game
 	//talk about the mountain {developer, ""}
@@ -2243,7 +2256,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//so nice seeing game systems evolve
 	//ascii art time
 	{{developer, "Have you noticed how nobody actually says your name?"},
-	 {developer, "They all say \"kiddo\", \"kid\", etc."},
+	 {developer, "They all say \"kiddo\", \"kid\", \"mister\", etc."},
 	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};*/
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
@@ -6293,7 +6306,8 @@ int main() {
 	PrintRoomData(self->getRoom()); //prints the data of the starting room
 
 	bool promptline = true; //if the prompting > should be in a newline, only false for typing nothing
-	while (bool continuing = true) { //the main loop! we continue until continuing is set to false (when the player quits or gets an ending)
+	bool continuing = true; //we continue until this is set to false (when the player quits or gets an ending)
+	while (continuing) { //the main loop!
 		char command[255] = ""; //the charray that the player inputs into
 
 		char commandWord[255]; //the first word of the player input (the command)

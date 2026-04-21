@@ -153,13 +153,15 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			if (!attack->targetFainted && !reciever->getHealth()) { //ignore incapacitated affected npcs
 				continue;
 			}
-			if (!reciever->getGuardians().empty()) {
-				NPC* guardian = reciever->getGuardians();
-				//MARK: figure out how to determine attacks are beneficial and shouldn't be blocked																			//won't block hits for opposing side (for example, after getting hypnotized and doing a protect move)
-				if (attack->power > 0 && guardian->getHealth() && !guardian->getHypnotized() && !guardian->getFrozen() && !guardian->getRecovering() && !guardian->getAway() && guardian->getEnemy() == reciever->getEnemy()) {
+			vector<NPC*> guardians = reciever->getGuardians(); //check the reciever's guardians
+			for (size_t i = 0; i < guardians.size(); i++) { //check all the guardians for if they can take the hit for the current reciever, and just go with the first one we find if there's multiple
+				NPC* guardian = guardians[i];
+				//guardians block hits if they're not beneficial and the guardian still has hp and they're not frozen or recovering or not here, of course, and also they won't block hits for opposing side (for example, after getting hypnotized and doing a protect move), also taking hypnotization into account
+				if (!attack->getBeneficial() && guardian->getHealth() && !guardian->getFrozen() && !guardian->getRecovering() && !guardian->getAway() && (!guardian->getHypnotized() && guardian->getEnemy() == reciever->getEnemy()|| guardian->getHypnotized() && guardian->getEnemy() != reciever->getEnemy())) {
 					cout << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
 					reciever = guardian;
 					CinPause();
+					break;
 				}
 			}
 			double attackProcessing = 0; //processes attack and pierce as doubles for better rounding at the end
@@ -184,27 +186,32 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			for (int j = 0; j < hits; j++) {
 				if (hits > 1) cout << "\nHit " << j+1 << "!";
 				double randmultiplier = 0.9 + ((double)rand()/RAND_MAX) * 0.2; //randomly vary attack power of every hit by 10%
-				bool crit = !(rand()%20) //5% chance to crit
+				bool crit = !(rand()%20); //5% chance to crit
 				if (crit) randmultiplier *= 1.75;
-				if (reciever->getParrying()) { //parry the hit if parrying MARK: DON'T PARRY BENEFICIAL attacks and also not recoil attacks
+				if (reciever->getParrying() && !attack->getBeneficial()) { //parry the hit if parrying
 					cout << "\n" << reciever->getName() << " parried it!";
 					CinPause();
-					reciever->setParrying(false); //don't parry other attacks
+					reciever->setParrying(NULL); //don't parry other attacks
 					attacker->damage(effectiveAttack*randmultiplier*2.0, effectivePierce, 1); //send the attack right back at double power!
-				} else if (!reciever->getInvincible()) { //hit normally
+				} else if (!reciever->getInvincible() && attack->power > 0) { //hit normally
 					reciever->damage(effectiveAttack*randmultiplier, effectivePierce, 1);
 				}
-				if (crit) cout << "\nCRITICAL HIT!"; //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or oh shoot if you got hit)
-				if (reciever->getInvincible()) cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
-				CinPause();
+				if (crit) { //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or "oh shoot" if you got hit)
+					cout << "\nCRITICAL HIT!";
+					CinPause();
+				}
+				if (reciever->getInvincible() && attack->power > 0) {
+					cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
+					CinPause();
+				}
 			}
 			if (!hits) cout << "\nThe attack missed!";
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 				reciever->setEffect(attack->appliedeffect);
 			}
 			if (attack->cancel != NULL) { //removes the effect this attack cancels out
-				if (Effect* canceled = reciever->getEffect(attack->cancel->name))
-				reciever->removeEffect(*canceled, NULL); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
+				if (NPCEffect* canceled = reciever->getEffect(attack->cancel))
+				reciever->removeEffect(canceled->effect, NULL); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
 			}
 			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 				attacker->damage(attack->recoil * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0, 0, 1);
@@ -212,8 +219,8 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			if (attack->guardset) { //set the guard if the attack does that, add it to the current guard unless it's negative, then it goes from 0 because getGuard returns that for values < 0
 				attacker->setGuard(attack->guardset, true);
 			}
-			if (attack->protect) { //MARK: guardians should NOT defend if frozen, tired, or hypnotized, or removed
-				if (NPC* guarding = attacker->getGuarding()) guarding->setGuardian(NULL); //can only guard one npc at a time
+			if (attack->protect) {
+				if (NPC* guarding = attacker->getGuarding()) guarding->removeGuardian(attacker); //can only guard one npc at a time
 				reciever->setGuardian(attacker);
 				attacker->setGuarding(reciever);
 			}
@@ -221,7 +228,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				carryOutAttack(reciever->getRecoilAttack(), reciever, attacker, true);
 			}
 			for (int i = 0; i < attack->copyamount; i++) { //copy the target for copying attacks
-				addNPC(target); //duplicate the target with no parent on the same team as the target
+				addNPC(reciever); //duplicate the target with no parent on the same team as the target
 			}
 			if (attack->spleak) reciever->alterSp(-attack->spleak);
 			
@@ -247,8 +254,8 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 
 //carries out the attack (makes it hit the target) MARK: carry out attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil) {
-	attacker->alterSp(-attack->cost); //removes sp from the attacker
-	if (attack->spbomb) { //if it's this one move, we have to check due to its unique functionality
+	attacker->alterSp(-Round(attack->cost*attacker->getSPUseMultiplier())); //removes sp from the attacker
+	if (attack->spbomb) { //if it's this one move, we have to do stuff related to its unique functionality
 		attack->power = 0; //starts at 0 damage
 		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
 			attack->power += npc->getSP();
@@ -264,13 +271,17 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		if (attack->power < 12) cout << "a small glowing orb!";
 		else if (attack->power < 30) cout << "really big!";
 		else if (attack->power < 60) cout << "a boulder of energy!";
-		else if (attack->power < 80) cout << "a huge atack!";
+		else if (attack->power < 80) cout << "a huge attack!";
 		else if (attack->power < 100) cout << "super big!";
 		else cout << "massive!";
 		CinPause();
-	} //says what happened depending on if it was normal or due to recoil
-	if (!recoil) cout << "\n" << attacker->getName() << " used " << attack->name << "!";
-	else cout << "\n" << target->getName() << " was affected by " << attacker->getName() << "'s " << attack->name << "!";
+	}
+	//says what happened depending on if it was normal or due to recoil
+	if (!recoil) cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //using normal attack
+	else if (attack->focushits) cout << "\n" << target->getName() << " was affected by " << attacker->getName() << "'s " << attack->name << "!"; //attack triggered target's recoil or attack had recoil and hit teammate as well and this is the result of either situation
+	else cout << "\n" << attacker->getName() << "'s team was affected by " << attacker->getName() << "'s " << attack->name << "!"; //this was the result of a recoiling regular attack that hits the team unfocusedly
+
+	//print description of the attack and what the attacker did
 	cout << "\n" << attacker->getName() << " " << attack->description;
 	if (attack->focushits) cout << " " << target->getName() << attack->afterdesc; //prints the target unless it's not focused on a specific target
 	cout << "!"; //punctuate the description!
@@ -282,8 +293,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	}
 	//affects the attacker before attacking if we do that
 	if (attack->affectselfbeforeattack) {
-		if (attack->selfeffect != NULL) alleffects[attacker] = attacker->setEffect(attack->selfeffect);
-		if (attack->selfcancel != NULL) alleffects[attacker] = attacker->setEffect(attack->selfeffect);
+		if (attack->selfeffect != NULL) attachEffect(attacker->setEffect(attack->selfeffect));
+		if (attack->selfcancel != NULL) attacker->removeEffect(attack->selfeffect);
 	}
 	//says if we hit multiple targets
 	if (!attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
@@ -301,8 +312,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		}
 	} //affects the attacker however applicable
 	if (!attack->affectselfbeforeattack) {
-		if (attack->selfeffect != NULL) alleffects[attacker] = attacker->setEffect(attack->selfeffect);
-		if (attack->selfcancel != NULL) alleffects[attacker] = attacker->setEffect(attack->selfeffect);
+		if (attack->selfeffect != NULL) attachEffect(attacker->setEffect(attack->selfeffect));
+		if (attack->selfcancel != NULL) attacker->removeEffect(attack->selfeffect);
 	}
 	for (int i = 0; i < attack->summonamount; i++) { //add adds for how many this attack summons
 		bool forenemy = attack->enemysummon; //enemy and team summons are reversed when hypnotized
@@ -566,7 +577,8 @@ bool Battle::playerTurn(NPC* plr) {
 	bool promptline = true; //if the prompting > should be in a new line
 	bool keepFighting = true; //if the player wants to keep fighting (not run away)
 
-	while (bool continuing = true) { //loops until a valid action is taken
+	bool continuing = true;
+	while (continuing) { //loops until a valid action is taken
 		char command[255] = ""; //the command that the player inputs into
 
 		char commandWord[255]; //the command word
@@ -615,7 +627,7 @@ vector<NPC*>& Battle::getTarTeam(NPC* npc, Attack* attack) {
 	return npc->getEnemy() ^ npc->getHypnotized() ^ attack->targetAlly ? playerTeam : enemyTeam;
 }
 //get a vector of all the targets that we could target with the attack MARK: get targets
-vector<NPC*> Batle::getTargets(NPC* npc, Attack* attack) {
+vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 	if (attack->targetself) return {npc}; //just target self if the attack targets self (no filtering because self-targeting attacks are something that should really just always launch)
 	
 	vector<NPC*> choices = getTarTeam(npc, attack); //get the options of targets that we have depending on who the attacker is and what the attack does
@@ -632,7 +644,7 @@ vector<NPC*> Batle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->targetFainted && target->getHealth() > 0) continue; //can't target fainted if bro isn't fainted
 		if (attack->power < 0 && target->getHealth() >= target->getHealthMax()) continue; //can't (shouldn't) heal if bro is at full health
 		if (attack->take && (target->getBoss() || target->getPlayerness() || target == npc)) continue; //taking attacks can't target bosses, the player (not player otherwise it would be boring gameplay waiting for your teammates to beat the guy), or the attacker (taking yourself would be some real cartoon stuff)
-		if (attack->remove && target->getBoss()) continue; //can't remove bosses cause that's just messing up everyone else's groove during the fight
+		if (attack->appliedeffect && attack->appliedeffect->remove && target->getBoss()) continue; //can't remove bosses cause that's just messing up everyone else's groove during the fight
 		if (attack->appliedeffect && attack->appliedeffect->hypnotize && target->getBoss()) continue; //can't hypnotize bosses because that would be weird for some fights
 		if (attack->risky && target->getHealth() < target->getHealthMax()/2) continue; //can't use risky moves if they have below half health because that would be risky
 		if (attack->targetshark && !target->getShark()) continue; //shark-targeting attacks must have a shark to target
@@ -641,32 +653,46 @@ vector<NPC*> Batle::getTargets(NPC* npc, Attack* attack) {
 			if (target == npc) continue; //don't protect yourself because that would be wasting SP to do literally nothing (you're already taking your hits for yourself)
 			if (npc->getGuarding() && npc->getGuarding()->getHealth() > 0) continue; //no guarding moves if we're already guarding someone still capacitated (don't switch person being guarded, that would be like "oh lol nope yeah I'm actually not defending you anymore have fun")
 			if (target->getGuarding()) continue; //don't guard guardians cause that's weird
-			if (vector<NPC*>& guardians = target->getGuardians()) { //don't guard the teammate if they're already being guarded by someone still capacitated because they got this, better focus on dps for now or guarding other teammates
-				for (NPC* guard : guardians) if (guard->getHealth() > 0) continue;
-			}
+			for (NPC* guard : target->getGuardians()) if (guard->getHealth() > 0) continue; //don't guard the teammate if they're already being guarded by someone still capacitated because they got this, better focus on dps for now or guarding other teammates
 		} //yay the target passed all the tests and is now a valid target option!
 		targets.push_back(target);
 	}
 	//check for further prioritizations from here
-	if (Effect* teffect = npc->getTargetEffect()) { //filter out dummy npcs if targeting our own team, to avoid stuff like uselessly buffing or healing dummies, for example
-		vector<NPC*> _targets = targets; //temporary copy of targets to see if prioritization would remove all valid targets
-		for (NPC* target : targets) { //iterate through targets and not _targets so we don't iterate through a vector we're removing from
-			if (!target->getBasicAttack() && target->getSpecialAttacks().empty()) _targets.erase(remove(_targets.begin(), _targets.end(), target), _targets.end()); //remove the target if they don't have any attacks, meaning they're a dummy (as in, the non-moving definition of the word, not unintelligent)
+	{ //try to filter out npcs that are away because targeting npcs you can't hit when there's a perfectly targetable npc right there would be really dumb
+		vector<NPC*> _targets; //store non-away npcs to see if prioritization would remove all valid targets
+		for (NPC* target : targets) {
+			if (!target->getAway()) _targets.push_back(target); //add the target if they are not away
 		}
-		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just erase remove everyone
+		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
+	}
+	//filter out dummy npcs if targeting our own team, to avoid stuff like uselessly buffing or healing dummies, for example. This section is to ensure dummies are always useful while making teammates not dumb
+	//hypnotized npcs can target dummies no matter what to ensure dummies are always useful, blocking heals for other team and blocking hits on same team
+	//non-beneficial attacks can also hit dummies no matter what (skip dummy filtering) so that npcs like graham that can damage teammates are also blocked by dummies
+	if (choices[0]->getEnemy() == npc->getEnemy() && !npc->getHypnotized() && attack->getBeneficial()) {
+		vector<NPC*> _targets; //store non-dummy npcs to see if prioritization would remove all valid targets
+		for (NPC* target : targets) {
+			if (target->getBasicAttack() || !target->getSpecialAttacks().empty()) _targets.push_back(target); //add the target if they have any attacks, meaning they're not a dummy (as in, the non-moving definition of the word, not unintelligent)
+		}
+		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
 	}
 	if (Effect* teffect = npc->getTargetEffect()) { //if the npc prioritizes hitting targets with this effect, filter out npcs without the effect
-		vector<NPC*> _targets = targets; //temporary copy of targets to see if prioritization would remove all valid targets
-		for (NPC* target : targets) { //iterate through targets and not _targets so we don't iterate through a vector we're removing from
-			if (!target->getEffect(teffect)) _targets.erase(remove(_targets.begin(), _targets.end(), target), _targets.end()); //remove the target if they don't have the targeted effect
+		vector<NPC*> _targets; //store the npcs with the effect to see if prioritization would remove all valid targets
+		for (NPC* target : targets) {
+			if (target->getEffect(teffect)) _targets.push_back(target); //add the target if they have the targeted effect
 		}
-		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just erase remove everyone
+		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filter everyone out
 	}
 	if (attack->prioritizeleader) { //leader-prioritizing moves either prioritize their parent or team leader depending on if they're a summon or not, or if they're hypnotized
 		//if there is no parent or the parent is not in the same team (meaning the npc is hypnotized or just targetting the other team's leader), we default to the team leader
 		NPC* leader = ((!npc->getParent() || !getNPCInVector(choices, npc->getParent()->getName())) ? choices[0] : npc->getParent()); //or just choose the actual parent
 		//check if the leader is one of the available targets and choose it if so
 		if (getNPCInVector(targets, leader->getName())) return {leader};
+	}
+	if (attack->prioritizenonleader) { //non-leader-prioritizing moves prioritize not hitting the leader
+		//if there is no parent or the parent is not in the same team (meaning the npc is hypnotized or just targetting the other team's leader), we default to the team leader
+		NPC* leader = ((!npc->getParent() || !getNPCInVector(choices, npc->getParent()->getName())) ? choices[0] : npc->getParent()); //or just choose the actual parent
+		//if removing the leader wouldn't make it an empty list, we try to filter it out
+		if (targets.size() != 1) targets.erase(remove(targets.begin(), targets.end(), leader), targets.end());
 	}
 
 	return targets; //return the targets!
@@ -719,10 +745,9 @@ void Battle::npcTurn(NPC* npc) {
 	NPC* target = targets[rand()%targets.size()]; //choose one of the targets
 	carryOutAttack(attack, npc, target); //launches the attack!
 
-	if (attack->recoil && ((double)rand()/RAND_MAX < attack->recoilchance)) { //handle recoiling attacks
-		vector<NPC*> rtargets = getTargets(npc, attack);
-		if (rtargets.empty()) return;
-		carryOutAttack(attack, npc, rtargets[rand()%rtargets.size()]); //launches the attack!
+	if (attack->recoilatt && ((double)rand()/RAND_MAX < attack->recoilchance)) { //handle recoiling attacks
+		vector<NPC*> rtargets = getTargets(npc, attack->recoilatt); //get the targets which is just the npc's own team
+		carryOutAttack(attack->recoilatt, npc, rtargets[rand()%rtargets.size()], true); //launches the attack!
 		if (!WorldState[RECOILED]) { //clarify that it was an accident if it was the first time
 			cout << "\n" << npc->getName() << " - \"Oops.\"";
 			CinPause();
@@ -753,7 +778,8 @@ int Battle::FIGHT() {
 	
 	NPC* current; //the current npc whose turn it is
 
-	while (bool continuing = true) { //the main battle loop! continues until continuing is set to false, only if the player successfully runs away
+	bool continuing = true;
+	while (continuing) { //the main battle loop! continues until continuing is set to false, only if the player successfully runs away
 		if (turn.empty()) { //we put everyone in order again if the turn queue is empty
 			reorder(); //also clear went and skip
 			checkEffects(); //we also check if there are any 0-duration effects to stop tracking

@@ -63,6 +63,7 @@ struct Attack {
 
 	bool contact; //if the attacker makes contact with the target
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated
+	bool prioritizenonleader = false; //if this attack prioritizes not hitting the leader
 	bool targetself = false; //self-explanatory
 	bool targetshark = false; //if this attack should only target sharks
 
@@ -103,6 +104,12 @@ struct Attack {
 	//sets the true description of the attack, so that it can be seen in the attacks menu
 	void addDescription(const char* desc) {
 		trueDesc = desc;
+	}
+
+	//gets (estimates) if you want to be hit by this attack, like buffs or heals and stuff like that
+	bool getBeneficial() {
+		if (risky) return true; //we wouldn't clarify that it's risky unless it was for a teammate, why wouldn't we want to give something risky to an enemy
+		if (power < 0) return true; //healing attacks most probably are beneficial
 	}
 };
 

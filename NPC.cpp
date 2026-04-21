@@ -434,8 +434,8 @@ int NPC::getGuard() {
 bool NPC::getAway() { //get if the npc is away from the battle
 	return away;
 }
-NPCEffect* NPC::getEffect(const char* effect, bool getfinished) {
-	for (Effect _effect : effects) { //check if we already have the effect
+NPCEffect* NPC::getEffect(Effect* effect, bool getfinished) {
+	for (Effect* _effect : effects) { //check if we already have the effect
 		if (effect == _effect) {
 			if (!npceffects[effect].duration && !getfinished) return NULL;
 			return &npceffects[effect];
@@ -762,7 +762,7 @@ void NPC::printEffects() { //prints the effects this npc has
 	}
 	cout << "\n  Status effects: ";
 	int i = 0; //track the effect #
-	for (Effect& effect : effects) {
+	for (Effect* effect : effects) {
 		cout << effect->name;
 		if (effect->duration < 1000) { //if it has >1000 ticks, it's probably intended to just last forever, so we don't print a duration
 			cout << " (" << npceffects[effect].duration << " ticks left)";
@@ -780,7 +780,7 @@ void NPC::damage(double power, double pierce) {
 	double defenseD = (power > 0 ? stats.defense : 0); //converts stats to doubles for easier damage calculation, also don't defend against heals!
 	double toughnessD = stats.toughness;
 	//calculates the damage
-	int damage = Round(power * (10.0f/(10.0f + ClampD(defenseD - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessD)),0,defenseF)))) * totalhits;
+	int damage = Round(power * (10.0f/(10.0f + ClampD(defenseD - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessD)),0,defenseD))));
 	if (damage > 0) guard--; //hits lower guard
 	int totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	
@@ -947,7 +947,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (isBoss && (effect->remove || effect->hypnotize)) { //usually attacks that set these are filtered out for bosses before being launched, but we check for it here in case the player did that
 		cout <<"\n" << name << " was not affected by the attack's " << effect->name << "!";
 		CinPause();
-		return;
+		return NULL;
 	}
 	bool stacking = false;
 	for (Effect* _effect : effects) { //check if we already have the effect
@@ -956,7 +956,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 			NPCEffect& npceffect = npceffects[effect];
 			if (npceffect.duration >= effect->duration && !effect->stacks) { //it does nothing if it's already here and with an equal or greater duration
 				cout << name << " already has " << effect->name << "!";
-				return;
+				return &npceffects[effect];
 			} //extends the duration otherwise
 			if (effect->duration < 1000) cout << name << "'s " << effect->name << " was extended!"; //only print this if it isn't something infinite
 			npceffect.duration = effect->duration;
@@ -964,7 +964,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 				npceffect.affectors.insert(affector);
 				if (effect->stacks) npceffect.stacks++;
 			}
-			if (!effect->stacks) return;
+			if (!effect->stacks) return &npceffects[effect];
 			else stacking = true;
 			break;
 		}
@@ -1078,9 +1078,9 @@ void NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clar
 			if (effect->attackeffect) { //only one effect in the game uses this so we don't need to worry about multiple effects handling
 				if (affector) cout << "\n" << name << "'s attacks no longer inflict " << effect->attackeffect << "!";
 				attackeffect = NULL;
-			} //don't account for guardset?
+			}
 			if (effect->falldamage) {
-				damage(effect->falldamage, 0, 1);
+				damage(effect->falldamage, 0);
 			}
 
 			//edit stat multipliers MARK: multiplier effects
