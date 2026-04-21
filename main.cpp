@@ -3,7 +3,7 @@
 *  This program is an epic text-based RPG where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. There's a bunch of other commands as well.
 *  
-*  In case you missed the first BURGER QUEST, you can play it at https://codehs.com/sandbox/id/zuul-kb8vTu
+*  In case you missed the first BURGER QUEST, you can play it at https://codehs.com/sandbox/id/zuul-kb8vTu/run
 */
 #include <iostream>
 #include <iomanip>
@@ -2197,6 +2197,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "I don't really know if that's exactly how it works but that's what the graph was so yeah."},
 	 {developer, "And anyway the bookmark was called \"economonies\" so that's where I assume monies came from."}};
 	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
+	{{developer, "Have you ever played BURGER QUEST? (the first one)"},
+	 {developer, "The sequel is way better but if you're curious you can try it on this link: https://codehs.com/sandbox/id/zuul-kb8vTu/run"},
+	 {developer, "You're probably on a terminal so you should do shift+insert to copy paste."}}
+	{{developer, "I was walking to my C++ class today,"},
+	 {developer, "and I saw a bicycle-powered blender."},
+	 {developer, "So you pedal and that generates electricity and the blender blends the stuff."},
+	 {developer, "I think it's a very good idea."}}
+	{{developer, "Have you tried the gym yet?"},
+	 {developer, "It's very useful for having benched teammates catch up to your level."},
+	 {developer, "And also it leaves them all in one place as a bonus side-effect."}}
+	{{developer, "Have you found the bank yet?"},
+	 {developer, "Idk if you'll need it but there wasn't any reason not to make it."},
+	 {developer, "Except time but I made it already so yeah. (didn't take too long tho)"},
+	 {developer, "Well that bank is very reliable."}}
 	//have you fought greer yet
 	//can you give me feedback (and say link to form)
 	{{developer, "Idk if you've encountered teammates with defend attack,"},
@@ -2240,6 +2254,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O
 	  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \ * /
 	{developer, "He's breakdancing!"}}
+	{{developer, "I've noticed,"},
+	 {developer, "this game has a noticable lack of dinosaurs."}}
 	//favorite game
 	//talk about the mountain {developer, ""}
 	{{developer, "You know there was going to be a \"BIG CAT\" as the first enemy on the mountain,"},
@@ -2249,7 +2265,23 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//limbo
 	//burger quest 2 ideation
 	//talk about bosses
-	//zuul
+	{{developer, "I found one of the first ideas for this game; it was pretty interesting."},
+	 {developer, "This was from a Zuul assignment in my C++ class after last year's Python class,"},
+	 {developer, "which also had a Zuul assignment (BURGER QUEST 1!)."},
+	 {developer, "So I knew I wanted to make the sequel,"},
+	 {developer, "and I found in my chemistry notebook what seems to be my first idea"},
+	 {developer, "because I wrote it before the one that led to the current story,"},
+	 {developer, "and so it was that you left a bad review on the BURGER RESTAURANT"},
+	 {developer, "and they put you in BURGER prison for doing that,"},
+	 {developer, "so the game would be escaping the prison."},
+	 {developer, "I'm glad I wrote that down because I completely forgot that."}}
+	{{developer, "This document that I used to plan this game says that this game is supposed to take place in..."},
+	 {NULL, "\"GENERIC FANTASTY LAND\""},
+	 {developer, "cause I'm pretty sure it was supposed to be generic but with BURGERs,"},
+	 {developer, "but that was boring so I changed it to a cool amazing innovative fantasty land instead."},
+	 {NULL, "(well at least I hope it's cool amazing and innovative)"},
+	 {developer, "Idk what this place is called now, it's just the earth but fictional"},
+	 {developer, "so yea just the earth."}}
 	//burger all caps lore
 	//kept thinking michelin is named jim
 	//viola after fire fight

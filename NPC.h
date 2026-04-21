@@ -10,8 +10,6 @@
 #include <map>
 #include <set>
 #include "Room.h"
-#include "Effect.h"
-#include "Attack.h"
 #include "Conversation.h"
 #include "Stats.h"
 #include "WorldState.h"
@@ -20,7 +18,9 @@ using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
 class Item;
-class NPC; //forward declare itself so we can make this effect struct immediately after
+class NPC; //forward declare itself so we can make that effect struct immediately after
+struct Attack;
+struct Effect;
 
 struct NPCEffect { //effect instances so we don't have a mess of copied effects
 	Effect* effect;
@@ -167,7 +167,7 @@ public: //you need to set stats on creation
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false, int instant = 0);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
-	void damage(double power, double pierce);
+	int damage(double power, double pierce); //affect the npc's health and return how much the health was affected by
 	void directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);

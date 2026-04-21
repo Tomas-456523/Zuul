@@ -73,7 +73,7 @@ struct Attack {
 
 	bool take = false; //if this attack is an attack that makes the attacker take the target
 
-	Attack() {} //default constructor so NPC doesn't throw error
+	//Attack() {} //default constructor so NPC doesn't throw error
 
 	//constructs the attack
 	//default stats are for testing purposes

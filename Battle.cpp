@@ -140,19 +140,32 @@ void Battle::checkEffects() {
 	}
 }
 //add the effect to the alleffects vector while handling duplicates
-void attachEffect(NPCEffect* effect) {
+void Battle::attachEffect(NPCEffect* effect) {
 	for (NPCEffect* neffect : alleffects) {
 		if (effect->)
 	}
 }
 //stuff that happens when an npc gets incapacitated MARK: handle knockout
-void NPC::handleKnockout(NPC* npc) {
-	//we can't print incapacitated if they were incapacitated before
-	//untake
-	//handle bonds
+void Battle::handleKnockout(NPC* npc) {
+	if (npc->popExtraLives()) { //if the npc has extra lives, pop one and fully heal them
+		cout << "\n" << npc->getName() << " had an extra life!";
+		npc->directDamage(-npc->getHealthMax());
+		return;
+	} else {
+		cout << "\n" << npc->getName() << " is incapacitated!";
+	}
+	
+	//MARK: we can't print incapacitated if they were incapacitated before, make sure it doesn't do that
+
+	npc->setTaking(NULL); //untake taken npcs
+	//remove bond effects from the parent
+	if (npc->getOpener() && npc->getOpener()->appliedeffect && npc->getOpener()->appliedeffect->bond) {
+		NPC* leader = (!npc->getParent() ? (npc->getEnemy() ? enemyTeam : playerTeam)[0] : npc->getParent());
+		leader->removeEffect(npc->getOpener()->appliedeffect, npc);
+	}
 }
 //applies damage to the npc and handles stuff related to that MARK: carry out damage
-void NPC::carryOutDamage(NPC* npc, double damage, double pierce) {
+void Battle::carryOutDamage(NPC* npc, double damage, double pierce) {
 	//apply the damage
 	if (npc->getHealth() <= 0) handleKnockout(npc);
 }
@@ -199,13 +212,14 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				double randmultiplier = 0.9 + ((double)rand()/RAND_MAX) * 0.2; //randomly vary attack power of every hit by 10%
 				bool crit = !(rand()%20); //5% chance to crit
 				if (crit) randmultiplier *= 1.75;
-				if (reciever->getParrying() && !attack->getBeneficial()) { //parry the hit if parrying
+				if (reciever->getParrying() == attacker && !attack->getBeneficial()) { //parry the hit if parrying the attacker
 					cout << "\n" << reciever->getName() << " parried it!";
 					CinPause();
 					reciever->setParrying(NULL); //don't parry other attacks
-					attacker->damage(effectiveAttack*randmultiplier*2.0, effectivePierce, 1); //send the attack right back at double power!
-				} else if (!reciever->getInvincible() && attack->power > 0) { //hit normally
-					reciever->damage(effectiveAttack*randmultiplier, effectivePierce, 1);
+					attacker->damage(effectiveAttack*randmultiplier*2.0, effectivePierce); //send the attack right back at double power!
+				} else if ((reciever->getInvincible() && attack->power < 0) || (!reciever->getInvincible() && attack->power != 0)) { //hit normally if healing or (damaging and not invincible), never apply damage for 0 power attacks since their point isn't to affect health if that's the case
+					int damage = reciever->damage(effectiveAttack*randmultiplier, effectivePierce);
+					if (attack->lifesteal) attacker->damage(damage * -attack->lifesteal, 0); //heal the attacker based on the lifesteal
 				}
 				if (crit) { //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or "oh shoot" if you got hit)
 					cout << "\nCRITICAL HIT!";
@@ -217,6 +231,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				}
 			}
 			if (!hits) cout << "\nThe attack missed!";
+			//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
 			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 				reciever->setEffect(attack->appliedeffect);
 			}
@@ -224,25 +239,18 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				if (NPCEffect* canceled = reciever->getEffect(attack->cancel))
 				reciever->removeEffect(canceled->effect, NULL); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
 			}
-			if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
-				attacker->damage(attack->recoil * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0, 0, 1);
-			}
-			if (attack->guardset) { //set the guard if the attack does that, add it to the current guard unless it's negative, then it goes from 0 because getGuard returns that for values < 0
-				attacker->setGuard(attack->guardset, true);
-			}
-			if (attack->protect) {
-				if (NPC* guarding = attacker->getGuarding()) guarding->removeGuardian(attacker); //can only guard one npc at a time
-				reciever->setGuardian(attacker);
-				attacker->setGuarding(reciever);
-			}
-			if (attack->contact && reciever->getRecoilAttack()) {
-				carryOutAttack(reciever->getRecoilAttack(), reciever, attacker, true);
-			}
 			for (int i = 0; i < attack->copyamount; i++) { //copy the target for copying attacks
 				addNPC(reciever); //duplicate the target with no parent on the same team as the target
 			}
-			if (attack->spleak) reciever->alterSp(-attack->spleak);
-			
+			if (attack->targuard) reciever->setGuard(attack->targuard, true); //adds target guards on the target
+			if (attack->spleak) reciever->alterSp(-attack->spleak); //alter sp how the attack does that
+			if (attack->extralives) { //add extra lives to the target
+				reciever->addExtraLives(attack->extralives);
+				cout << "\n" << reciever->getName() << " got " << attack->extralives << " extra li" << (attack->extralives == 1 ? "fe" : "ves") << "!";
+			}
+			if (attack->contact && reciever->getRecoilAttack()) { //attacker gets attacked by the target's recoil attack
+				carryOutAttack(reciever->getRecoilAttack(), reciever, attacker, true);
+			}
 			//check if the guy fainted and do stuff if so
 		}
 	}
@@ -321,7 +329,18 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			int tarPos = rand() % tarparty.size();
 			hitTargets(attacker, attack, tarparty, tarPos);
 		}
-	} //affects the attacker however applicable
+	}
+	if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
+		attacker->damage(attack->recoil * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0, 0, 1);
+	}
+	if (attack->guardset) attacker->setGuard(attack->guardset, true); //set the guard if the attack does that, add it to the current guard unless it's negative, then it goes from 0 because getGuard returns that for values < 0
+	if (attack->protect) { //handle guarding here and not in hitTargets because we it only guards one person anyway
+		if (NPC* guarding = attacker->getGuarding()) guarding->removeGuardian(attacker); //can only guard one npc at a time
+		target->setGuardian(attacker);
+		attacker->setGuarding(target);
+	}
+	if (attack->parry) attacker->setParrying(target); //parrying attacks are for parrying the target so we do that
+	//affects the attacker however applicable
 	if (!attack->affectselfbeforeattack) {
 		if (attack->selfeffect != NULL) attachEffect(attacker->setEffect(attack->selfeffect));
 		if (attack->selfcancel != NULL) attacker->removeEffect(attack->selfeffect);

@@ -674,7 +674,10 @@ void NPC::setGymStart(time_t start) {
 	gymStart = start;
 }
 void NPC::setTaking(NPC* npc) {
-	if (taking) taking->setAway(false); //untake the old taking
+	if (taking) { //untake the old taking
+		taking->setAway(false);
+		cout << "\n" << taking->getName() << " was freed!";
+	}
 	taking = npc; //set new taking
 	if (taking) taking->setAway(true); //make new taking be set to away
 }
@@ -752,7 +755,7 @@ void NPC::printDamage(int damage, const char* status) { //prints the damage the 
 	cout << "\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
 	if (health <= 0) { //says that the npc is incapacitated if it now has 0 hp
 		CinPause();
-		cout << "\n" << name << " is incapacitated!";
+		//cout << "\n" << name << " is incapacitated!";
 	}
 }
 void NPC::printEffects() { //prints the effects this npc has
@@ -773,8 +776,8 @@ void NPC::printEffects() { //prints the effects this npc has
 	}
 	cout << "\n";
 }
-//damages the npc
-void NPC::damage(double power, double pierce) {
+//damages the npc and get how much damage it did
+int NPC::damage(double power, double pierce) {
 	double damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
 	int oldguard = guard; //record what the guard was before
 	double defenseD = (power > 0 ? stats.defense : 0); //converts stats to doubles for easier damage calculation, also don't defend against heals!
