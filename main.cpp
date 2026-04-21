@@ -4138,33 +4138,38 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 9));
 	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
 	carnplant->setBasicAttack(bite);
-	carnplant->addSpecialAttack(nutrientabsorb);
+	//bite
+	//pitcher (3x slow + DOT)
+	//
 
 	NPC* smogfish = new NPC("", "SMOGFISH", "Floating fish of smog, who typically fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
-	//copycat (turn into random teammate, not player)
+	//copycat (turn into random teammate, prioritize not player)
 
 	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle with vines round about and smog seeping through its helmet.", limbo, 0, Stats());
+	//charge (upslash effect, strong hit)
+	//vine whip (2 hits)
 	//constrict
-	//some other attacks
 
 	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(), Stats());
 	//temple of hope in the desert, gives big red button of hope
 	//you get seperated from your teammates and you have to fight enemies that decay your stats
-	//probably some hard puzzles
-	//and you get reunited at the end
+	//you need to get three light orbs to open the way down by doing puzzles and fighting and stuff
+	//also each light orb you put in returns one teammate to you
 	//the dark decays your stats with its attacks
 	//and when stats are low enough it can tempt teammates into despair
 	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
 	//after that you get the button
-
-	//REMEMBER, the player is alone when fighting these! account for that!
 	
 	//shadow creature (attacks that chip stats)
+	//shadow slap
 
-	//masky
+	//masky (no basic attack)
+	//:D - good to teammate
+	//D: - bad to enemy
 
 	//NPC* pyramid = new NPC("", "PYRAMON", "Floa");
-	//floating pyramid attacks
+	//laser
+	//pyradon
 	//hypnotize or something
 
 	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(5000, 15, 15, 0, 15, 14, 9), Stats(1, 0, 1, 0, 1, 1, 0));
@@ -4213,6 +4218,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "Even if you did for you it's the same as donating penny shavings..."}, {richie, "STOP! >:("}}
 	//ratman - {{firewithfire, "Ratman!"}, {firewithfire, "..."}, {firewithfire, "Yeah you're just a weirdo in a rat costume."}, {ratman, "I will not tolerate this slander."}, {ratman, "Because I'm Ratman."}}
 	Effect* wrath;
+
+	//bolide
+	//impact
+
+	//firefly
+	//
+	//
+
+	//monkey statue
+
+	//infernobo
+	//
+	//
+	//nova cannon
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)
 	NPC* burgermenace = new NPC("", "THE BURGER MENACE", "", limbo, 0, Stats(), Stats());

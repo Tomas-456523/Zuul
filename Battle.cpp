@@ -145,6 +145,17 @@ void attachEffect(NPCEffect* effect) {
 		if (effect->)
 	}
 }
+//stuff that happens when an npc gets incapacitated MARK: handle knockout
+void NPC::handleKnockout(NPC* npc) {
+	//we can't print incapacitated if they were incapacitated before
+	//untake
+	//handle bonds
+}
+//applies damage to the npc and handles stuff related to that MARK: carry out damage
+void NPC::carryOutDamage(NPC* npc, double damage, double pierce) {
+	//apply the damage
+	if (npc->getHealth() <= 0) handleKnockout(npc);
+}
 //hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
 void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos) {
 	for (int i = 0; i < tarparty.size(); i++) { //hits all the targets, we must iterate in order to account for multi-target attacks
@@ -822,6 +833,7 @@ int Battle::FIGHT() {
 
 		for (Effect* effect : current->getEffects()) { //tick all the npc's effects AFTER their turn (this makes durations more intuitive)
 			current->tickEffect(effect);
+			//if (current->getHealth() <= 0) handleKnockout(current);
 		}
 
 		went.insert(current); //the npc has went now so we track that they went

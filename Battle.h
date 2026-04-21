@@ -36,6 +36,8 @@ public:
 	bool runAway(); //try to escape the battle
 	void checkEffects(); //checks all the tracked effects for if they're at duration 0
 	void attachEffect(NPCEffect* effect); //add the effect to the alleffects vector and make sure no duplicates occur
+	void handleKnockout(NPC* npc); //handles stuff related to when the npc gets incapacitated
+	void carryOutDamage(NPC* npc, double damage, double pierce); //handles the damaging of the npc and stuff related to that
 	void hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos); //hit the target, and surroundings if needed
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil = false); //affects the given target based on the given attack
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 2); //interpret and carry out an attack command given by the player
