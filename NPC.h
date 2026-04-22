@@ -102,6 +102,7 @@ public: //you need to set stats on creation
 	bool getInvincible();
 	bool getEvasive();
 	int popExtraLives();
+	bool popKO(); //pop the ko status (if we've done the process after the npc gets incapacitated)
 	Effect* getAttackEffect();
 	bool getMasked();
 	const char* getHiddenTitle();
@@ -185,7 +186,7 @@ public: //you need to set stats on creation
 	void setGuard(int _guard, bool additive); //set guard to block attacks
 	void setGift(Item* item, bool fightfirst = false); //item to give when talking
 	NPCEffect* setEffect(Effect* effect, NPC* affector = NULL); //add an effect to the npc and return a pointer to the associated npceffect
-	void removeEffect(Effect* effect, NPC* affector);
+	NPCEffect* removeEffect(Effect* effect, NPC* affector);
 	void tickEffect(Effect* effect);
 	void setBoss(bool boss);
 	void setExtraXP(int xp);
@@ -387,6 +388,8 @@ protected:
 	bool leveledUp = false; //if the npc leveled up
 	Stats statChangesSum; //sum of all the stat changes that have occured and haven't been printed yet
 	vector<Attack*> newAttacks; //the newest attacks we've gotten
+
+	bool koCheck = false; //tracks if we have done the knockout process after this guy was incapacitated
 
 	int hypnosis = 0; //how hypnotized the npc is
 	int freeze = 0; //how frozen the npc is

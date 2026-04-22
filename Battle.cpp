@@ -16,52 +16,58 @@ using namespace std;
 using namespace Helper;
 
 //creates the battle instance MARK: initialize
-Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable) {
-	//clone npcs from both teams so I don't have to reset them later
-	for (NPC* _npc : *_playerTeam) {
-		NPC* npc = new NPC(*_npc);
-		playerTeam.push_back(npc);
-		vector<NPC*> guards = npc->getGuardians();
-		for (NPC* _guard : guards) { //update all guardian links so they're not pointing to outside battle
-			npc->removeGuardian(_guard);
-			NPC* guard = new NPC(*_guard);
-			npc->setGuardian(guard);
-			guard->setGuarding(npc);
-			playerTeam.push_back(guard);
-		}
-	}
-	for (NPC* npc : *_enemyTeam) {
-		enemyTeam.push_back(new NPC(*npc));
-	}
+Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable, bool scaleenemies) {
+	player = (*_playerTeam)[0]; //get a reference to the team leaders from main in case we need them
+	enemy = (*_enemyTeam)[0];
+
+	inventory = _inventory; //references the inventory from main
+	escapable = _escapable; //if you can escape this battle, usually only false for boss fights
+	scaleEnemies = scaleenemies; //tracks if we should scale the enemies
+	
+	setupWave(true, 0, false); //set up the player and enemy teams with the 0th (1st) wave, don't scale player team
+	setupWave(false, 0, scaleenemies); //we scale the enemies by default since the world fights do that
+
 	if (enemyTeam[0]->getMasked()) { //set to hidden values if the enemy leader was masked
 		enemyTeam[0]->setTitle(enemyTeam[0]->getHiddenTitle());
 		enemyTeam[0]->setName(enemyTeam[0]->getHiddenName());
 		enemyTeam[0]->setDescription(enemyTeam[0]->getHiddenDescription());
 	}
-	//add everyone to a list of everyone for convenience
-	everyone.insert(everyone.begin(), playerTeam.begin(), playerTeam.end());
-	everyone.insert(everyone.end(), enemyTeam.begin(), enemyTeam.end());
+}
+//resets or just sets the given party according to the given wave number the new wave npcs
+void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
+	vector<NPC*>& team = (pteam ? playerTeam : enemyTeam); //gets the affected team
+	NPC* worldleader = (pteam ? player : enemy); //gets the team leader (in the world)
+	for (NPC* npc : team) { //delete the old team if there was one
+		everyone.erase(remove(everyone.begin(), everyone.end(), npc), everyone.end());
+		//MARK: remove their npceffects
+		delete npc;
+	}
+	team.clear(); //empty the old team vector to make room for the new team
 
-	inventory = _inventory; //references the inventory from main
-	escapable = _escapable; //if you can escape this battle, usually only false for boss fights
-
-	player = (*_playerTeam)[0]; //get a reference to the player from main in case we need it
-
-	//give the enemies xp corresponding with the enemy's level, in order to scale them to that level
-	//sets the enemy level to the enemy leader, which should be the first one in the party since they put themselves in their own party when set to a leader
-	int enemyLevel = enemyTeam[0]->getLevel();
-	for (NPC* npc : enemyTeam) { //sets every enemy to the found level and sets them to be an enemy
-		npc->setLevel(enemyLevel);
-		npc->setEnemy(true);
-		xpReward += npc->getXpReward(); //adds their xp and mony rewards to the total
-		monyReward += npc->getMonyReward();
+	//we copy the npcs so I don't have to reset them later and also there's can be multiple of the same npc
+	for (NPC* npc : worldleader->getParty(wave)) { //copy all the npcs from the new wave to their corresponding party
+		NPC* npc = new NPC(*_npc);
+		npc->setEnemy(worldleader->getEnemy()); //make eneminess match the leader
+		team.push_back(npc);
+		vector<NPC*> guards = npc->getGuardians();
+		for (NPC* _guard : guards) { //update all guardian links so they're not pointing to outside battle
+			npc->removeGuardian(_guard); //get rid of the one in world
+			NPC* guard = new NPC(*_guard);
+			guard->setEnemy(worldleader->getEnemy()); //make guardian's eneminess match their team
+			npc->setGuardian(guard); //set the Battle copy as the actual guardian
+			guard->setGuarding(npc); //update this one to guard the Battle copy and not the one in the world
+			team.push_back(guard);
+		}
 	}
 
-	//the rest of the process is just de-duplicating enemy names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
+	//add everyone to a list of everyone for convenience
+	everyone.insert(everyone.begin(), team.begin(), team.end());	
+
+	//de-duplicating the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
 	vector<char*> names; //each name
 	vector<int> amount; //how many times that name appears
 	vector<int> count; //how many times we've counted that name while renaming them (like, we have BOB, and then we rename him to BOB 2. That means count == 2)
-	for (NPC* npc : enemyTeam) {
+	for (NPC* npc : team) {
 		char* name = new char[255]; //gets the name of the enemy
 		strcpy(name, npc->getName());
 		bool namefound = false; //searches names to see if we've already saved that name before
@@ -78,7 +84,7 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 			count.push_back(0); //we haven't begun checking this yet, so it's set to 0
 		}
 	} //renames all the duplicate enemies
-	for (NPC* npc : enemyTeam) {
+	for (NPC* npc : team) {
 		for (int i = 0; i < names.size(); i++) { //we check all the names to see if one matches this enemy's name
 			if (!strcmp(npc->getName(), names[i])) {
 				if (amount[i] > 1) { //no need to rename the first one, so we only continue if it isn't
@@ -93,6 +99,18 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	} //deallocates the names we were using
 	for (char* name : names) {
 		delete[] name;
+	}
+
+	if (!scaleteam) return; //don't scale the team if we're told not to (also skips reward adding, but that doesn't matter in every context scaleteam is set to false anyway)
+
+	//give the enemies xp corresponding with the enemy's level, in order to scale them to that level
+	//sets the enemy level to the enemy leader, which should be the first one in the party since they put themselves in their own party when set to a leader
+	int enemyLevel = team[0]->getLevel();
+	for (NPC* npc : enemyTeam) { //sets every enemy to the found level and sets them to be an enemy
+		npc->setLevel(enemyLevel);
+		
+		xpReward += npc->getXpReward(); //adds their xp and mony rewards to the total
+		monyReward += npc->getMonyReward();
 	}
 }
 //creates a new npc and adds it to the battle MARK: add npc
@@ -125,49 +143,155 @@ void Battle::addNPC(NPC* npc, NPC* parent, bool altteam) {
 	newguy->setParent(parent);
 	team->push_back(newguy);
 	everyone.push_back(newguy);
+	if (newguy->getOpener()) { //do the opening attack if they have one
+		checkOpeners({newguy});
+	}
 }
-//checks all the effects that everyone has for if they've run out MARK: check effects
-void Battle::checkEffects() {
-	//checks everyone's effects to see if they wore off
-	for (int i = 0; i < alleffects.size();) {
-		NPCEffect* npceffect = alleffects[i];
-		if (npceffect.duration <= 0) {
-			npceffect->affected->removeEffect(npceffect->effect); //removes the effect
-			alleffects.erase(remove(alleffects.begin(), alleffects.end(), npceffect), alleffects.end());
-			continue; //skip the increment because the rest of the vector just shifted left from removing the current effect
+//checks all the effects that the given npc has for if they've run out, for duration 0 moves MARK: check effects
+void Battle::checkEffects(NPC* npc) {
+	for (Effect* effect : npc->getEffects()) { //check all their effects for if their duration is 0
+		NPCEffect* neffect = npc->getEffect(effect);
+		if (neffect->duration <= 0) {
+			npc->removeEffect(effect); //remove the effect
+			detatchEffect(neffect); //handle effect removal stuff
 		}
-		i++;
 	}
 }
-//add the effect to the alleffects vector while handling duplicates
+//add the effect to the alleffects vector while handling duplicates MARK: attach effect
 void Battle::attachEffect(NPCEffect* effect) {
-	for (NPCEffect* neffect : alleffects) {
-		if (effect->)
+	if (effect->effect->hypnotize) { //when changing hypnosis status, untake anyone they may be taking
+		effect->npc->setTaking(NULL);
 	}
+	if (effect->effect->speedbuff != 1) { //if the speed has changes
+		speedSort(effect->npc); //reconfigure the npc's speed and turn stuff to account for the new speed
+	}
+	for (NPCEffect* neffect : alleffects) { //if there's a duplicate just return cause it's already there
+		if (neffect->effect == effect->effect && neffect->npc == effect->npc) {
+			return;
+		}
+	} //psuh the new effect
+	alleffects.push_back(effect);
+}
+//handle effect removal, including removing the effect from the alleffects vector MARK: detatch effect
+void Battle::detatchEffect(NPCEffect* effect) {
+	if (!effect) return; //removeEffect on NPCs may return NULL for the effect not being there so we check for that
+	if (effect->stacks) return; //if the effect is still affecting the npc, we don't do the removal stuff
+
+	if (effect->effect->hypnotize) { //when changing hypnosis status, untake anyone they may be taking
+		effect->npc->setTaking(NULL);
+	} 
+	if (effect->effect->speedbuff != 1) { //if the speed has changes
+		speedSort(effect->npc); //reconfigure the npc's speed and turn stuff to account for the new speed
+	}
+	//stop tracking the effect
+	alleffects.erase(remove(alleffects.begin(), alleffects.end(), effect), alleffects.end());
+
+	if (effect->npc->popKO()) handleKnockout(effect->npc); //handle ko stuff if the npc was just incapacitated due to effect fall damage
 }
 //stuff that happens when an npc gets incapacitated MARK: handle knockout
 void Battle::handleKnockout(NPC* npc) {
 	if (npc->popExtraLives()) { //if the npc has extra lives, pop one and fully heal them
 		cout << "\n" << npc->getName() << " had an extra life!";
-		npc->directDamage(-npc->getHealthMax());
+		CinPause();
+		npc->damage(-npc->getHealthMax());
 		return;
-	} else {
+	} else { //make sure the player understands this npc is incapacitated
 		cout << "\n" << npc->getName() << " is incapacitated!";
+		CinPause();
 	}
 	
-	//MARK: we can't print incapacitated if they were incapacitated before, make sure it doesn't do that
-
 	npc->setTaking(NULL); //untake taken npcs
+
+	//also if there is only one npc left on this team we make sure they're not taken
+	if (aliveCount(npc->getEnemy() ? enemyTeam : playerTeam) == 1) {
+		for (NPC* enemy : (npc->getEnemy() ? playerTeam : enemyTeam)) npc->setTaking(NULL);
+	}
+
 	//remove bond effects from the parent
 	if (npc->getOpener() && npc->getOpener()->appliedeffect && npc->getOpener()->appliedeffect->bond) {
 		NPC* leader = (!npc->getParent() ? (npc->getEnemy() ? enemyTeam : playerTeam)[0] : npc->getParent());
-		leader->removeEffect(npc->getOpener()->appliedeffect, npc);
+		detatchEffect(leader->removeEffect(npc->getOpener()->appliedeffect, npc));
+		if (leader->popKO()) handleKnockout(leader); //handle ko stuff if the leader was just incapacitated due to fall damage
 	}
 }
-//applies damage to the npc and handles stuff related to that MARK: carry out damage
-void Battle::carryOutDamage(NPC* npc, double damage, double pierce) {
-	//apply the damage
-	if (npc->getHealth() <= 0) handleKnockout(npc);
+//does the hitting stuff for only one of the targets MARK: hit target
+void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry) {
+	double attackProcessing = 0; //processes attack and pierce as doubles for better rounding at the end
+	double pierceProcessing = 0;
+	if (attack->spbomb) { //sp bombs don't get multipliers or modifiers of any sort, power still increases due to level from sp stat
+		attackProcessing = attack->power;
+	} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
+		attackProcessing = pierceProcessing = 9999999; //just send as much damage as possible MARK: actually no, send damage equal to the health (direct damage)
+	} else { //normal attacks, we multiply the attack power/pierce and attack/pierce stat together so they both matter equally, and divide by 10 just cause I don't want the numbers to be too big
+		attackProcessing = attack->power * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0;
+		pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
+	}
+	if (parry) attackProcessing *= 2; //parried hits hit with double power!
+	for (Effect* effect : attack->synergies) { //increase attack power by 1.5x for all synergies on the reciever
+		bool synergized = false; //track if we synergized at all so we can pause once for any amount of synergies found
+		if (reciever->getEffect(effect, false)) {
+			attackProcessing *=  1.5;
+			cout << "\nThe attack synergized with " << reciever->getName() << "'s " << effect->name << "!";
+		}
+		if (synergized) CinPause(); //final pause
+	}
+	
+	for (int j = 0; j < hits; j++) { //damages the target the given amount of times
+		if (hits > 1) cout << "\nHit " << j+1 << "!"; //announce which hit it was if it's multi-hit
+
+		//parry the hit if parrying the attacker
+		if (reciever->getParrying() == attacker && !attack->getBeneficial()) {
+			cout << "\n" << reciever->getName() << " parried it!";
+			CinPause();
+			reciever->setParrying(NULL); //don't parry other attacks or hits
+			hitTarget(attack, attacker, attacker, 1, true); //send the hit right back at double power!
+			hits -= 1; //subtract one hit because we just parried it
+			continue; //don't apply the damage of this hit to the npc
+		}
+
+		attackProcessing *= (0.9 + ((double)rand()/RAND_MAX) * 0.2); //randomly vary attack power of every hit by 10%
+		bool crit = !(rand()%20); //5% chance to crit
+		if (crit) attackProcessing *= 1.75; //75% extra attack seems to be a good sweet spot for crit multipliers
+
+		int effectiveAttack = Round(attackProcessing); //convert the processing doubles to ints
+		int effectivePierce = Round(pierceProcessing);
+
+		if ((reciever->getInvincible() && attack->power < 0) || (!reciever->getInvincible() && attack->power != 0)) { //hit normally if healing or (damaging and not invincible), never apply damage for 0 power attacks since their point isn't to affect health if that's the case
+			int damage = reciever->damage(effectiveAttack*randmultiplier, effectivePierce);
+			if (attack->lifesteal) attacker->damage(damage * -attack->lifesteal, 0); //heal the attacker based on the lifesteal
+		}
+		if (crit) { //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or "oh shoot" if you got hit)
+			cout << "\nCRITICAL " << (attack->power > 0 ? "HIT" : "HEAL") << "!";
+			CinPause();
+		}
+		if (reciever->getInvincible() && attack->power > 0) {
+			cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
+			CinPause();
+		}
+	}
+	if (!hits) cout << "\nThe attack missed!";
+	if (reciever->popKO()) handleKnockout(reciever); //apply knockout stuff to the reciever
+	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
+	if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
+		attachEffect(reciever->setEffect(attack->appliedeffect));
+	}
+	if (attack->cancel != NULL) { //removes the effect this attack cancels out
+		if (NPCEffect* canceled = reciever->getEffect(attack->cancel))
+		detatchEffect(reciever->removeEffect(canceled->effect, NULL)); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
+		if (reciever->popKO()) handleKnockout(reciever); //handle ko stuff if the reciever was just incapacitated due to effect fall damage
+	}
+	for (int i = 0; i < attack->copyamount; i++) { //copy the target for copying attacks
+		addNPC(reciever); //duplicate the target with no parent on the same team as the target
+	}
+	if (attack->targuard) reciever->setGuard(attack->targuard, true); //adds target guards on the target
+	if (attack->spleak) reciever->alterSp(-attack->spleak); //alter sp how the attack does that
+	if (attack->extralives) { //add extra lives to the target
+		reciever->addExtraLives(attack->extralives);
+		cout << "\n" << reciever->getName() << " got " << attack->extralives << " extra li" << (attack->extralives == 1 ? "fe" : "ves") << "!";
+	}
+	if (attack->contact && reciever->getRecoilAttack()) { //attacker gets attacked by the target's recoil attack
+		carryOutAttack(reciever->getRecoilAttack(), reciever, attacker, true);
+	}
 }
 //hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
 void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos) {
@@ -188,89 +312,12 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 					break;
 				}
 			}
-			double attackProcessing = 0; //processes attack and pierce as doubles for better rounding at the end
-			double pierceProcessing = 0;
-			if (attack->spbomb) { //sp bombs don't get multipliers or modifiers of any sort, power still increases due to level from sp stat
-				attackProcessing = attack->power;
-			} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
-				attackProcessing = pierceProcessing = 9999999; //just send as much damage as possible MARK: actually no, send damage equal to the health (direct damage)
-			} else { //normal attacks
-				attackProcessing = attack->power * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0;
-				pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
-			}
-			for (Effect* effect : attack->synergies) { //increase attack power by 1.5x for all synergies on the reciever
-				if (reciever->getEffect(effect, false)) attackProcessing *=  1.5;
-			}
-			int effectiveAttack = Round(attackProcessing); //convert the processing doubles to ints
-			int effectivePierce = Round(pierceProcessing);
-			
-			//damages the target
 			int hits = 1; //some moves hit a random amount of times within a certain range
 			if (attack->focushits) hits = rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits;
-			for (int j = 0; j < hits; j++) {
-				if (hits > 1) cout << "\nHit " << j+1 << "!";
-				double randmultiplier = 0.9 + ((double)rand()/RAND_MAX) * 0.2; //randomly vary attack power of every hit by 10%
-				bool crit = !(rand()%20); //5% chance to crit
-				if (crit) randmultiplier *= 1.75;
-				if (reciever->getParrying() == attacker && !attack->getBeneficial()) { //parry the hit if parrying the attacker
-					cout << "\n" << reciever->getName() << " parried it!";
-					CinPause();
-					reciever->setParrying(NULL); //don't parry other attacks
-					attacker->damage(effectiveAttack*randmultiplier*2.0, effectivePierce); //send the attack right back at double power!
-				} else if ((reciever->getInvincible() && attack->power < 0) || (!reciever->getInvincible() && attack->power != 0)) { //hit normally if healing or (damaging and not invincible), never apply damage for 0 power attacks since their point isn't to affect health if that's the case
-					int damage = reciever->damage(effectiveAttack*randmultiplier, effectivePierce);
-					if (attack->lifesteal) attacker->damage(damage * -attack->lifesteal, 0); //heal the attacker based on the lifesteal
-				}
-				if (crit) { //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or "oh shoot" if you got hit)
-					cout << "\nCRITICAL HIT!";
-					CinPause();
-				}
-				if (reciever->getInvincible() && attack->power > 0) {
-					cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
-					CinPause();
-				}
-			}
-			if (!hits) cout << "\nThe attack missed!";
-			//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
-			if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
-				reciever->setEffect(attack->appliedeffect);
-			}
-			if (attack->cancel != NULL) { //removes the effect this attack cancels out
-				if (NPCEffect* canceled = reciever->getEffect(attack->cancel))
-				reciever->removeEffect(canceled->effect, NULL); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
-			}
-			for (int i = 0; i < attack->copyamount; i++) { //copy the target for copying attacks
-				addNPC(reciever); //duplicate the target with no parent on the same team as the target
-			}
-			if (attack->targuard) reciever->setGuard(attack->targuard, true); //adds target guards on the target
-			if (attack->spleak) reciever->alterSp(-attack->spleak); //alter sp how the attack does that
-			if (attack->extralives) { //add extra lives to the target
-				reciever->addExtraLives(attack->extralives);
-				cout << "\n" << reciever->getName() << " got " << attack->extralives << " extra li" << (attack->extralives == 1 ? "fe" : "ves") << "!";
-			}
-			if (attack->contact && reciever->getRecoilAttack()) { //attacker gets attacked by the target's recoil attack
-				carryOutAttack(reciever->getRecoilAttack(), reciever, attacker, true);
-			}
-			//check if the guy fainted and do stuff if so
+			hitTarget(attack, attacker, reciever, hits);
 		}
 	}
 }
-
-//MARK: before finishing this, make sure every time you use multipliers evrrywhere in the whole game, it rounds to the nearest int.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //carries out the attack (makes it hit the target) MARK: carry out attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil) {
 	attacker->alterSp(-Round(attack->cost*attacker->getSPUseMultiplier())); //removes sp from the attacker
@@ -313,7 +360,10 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	//affects the attacker before attacking if we do that
 	if (attack->affectselfbeforeattack) {
 		if (attack->selfeffect != NULL) attachEffect(attacker->setEffect(attack->selfeffect));
-		if (attack->selfcancel != NULL) attacker->removeEffect(attack->selfeffect);
+		if (attack->selfcancel != NULL) {
+			detatchEffect(attacker->removeEffect(attack->selfeffect));
+			if (attacker->popKO()) handleKnockout(attacker); //handle ko stuff if the attacker was just incapacitated due to fall damage
+		}
 	}
 	//says if we hit multiple targets
 	if (!attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
@@ -343,11 +393,23 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	//affects the attacker however applicable
 	if (!attack->affectselfbeforeattack) {
 		if (attack->selfeffect != NULL) attachEffect(attacker->setEffect(attack->selfeffect));
-		if (attack->selfcancel != NULL) attacker->removeEffect(attack->selfeffect);
+		if (attack->selfcancel != NULL) {
+			detatchEffect(attacker->removeEffect(attack->selfeffect));
+			if (attacker->popKO()) handleKnockout(attacker); //handle ko stuff if the attacker was just incapacitated due to fall damage
+		}
 	}
 	for (int i = 0; i < attack->summonamount; i++) { //add adds for how many this attack summons
 		bool forenemy = attack->enemysummon; //enemy and team summons are reversed when hypnotized
 		addNPC(attack->summon, attacker, (attacker->getHypnotized() ? !forenemy : forenemy));
+	}
+}
+//check all the given npcs for if they have an opening attack to do MARK: check openers
+void Battle::checkOpeners(const vector<NPC*>& checks) {
+	for (NPC* npc : checks) {
+		if (npc->getOpener()) {
+			npcTurn(npc); //do the turn for the npc (who will choose the opener)
+			npc->setOpener(NULL); //only do opener once
+		}
 	}
 }
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item
@@ -411,7 +473,7 @@ bool Battle::useItem(const char* itemname) {
 			cout << npc->getName() << " is too damaged for the " << itemname << " to work!";
 			return false;
 		} //directly applies the health to the target
-		npc->directDamage(-hp->getHp());
+		npc->damage(-hp->getHp());
 	//sp items restore sp for the target
 	} else if (!strcmp(item->getType(), "sp")) {
 		SpItem* sp = (SpItem*)item; //converts to the corresponding subclass
@@ -424,7 +486,7 @@ bool Battle::useItem(const char* itemname) {
 			return false;
 		} //gives success message and revives the teammate
 		cout << npc->getName() << " was recapacitated!";
-		npc->directDamage(-revive->getHp());
+		npc->damage(-revive->getHp());
 	//effect items apply an effect to the target
 	} else if (!strcmp(item->getType(), "effect")) {
 		EffectItem* affecter = (EffectItem*)item; //converts to the corresponding subclass
@@ -432,7 +494,7 @@ bool Battle::useItem(const char* itemname) {
 			cout << npc->getName() << " is incapacitated! The " << itemname << " won't work!";
 			return false;
 		} //sets the effect on the target
-		npc->setEffect(affecter->getEffect());
+		attachEffect(npc->setEffect(affecter->getEffect()));
 		//the SUPERSMOOTHIE has this specific battle-handled effect
 		for (int i = 0; i < affecter->getEffect()->multipositioning; i++) {
 			playerTeam.push_back(npc); //add a shallow copy to the team lists so they're just in multiple positions, very cool
@@ -558,11 +620,33 @@ void Battle::reorder() { //put everyone in the priority queue based on their spe
 }
 //interpret and carry out player attacks, and return whether we successfully launched an attack MARK: parse attack
 bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax) {
+	//get attack first
+	//failure types:
+		//invalid target
+		//not enough SP for the attack
+		//invalid attack/command (automatic)
+	
+	//there is both attacks ENERGY BALL and BIG ENERGY BALL
+	//there is also both attacks PUNCH and PUNCH FLURRY
+	//make sure if the player tried to PUNCH FLURRY the error message does not say anything about a normal PUNCH
+
+	Attack* candidate = NULL; //tracks any old candidates to give better error messages (e.g. unsuccessfully using PUNCH FLURRY shouldn't say anything about the move PUNCH)
+
 	//we have to check multiple times, since attacks may have 0 or more spaces in them
 	for (int i = checkMax-1; i >= 0; i--) {
 		if (i < checkMax) { //if it's the first one, we've already parsed it the same, no need to parse again
 			ParseCommand(commandP, commandWordP, commandExtensionP, i);
 		}
+
+		Attack* attack; //the attack we're doing
+
+		if (!strcmp(commandWordP, plr->getBasicAttack()->name)) { //it might be the basic attack
+			attack = plr->getBasicAttack();
+		} else { //it might be one of the special attacks
+			attack = getAttackInVector(plr->getSpecialAttacks());
+			if (attack && attack->minLevel <= plr->getLevel())
+		}
+
 		//finds the target using what is currently thought to be the name
 		NPC* target = getNPCInVector(enemyTeam, commandExtensionP);
 		//if no target was given in the string and there's only one enemy, we of course just target that enemy
@@ -649,7 +733,6 @@ bool Battle::playerTurn(NPC* plr) {
 	CinIgnoreAll(); //clears extra input and invalid input
 
 	return keepFighting; //returns if the player wants to keep fighting (true) or run away (false)
-
 }
 //find which team this attack hits MARK: get target team
 vector<NPC*>& Battle::getTarTeam(NPC* npc, Attack* attack) {
@@ -751,14 +834,19 @@ Attack* chooseAttack(NPC* npc) {
 	return npc->getBasicAttack();
 }
 //npcs decide what to do on their turn here MARK: npc turn
-void Battle::npcTurn(NPC* npc) {
-	cout << "\n" << npc->getName() << "'s turn!"; //prints whose turn it is
-	CinPause();
+void Battle::npcTurn(NPC* npc, bool opener) {
+	if (!opener) { //don't print that it's their turn if it's just an opening attack
+		cout << "\n" << npc->getName() << "'s turn!"; //prints whose turn it is
+		CinPause();
+	}
 
-	Attack* attack = chooseAttack(npc); //get the attack to do!
+	//get the attack to do! defaults to opener if this is an opening turn
+	Attack* attack = (opener ? npc->getOpener() : chooseAttack(npc));
+	
 	vector<NPC*> targets = getTargets(npc, attack); //try to find the targets for the attack
 
 	while (targets.empty()) { //if no targets were found for the attack (while loop is only for npcs with no basic attack, usually basically just an if statement)
+		if (opener) return; //just don't do the attack, don't choose new attack if it was an opening attack
 		if (attack == npc->getBasicAttack()) break; //if it WAS just the basic attack causing issues, then we just break so we can get to the doing nothing message
 		
 		if (!npc->getBasicAttack()) attack = chooseAttack(npc); //if the npc has no basic attack (graham), just keep rolling special attacks until it works
@@ -785,36 +873,27 @@ void Battle::npcTurn(NPC* npc) {
 		WorldState[RECOILED] = true;
 	}
 }
-
-
-
-
-
-//MARK: all others are defeated, untake it
-
-//MARK: if changing hypnosis status, release taken npc?
-
-//MARK: also remember to readd npc to order queue after changing their speed
-
-//MARK: implement waves!
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-//begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away MARK: FIGHT
-int Battle::FIGHT() {
-	cout << "\nBATTLE BEGIN!"; //shows everyone involved in the battle plus flavor text
+//prints text for starting a new wave or the battle as a whole
+void Battle::printVersus(size_t wave) { //shows everyone involved in the battle plus flavor text
+	if (!wave) cout << "\nBATTLE BEGIN!"; //first wave is just the starting text
+	else cout << "\nWAVE " << wave << "!"; //otherwise print which wave it is
 	printTeam(playerTeam);
 	cout << "\n<<< VERSUS >>>";
 	printTeam(enemyTeam);
 	CinPause(); //gives the player time to orient themselves
+}
+//begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away MARK: FIGHT
+int Battle::FIGHT() {
+	printVersus(0); //print all the battle intro text
 	
 	NPC* current; //the current npc whose turn it is
+
+	checkOpeners(everyone); //check any opening moves the npcs may have
 
 	bool continuing = true;
 	while (continuing) { //the main battle loop! continues until continuing is set to false, only if the player successfully runs away
 		if (turn.empty()) { //we put everyone in order again if the turn queue is empty
-			reorder(); //also clear went and skip
-			checkEffects(); //we also check if there are any 0-duration effects to stop tracking
+			reorder(); //also clear went and reset known speeds
 		}
 
 		current = turn.top(); //gets the npc whose turn it is at the front of the queue
@@ -827,10 +906,7 @@ int Battle::FIGHT() {
 			continue;
 		}
 
-		//MARK: IMPORTANT:
-		//if we apply a 0 duration effect and the same effect gets added again, it will create a dangling pointer on the battle side.
-		//actually this is automatically handled as long as we reget the pointer to the NPCEffect from npc->getEffect(effect) every time we setEffect
-		//well make sure it does that
+		checkEffects(current); //we also check if there are any 0-duration effects to stop tracking before the turn starts
 		
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk
@@ -855,16 +931,29 @@ int Battle::FIGHT() {
 
 		for (Effect* effect : current->getEffects()) { //tick all the npc's effects AFTER their turn (this makes durations more intuitive)
 			current->tickEffect(effect);
-			//if (current->getHealth() <= 0) handleKnockout(current);
+			if (current->popKO()) handleKnockout(current); //handle ko if this just ko'd them
 		}
 
 		went.insert(current); //the npc has went now so we track that they went
+
+		bool newwave = false; //check if we're starting a new wave
 		
-		//check the player team and enemy team for if they've lost all hp, and returns win or loss based on that result
+		//check the player team and enemy team for if they've lost all hp, sees if we can go to a new wave, and if not, returns win or loss based on that result
 		if (aliveCount(playerTeam) <= 0) {
-			return 0; //lose
+			if (++pwave < player->getWaves()) { //also checks each team for if they have more waves
+				setupWave(true, pwave, false);
+				newwave = true;
+			} else return 0; //lose
 		} else if (aliveCount(enemyTeam) <= 0) {
-			return 1; //win
+			if (++ewave < player->getWaves()) {
+				setupWave(true, ewave, scaleEnemies);
+				newwave = true;
+			} else return 1; //win
+		}
+
+		if (newwave) { //reset the turn queue if it's a new wave to force a new round
+			while (!turn.empty()) turn.pop();
+			checkOpeners(everyone); //check any opening moves the new npcs may have
 		}
 	}
 	return 2; //return 2 because the player ran away

@@ -317,6 +317,13 @@ int NPC::popExtraLives() { //return the extra lives then decrement the amount if
 	if (extralives) return extralives--;
 	return 0; //otherwise return 0 extra lives and don't decrement into the negatives
 }
+bool NPC::popKO() { //pop the KO check
+	if (koCheck) {
+		koCheck = false;
+		return true;
+	}
+	return false;
+}
 Effect* NPC::getAttackEffect() {
 	return attackeffect;
 }
@@ -753,10 +760,6 @@ void NPC::printDamage(int damage, const char* status) { //prints the damage the 
 	if (damage) cout << "!";
 	else cout << ".";
 	cout << "\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
-	if (health <= 0) { //says that the npc is incapacitated if it now has 0 hp
-		CinPause();
-		//cout << "\n" << name << " is incapacitated!";
-	}
 }
 void NPC::printEffects() { //prints the effects this npc has
 	int size = effects.size(); //returns if we don't have any effects
@@ -778,12 +781,15 @@ void NPC::printEffects() { //prints the effects this npc has
 }
 //damages the npc and get how much damage it did
 int NPC::damage(double power, double pierce) {
-	double damagePierce = 10; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
+	double damagePierce = 10.0; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
 	int oldguard = guard; //record what the guard was before
 	double defenseD = (power > 0 ? stats.defense : 0); //converts stats to doubles for easier damage calculation, also don't defend against heals!
 	double toughnessD = stats.toughness;
+
+	bool capacitated = health > 0;
+
 	//calculates the damage
-	int damage = Round(power * (10.0f/(10.0f + ClampD(defenseD - ((power/damagePierce + pierce)*10.0f/(10.0f + toughnessD)),0,defenseD))));
+	int damage = Round(power * (10.0/(10.0 + ClampD(defenseD - ((power/damagePierce + pierce)*10.0/(10.0 + toughnessD)),0,defenseD))));
 	if (damage > 0) guard--; //hits lower guard
 	int totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	
@@ -799,13 +805,26 @@ int NPC::damage(double power, double pierce) {
 		printDamage(totalDamage);
 	}
 
+	//track that this npc was just now incapacitated
+	if (capacitated && health <= 0) {
+		koCheck = true;
+	} else if (!capacitated && health > 0) { //make sure we don't do any ko stuff if they were just recapacitated
+		koCheck = false;
+	}
+
 	return totalDamage;
 }
 //directly applies damage while ignoring defense and all that
 void NPC::directDamage(int damage, const char* status) {
 	int totalDamage = Clamp(damage,health-stats.hpmax,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
+	bool capacitated = health > 0;
 	health -= totalDamage;
 	printDamage(damage, status); //prints the damage taken and why it was taken
+	if (capacitated && health <= 0) { //track that this npc was just incapacitated
+		koCheck = true;
+	} else if (!capacitated && health > 0) { //make sure we don't do any ko stuff if they were just recapacitated
+		koCheck = false;
+	}
 }
 void NPC::setLevel(int _level) { //manually sets the level of the npc (will not level down)
 	int lvlguard = 100; //guards the level up past a certain amount to avoid the program freezing on large level settings
@@ -1049,7 +1068,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	return &npceffects[effect]; //return a reference to the npc's manager of this effect
 }
 //removes an effect from the npc, specifically from the affector in cases of stacking, ans affector is also used like the "in battle" and "announce changes" bool MAKR: remove effect
-void NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clarify an affector it just removes all the stacks of the effect
+NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clarify an affector it just removes all the stacks of the effect
 	for (Effect* _effect : effects) {
 		if (effect == _effect) {
 			int stacks = 1;
@@ -1096,9 +1115,6 @@ void NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clar
 				if (affector) cout << "\n" << name << "'s attacks no longer inflict " << effect->attackeffect << "!";
 				attackeffect = NULL;
 			}
-			if (effect->falldamage) {
-				damage(effect->falldamage, 0);
-			}
 
 			//edit stat multipliers MARK: multiplier effects
 			attackMultiplier /= pow(effect->attackbuff, stacks);
@@ -1120,15 +1136,21 @@ void NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don't clar
 				if (effect->spusage != 1) cout << "\n" << name << "'s moves now use " << spUseMultiplier << " times SP!";
 			}
 
-			return; //return to stop iterating through effects cause we already did all the stuff
+			//apply fall damage (effect removal damage) if the npc isn't invincible (or the fall damage heals for some reason)
+			if (effect->falldamage && !(effect->falldamage > 0 && invincibility)) {
+				damage(effect->falldamage, 0);
+			}
+
+			return npceffects[effect]; //return the npceffect so Battle can check if it's fully run out
 		}
 	}
+	return NULL; //return NULL because no effect was found
 }
-//called by Battle to tick this npc's effects, not all at once to allow for fine tuning, please do not call while iterating probably MARK: tick effects
+//called by Battle to tick this npc's effects, not all at once to allow for fine tuning, only ticks duration if incapacitated MARK: tick effects
 void NPC::tickEffect(Effect* effect) {
 	NPCEffect& npceffect = npceffects[effect]; //get the npceffect for convenience
 	if (getHealth()) { //we don't affect the npc if they're unconscious
-		if (effect->damage) { //applies damage (or healing)
+		if (effect->damage && !(effect->damage > 0 && invincibility)) { //applies damage if not invinclible (or healing which succeeds always)
 			directDamage(effect->damage, effect->name);
 			if (effect->lifesteal) { //give life stealers the health they just took
 				for (NPC* affector : npceffect.affectors) { //only if they have health left; lifesteal is not an insurance policy for when you're incapacitated

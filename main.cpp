@@ -532,7 +532,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	pshrimplebeam->instakill = true;
 	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (100 ATTACK, 100 PIERCE)");
 	Item* shrimplegun = new WeaponItem("SHRIMPLE GUN", "An advanced red water gun granting non-shrimp wielders the ability to use the SHRIMPLE BEAM.", mountainlake, pshrimplebeam);
-	Attack* parry = new Attack("PARRY", "is preparing to parry", 7, 0, 0, 1, 1, 1);
+	Attack* parry = new Attack("PARRY", "is preparing to parry", false, 7, 0, 0, 1, 1, 1);
 	parry->parry = true;
 	Item* parryguide = new EducationItem("PARRYING GUIDE", "An in depth guide on how to PARRY enemy attacks.", limbo, parry);
 
@@ -4277,6 +4277,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* adversary = new NPC("", "THE ADVERSARY", "", limbo, 0, Stats(), Stats());
 	//
 
+
+	//MARK: make sure all the 0 hit and 0 target moves actually make sense with that
+	//MARK: probably no attack should have 0 damage and non-0 hits
+	//MARK: all 0 target attacks should be for affecting self or summoning stuff like that, nothing to do with the other team (except makinhg a summon for them)
+	//MARK: make sure we NO ATTACKS accidentally don't have a bool as the third slot
+
 	//set up overworld enemies  MARK: enemies (world)
 	NPC* forestguard = new NPC(*grassman);
 	forestguard->setLeader(true, 1, forestentrance);
@@ -4338,11 +4344,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	_ninjascroll->setAttack(pdeadlyspinferno);
 	govguard->setGift(ninjascroll, true);
 
-	/*NPC* forestrando = new NPC(*grassman);
-	forestrando->setLeader(true, 5, forestleft);
-	forestrando->setDialogue("*angry bush noises*");
-	forestrando->addRejectionDialogue("*angry bush noises*");*/
-
 	NPC* forestguard2 = new NPC(*buffgrassman);
 	forestguard2->setLeader(true, 2, foresttempleentrance);
 	forestguard2->setParty({pricklyhog});
@@ -4388,12 +4389,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 									   {egadwick, "Now I can safely be in the great outdoors!"}});
 	roguerobot->setDialogue({{NULL, "EGARDENBOT - *rogue snipping noises*"}});
 	roguerobot->addRejectionDialogue({{NULL, "EGARDENBOT - *rogue snipping noises*"}});
-
-	/*NPC* plantguard = new NPC(*carnplant);
-	plantguard->setLeader(true, 4, foresttempleentrance);
-	plantguard->blockExit(NORTHWEST, ENEMY, "blocked by the CARNIVOROUS PLANT.");
-	plantguard->setDialogue("*snapping biting noises*");
-	plantguard->addRejectionDialogue("*snapping biting noises*");*/
 
 	NPC* flowerguard = new NPC(*flowerfiend);
 	flowerguard->setLeader(true, 3, flowerfield);
@@ -5519,7 +5514,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		}
 		CinPause();
 	} else if (battlestatus == 1) { //win
-		cout << "YOU WIN!";
+		cout << "\nVICTORY!";
 		CinPause();
 		mony += battle.getMonyReward(); //adds the monies to the player's balance
 		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is never just 1

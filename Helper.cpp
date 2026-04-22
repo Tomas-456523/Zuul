@@ -100,6 +100,15 @@ namespace Helper {
 		}
 		return NULL; //no valid item was found so return null
 	}
+	//finds an attack in the given vector that has the given name
+	Attack* getAttackInVector(std::vector<Attack*>& the_vector, const char* attackname) {
+		for (Attack* attack : the_vector) { //if the attack's name matches, we return that
+			if (!strcmp(attack->name, attackname)) {
+				return attack;
+			}
+		}
+		return NULL; //no valid attack was found so return null
+	}
 	//prints the data of the given npc
 	void printNPCData(NPC* npc, bool battle) {
 		cout << "\n" << npc->getTitle(); //prints the title of the npc if they have one

@@ -21,7 +21,7 @@ struct speedComparer {
 
 class Battle {
 public:
-	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable = true);
+	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable = true, bool scaleenemies = true);
 	~Battle();
 
 	int FIGHT(); //starts the battle process and returns an int based on the outcome
@@ -34,10 +34,11 @@ public:
 	void analyze(const char* name); //print the data of the given item or npc
 	void printHelp(); //print the valid command words and extensions
 	bool runAway(); //try to escape the battle
-	void checkEffects(); //checks all the tracked effects for if they're at duration 0
+	void checkEffects(NPC* npc); //checks all the npc's tracked effects for if they're at duration 0
 	void attachEffect(NPCEffect* effect); //add the effect to the alleffects vector and make sure no duplicates occur
+	void detatchEffect(NPCEffect* effect); //handle effect removal
 	void handleKnockout(NPC* npc); //handles stuff related to when the npc gets incapacitated
-	void carryOutDamage(NPC* npc, double damage, double pierce); //handles the damaging of the npc and stuff related to that
+	void hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry = false); //hit one of the targets from hitTargets
 	void hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos); //hit the target, and surroundings if needed
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil = false); //affects the given target based on the given attack
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 2); //interpret and carry out an attack command given by the player
@@ -45,7 +46,10 @@ public:
 	vector<NPC*> getTargets(NPC* npc, Attack* attack); //get a vector of valid targets that we can target with the attack
 	bool playerTurn(NPC* plr); //the player chooses what to do here
 	Attack* chooseAttack(NPC* npc); //choose an attack for the npc based on their precalculated attack weights
-	void npcTurn(NPC* npc); //the npc chooses an attack to do
+	void npcTurn(NPC* npc, bool opener = false); //the npc chooses an attack to do
+	void printVersus(size_t wave); //prints the starting text or wave text
+	void setupWave(bool pteam, size_t wave, bool scaleteam); //sets up a new wave for the given side
+	void checkOpeners(const vector<NPC*>& checks); //check the given npcs for if they have opening moves
 	
 	void addNPC(NPC* npc, NPC* parent = NULL, bool altteam = false); //creates a new npc mid-battle
 
@@ -69,8 +73,13 @@ private:
 	vector<Item*>* inventory; //pointer to the player's inventory
 
 	NPC* player; //the original player object
+	NPC* enemy; //the original enemy object
+
+	size_t pwave = 0;
+	size_t ewave = 0;
 
 	bool escapable; //if you can run from this battle
+	bool scaleEnemies; //if we should scale the enemies to match their world level (for world fights)
 
 	int xpReward = 0; //how much xp is given to the player party for winning
 	int monyReward = 0; //how many monies are given to the player party for winning
