@@ -796,6 +796,8 @@ void Battle::npcTurn(NPC* npc) {
 
 //MARK: also remember to readd npc to order queue after changing their speed
 
+//MARK: implement waves!
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 //begins the battle process and returns 0 if the player team lost, 1 if they won, and 2 if they ran away MARK: FIGHT
@@ -828,6 +830,7 @@ int Battle::FIGHT() {
 		//MARK: IMPORTANT:
 		//if we apply a 0 duration effect and the same effect gets added again, it will create a dangling pointer on the battle side.
 		//actually this is automatically handled as long as we reget the pointer to the NPCEffect from npc->getEffect(effect) every time we setEffect
+		//well make sure it does that
 		
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk

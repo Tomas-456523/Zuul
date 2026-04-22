@@ -2227,7 +2227,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//commentary about the world
 	{{developer, "It's weird how I have a very specific vision for how the world looks,"},
 	 {developer, "like I have character designs and everything,"},
-	 {developer, "but nobody will ever see them cause it's a text-based game :|"}}
+	 {developer, "but nobody will ever see them cause it's a text-based game :|"},
+	 {developer, "Maybe I'll make this a graphics-based game someday and then you can see all that..."},
+	 {devdloper, "but that's a very considerably sized maybe."}}
 	//scope creep
 	//future projects
 	{{developer, "Hey check it out I can say dancing!"},
@@ -2276,7 +2278,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "so the game would be escaping the prison."},
 	 {developer, "I'm glad I wrote that down because I completely forgot that."}}
 	{{developer, "This document that I used to plan this game says that this game is supposed to take place in..."},
-	 {NULL, "\"GENERIC FANTASTY LAND\""},
+	 {NULL, "\"GENERIC FANTASY LAND\""},
 	 {developer, "cause I'm pretty sure it was supposed to be generic but with BURGERs,"},
 	 {developer, "but that was boring so I changed it to a cool amazing innovative fantasty land instead."},
 	 {NULL, "(well at least I hope it's cool amazing and innovative)"},
@@ -3916,7 +3918,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough pavement-gray shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats(20, 15, 35, 25, 50, 30, 9));
 	paveshark->setShark(); //this is a shark
-	Effect* submerged = new Effect("SUBMERGED", 2147483647, 0, 0, 1, 3);
+	Effect* submerged = new Effect("SUBMERGED", 2147483647, 0, 0, 1, 4);
 	Attack* sharkbite = new Attack("SHARK BITE", "sharkily bit", true, -5, 20, 50, 1, 1, 1);
 	sharkbite->selfcancel = submerged;
 	sharkbite->affectselfbeforeattack = true;
@@ -3954,7 +3956,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* gamblemonster = new NPC("GAMBLE MONSTER", "GAMBLONGO", "He's Gamblongo the Gamble monster and he owns the casino. He looks like a floating blob of puree with eyes.", limbo, 0, Stats(100, 20, 30, 40, 50, 70, 90), Stats(2, 2, 2, 2, 2, 2, 1));
 	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -5, 0, 0, 0, 0, 0, 0);
-	Attack* get = new Attack("DEATH", "got you", false, 90, 123456789, 123456789, 1, 1, 15);
+	Attack* get = new Attack("DEATH", "got you", false, 90, 12345678, 12345678, 1, 1, 15);
 	get->focushits = false;
 	gamblemonster->setBasicAttack(gonna);
 	gamblemonster->addSpecialAttack(get);
@@ -4150,10 +4152,29 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//sorcery (sp leak)
 	//curse (very heavy dot)
 
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 9));
+	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
+	carnplant->setBasicAttack(bite);
+	//bite
+	//pitcher (3x slow + DOT)
+	//
+
+	NPC* smogfish = new NPC("", "SMOGFISH", "Floating fish of purple smog who typically fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
+	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 0, 0, 1);
+	copycat->transformtotar = true;
+	copycat->prioritizenonleader = true; //don't transform into the player if possible to make sense of self stand out more
+	smogfish->setBasicAttack(copycat);
+
+	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle with vines round about and smog seeping through its helmet.", limbo, 0, Stats(100, 30, 10, 30, 4, 25, 9));
+	//charge (upslash effect, strong hit)
+	//vine whip (2 hits)
+	//constrict
+
 	//entering temples requires having max size party
 	//temples scale to your level
 	//you can't exit until you beat the boss (or you use the give up exit which resets everything?)
-	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except he's not short.", limbo, 0, Stats(), Stats());
+	//Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0)
+	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
 	//temple of humility in the forest, gives output antenna of humility
 	//forest temple is pretty standard, with some branching paths and combat and choices that allow you to buff yourself or buff your teammates
 	//and probably a puzzle or two (prolly one)
@@ -4167,31 +4188,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//you can also REPENT if you haven't defeated them all yet
 	//then you get the antenna
 
-	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 9));
-	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
-	carnplant->setBasicAttack(bite);
-	//bite
-	//pitcher (3x slow + DOT)
-	//
-
-	NPC* smogfish = new NPC("", "SMOGFISH", "Floating fish of smog, who typically fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
-	//copycat (turn into random teammate, prioritize not player)
-
-	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle with vines round about and smog seeping through its helmet.", limbo, 0, Stats());
-	//charge (upslash effect, strong hit)
-	//vine whip (2 hits)
-	//constrict
-
-	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(), Stats());
-	//temple of hope in the desert, gives big red button of hope
-	//you get seperated from your teammates and you have to fight enemies that decay your stats
-	//you need to get three light orbs to open the way down by doing puzzles and fighting and stuff
-	//also each light orb you put in returns one teammate to you
-	//the dark decays your stats with its attacks
-	//and when stats are low enough it can tempt teammates into despair
-	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
-	//after that you get the button
-	
 	//shadow creature (attacks that chip stats)
 	//shadow slap
 
@@ -4204,7 +4200,33 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//pyradon
 	//hypnotize or something
 
-	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(5000, 15, 15, 0, 15, 14, 9), Stats(1, 0, 1, 0, 1, 1, 0));
+	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(8000, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
+	//temple of hope in the desert, gives big red button of hope
+	//you get seperated from your teammates and you have to fight enemies that decay your stats
+	//you need to get three light orbs to open the way down by doing puzzles and fighting and stuff
+	//also each light orb you put in returns one teammate to you
+	//the dark decays your stats with its attacks
+	//and when stats are low enough it can tempt teammates into despair
+	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
+	//after that you get the button
+
+	NPC* bolide;
+	//impact
+
+	NPC* firefly;
+	//firethrower
+	//
+
+	NPC* monkeystatue;
+	NPC* infernobo;
+	//infernobo
+	//
+	//
+	//nova cannon
+
+	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(6000, 15, 10, 0, 10, 14, 9), Stats(2, 0, 1, 0, 1, 1, 0));
+	NPC* firewithfir2 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning a bright blue.", limbo, 0,               Stats(6000, 15, 20, 0, 15, 21, 9), Stats(2, 0, 2, 0, 1, 2, 0));
+	NPC* firewithfir3 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning an intense purple hue.", limbo, 0,       Stats(6000, 15, 30, 0, 20, 28, 9), Stats(2, 0, 3, 0, 2, 3, 0));
 	//temple of patience in the volcano area, gives plotometer of patience
 	//you do puzzles and fight fire enemies
 	//then you fight fire with fire
@@ -4215,7 +4237,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//teammates calm down naturally after a few turns (and increase wrath meter less), but you can CALM DOWN them so they calm down faster (5 by default probably)
 	//then you get the plotometer
 
-	//burny burn
+	//burny burn (recoil)
 
 	//firefight "fought"" with fire"
 	//ragebait
@@ -4228,18 +4250,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//ragebait
 	//flame
 
-	//something related to the outside
-
-	//something like the boss
-
-	//something that gets angry when you hit it
-
-	//floria would just heal more? prolly don't allow beneficial moves
+	//MARK: floria would just heal more? prolly don't allow beneficial moves
 	Attack* ragebait;
 	//self - {{firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate."}, {self, "SHUT UP >:|"}}
 	//floria - {{firewithfire, "Hey Floria your hat looks stupid."}, {firewithfire, "You're stupid."}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}}
 	//egadwick - {{firewithfire, "Who let this fossil into the team?"}, {firweithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd..."}, {egadwick, "You don't understand the marvelousness of science!"}}
-	//absolom - {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {firewithfire, "At least he's not all dead like-"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! >:("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}}
+	//absolom - {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! >:("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}}
 	//viola - {{firewithfire, ""}} comment about kidnapping
 	//mike - {{firewithfire, ""}} taunt about mine collapse?
 	//cacty - {{NULL, "FIRE WITH FIRE - *insults Cacty's mother in cactus language*"}, {NULL, "CACTY - *furious cactus noises*"}}
@@ -4250,24 +4266,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "Even if you did for you it's the same as donating penny shavings..."}, {richie, "STOP! >:("}}
 	//ratman - {{firewithfire, "Ratman!"}, {firewithfire, "..."}, {firewithfire, "Yeah you're just a weirdo in a rat costume."}, {ratman, "I will not tolerate this slander."}, {ratman, "Because I'm Ratman."}}
 	Effect* wrath;
-
-	//bolide
-	//impact
-
-	//firefly
-	//
-	//
-
-	//monkey statue
-
-	//infernobo
-	//
-	//
-	//nova cannon
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)
 	NPC* burgermenace = new NPC("", "THE BURGER MENACE", "", limbo, 0, Stats(), Stats());
 	//burger tendril
+	//
+
+	//burger boom
+
+	NPC* adversary = new NPC("", "THE ADVERSARY", "", limbo, 0, Stats(), Stats());
 	//
 
 	//set up overworld enemies  MARK: enemies (world)
@@ -5515,7 +5522,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		cout << "YOU WIN!";
 		CinPause();
 		mony += battle.getMonyReward(); //adds the monies to the player's balance
-		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is literally never just 1
+		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is never just 1
 		cout << "\nYou earned " << battle.getMonyReward() << " monies! Now you have " << mony << " monies!";
 		CinPause();
 		//gives all npcs the xp reward
@@ -5545,6 +5552,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			cout << name << " gave you the " << item->getName() << "!"; //says that you got the thing
 			CinPause();
 		}
+
 		//some NPCs have special fight endings after defeating them, so we do those checks here
 		if (npc->getLobster()) { //if it was the lobster
 			cout << "\nThe TUNNEL LOBSTER, now defeated, appears docile.";

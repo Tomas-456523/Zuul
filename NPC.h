@@ -61,7 +61,7 @@ public: //you need to set stats on creation
 	int getLevel(); //gets the level of the npc
 	int xpForNextLevel();
 	int xpForLevel(int level); //for the level from 0
-	vector<NPC*>* getParty();
+	vector<NPC*>* getParty(size_t wave = 0);
 	bool getLeader(); //if npc is a leader
 	bool getEscapable();
 	int getXpReward(); //reward for beating them
@@ -118,8 +118,7 @@ public: //you need to set stats on creation
 	bool getBlocked(Room* room, const char* direction); //get if the npc doesn't want to go in this direction
 	void depositMonies(int& monies);
 	NPC* getTaking(); //get what npc this npc is taking in battle, very probably null
-	bool moreWaves(); //get if there's more waves to fight other than the current one
-	void popWave();
+	void getWave(size_t wave); //get how many waves there are in a battle against this npc
 	NPC* getPursuer();
 	NPC* getPursuing();
 	pair<Room*, const char*>& getSpecial(); //get special pursuit room stuff
@@ -224,6 +223,7 @@ public: //you need to set stats on creation
 	void setPursueSpecial(Room* special, const char* dir, const Conversation& text);
 	void doCatchChanges();
 	void setParent(NPC* npc);
+	void transform(NPC* npc); //transform into the given npc
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER);
@@ -290,7 +290,7 @@ protected:
 
 	int id; //npc's index in npcsH
 
-	queue<vector<NPC*>> party; //the npc's party if it is a leader (and supports multiple waves)
+	vector<vector<NPC*>> party; //the npc's party if it is a leader (and supports multiple waves)
 
 	NPC* parent = NULL; //npc that summoned this one in battle
 

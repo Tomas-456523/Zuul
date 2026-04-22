@@ -10,6 +10,9 @@
 #include "Item.h"
 #include "Helper.h"
 #include "Conversation.h"
+#include "Attack.h"
+#include "Effect.h"
+
 using namespace std;
 using namespace Helper;
 
@@ -24,7 +27,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	isLeader = _isleader;
 	isPlayer = _player;
 	if (isLeader) { //adds itself to its own party if it's a leader npc (fightable or the player)
-		party.push({&*this});
+		party.push_back({&*this});
 	}
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 	id = npcID++; //get this npc's id and increment it for the next one
@@ -152,11 +155,11 @@ int NPC::xpForNextLevel() { //arbitrary formula for the level curve, it just loo
 int NPC::xpForLevel(int level) { //uses an altered version of the above arbitrary formula to find how much xp until getting to a certain level from level 0
 	return ((level-1)*(2*level-1)*level/6) + 9*level;
 }
-vector<NPC*>* NPC::getParty() { //gets the npc's party for leader npcs
-	return &party.front();
+vector<NPC*>* NPC::getParty(size_t wave) { //gets the npc's party for leader npcs
+	return &party[wave];
 }
-void NPC::popWave() {
-	party.pop();
+size_t NPC::getWaves() { //get how many waves there are
+	return party.size()
 }
 NPC* NPC::getPursuer() {
 	return pursuer;
@@ -403,9 +406,6 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 
 	deposittime = now; //get the new time
 }
-bool NPC::moreWaves() {
-	return !party.empty();
-}
 WorldChange& NPC::editRespawnChanges() { //gets respawn changes for editing
 	gotRespawnChanges = true; //we only get the changes if we want to add some changes, so set got respawn changes to true
 	respawnchanges.push(WorldChange()); //start a new changes
@@ -562,7 +562,7 @@ void NPC::setHome(Room* room) {
 }
 //set a party for enemy leader npcs
 void NPC::setParty(initializer_list<NPC*> wave, bool newwave) {
-	if (newwave) party.push({}); //make the waves queue have a new party if we're making a new wave
+	if (newwave) party.push_back({}); //make the waves vector have a new party if we're making a new wave
 	for (NPC* _npc : wave) { //loops through the npcs in the wave and adds all the npcs to the party
 		if (_npc != NULL) {
 			NPC* npc = new NPC(*_npc); //duplicates the npc because there might be multiple of the same one
@@ -936,6 +936,20 @@ void NPC::doCatchChanges() {
 void NPC::setParent(NPC* npc) {
 	parent = npc;
 }
+void NPC::transform(NPC* npc) {
+	//change title
+	//change name
+	//change description
+	//change stats
+	//change scale
+	//edit hp according to old percentage
+	//edit sp according to old percentage
+	//change attacks, basic and special
+	calculateWeights();
+	//recoil attack
+	//target effect
+	//bossness
+}
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
 }
@@ -1117,8 +1131,8 @@ void NPC::tickEffect(Effect* effect) {
 		if (effect->damage) { //applies damage (or healing)
 			directDamage(effect->damage, effect->name);
 			if (effect->lifesteal) { //give life stealers the health they just took
-				for (NPC* affector : npceffect.affectors) {
-					affector->directDamage(-effect->damage*effect->lifesteal, effect->name);
+				for (NPC* affector : npceffect.affectors) { //only if they have health left; lifesteal is not an insurance policy for when you're incapacitated
+					if (affector->getHealth() > 0) affector->directDamage(-effect->damage*effect->lifesteal, effect->name);
 				}
 			}
 		}

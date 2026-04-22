@@ -73,6 +73,9 @@ struct Attack {
 
 	bool take = false; //if this attack is an attack that makes the attacker take the target
 
+	bool transformtotar = false; //if this attack makes the attacker transform into the target (if this is true, transformation will be overridden on use)
+	NPC* transformation = NULL; //the attacker transforms into this npc
+
 	//Attack() {} //default constructor so NPC doesn't throw error
 
 	//constructs the attack
