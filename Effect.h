@@ -52,8 +52,6 @@ struct Effect {
 
 	bool bond = false; //if this is something we should remove from the affected npc when the affector is incapacitated, only used in opening attacks (also handled by Battle)
 
-	//Effect() {} //default constructor to avoid random errors
-
 	//constructs the effect
 	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, double _attackbuff = 1, double _defensebuff = 1, double _toughbuff = 1, double _piercebuff = 1, double _speedbuff = 1) {
 		name = _name;
@@ -66,6 +64,15 @@ struct Effect {
 		piercebuff = _piercebuff;
 		speedbuff = _speedbuff;
 		Helper::effectsH.push_back(this); //store a pointer to this effect in the effects vector
+	}
+
+	//gets (estimates) if you want to have this effect, like buffs or heals and stuff like that
+	bool getBeneficial() {
+		if (damage < 0 || spleak < 0 || invincible || evasive || attackbuff > 1 || defensebuff > 1 || toughbuff > 1 || piercebuff > 1 || speedbuff > 1|| spusage < 1 || damagebuff < 1 || guardset) return false; //obvious positives
+		if (damage > 0 || spleak > 0 || freeze || hypnotize || attackbuff < 1 || defensebuff < 1 || toughbuff < 1 || piercebuff < 1 || speedbuff < 1|| spusage > 1 || damagebuff > 1) return false; //obvious negatives
+		if (falldamage < 0 || attackeffect) return true; //lower priority positives
+		if (falldamage > 0 || remove || tiring) return false; //lower priority negatives
+		return false; //default to bad because if it doesn't do any of the above it's probably for something bad
 	}
 };
 #endif // !EFFECT

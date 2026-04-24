@@ -73,10 +73,8 @@ struct Attack {
 
 	bool take = false; //if this attack is an attack that makes the attacker take the target
 
-	bool transformtotar = false; //if this attack makes the attacker transform into the target (if this is true, transformation will be overridden on use)
+	bool transformtotar = false; //if this attack makes the attacker transform into the target (if this is true, NPC* transformation will be overridden on use)
 	NPC* transformation = NULL; //the attacker transforms into this npc
-
-	//Attack() {} //default constructor so NPC doesn't throw error
 
 	//constructs the attack
 	//default stats are for testing purposes
@@ -111,8 +109,11 @@ struct Attack {
 
 	//gets (estimates) if you want to be hit by this attack, like buffs or heals and stuff like that
 	bool getBeneficial() {
+		if (power < 0 || spleak < 0 || extralives || targuard || protect || copyamount) return true; //obvious positives
 		if (risky) return true; //we wouldn't clarify that it's risky unless it was for a teammate, why wouldn't we want to give something risky to an enemy
-		if (power < 0) return true; //healing attacks most probably are beneficial
+		if (power > 0 || take || spleak > 0) return false; //obvious negatives
+		if (appliedeffect) return appliedeffect->getBeneficial(); //see if the effect is beneficial and the attack's beneficialness probably matches
+		return false; //default to bad because it's an attack after all, you don't wanna get attacked, and also most attacks definitely are not beneficial
 	}
 };
 

@@ -25,7 +25,7 @@ namespace Helper {
 	NPC* getNPCInVector(std::vector<NPC*>& the_vector, const char* npcname); //returns the npc in the given vector that has the given name
 	Item* getItemInVector(std::vector<Item*>& the_vector, const char* itemname); //returns the item in the given vector that has the given name
 	Item* getItemTypeInVector(std::vector<Item*>& the_vector, const char* itemtype); //returns the item in the given vector that has the given type
-	Attack* getAttackInVector(std::vector<Attack*>& the_vector, const char* attackname); //returns the attack in the given vector that has the given name
+	Attack* getAttackInVector(const std::vector<Attack*>& the_vector, const char* attackname); //returns the attack in the given vector that has the given name
 	void printNPCData(NPC* npc, bool battle = false); //prints the data of the npc
 	void printItemData(Item* item); //prints the data of the item
 	void printAttacks(NPC* npc); //prints the attacks that the given npc has
@@ -35,7 +35,7 @@ namespace Helper {
 	int Round(double num); //do (int)round(num), so I don't have to write that everywhere
 	void sortBySpeed(std::vector<NPC*>& team); //sorts the vector of npcs by speed
 	int aliveCount(std::vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
-	vector<NPC*> getAlive(const vector<NPC*>& team); //get vector with only the npcs above 0 hp
+	std::vector<NPC*> getAlive(const std::vector<NPC*>& team); //get vector with only the npcs above 0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
 	void printConversation(const Conversation* _convo, bool finalpause); //print a conversation in conversation order
 	void printLvlUpData(NPC* npc); //print the level up data of the given npc

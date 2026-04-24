@@ -1,12 +1,15 @@
 //the implementation file for my Helper namespace, has a bunch of helpful functions that I might use in multiple files
 
 #include "Helper.h"
+#include "Attack.h"
 #include "NPC.h"
 #include "Item.h"
+#include "Room.h"
 #include <cstring>
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
 namespace Helper {
@@ -101,7 +104,7 @@ namespace Helper {
 		return NULL; //no valid item was found so return null
 	}
 	//finds an attack in the given vector that has the given name
-	Attack* getAttackInVector(std::vector<Attack*>& the_vector, const char* attackname) {
+	Attack* getAttackInVector(const std::vector<Attack*>& the_vector, const char* attackname) {
 		for (Attack* attack : the_vector) { //if the attack's name matches, we return that
 			if (!strcmp(attack->name, attackname)) {
 				return attack;
@@ -208,7 +211,7 @@ namespace Helper {
 	int aliveCount(vector<NPC*>& team) {
 		int i = 0; //starts at 0 and adds 1 every time someone has >0 hp
 		for (NPC* npc : team) {
-			if (npc->getHealth() > 0 && (npc->getBasicAttack() || !npc->getSpecialAttacks()->empty())) { //they also don't count if they have no attacks (e.g. a life plant, it doesn't do anything so it doesn't count)
+			if (npc->getHealth() > 0 && (npc->getBasicAttack() || !npc->getSpecialAttacks().empty())) { //they also don't count if they have no attacks (e.g. a life plant, it doesn't do anything so it doesn't count)
 				i++;
 			}
 		}

@@ -14,13 +14,13 @@
 #include "Stats.h"
 #include "WorldState.h"
 #include "WorldChange.h"
+#include "Effect.h"
 using namespace std;
 
 class Room; //forward declares room because these two classes reference each other
 class Item;
 class NPC; //forward declare itself so we can make that effect struct immediately after
 struct Attack;
-struct Effect;
 
 struct NPCEffect { //effect instances so we don't have a mess of copied effects
 	Effect* effect;
@@ -31,6 +31,8 @@ struct NPCEffect { //effect instances so we don't have a mess of copied effects
 	NPCEffect(Effect* _effect, NPC* npc, NPC* parent) : effect(_effect), affected(npc), duration(_effect->duration) {
 		if (parent) affectors.insert(parent);
 	}
+
+	NPCEffect() : effect(NULL), affected(NULL), duration(0) {} //default constructor for the effects map
 };
 
 class NPC {
@@ -62,6 +64,7 @@ public: //you need to set stats on creation
 	int xpForNextLevel();
 	int xpForLevel(int level); //for the level from 0
 	vector<NPC*>* getParty(size_t wave = 0);
+	size_t getWaves(); //get how many waves there are
 	bool getLeader(); //if npc is a leader
 	bool getEscapable();
 	int getXpReward(); //reward for beating them
@@ -72,7 +75,7 @@ public: //you need to set stats on creation
 	Attack* getGuardAttack();
 	Attack* getOpener();
 	vector<Attack*> getSpecialAttacks();
-	int getWeight();
+	int getWeight(Attack* attack);
 	bool getLevelUp(); //if we leveled up recently
 	Stats getStatChanges(); //the stat changes from the last level up
 	vector<Attack*> getNewAttacks();

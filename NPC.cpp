@@ -159,7 +159,7 @@ vector<NPC*>* NPC::getParty(size_t wave) { //gets the npc's party for leader npc
 	return &party[wave];
 }
 size_t NPC::getWaves() { //get how many waves there are
-	return party.size()
+	return party.size();
 }
 NPC* NPC::getPursuer() {
 	return pursuer;
@@ -790,6 +790,7 @@ int NPC::damage(double power, double pierce) {
 
 	//calculates the damage
 	int damage = Round(power * (10.0/(10.0 + ClampD(defenseD - ((power/damagePierce + pierce)*10.0/(10.0 + toughnessD)),0,defenseD))));
+	damage = Round(damage*damageMultiplier); //multiplies damage by the effects' damage multiplier
 	if (damage > 0) guard--; //hits lower guard
 	int totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	
@@ -1008,7 +1009,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (!stacking) { //place the effect normally
 		effects.push_back(effect);
 		npceffects[effect] = NPCEffect(effect, this, affector);
-		cout << "\n" << name << " now has " << effect->name << "!";
+		if (affector) cout << "\n" << name << " now has " << effect->name << "!";
 		CinPause();
 	}
 
@@ -1042,7 +1043,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 		attackeffect = effect->attackeffect;
 	}
 	if (effect->guardset) { //the attacks are supposed to print if they do this so don't print anything here
-		setGuard(effect->guardset);
+		setGuard(effect->guardset, false);
 	}
 
 	//edit stat multipliers MARK: multiplier effects
@@ -1141,7 +1142,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 				damage(effect->falldamage, 0);
 			}
 
-			return npceffects[effect]; //return the npceffect so Battle can check if it's fully run out
+			return &npceffects[effect]; //return the npceffect so Battle can check if it's fully run out
 		}
 	}
 	return NULL; //return NULL because no effect was found

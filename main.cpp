@@ -431,7 +431,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 								{NULL, "..."},
 								{NULL, "The rock outside is glowing red hot..."},
 								{NULL, "The elevator dings."}});
-	Room* burgerbasement = new Room("at the entrance of the BURGER BASEMENT. The walls are a bluish gray, and the lights emit a constant hum.");
+	Room* burgerbasement = new Room("at the entrance of the BURGER BASEMENT. The walls are a tealish gray, and the lights emit a constant hum.");
 	Room* burgbasenw = new Room("in a sort of BURGER storage room, on a metal platform above a pit of BURGERs.");
 	Room* burgbasene = new Room("at the entrance of a storage room. There is no physical door, just the doorway with a metallic outline.");
 	Room* burgbasew = new Room("at the entrance of a basement room, labeled the cooler room.");
@@ -1298,7 +1298,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(40, 0, 16, 0, 8, 13, 9));
 	Effect* swatshield = new Effect("SWAT SHIELD", 2147483647);
 	swatshield->guardset = 1;
-	guardbot->setEffect(swatshield);
+	guardbot->setEffect(swatshield, NULL);
 	Attack* baton = new Attack("BATON", "thwacked", true, -5, 15, 0, 1, 1, 1);
 	baton->afterdesc = " with its baton";
 	Attack* pepperspray = new Attack("PEPPER SPRAY", "sprayed pepper spray at", false, 7, 10, 0, 1, 1, 1);
@@ -3410,7 +3410,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	jimshady->setBasicAttack(shrimplebeam);
 	Effect* engarde = new Effect("EN GARDE!", 2147483647);
 	engarde->guardset = 1;
-	jimshady->setEffect(engarde);
+	jimshady->setEffect(engarde, NULL);
 
 	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 15, 9));
 	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied all over", true, 0, 5, 0, 3, 4, 1);
@@ -3470,7 +3470,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", limbo, 0, Stats(5, 0, 30, 0, 30, 15, 9));
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
 	shieldup->guardset = 5;
-	skeleviking->setEffect(shieldup);
+	skeleviking->setEffect(shieldup, NULL);
 	Attack* vslash = new Attack("VIKING SLASH", "hit", true, -5, 5, 0, 1, 1, 1);
 	vslash->afterdesc = " with his sword";
 	skeleviking->setBasicAttack(vslash);
@@ -4125,7 +4125,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	megagun->selfeffect = assaultmode;
 	megagun->selfcancel = defensemode;
 	megagun->affectselfbeforeattack = true;
-	ceo->setEffect(defensemode);
+	ceo->setEffect(defensemode, NULL);
 	ceo->setBasicAttack(lockon);
 	ceo->addSpecialAttack(minigun);
 	ceo->addSpecialAttack(flamethrower);
@@ -5222,7 +5222,43 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgercultists->setParty({burgercultist, burgercultist, burgercultist, burgercultist});
 	burgercultists->setDialogue("...");
 	burgercultists->addRejectionDialogue("...");
-	burgercultists->addLinkedRoom(burgplate, "");
+	burgercultists->addLinkedRoom(burgplate, ""); //MARK: what the heck is this?
+
+	//
+
+	//
+
+	//
+	
+	//
+
+	//
+
+	//
+
+	//ftboss
+
+	//
+
+	//
+
+	//
+
+	//
+
+	//dtboss
+
+	//
+
+	//
+
+	//
+
+	//
+
+	//vtboss
+
+	//finalboss
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
