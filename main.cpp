@@ -447,13 +447,30 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* BURGERPRISON = new Room("in the BURGER PRISON, full of cells and torture devices.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. The rock is very hot here.");
 	basestation->setStation();
-	Room* 
+	
+	//Create the temple rooms MARK: TEMPLES!
+	Room* foresttemple = new Room("in the forest temple.");
+	//side
+	//side
+	//
+	//side
+	//side
+	//
+	//side
+	//side
+	//
+	//
+	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
 
+	//Create the finale and post-game rooms MARK: A
+
+	/*{{NULL, "You are unbelievably deep underground."}, {NULL, "The high temperatures of the deep have been replaced with coldness."}, {NULL, "The BURGER RESTAURANT's advertisements illuminate the ground around you,"}, {NULL, "but you can't see the edge of the cavern at all."}, {NULL, "Welcome to..."}, {NULL, "<<< THE ABYSS >>>"}}*/
+
 	//Create NPCs and items MARK: make npcs, items, etc.
-	self->addRecruitedDialogue("Huh?");
+	self->addRecruitedDialogue("Huh?"); //player defined above before all the rooms
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
 
@@ -2290,7 +2307,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//ascii art time
 	{{developer, "Have you noticed how nobody actually says your name?"},
 	 {developer, "They all say \"kiddo\", \"kid\", \"mister\", etc."},
-	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};*/
+	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};
+	{{developer, "A duration of 2 for enemy freezing effects (like the enemy is the one doing the affecting) is really the sweet spot."},
+	 {developer, "1 would be too short and meaningless but 3 might get annoying,"},
+	 {developer, "So 2 is good for general purposes."},
+	 {developer, "I mean probably I haven't actually tested my game as of writing this :P"}}*/
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
@@ -3874,7 +3895,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats(50, 0, 25, 10, 20, 25, 9));
 	Attack* chuck = new Attack("CHUCKED", "telekinetically chucked some debris at", false, -5, 15, 0, 1, 1, 1);
-	Effect* stretched = new Effect("STRETCHED", 3, 10);
+	Effect* stretched = new Effect("STRETCHED", 3, 15);
 	stretched->freeze = true;
 	Attack* stretch = new Attack("STRETCHED", "is stretching", false, 7, 20, 20, 1, 1, 1);
 	stretch->afterdesc = " apart in the air";
@@ -4054,7 +4075,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	legalimmunity->invincible = true;
 	Attack* legaldefense = new Attack("LEGAL DEFENSE", "legally defended", false, 7, 0, 0, 1, 1, 1, true);
 	legaldefense->addEffect(legalimmunity);
-	Effect* enjoined = new Effect("ENJOINED", 1);
+	Effect* enjoined = new Effect("ENJOINED", 2);
 	enjoined->freeze = true;
 	Attack* injunction = new Attack("INJUNCTION", "injuncted", false, 7, 0, 0, 1, 1, 1);
 	injunction->afterdesc = "'s right to battle";
@@ -4151,12 +4172,19 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//sorcery (sp leak)
 	//curse (very heavy dot)
 
-	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(20, 5, 7, 5, 5, 12, 9));
-	Attack* bite = new Attack("BITE", "bit", true, -5, 10, 5, 1, 1, 1);
-	carnplant->setBasicAttack(bite);
-	//bite
-	//pitcher (3x slow + DOT)
-	//
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(25, 6, 15, 5, 15, 7, 9));
+	Effect* macerated = new Effect("MACERATED", 4, 9, 0, 1, 1, 1, 1, 0.25);
+	Attack* snaptrap = new Attack("SNAP TRAP", "snapped its fangs upon", true, -5, 15, 15, 1, 1, 1);
+	snaptrap->synergies.push_back(macerated);
+	Attack* pitcherfluid = new Attack("PITCHER FLUID", "coughed up sticky pitcher fluid at", true, 6, 8, 30, 1, 1, 3);
+	pitcherfluid->addEffect(macerated);
+	Attack* sundew = new Attack("SUNDEW TENDRIL", "wrapped a sundew tendril around", true, 9, 5, 20, 1, 1, 1, false, 0, 0, 1);
+	Effect* sundewed = new Effect("SUNDEWED", 5, 12);
+	sundewed->lifesteal = 1;
+	sundew->addEffect(sundewed);
+	carnplant->setBasicAttack(snaptrap);
+	carnplant->addSpecialAttack(pitcherfluid);
+	carnplant->addSpecialAttack(sundew);
 
 	NPC* smogfish = new NPC("", "SMOGFISH", "Floating many-finned fish of purple smog who fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
 	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 0, 0, 1);
@@ -4164,10 +4192,25 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	copycat->prioritizenonleader = true; //don't transform into the player if possible to make sense of self stand out more
 	smogfish->setBasicAttack(copycat);
 
-	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle with vines round about and smog seeping through its helmet.", limbo, 0, Stats(100, 30, 10, 30, 4, 25, 9));
-	//charge (upslash effect, strong hit)
-	//vine whip (2 hits)
-	//constrict
+	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle, puppeted by vines wrapped round about and through its helmet.", limbo, 0, Stats(250, 30, 10, 30, 4, 25, 9));
+	Attack* fullsteam = new Attack("FULL STEAM", "charged full steam at", true, -5, 22, 0, 1, 1, 1);
+	Effect* knockedaway = new Effect("KNOCKED AWAY", 0);
+	knockedaway->remove = true;
+	fullsteam->addEffect(knockedaway);
+	Attack* vinelash = new Attack("VINE LASH", "lashed its vines around", true, 7, 19, 5, 2, 2, 1);
+	vinelash->focushits = false;
+	Attack* constrict = new Attack("CONSTRICT", "constricted", true, 12, 10, 0, 1, 1, 1);
+	constrict->afterdesc = " with its vines";
+	Effect* constricted = new Effect("CONSTRICTED", 2, 10);
+	constricted->freeze = true;
+	Attack* piledrive = new Attack("PILEDRIVE", "piledrove", true, 12, 30, 6, 1, 1, 1);
+	Effect* piledriven = new Effect("FRACTURED", 4, 0, 0, 1, 0.5);
+	piledrive->addEffect(piledriven);
+	constrict->addEffect(constricted);
+	junglenaut->setBasicAttack(fullsteam);
+	junglenaut->addSpecialAttack(vinelash);
+	junglenaut->addSpecialAttack(constrict);
+	junglenaut->addSpecialAttack(piledrive);
 
 	//entering temples requires having max size party
 	//temples scale to your level
@@ -4180,8 +4223,23 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//and probably a puzzle or two (prolly one)
 	//sos starts by copying your attacks but better,
 	//then tempts teammates into joining him (prize), effectiveness depends on how many times you helped yourself
+	//"He only cares about himself."
+	//"He doesn't deserve you!"
+	//"Why don't you join the better side?"
 	//you can use your attack APOLAGIZE TO to ask teammates to come back
 	//near the end any remaining hypnotized teammates are sent back by sos and he tells you
+
+	//NULL, "SENSE OF SELF shrinks down to your height."
+	//senseofself, "Hey man,"
+	//senseofself, "I'm sorry about this whole 'you but better' shtick."
+	//senseofself, "I just wanted to show you,"
+	//senseofself, "You can't rely on these people!"
+	//senseofself, "Look how quick they were to betray you!"
+	//senseofself, "You don't need them!"
+	//senseofself, "But what could be better..."
+	//senseofself, "than two of you?!"
+	//senseofself, "Help me finish them off, and we can defeat BURGER together!"
+	//NULL, "Join SENSE OF SELF? (YES or NO)"
 	//hey it was all just to show you you can't rely on these ppl
 	//join me and WE can defeat BURGER together!
 	//if you join him he just instakills you after you defeat your other teammates
@@ -5225,25 +5283,47 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgercultists->setDialogue("...");
 	burgercultists->addRejectionDialogue("...");
 	burgercultists->addLinkedRoom(burgplate, ""); //MARK: what the heck is this?
-
-	//
-
-	//
-
-	//
 	
-	//
+	//left path guards
+	NPC* ftlguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
+	ftboss->setLeader(true, 0, , false);
+	ftlguard1->setParty({carnplant, smogfish});
+	ftboss->setScaleFight();
 
-	//
+	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
+	ftboss->setLeader(true, 0, , false);
+	ftlguard2->setParty({carnplant, carnplant});
+	ftboss->setScaleFight();
 
-	//
+	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
+	ftboss->setLeader(true, 0, , false);
+	ftlguard3->setParty({smogfish, smogfish, smogfish});
+	ftboss->setScaleFight();
+	
+	//right path guards
+	NPC* ftrguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
+	ftboss->setLeader(true, 0, , false);
+	ftrguard1->setParty({carnplant, smogfish});
+	ftboss->setScaleFight();
 
+	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
+	ftboss->setLeader(true, 0, , false);
+	ftrguard2->setParty({carnplant, carnplant});
+	ftboss->setScaleFight();
+
+	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
+	ftboss->setLeader(true, 0, , false);
+	ftrguard3->setParty({smogfish, smogfish, smogfish});
+	ftboss->setScaleFight();
+	
+	//the boss!
 	NPC* ftboss = new NPC(*senseofself);
 	ftboss->setMask("", "SENSE OF SELF", "A slowly swirling mass of thin purple smog.");
-	ftboss->setLeader(true, 0, ); //MARK: SCALE LEVELS!
+	ftboss->setLeader(true, 0, foresttempleboss, false);
+	ftboss->setScaleFight();
 	ftboss->addConversation({{NULL, "You approach the cloud of smog."},
-							 {NULL, "The smog swirls into the center of the room..."}, //You see a figure standing in the smog as it clears...
-							 {NULL, "SENSE OF SELF transformed into..."}, //
+							 {NULL, "The smog drifts away from the center of the room..."},
+							 {NULL, "You see a figure standing in the smog..."},
 							 {self, "What the heck?"},
 							 {self, "Who are you?"},
 							 {senseofself, "I'm you,"},
@@ -5252,10 +5332,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{senseofself, "Wwhhaatt?"},
 							{senseofself, "Ii'mm bbetterr tthaan yyoooouuuuuuu......"},
 							{NULL, "The smog fades from the room..."},
-							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground!"}});
+							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground."}});
 	ftboss->setTalkOnDefeat();
 	ftboss->setForceBattle();
-	ftboss->addLinkedItem(outputantenna, );
+	ftboss->addLinkedItem(outputantenna, foresttempleboss);
+	ftboss->addLinkedRoom(foresttempleboss, "in the forest temple arena, cleared of any traces of smog.");
+
 
 	//
 

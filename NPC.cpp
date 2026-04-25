@@ -187,6 +187,9 @@ pair<int, int> NPC::getPurPos(Room* room) {
 NPC* NPC::getParent() {
 	return parent;
 }
+void NPC::getScaleFight() {
+	return scaleFight;
+}
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
 	pos.first = Clamp(pos.first, 0, pursueRooms.size());
@@ -964,10 +967,13 @@ void NPC::doCatchChanges() {
 void NPC::setParent(NPC* npc) {
 	parent = npc;
 }
+void NPC::setScaleFight() {
+	scaleFight = true;
+}
 //transform the npc to match the other npcs
 void NPC::transform(NPC* npc) {
 	title = npc->getTitle(); //set the identifiers
-	strcpy(name, npc->getName());
+	//strcpy(name, npc->getName());
 	description = npc->getDescription();
 	int _level = level; //track old stats so we can reset them
 	double healthPercent = health/stats.hpmax;

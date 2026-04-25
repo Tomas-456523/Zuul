@@ -132,6 +132,7 @@ public: //you need to set stats on creation
 	NPC* getParent();
 	const Stats& getBaseStats();
 	const Stats& getStatScale();
+	bool getScaleFight();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -229,6 +230,7 @@ public: //you need to set stats on creation
 	void setPursueSpecial(Room* special, const char* dir, const Conversation& text);
 	void doCatchChanges();
 	void setParent(NPC* npc);
+	void setScaleFight();
 	void transform(NPC* npc); //transform into the given npc
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
@@ -391,6 +393,8 @@ protected:
 	
 	int level = 0;
 	int xp = 0; //how much xp the npc has stored up
+
+	bool scaleFight = false; //if this npc should scale to the player's level when fighting
 
 	bool leveledUp = false; //if the npc leveled up
 	Stats statChangesSum; //sum of all the stat changes that have occured and haven't been printed yet
