@@ -71,7 +71,7 @@ public: //you need to set stats on creation
 	int getMonyReward();
 	bool getEnemy(); //if npc is enemy
 	Attack* getBasicAttack();
-	Attack* getRecoilAttack();
+	Attack* getRecoilAttack(bool contact); //gets the recoil attack depending on if we're checking due to a contact or non-contact attack
 	Attack* getGuardAttack();
 	Attack* getOpener();
 	vector<Attack*> getSpecialAttacks();
@@ -130,6 +130,8 @@ public: //you need to set stats on creation
 	pair<int, int> getPurPos(Room* room); //get coordinates relative to the pursuit grid
 	Room* getPurRoom(pair<size_t, size_t>& pos); //coordinates to room
 	NPC* getParent();
+	const Stats& getBaseStats();
+	const Stats& getStatScale();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -166,7 +168,7 @@ public: //you need to set stats on creation
 	void setTitle(const char* _title);
 	void setDescription(const char* _description);
 	void setScale(Stats _scale);
-	void setBaseStats(Stats _stats); //reset base stats, used by viola
+	void setBaseStats(Stats _stats); //reset base stats
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false, int instant = 0);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
@@ -174,7 +176,7 @@ public: //you need to set stats on creation
 	void directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
-	void setRecoilAttack(Attack* attack);
+	void setRecoilAttack(Attack* attack, bool contact = true); //set a recoil attack (retaliation) with the option deciding if it should only be for contact attacks
 	void setGuardAttack(Attack* attack);
 	void setOpener(Attack* attack); //set opening attack for when the battle starts
 	void addSpecialAttack(Attack* attack);
@@ -302,6 +304,8 @@ protected:
 	vector<Attack*> special_attacks; //the npc's special attacks that cost sp
 
 	Attack* recoilattack = NULL; //the attack that happens when this npc is hit
+	bool contactrecoil = true; //if the recoil attack only triggers against contact attacks
+
 	Attack* opener = NULL; //the attack that happens when this npc goes into battle
 
 	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack

@@ -140,8 +140,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many ninja weapons and scrolls up on the walls.");
 	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of ninjaberries and ninjasteak and ninjafish and the diet isn't actually that strict.");
 	Room* ninjaforge = new Room("in the ninja forge. There are many ninja weapons and molds on the wall.");
-	Room* foresttempleentrance = new Room("in the sunny glade, at the sealed entrance of the ancient forest temple.");
-	Room* foresttemplestairs = new Room("on the steps that go into the ancient forest temple.");
+	Room* foresttempleentrance = new Room("in a wide sunny glade, at the entrance of an ancient forest temple.");
+	Room* foresttemplestairs = new Room("on the steps going into the ancient forest temple.");
 	foresttempleentrance->setTempleEntrance(IN_TEMPLE, foresttemplestairs,
 		{{self, "Hi forest temple can you please open?"},
 		 {NULL, "The temple rumbles..."},
@@ -150,8 +150,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 		 {NULL, "The door grinds to a halt."},
 		 {NULL, "The forest temple has been opened!"},
 		 {NULL, "You can go IN TEMPLE now!"}});
-	Room* foresttemple = new Room("in the forest temple.");
-	//temple stuff
 	Room* flowerfield = new Room("in the aromatic flower fields. Your sister likes hanging out here.");
 	Room* flowerfield2 = new Room("deep in the flower fields. A really nice river flows over here.");
 	Room* forestfork = new Room("at another fork in the road. I hope we don't come across a spoon in the road.");
@@ -297,7 +295,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* mineshortcut = new Room("in stable room, full of mining supplies and explosives.");
 	Room* sewertreasure = new Room("in a rocky cave full of bones and fancy ores.");
 	//the volcano temple
-	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple. The rock burns bright red.");
+	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple.\nThe rock burns bright red.");
 	Room* volcanotemplestairs = new Room("on the steps that go into the ancient volcanic temple.");
 	volcanotempleentrance->setTempleEntrance(IN_TEMPLE, volcanotemplestairs,
 		{{self, "Hi volcano temple can you please open?"},
@@ -449,6 +447,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* BURGERPRISON = new Room("in the BURGER PRISON, full of cells and torture devices.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. The rock is very hot here.");
 	basestation->setStation();
+	Room* 
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
@@ -4159,7 +4158,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//pitcher (3x slow + DOT)
 	//
 
-	NPC* smogfish = new NPC("", "SMOGFISH", "Floating fish of purple smog who typically fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
+	NPC* smogfish = new NPC("", "SMOGFISH", "Floating many-finned fish of purple smog who fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
 	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 0, 0, 1);
 	copycat->transformtotar = true;
 	copycat->prioritizenonleader = true; //don't transform into the player if possible to make sense of self stand out more
@@ -4175,6 +4174,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//you can't exit until you beat the boss (or you use the give up exit which resets everything?)
 	//Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0)
 	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
+	senseofself->setBoss(true);
 	//temple of humility in the forest, gives output antenna of humility
 	//forest temple is pretty standard, with some branching paths and combat and choices that allow you to buff yourself or buff your teammates
 	//and probably a puzzle or two (prolly one)
@@ -4201,6 +4201,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//hypnotize or something
 
 	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(8000, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
+	thedark->setBoss(true);
 	//temple of hope in the desert, gives big red button of hope
 	//you get seperated from your teammates and you have to fight enemies that decay your stats
 	//you need to get three light orbs to open the way down by doing puzzles and fighting and stuff
@@ -4227,6 +4228,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(6000, 15, 10, 0, 10, 14, 9), Stats(2, 0, 1, 0, 1, 1, 0));
 	NPC* firewithfir2 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning a bright blue.", limbo, 0,               Stats(6000, 15, 20, 0, 15, 21, 9), Stats(2, 0, 2, 0, 1, 2, 0));
 	NPC* firewithfir3 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning an intense purple hue.", limbo, 0,       Stats(6000, 15, 30, 0, 20, 28, 9), Stats(2, 0, 3, 0, 2, 3, 0));
+	firewithfire->setBoss(true);
 	//temple of patience in the volcano area, gives plotometer of patience
 	//you do puzzles and fight fire enemies
 	//then you fight fire with fire
@@ -5236,7 +5238,24 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//
 
-	//ftboss
+	NPC* ftboss = new NPC(*senseofself);
+	ftboss->setMask("", "SENSE OF SELF", "A slowly swirling mass of thin purple smog.");
+	ftboss->setLeader(true, 0, ); //MARK: SCALE LEVELS!
+	ftboss->addConversation({{NULL, "You approach the cloud of smog."},
+							 {NULL, "The smog swirls into the center of the room..."}, //You see a figure standing in the smog as it clears...
+							 {NULL, "SENSE OF SELF transformed into..."}, //
+							 {self, "What the heck?"},
+							 {self, "Who are you?"},
+							 {senseofself, "I'm you,"},
+							 {senseofself, "but better!"}});
+	ftboss->addLinkedConvo(senseofself, {{NULL, "SENSE OF SELF starts sublimating into smog..."},
+							{senseofself, "Wwhhaatt?"},
+							{senseofself, "Ii'mm bbetterr tthaan yyoooouuuuuuu......"},
+							{NULL, "The smog fades from the room..."},
+							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground!"}});
+	ftboss->setTalkOnDefeat();
+	ftboss->setForceBattle();
+	ftboss->addLinkedItem(outputantenna, );
 
 	//
 

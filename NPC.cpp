@@ -210,8 +210,9 @@ int NPC::getMonyReward() {
 Attack* NPC::getBasicAttack() {
 	return standard_attack;
 }
-Attack* NPC::getRecoilAttack() {
-	return recoilattack;
+Attack* NPC::getRecoilAttack(bool contact) {
+	if (contact || !contactrecoil) return recoilattack; //return the attack only if reacting to a contact attack or if the recoil attack is marked as reacting to non-contact also
+	return NULL; //return null if the above checks were false, also NULL is returned above anyway if we have no recoil attack
 }
 Attack* NPC::getGuardAttack() {
 	return guardattack;
@@ -449,6 +450,12 @@ NPCEffect* NPC::getEffect(Effect* effect, bool getfinished) {
 		}
 	}
 	return NULL;
+}
+const Stats& NPC::getBaseStats() {
+	return basestats;
+}
+const Stats& NPC::getStatScale() {
+	return scale;
 }
 void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc to edit on defeat
 	changes.back().worldcon = cond;
@@ -849,8 +856,9 @@ void NPC::setBaseStats(Stats _stats) { //reset base stats and calculate new curr
 void NPC::setBasicAttack(Attack* attack) {
 	standard_attack = attack;
 }
-void NPC::setRecoilAttack(Attack* attack) {
+void NPC::setRecoilAttack(Attack* attack, bool contact) {
 	recoilattack = attack;
+	contactrecoil = contact;
 }
 void NPC::setGuardAttack(Attack* attack) {
 	guardattack = attack;
@@ -956,19 +964,26 @@ void NPC::doCatchChanges() {
 void NPC::setParent(NPC* npc) {
 	parent = npc;
 }
+//transform the npc to match the other npcs
 void NPC::transform(NPC* npc) {
-	//change title
-	//change name
-	//change description
-	//change stats
-	//change scale
-	//edit hp according to old percentage
-	//edit sp according to old percentage
-	//change attacks, basic and special
-	calculateWeights();
-	//recoil attack
-	//target effect
-	//bossness
+	title = npc->getTitle(); //set the identifiers
+	strcpy(name, npc->getName());
+	description = npc->getDescription();
+	int _level = level; //track old stats so we can reset them
+	double healthPercent = health/stats.hpmax;
+	double spPercent = sp/stats.spmax;
+	stats = basestats = npc->getBaseStats(); //set new base and scaling stats
+	scale = npc->getStatScale();
+	level = 0; //bring level down to 0 so we can readjust stats with setLevel()
+	setLevel(_level); //update the stats and set the level back
+	health = Round(healthPercent * stats.hpmax); //make the health and sp match the old percentage
+	sp = Round(spPercent * stats.spmax);
+	standard_attack = npc->getBasicAttack(); //set new attacks
+	special_attacks = npc->getSpecialAttacks();
+	calculateWeights(); //and we need to set the attack weights accordingly
+	recoilattack = npc->getRecoilAttack(true); //other properties that may be appropriate to match as well
+	targeteffect = npc->getTargetEffect();
+	//don't change boss status because non-bosses become fake bosses, and bosses stay bosses
 }
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});

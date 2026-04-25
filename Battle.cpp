@@ -292,8 +292,8 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		reciever->addExtraLives(attack->extralives);
 		cout << "\n" << reciever->getName() << " got " << attack->extralives << " extra li" << (attack->extralives == 1 ? "fe" : "ves") << "!";
 	}
-	if (attack->contact && reciever->getRecoilAttack()) { //attacker gets attacked by the target's recoil attack
-		carryOutAttack(reciever->getRecoilAttack(), reciever, attacker, true);
+	if (Attack* recoilatt = eciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
+		carryOutAttack(recoilatt, reciever, attacker, true);
 	}
 }
 //hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
@@ -404,6 +404,10 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	for (int i = 0; i < attack->summonamount; i++) { //add adds for how many this attack summons
 		bool forenemy = attack->enemysummon; //enemy and team summons are reversed when hypnotized
 		addNPC(attack->summon, attacker, (attacker->getHypnotized() ? !forenemy : forenemy));
+	}
+	if (attack->transformtotar) attack->transform = target; //transform into the target if that's what the attack does
+	if (NPC* transformation = attack->transform) { //if the attack makes the attacker transform we make it transform into that
+		attacker->transform(transformation);
 	}
 }
 //check all the given npcs for if they have an opening attack to do MARK: check openers
