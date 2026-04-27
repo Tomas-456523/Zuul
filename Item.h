@@ -359,12 +359,41 @@ private:
 
 //there are a few types of temple orbs which do unique things
 
-//escape/entry orbs are for making sure you have
+//escape/entry orbs are for guaranteeing temples can't softlock while allowing a way to reset
 class EscapeOrb : public Item {
+public:
+	EscapeOrb(const char* _name1, const char* _name2, const char* _name3, const char* _desc1, const char* _desc2, const char* _desc3, Room* _home, Room* _teleport, NPC* _boss, initializer_list<NPC*> _enemies, WorldChange escapechanges);
 
+	void take(); //different stuff that happens when taking or dropping the orb
+	void drop();
+	void petrify();
+	void printUseError(); //the orbs have different error messages depending on if you try to use the escape or entry version
+
+	bool getInert(); //gets if this thing is useless, when the boss has been defeated
+	Room* getDestination(); //get where the orb takes you to when taken
+	Room* getEntrance(); //get where the orb takes you to when dropped
+private:
+	const char* name1; //the item's name changes between these two
+	const char* name2;
+	const char* desc1; //the item's description changes between these two
+	const char* desc2;
+	const char* name3; //the item changes to these after the boss is defeated
+	const char* desc3;
+
+	Room* takefrom; //home location where you take the orb from
+	Room* taketo; //location where the orb takes you to
+
+	NPC* boss; //the boss of this orb's temple
+	vector<NPC*> enemies; //enemies to respawn after leaving the temple
+
+	WorldChange dropchanges; //changes that happen when this orb is dropped
 };
 
 class ChoiceOrb : public Item {
+
+};
+
+class LightOrb : public Item {
 
 };
 #endif

@@ -526,3 +526,54 @@ const vector<const char*>& BlenderItem::getIngredients() {
 Item* BlenderItem::getProduct() {
 	return product;
 }
+
+//escape/entry orbs are for guaranteeing temples can't softlock while allowing a way to reset
+EscapeOrb::EscapeOrb(const char* _name1, const char* _name2, const char* _name3, const char* _desc1, const char* _desc2, const char* _desc3, Room* _home, Room* _teleport, NPC* _boss, initializer_list<NPC*> _enemies, const WorldChange& escapechanges) : Item(_name1, _desc1, _home, true) {
+	type = "escapeorb"; //sets the type
+	name1 = _name1;
+	name2 = _name2;
+	desc1 = _desc1;
+	desc2 = _desc2;
+	name3 = _name3;
+	desc3 = _desc3;
+	takefrom = _home;
+	taketo = _teleport;
+	boss = _boss;
+	enemies = _enemies;
+	dropchanges = escapechanges;
+}
+//the entry/escape orbs does these things on drop and take
+void EscapeOrb::take() {
+	name = name2;
+	description = desc2;
+}
+void EscapeOrb::drop() {
+	if (boss->getDefeated()) return; //don't do anything if the boss is already defeated
+	name = name1;
+	description = desc1;
+	for (NPC* enemy : enemies) enemy->undefeat(); //undefeat unrespawning enemies
+	WorldChange changes = dropchanges; //clone the changes so we can do them multiple times
+	applyWorldChange(changes);
+	setRoom(takefrom);
+}
+//make the orb into a useless STONE ORB
+void EscapeOrb::petrify() {
+	name = name3;
+	description = desc3;
+}
+//gets if this thing is useless
+bool EscapeOrb::getInert() {
+	return boss->getDefeated();
+}
+void EscapeOrb::printUseError() {
+	if (name == _name1) cout << "\nThe ENTRY ORB can't be used! You must TAKE it instead!";
+	else cout << "\nThe ESCAPE ORB can't be used! You must DROP it instead!";
+}
+//get where the orb takes you to when dropped
+Room* EscapeOrb::getDestination() {
+	return taketo;
+}
+//get where the orb takes you to when dropped
+Room* EscapeOrb::getEntrance() {
+	return takefrom;
+}

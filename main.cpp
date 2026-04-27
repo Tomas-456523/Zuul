@@ -140,7 +140,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* ninjacapitol = new Room("in the chief ninja's abode. There are many ninja weapons and scrolls up on the walls.");
 	Room* ninjapantry = new Room("in the ninja storage unit. The ninjas live on a strict diet of ninjaberries and ninjasteak and ninjafish and the diet isn't actually that strict.");
 	Room* ninjaforge = new Room("in the ninja forge. There are many ninja weapons and molds on the wall.");
-	Room* foresttempleentrance = new Room("in a wide sunny glade, at the entrance of an ancient forest temple.");
+	Room* foresttempleentrance = new Room("in a wide sunny glade, at the entrance of an ancient forest temple.\nIt's built in an octagonal shape with dark green bricks.");
 	Room* foresttemplestairs = new Room("on the steps going into the ancient forest temple.");
 	foresttempleentrance->setTempleEntrance(IN_TEMPLE, foresttemplestairs,
 		{{self, "Hi forest temple can you please open?"},
@@ -383,7 +383,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* ceoelevator1 = new Room("in the elevator, at ground level.");
 	Room* ceoelevator2 = new Room("in the elevator, on the second floor.");
 	Room* ceoelevator3 = new Room("in the elevator, at the top level with the CEO's office.");
-	ceoelevator2->shareItems(ceoelevator1);
+	ceoelevator2->shareItems(ceoelevator1); //they have the same items since it's the same elevator going up and down
 	ceoelevator3->shareItems(ceoelevator1);
 	Room* ceoroom = new Room("in the BURGER CEO's office. The desk stands in front of the BURGER SAFE, where all the company valuables are held.");
 	Room* burgsafe = new Room("in the BURGER SAFE. Countless monies and company documents are piled up here.");
@@ -448,8 +448,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	
 	//Create the temple rooms MARK: TEMPLES!
 	Room* forestbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
-	Room* forestbuffer2 = new Room("fully in the forest temple. It's built with dark green bricks.");
-	Room* foresttemple = new Room("farther into the forest temple.\nYou are presented with a CHOICE ORB.");
+	Room* forestbuffer2 = new Room("fully in the forest temple. You must DROP the ESCAPE ORB if you wish to leave.");
+	forestbuffer2->shareItems(forestbuffer1); //share items because it's the same room
+	Room* foresttemple = new Room("in the forest temple.\nYou are presented with a CHOICE ORB.");
 	Room* forestbranchw = new Room("on the western branch of the forest temple. Plants and purple smog seep through the walls.");
 	Room* forestbranche = new Room("on the eastern branch of the forest temple. Plants and purple smog seep through the walls.");
 	Room* foresttemple2 = new Room("in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB.");
@@ -5386,6 +5387,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard3->setParty({smogfish, smogfish, smogfish});
 	ftboss->setScaleFight();
 	
+	//f(orest temple) e(ntry/escape) orb
+	Item* feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB", "A shiny purple orb which you must TAKE in order to enter the forest temple.");
+	
 	//the boss!
 	NPC* ftboss = new NPC(*senseofself);
 	ftboss->setMask("", "SENSE OF SELF", "A slowly swirling mass of thin purple smog.");
@@ -5402,10 +5406,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{senseofself, "Wwhhaatt?"},
 							{senseofself, "Ii'mm bbetterr tthaan yyoooouuuuuuu......"},
 							{NULL, "The smog fades from the room..."},
-							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground."}});
+							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground."},
+							{NULL, "Your ESCAPE ORB hardened into a STONE ORB!"}});
 	ftboss->setTalkOnDefeat();
 	ftboss->setForceBattle();
 	ftboss->addLinkedItem(outputantenna, foresttempleboss);
+	ftboss->setLinkedOrb(feorb);
 	ftboss->addLinkedRoom(foresttempleboss, "in the forest temple arena, cleared of any traces of smog.");
 
 
@@ -5456,7 +5462,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	minelight->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	volcanoentrance->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	volcanoentrance->blockExit(NORTH, HEAT, "too hot! You'd probably melt from the radiation unless you got some SUNSCREEN!");
-	sewercenter3->blockExit(DOWN, RUBBLE, "blocked by the ground. It looks pretty fragile and rubbley, maybe don't stand on it.");
+	sewercenter3->blockExit(DOWN, RUBBLE, "blocked by rocky rubble.");
 	sewercenter4->blockExit(WEST, LOCK, "locked with a GREEN LOCK.");
 	volcano2->blockExit(NORTH, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
 	volcano4->blockExit(NORTHEAST, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
@@ -5852,7 +5858,15 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		cout << "The " << itemname << " is being guarded by " << guard->getName() << ".";
 		return;
 	}
-	//you're not allowed to take items not marked as takable
+	if (!strcmp(item->getType(), "escapeorb") && player->getParty()->size() < 4) { //escape orbs must be taken with 4 people so that the temples can actually use their themes and stuff 
+		size_t partysize = player->getParty()->size();	//here we say the together for emphasis unless it's just you
+		cout << "\nYou tried to take the ENTRY ORB " << (partysize > 1 ? "together " << "") << "with your party of " << partysize << ".";
+		CinPause();
+		cout << "The ENTRY ORB didn't budge!";
+		CinPause();
+		cout << "You need a full team of 4 people to take it out of its slot!"
+		return;
+	} //you're not allowed to take items not marked as takable
 	if (!item->getTakable()) {
 		cout << "\n";
 		if (strcmp(item->getDenial(), "")) { //if there is a custom denial we use it
@@ -5883,6 +5897,15 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		applyWorldChange(changer->getChanges()); //do the changes
 		printConversation(&changer->getUseText(), false); //prints what the player did and what it accomplished
 		deleteItem(currentRoom, inventory, item); //we shouldn't keep world change items because the taking was the using and they're consumables
+	} else if (!strcmp(item->getType(), "escapeorb")) { //escape orbs make you enter the temple when taken
+		CinPause();
+		EscapeOrb* orb = (EscapeOrb*)item;
+		cout << "\nThe temple door behind you shut!";
+		CinPause();
+		cout << "The ENTRY ORB transformed into an ESCAPE ORB!";
+		orb->take();
+		CinPause(); //pause after the shatter message
+		travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getDestination()); //go into the temple
 	}
 }
 
@@ -5892,6 +5915,14 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	if (item == NULL) { //gives error message if we have no itemname
 		cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
 		return;
+	}
+	if (!strcmp(item->getType(), "escapeorb")) { //the escape/entry orbs require extra confirmation before being dropped due to their effects
+		EscapeOrb* orb = (EscapeOrb*)item;
+		if (orb->getInert()) cout << "\nYour " << item->getName() << " will be shattered uselessly now that you've cleared its corresponding temple.";
+		else cout << "\nAll your progress in the temple will be reset.";
+		CinPause();
+		cout << "Are you sure you want to drop your " << item->getName() << "?";
+		if (!AOrB(NULL, "YES", "NO")) return;
 	}
 	item->setRoom(currentRoom); //puts the item in the current room
 	//erases the item from the inventory
@@ -5904,6 +5935,17 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		player->removeSpecialAttack(attack);
 		cout << player->getName() << " can no longer use " << attack->name << ".";
 		CinPause();
+	} else if (!strcmp(item->getType(), "escapeorb")) { //escape orbs reset their temples and teleport you out
+		CinPause();
+		EscapeOrb* orb = (EscapeOrb*)item;
+		cout << "\nThe " << item->getName() << " shattered!";
+		if (orb->getInert()) {
+			deleteItem(currentRoom, inventory, orb);
+		} else { //make it reset the temple plus a pause
+			orb->drop();
+			CinPause(); //pause after the shatter message
+			travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getEntrance()); //go back to the temple entrance
+		}
 	}
 }
 
@@ -6254,6 +6296,10 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	//you can't use materials; they get a unique error message
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
+		return;
+	//escape orbs get a unique error message as well
+	} else if (!strcmp(item->getType(), "escapeorb")) {
+		((EscapeOrb*)item)->printUseError();
 		return;
 	} else { //other types of items must be used in battles
 		cout << "\nThe " << itemname << " can only be used in battle!";

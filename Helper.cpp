@@ -515,6 +515,9 @@ namespace Helper {
 			changes.linkedStations.front()->setStation();
 			changes.linkedStations.pop();
 		}
+		if (Item* orb = changes.linkedOrb) { //petrify the linked escape/entry orb
+			((EscapeOrb*)orb)->petrify();
+		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;
 		}

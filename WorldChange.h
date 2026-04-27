@@ -63,6 +63,8 @@ struct WorldChange {
 	std::queue<std::pair<Room*, Item*>> removeStock; //remove this stock from these rooms
 	std::queue<Room*> linkedStations; //these rooms are set to stations
 
+	Item* linkedOrb = NULL; //petrify this orb, a very specific functionality
+
 	size_t worldcon = Helper::NEVER; //world condition that this affects, unless it's NEVER then it doesn't do anything
 };
 

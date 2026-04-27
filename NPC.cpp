@@ -994,6 +994,9 @@ void NPC::transform(NPC* npc) {
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
 }
+void NPC::setLinkedOrb(Item* orb) {
+	changes.back().linkedOrb = orb;
+}
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }

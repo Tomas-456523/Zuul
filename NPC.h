@@ -249,6 +249,7 @@ public: //you need to set stats on creation
 	void addDeleaderLink(NPC* npc);
 	void addRoamLink(NPC* npc);
 	void addLinkedGift(NPC* npc, Item* item);
+	void setLinkedOrb(Item* orb);
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
