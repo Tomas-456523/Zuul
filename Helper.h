@@ -40,6 +40,7 @@ namespace Helper {
 	void printConversation(const Conversation* _convo, bool finalpause); //print a conversation in conversation order
 	void printLvlUpData(NPC* npc); //print the level up data of the given npc
 	void applyWorldChange(WorldChange& changes); //apply the changes to the world which are in the given stuff to change
+	void applyWeaponAttack(NPC* player, Item* item); //gives the player the attack the weapon item has, weapon items can be gotten through different places so we have this helper
 	bool getCardinal(const char* direction); //get if the direction given is a cardinal direction
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files

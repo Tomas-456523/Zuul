@@ -356,4 +356,15 @@ private:
 	vector<const char*> ingredients; //what is used to make the product
 	Item* product; //what the blender item makes
 };
+
+//there are a few types of temple orbs which do unique things
+
+//escape/entry orbs are for making sure you have
+class EscapeOrb : public Item {
+
+};
+
+class ChoiceOrb : public Item {
+
+};
 #endif

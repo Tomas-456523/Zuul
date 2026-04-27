@@ -519,6 +519,13 @@ namespace Helper {
 			WorldState[changes.worldcon] = true;
 		}
 	}
+	//gives the player the attack the weapon item has, weapon items can be gotten through different places so we have this helper
+	void applyWeaponAttack(NPC* player, Item* item) {
+		WeaponItem* weapon = (WeaponItem*)item;
+		Attack* attack = weapon->getAttack();
+		player->addSpecialAttack(attack);
+		cout << player->getName() << " can now use " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
+	}
 	//get if the direction given is a cardinal direction
 	bool getCardinal(const char* direction) {
 		return !strcmp(direction, "NORTH") || !strcmp(direction, "SOUTH") || !strcmp(direction, "EAST") || !strcmp(direction, "WEST") || !strcmp(direction, "NORTHEAST") || !strcmp(direction, "NORTHWEST") || !strcmp(direction, "SOUTHEAST") || !strcmp(direction, "SOUTHWEST") || !strcmp(direction, "UP") || !strcmp(direction, "DOWN"); //never seat eoggy waffles

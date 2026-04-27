@@ -27,6 +27,7 @@ namespace Helper {
 		IMPRISONED,
 		LOBSTERPRISON,
 		ESCAPEDBASE,
+		TEAMCLINGY, //if you're currently not allowed to dismiss your teammates
 		BURGERMANDEF,
 		BURGERMENDEF,
 		GAMEEND, //when the player reaches an ending

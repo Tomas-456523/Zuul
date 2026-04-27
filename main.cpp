@@ -173,7 +173,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 						{NULL, "The sun beats down with no clouds in sight."},
 						{NULL, "Surely there must be someone friendly around here?"}});
 	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
-	Room* deserttemplestairs = new Room("on the steps that go into the ancient desert temple.");
+	Room* deserttemplestairs = new Room("on the steps going into the ancient desert temple.");
 	deserttempleentrance->setTempleEntrance(IN_TEMPLE, deserttemplestairs,
 		{{self, "Hi desert temple can you please open?"},
 		 {NULL, "The temple rumbles..."},
@@ -183,7 +183,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 		 {NULL, "The door grinds to a halt."},
 		 {NULL, "The desert temple has been opened!"},
 		 {NULL, "You can go IN TEMPLE now!"}});
-	Room* deserttemple = new Room("in the desert temple.");
 	//temple stuff
 	Room* desertdune = new Room("at a low point in the desert. A rare shadow is present where you can rest.");
 	Room* desertplain = new Room("at a really flat area of the desert.");
@@ -296,7 +295,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* sewertreasure = new Room("in a rocky cave full of bones and fancy ores.");
 	//the volcano temple
 	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple.\nThe rock burns bright red.");
-	Room* volcanotemplestairs = new Room("on the steps that go into the ancient volcanic temple.");
+	Room* volcanotemplestairs = new Room("on the steps going into the ancient volcanic temple.");
 	volcanotempleentrance->setTempleEntrance(IN_TEMPLE, volcanotemplestairs,
 		{{self, "Hi volcano temple can you please open?"},
 		 {NULL, "The temple rumbles..."},
@@ -306,7 +305,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 		 {NULL, "The door grinds to a halt."},
 		 {NULL, "The volcano temple has been opened!"},
 		 {NULL, "You can go IN TEMPLE now!"}});
-	Room* volcanotemple = new Room("in the volcano temple.");
 	//the bridge to BURGERSBURG
 	Room* bridge1 = new Room("on the final bridge to BURGERSBURG. The lava ocean crackles beneath your feet.");
 	Room* bridge2 = new Room("halfway through the bridge. An eternal night looms over the city.");
@@ -449,7 +447,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	basestation->setStation();
 	
 	//Create the temple rooms MARK: TEMPLES!
-	Room* foresttemple = new Room("in the forest temple, built with dark green bricks.\nYou are presented with a CHOICE ORB.");
+	Room* forestbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
+	Room* forestbuffer2 = new Room("fully in the forest temple. It's built with dark green bricks.");
+	Room* foresttemple = new Room("farther into the forest temple.\nYou are presented with a CHOICE ORB.");
 	Room* forestbranchw = new Room("on the western branch of the forest temple. Plants and purple smog seep through the walls.");
 	Room* forestbranche = new Room("on the eastern branch of the forest temple. Plants and purple smog seep through the walls.");
 	Room* foresttemple2 = new Room("in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB.");
@@ -462,7 +462,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* foresttemple5 = new Room("at the end of the hallway. Lots of purple smog flows from the room to the NORTH.");
 	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");
 
+	Room* deserttemple = new Room("in the desert temple.");
+
+	Room* volcanotemple = new Room("in the volcano temple.");
+
 	//Create the finale and post-game rooms MARK: TA
+	NPC* burgermenace;
 	Room* abyss = new Room("right outside the BURGER RESTAURANT in the depths of the world.");
 	abyss->setWelcome({{NULL, "You are unbelievably deep underground."},
 					   {NULL, "The high temperatures of the deep have been replaced with coldness."},
@@ -470,8 +475,58 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {NULL, "but you can't see the edge of the cavern at all."},
 					   {NULL, "Welcome to..."},
 					   {NULL, "<<< THE ABYSS >>>"}});
-	Room* abyss2 = new Room("");
-	Room* aboss = new Room("at a sheer cliff, staring down THE BURGER MENACE.");
+	Room* abyss2 = new Room("on the most walkable path forward. The rock around you looks like the moon.");
+	Room* abyss3 = new Room("still on the path. The air around you is still."); //I wanted to say the air is still around you but that sounds like a confirmation that you're still in a place with air
+	Room* abyss4 = new Room("at the edge of a steep ledge.");
+	Room* abyss5 = new Room("in a crater of the abyss. The path forward continues.");
+	Room* abyss6 = new Room("in the middle of the crater. You see a rock that looks like a BURGER.");
+	Room* abyss7 = new Room("at the other end of the crater. The rocks look very climbable.");
+	Room* abyss8 = new Room("past the abyssal crater. The BURGER RESTAURANT looks faint from here.");
+	Room* abyss9 = new Room("at the bottom of a cliff; it's a pretty tall cliff.");
+	Room* abyss10 = new Room("on the highest stretch of ground you can see.\nThe end of the path is right up ahead.");
+	Room* aboss = new Room("at a sheer drop-off, staring down THE BURGER MENACE.");
+	aboss->setWelcome({{NULL, "You're at the end of the abyssal path, at a sheer drop-off."},
+					   {NULL, "You look over the edge."},
+					   {NULL, "You only see the wall of the cliff heading into darkness."},
+					   {NULL, "A faint light appears from the darkness..."},
+					   {NULL, "Suddenly, from the depths flew up..."},
+					   {NULL, "<<< THE BURGER MENACE >>>"},
+					   {burgermenace, "I DIDN'T APPRECIATE WHAT YOU DID TO MY BURGER MAN,"},
+					   {burgermenace, "SO I BROUGHT YOU DOWN HERE TO HAVE A CHAT FACE TO FACE."},
+					   {self, "So everything that happened is your fault? >:|"},
+					   {burgermenace, "IF YOU SAY SO."},
+					   {burgermenace, "BUT YOUR DEATH,"},
+					   {burgermenace, "YOU HAVE BROUGHT UPON YOURSELF."},
+					   {NULL, "THE BURGER MENACE throws a BURGER TENDRIL at you like a speeding train."},
+					   {NULL, "You put your hands on your hips."},
+					   {self, ">:|"},
+					   {NULL, "Suddenly..."}
+					   {NULL, "You are filled with the power of PLOT!"},
+					   {NULL, "Your stats rose by 100000%!"},
+					   {NULL, "You dodge the BURGER TENDRIL!"},
+					   {burgermenace, "PROCRASTINATE DYING IF YOU WANT."},
+					   {burgermenace, "YOU ARE NOTHING TO ME."}});
+					   //BATTLE BEGIN!
+
+	//ENTRY ORB
+	//ESCAPE ORB
+	//{NULL, "You try to take the ENTRY ORB."}
+	//{NULL, "It doesn't budge."}
+	//{NULL, "You need a full team of four to take it out!"}
+
+	//{NULL, "You took the ENTRY ORB."}
+	//{NULL, "The temple door closes behind you."}
+	//{NULL, "The way forward opens!"}
+	//{NULL, "Your ENTRY ORB transforms into an ESCAPE ORB."}
+	//{NULL, "DROP the ESCAPE ORB to shatter it and escape the temple."}
+
+	//{NULL, "You dropped the ESCAPE ORB."}
+	//{NULL, "The ESCAPE ORB shattered!"}
+	//(room text) (or doesn't do anything if the temple boss has already been beaten)
+	
+	//CHOICE ORB
+	//LIGHT ORB
+	//ICE ORB
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
@@ -4343,7 +4398,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* wrath;
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)
-	NPC* burgermenace = new NPC("", "THE BURGER MENACE", "", limbo, 0, Stats(), Stats());
+	burgermenace = new NPC("", "THE BURGER MENACE", "", limbo, 0, Stats(), Stats());
 	//burger tendril
 	//
 
@@ -5698,6 +5753,11 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			inventory->push_back(item);
 			cout << name << " gave you the " << item->getName() << "!"; //says that you got the thing
 			CinPause();
+			//also apply any attacks to the player if they were given a weapon item
+			if (!strcmp(item->getType(), "weapon")) {
+				applyWeaponAttack(player, (*party)[0]);
+				CinPause();
+			}
 		}
 
 		//some NPCs have special fight endings after defeating them, so we do those checks here
@@ -5816,11 +5876,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		}
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items enable the use of their move
 		CinPause();
-		WeaponItem* weapon = (WeaponItem*)item;
-		Attack* attack = weapon->getAttack();
-		player->addSpecialAttack(attack);
-		cout << player->getName() << " can now use " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
-		CinPause();
+		applyWeaponAttack(player, item);
 	} else if (!strcmp(item->getType(), "worldchange")) {
 		WorldChangeItem* changer = (WorldChangeItem*)item;
 		if (!changer->getTakeToUse()) return;
@@ -6128,6 +6184,13 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 					if (i < amount) cout << " and a ";
 				}
 				cout << "!";
+				//also make sure that weapon items give their attack
+				for (size_t i = 0; i < amount; i++) {
+					if (!strcmp(weapon->getType(), "weapon")) {
+						CinPause(); //pauses the last weapon printing, and also all the previous stuff!
+						applyWeaponAttack(player, weapon);
+					}
+				}
 			}
 		}
 	//switch items are in one factory and switch the direction of all the conveyor belts
@@ -6272,6 +6335,10 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		npc->printDismissalRejection();
 		cout << "\n" << npcname << " was not dismissed.";
 		return;
+	}
+	if (WorldState[TEAMCLINGY]) {
+		cout << "\nYour team has no way to go back home right now!";
+		return;
 	} //removes the npc from your party
 	party->erase(remove(party->begin(), party->end(), npc), party->end());
 	//if you dismiss a partymate in the gym, it leaves them there so they can train, so we check for that
@@ -6319,6 +6386,11 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		inventory->push_back(item);
 		CinPause();
 		cout << npcname << " gave you the " << item->getName() << "!"; //says that you got the thing
+		//also apply any attacks to the player if they were given a weapon item
+		if (!strcmp(item->getType(), "weapon")) {
+			CinPause();
+			applyWeaponAttack(player, (*party)[0]);
+		}
 	}
 	//some npcs fight you immediately after talking so if that's the case we initiate battle here
 	if (npc->getForceBattle()) {
