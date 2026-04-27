@@ -449,25 +449,32 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	basestation->setStation();
 	
 	//Create the temple rooms MARK: TEMPLES!
-	Room* foresttemple = new Room("in the forest temple.");
-	//side
-	//side
-	//
-	//side
-	//side
-	//
-	//side
-	//side
-	//
-	//
+	Room* foresttemple = new Room("in the forest temple, built with dark green bricks.\nYou are presented with a CHOICE ORB.");
+	Room* forestbranchw = new Room("on the western branch of the forest temple. Plants and purple smog seep through the walls.");
+	Room* forestbranche = new Room("on the eastern branch of the forest temple. Plants and purple smog seep through the walls.");
+	Room* foresttemple2 = new Room("in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB.");
+	Room* forestbranchw2 = new Room("on the western branch of the forest temple. Carnivorous moss lines the walls and floor.");
+	Room* forestbranche2 = new Room("on the eastern branch of the forest temple. Carnivorous moss lines the walls and floor.");
+	Room* foresttemple3 = new Room("in the forest temple. Large purple flowers are flowering here.\nYou are presented with a CHOICE ORB.");
+	Room* forestbranchw3 = new Room("on the western branch of the forest temple. The structural integrity of this hallway is questionable.");
+	Room* forestbranche3 = new Room("on the eastern branch of the forest temple. The structural integrity of this hallway is questionable.");
+	Room* foresttemple4 = new Room("in a long hallway of the forest temple. You don't see any flora past this point.");
+	Room* foresttemple5 = new Room("at the end of the hallway. Lots of purple smog flows from the room to the NORTH.");
 	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");
+
+	//Create the finale and post-game rooms MARK: TA
+	Room* abyss = new Room("right outside the BURGER RESTAURANT in the depths of the world.");
+	abyss->setWelcome({{NULL, "You are unbelievably deep underground."},
+					   {NULL, "The high temperatures of the deep have been replaced with coldness."},
+					   {NULL, "The BURGER RESTAURANT's advertisements illuminate the ground around you,"},
+					   {NULL, "but you can't see the edge of the cavern at all."},
+					   {NULL, "Welcome to..."},
+					   {NULL, "<<< THE ABYSS >>>"}});
+	Room* abyss2 = new Room("");
+	Room* aboss = new Room("at a sheer cliff, staring down THE BURGER MENACE.");
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
-
-	//Create the finale and post-game rooms MARK: A
-
-	/*{{NULL, "You are unbelievably deep underground."}, {NULL, "The high temperatures of the deep have been replaced with coldness."}, {NULL, "The BURGER RESTAURANT's advertisements illuminate the ground around you,"}, {NULL, "but you can't see the edge of the cavern at all."}, {NULL, "Welcome to..."}, {NULL, "<<< THE ABYSS >>>"}}*/
 
 	//Create NPCs and items MARK: make npcs, items, etc.
 	self->addRecruitedDialogue("Huh?"); //player defined above before all the rooms
@@ -4229,6 +4236,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//you can use your attack APOLAGIZE TO to ask teammates to come back
 	//near the end any remaining hypnotized teammates are sent back by sos and he tells you
 
+	//cool punch
+
+	//cool energy ball
+
+	//super side kick
+
 	//NULL, "SENSE OF SELF shrinks down to your height."
 	//senseofself, "Hey man,"
 	//senseofself, "I'm sorry about this whole 'you but better' shtick."
@@ -4268,6 +4281,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//and when stats are low enough it can tempt teammates into despair
 	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
 	//after that you get the button
+
+	//jumpscare
 
 	NPC* bolide;
 	//impact
