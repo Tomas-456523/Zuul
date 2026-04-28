@@ -50,6 +50,7 @@ public:
 	void printVersus(size_t wave); //prints the starting text or wave text
 	void setupWave(bool pteam, size_t wave, bool scaleteam); //sets up a new wave for the given side
 	void checkOpeners(const vector<NPC*>& checks); //check the given npcs for if they have opening moves
+	void checkFightEffects(); //check the enemy leader for if they have any team effects to apply to the player team
 	
 	void addNPC(NPC* npc, NPC* parent = NULL, bool altteam = false); //creates a new npc mid-battle
 

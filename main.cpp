@@ -2957,7 +2957,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
 	foresttempleentrance->setExit(NORTHWEST, flowerfield);
 	foresttempleentrance->setExit(NORTH, forestfork);
-	//foresttempleentrance->setExit(IN_TEMPLE, foresttemplestairs);
 	flowerfield->setExit(WEST, flowerfield2);
 	flowerfield->setExit(SOUTHEAST, foresttempleentrance);
 	flowerfield2->setExit(EAST, flowerfield);
@@ -2991,11 +2990,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	desert->setExit(NORTHWEST, deserttempleentrance);
 	desert->setExit(NORTHEAST, desertdune);
 	desert->setExit(EAST, desertplain);
-	//deserttempleentrance->setExit(IN_TEMPLE, deserttemplestairs);
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
 	deserttemplestairs->setExit(OUTSIDE, deserttempleentrance);
-	deserttemplestairs->setExit(WEST, deserttemple);
 	deserttemple->setExit(EAST, deserttemplestairs);
 	desertdune->setExit(WEST, deserttempleentrance);
 	desertdune->setExit(NORTHEAST, desertgrave);
@@ -3179,9 +3176,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	sewercenter3->setExit(EAST, sewertreasure);
 	sewertreasure->setExit(WEST, sewercenter3);
 	volcanotempleentrance->setExit(UP, sewercenter3);
-	//volcanotempleentrance->setExit(IN_TEMPLE, volcanotemplestairs);
 	volcanotemplestairs->setExit(OUTSIDE, volcanotempleentrance);
-	volcanotemplestairs->setExit(WEST, volcanotemple);
 	volcanotemple->setExit(EAST, volcanotemplestairs);
 	sewercenter4->setExit(NORTHEAST, sewercenter2);
 	sewercenter4->setExit(SOUTHEAST, sewercenter1);
@@ -3361,10 +3356,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ceoroom->setExit(IN_ELEVATOR, ceoelevator3);
 	ceoroom->setExit(IN_SAFE, burgsafe);
 	burgsafe->setExit(OUT, ceoroom);
-	//elevatorentrance->setExit(IN_ELEVATOR, elevator);
 	elevatorentrance->setExit(OUTSIDE, mainstreet5);
 	elevator->setExit(TO_THE_TOP, elevatortop);
-	//elevator->setExit(OUT, elevatorentrance);
+	elevator->setExit(OUT, elevatorentrance);
 	elevatortop->setExit(OUT, BURGERRESTAURANT);
 	elevatortop->setExit(TO_GROUND_LEVEL, elevator);
 	BURGERRESTAURANT->setExit(IN_ELEVATOR, elevatortop);
@@ -3413,6 +3407,26 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burglab->setExit(OUT, burgbases);
 	BURGERPRISON->setExit(OUT, burgplats);
 	basestation->setExit(NORTH, BURGERPRISON);
+	foresttemplestairs->setExit(SOUTH, forestbuffer1);
+	forestbuffer1->setExit(NORTH, foresttemplestairs);
+	forestbuffer2->setExit(SOUTH, foresttemple);
+	foresttemple->setExit(SOUTH, forestbuffer2);
+	forestbranchw->setExit(NORTHEAST, foresttemple);
+	forestbranchw->setExit(SOUTHEAST, foresttemple2);
+	forestbranche->setExit(NORTH, foresttemple);
+	forestbranche->setExit(SOUTH, foresttemple2);
+	forestbranchw2->setExit(NORTH, foresttemple2);
+	forestbranchw2->setExit(SOUTH, foresttemple3);
+	forestbranche2->setExit(NORTHWEST, foresttemple2);
+	forestbranche2->setExit(SOUTHWEST, foresttemple3);
+	forestbranchw3->setExit(NORTH, foresttemple3);
+	forestbranchw3->setExit(EAST, foresttemple4);
+	forestbranche3->setExit(NORTHWEST, foresttemple3);
+	forestbranche3->setExit(SOUTHEAST, foresttemple4);
+	foresttemple4->setExit(EAST, foresttemple5);
+	foresttemple5->setExit(WEST, foresttemple4);
+	foresttemple5->setExit(NORTH, foresttempleboss);
+	foresttempleboss->setExit(SOUTH, foresttemple5);
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
 
@@ -5368,7 +5382,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	enzo->setWorldCondition(BEATCEO);
 
 	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats(150, 20, 30, 35, 45, 30, 9));
-	//MARK: unafilliated scientist
 	burgerscientist->setNoFight(); //FIGHT or ASK does the same thing and you can't actually fight him
 	burgerscientist->setLeader(true, 29, burglab);
 	burgerscientist->setTalkMakeChanges();
@@ -5434,44 +5447,66 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgercultists->setDialogue("...");
 	burgercultists->addRejectionDialogue("...");
 	burgercultists->addLinkedRoom(burgplate, ""); //MARK: what the heck is this?
+
+	//choice orb effects
+	Effect* fbuff = new Effect("TEMPLE BUFF", 2147483647, 0, 0, 1.5, 1.5, 1.5, 1.5, 1.5);
+	Effect* debuff = new Effect("TEMPLE DEBUFF", 2147483647, 0, 0, .75, .75, .75, .75, .75);
+	Effect* superswaggy = new Effect("SUPER SWAGGY", 2147483647, 0, 0, 3, 3, 3, 3, 3);
+	Effect* prettyswaggy = new Effect("SWAGGY", 2147483647, 0, 0, 1.75, 1.75, 1.75, 1.75, 1.75);
 	
 	//left path guards
 	NPC* ftlguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
 	ftlguard1->setLeader(true, 0, , false);
 	ftlguard1->setParty({carnplant, smogfish});
 	ftlguard1->setScaleFight();
+	ftlguard1->setFightEffects(NULL, fbuff); //buff self but not teammates
 
 	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
 	ftlguard2->setLeader(true, 0, , false);
 	ftlguard2->setParty({carnplant, carnplant});
 	ftlguard2->setScaleFight();
+	ftlguard1->setFightEffects(NULL, debuff); //debuff self but not teammates
 
 	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
 	ftlguard3->setLeader(true, 0, , false);
 	ftlguard3->setParty({smogfish, smogfish, smogfish});
-	ftlguard3->setScaleFight();
+	ftlguard3->setScaleFight(prettyswaggy, prettyswaggy);
+	ftlguard1->setFightEffects(prettyswaggy, prettyswaggy); //share buff with whole team including self
 	
 	//right path guards
 	NPC* ftrguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
 	ftrguard1->setLeader(true, 0, , false);
 	ftrguard1->setParty({carnplant, smogfish});
 	ftrguard1->setScaleFight();
+	ftrguard1->setFightEffects(fbuff, NULL); //buff teammates but not self
 
 	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
 	ftrguard2->setLeader(true, 0, , false);
 	ftrguard2->setParty({carnplant, carnplant});
 	ftrguard2->setScaleFight();
+	ftrguard1->setFightEffects(debuff, NULL); //debuff teammates but not self
 
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
 	ftrguard3->setLeader(true, 0, , false);
 	ftrguard3->setParty({smogfish, smogfish, smogfish});
 	ftrguard3->setScaleFight();
+	ftrguard1->setFightEffects(NULL, superswaggy); //keep all the buff to yourself
 
-	//buff self OR buff teammates
-
-	//debuff self or debuff teammates
-
-	//BIG BUFF self and big debuff teammates or vice versa
+	/*Room* forestbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
+	Room* forestbuffer2 = new Room("fully in the forest temple. You must DROP the ESCAPE ORB if you wish to leave.");
+	forestbuffer2->shareItems(forestbuffer1); //share items because it's the same room
+	Room* foresttemple = new Room("in the forest temple.\nYou are presented with a CHOICE ORB.");
+	Room* forestbranchw = new Room("on the western branch of the forest temple. Plants and purple smog seep through the walls.");
+	Room* forestbranche = new Room("on the eastern branch of the forest temple. Plants and purple smog seep through the walls.");
+	Room* foresttemple2 = new Room("in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB.");
+	Room* forestbranchw2 = new Room("on the western branch of the forest temple. Carnivorous moss lines the walls and floor.");
+	Room* forestbranche2 = new Room("on the eastern branch of the forest temple. Carnivorous moss lines the walls and floor.");
+	Room* foresttemple3 = new Room("in the forest temple. Large purple flowers are flowering here.\nYou are presented with a CHOICE ORB.");
+	Room* forestbranchw3 = new Room("on the western branch of the forest temple. The structural integrity of this hallway is questionable.");
+	Room* forestbranche3 = new Room("on the eastern branch of the forest temple. The structural integrity of this hallway is questionable.");
+	Room* foresttemple4 = new Room("in a long hallway of the forest temple. You don't see any flora past this point.");
+	Room* foresttemple5 = new Room("at the end of the hallway. Lots of purple smog flows from the room to the NORTH.");
+	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");*/
 	
 	//the boss!
 	NPC* ftboss = new NPC(*senseofself);
@@ -5497,12 +5532,87 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftboss->setLinkedOrb(feorb);
 	ftboss->addLinkedRoom(foresttempleboss, "in the forest temple arena, cleared of any traces of smog.");
 	ftboss->setEscapable(false);
+	
+	Item* choice1; //forwards reference the orb so it can move itself with the world changes
+	WorldChange choicea1;
+	choicea1.exitPavings.push(make_tuple(foresttemple, forestbranchw, SOUTHWEST, NORTHEAST));
+	choicea1.exitPavings.push(make_tuple(foresttemple2, forestbranchw, NORTHWEST, SOUTHEAST));
+	choicea1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
+	choicea1.linkedItems.push({choice1, limbo});
+	WorldChange choiceb1;
+	choiceb1.exitPavings.push(make_tuple(foresttemple, forestbranche, SOUTH, NORTH));
+	choiceb1.exitPavings.push(make_tuple(foresttemple2, forestbranche, NORTH, SOUTH));
+	choiceb1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
+	choiceb1.linkedItems.push({choice1, limbo});
+	choice1 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple, choicea1, choiceb1,
+								  {{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								   {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE BUFF.\""},
+								   {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE BUFF.\""},
+								   {NULL, "Which choice will you choose? (A or B)"}});
+	choice1->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
+
+	Item* choice2;
+	WorldChange choicea2;
+	choicea2.exitPavings.push(make_tuple(foresttemple2, forestbranchw2, SOUTH, NORTH));
+	choicea2.exitPavings.push(make_tuple(foresttemple3, forestbranchw2, NORTH, SOUTH));
+	choicea2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
+	choicea2.linkedItems.push({choice2, limbo});
+	WorldChange choiceb2;
+	choiceb2.exitPavings.push(make_tuple(foresttemple2, forestbranche2, SOUTHEAST, NORTHWEST));
+	choiceb2.exitPavings.push(make_tuple(foresttemple3, forestbranche2, NORTHEAST, SOUTHWEST));
+	choiceb2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
+	choiceb2.linkedItems.push({choice2, limbo});
+	choice2 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple2, choicea2, choiceb2,
+								  {{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								   {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE DEBUFF.\""},
+								   {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE DEBUFF.\""},
+								   {NULL, "Which choice will you choose? (A or B)"}});
+	choice2->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
+	
+	Item* choice3;
+	WorldChange choicea3;
+	choicea3.exitPavings.push(make_tuple(foresttemple3, forestbranchw3, SOUTH, NORTH));
+	choicea3.exitPavings.push(make_tuple(foresttemple4, forestbranchw3, WEST, EAST));
+	choicea3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
+	choicea3.linkedItems.push({choice3, limbo});
+	WorldChange choiceb3;
+	choiceb3.exitPavings.push(make_tuple(foresttemple3, forestbranche3, SOUTHEAST, NORTHWEST));
+	choiceb3.exitPavings.push(make_tuple(foresttemple4, forestbranche3, NORTHEAST, SOUTHWEST));
+	choiceb3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
+	choiceb3.linkedItems.push({choice3, limbo});
+	Item* choice3 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple3, choicea3, choiceb3,
+								  {{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								   {NULL, "CHOICE ORB - \"A - Share a buff with your team.\""},
+								   {NULL, "CHOICE ORB - \"B - Keep the buff to yourself, hugely increasing your power.\""},
+								   {NULL, "Which choice will you choose? (A or B)"}});
+	choice3->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
 
 	WorldChange ftodropchanges; //the changes that happen when dropping the forest temple escape orb in order to reset it
+	ftodropchanges.exitDepavings.push({foresttemple, SOUTH}); //reset the choice exit pavings
+	ftodropchanges.exitDepavings.push({foresttemple, SOUTHWEST});
+	ftodropchanges.exitDepavings.push({foresttemple2, NORTH});
+	ftodropchanges.exitDepavings.push({foresttemple2, NORTHWEST});
+	ftodropchanges.exitDepavings.push({foresttemple2, SOUTH});
+	ftodropchanges.exitDepavings.push({foresttemple2, SOUTHEAST});
+	ftodropchanges.exitDepavings.push({foresttemple3, NORTH});
+	ftodropchanges.exitDepavings.push({foresttemple3, NORTHEAST});
+	ftodropchanges.exitDepavings.push({foresttemple3, SOUTH});
+	ftodropchanges.exitDepavings.push({foresttemple3, SOUTHEAST});
+	ftodropchanges.exitDepavings.push({foresttemple4, WEST});
+	ftodropchanges.exitDepavings.push({foresttemple4, NORTHWEST});
+	ftodropchanges.roomChanges.push({foresttemple, "in the forest temple.\nYou are presented with a CHOICE ORB."}); //reset the descriptions
+	ftodropchanges.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB."});
+	ftodropchanges.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here.\nYou are presented with a CHOICE ORB."});
+	ftodropchanges.linkedItems.push({choice1, foresttemple});
+	ftodropchanges.linkedItems.push({choice2, foresttemple2});
+	ftodropchanges.linkedItems.push({choice3, foresttemple3});
 
 	//f(orest temple) e(ntry/escape) orb
-	Item* feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB", "A shiny purple orb which you must TAKE in order to enter the forest temple.", "A fragile purple orb which you must DROP in order to exit the forest temple.", "A hard stone orb, the petrified version of the forest temple's entry/escape orb.", forestbuffer1, forestbuffer2, ftboss, {ftlguard1, ftlguard2, ftlguard3, ftrguard1, ftrguard2, ftrguard3}, ftodropchanges);
-
+	Item* feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
+								"A shiny purple orb which you must TAKE in order to enter the forest temple.",
+								"A fragile purple orb which you must DROP in order to exit the forest temple.",
+								"A hard stone orb, the petrified version of the forest temple's entry/escape orb.",
+								forestbuffer1, forestbuffer2, ftboss, {ftlguard1, ftlguard2, ftlguard3, ftrguard1, ftrguard2, ftrguard3}, ftodropchanges);
 
 	//
 

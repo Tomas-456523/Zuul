@@ -577,3 +577,26 @@ Room* EscapeOrb::getDestination() {
 Room* EscapeOrb::getEntrance() {
 	return takefrom;
 }
+
+//choice orbs for making choices
+ChoiceOrb::ChoiceOrb(const char* _name, const char* desc, Room* _room, const WorldChange& a, const WorldChange& b, const Conversation& _useText, const Conversation& _atext, const Conversation& _btext) : Item(_name, desc, _room, false, false) {
+	type = "choiceorb";
+	achanges = a;
+	bchanges = b;
+	useText = _useText;
+	atext = _atext;
+	btext = _btext;
+}
+//make the choice
+ChoiceOrb::CHOICE() {
+	printConversation(&useText, false); //print the choice
+	WorldChange changes; //we copy the changes so they can be done multiple times
+	if (AOrB(NULL, "A", "B")) { //choice a
+		changes = achanges;
+		printConversation(&atext, false);
+	} else { //choice b
+		changes = bchanges;
+		printConversation(&btext, false);
+	}
+	applyWorldChange(changes);
+}

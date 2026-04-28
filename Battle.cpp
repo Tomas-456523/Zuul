@@ -419,6 +419,17 @@ void Battle::checkOpeners(const vector<NPC*>& checks) {
 		}
 	}
 }
+//check the enemy leader for if they have any team effects to apply to the player team
+void Battle::checkFightEffects() {
+	Effect* teameffect = enemy->getFightTeamEffect();
+	if (Effect* leadeffect = enemy->getFightLeadEffect()) {
+		attachEffect(playerTeam[0]->setEffect(leadeffect)); //give the leader effect to the leader (player)
+	}
+	if (!teameffect) return; //don't apply NULL effects
+	for (NPC* npc : playerTeam) { //give the team effect to all the non-leaders
+		if (!npc->getLeader()) attachEffect(npc->setEffect(teameffect));
+	}
+}
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item
 bool Battle::useItem(const char* itemname) {
 	Item* item = getItemInVector(*inventory, itemname); //finds the item; no need to check currentRoom this time!
@@ -898,6 +909,7 @@ int Battle::FIGHT() {
 	NPC* current; //the current npc whose turn it is
 
 	checkOpeners(everyone); //check any opening moves the npcs may have
+	checkFightEffects(); //check if this fight has any fight effects from the enemy leader
 
 	bool continuing = true;
 	while (continuing) { //the main battle loop! continues until continuing is set to false, only if the player successfully runs away

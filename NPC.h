@@ -133,6 +133,8 @@ public: //you need to set stats on creation
 	const Stats& getBaseStats();
 	const Stats& getStatScale();
 	bool getScaleFight();
+	Effect* getFightTeamEffect();
+	Effect* getFightLeadEffect();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -232,6 +234,7 @@ public: //you need to set stats on creation
 	void setParent(NPC* npc);
 	void setScaleFight();
 	void setImmunity(Effect* effect, const Conversation& immunetext);
+	void setFightEffects(Effect* team, Effect* lead);
 	void transform(NPC* npc); //transform into the given npc
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
@@ -315,6 +318,10 @@ protected:
 	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack
 
 	Effect* targeteffect = NULL; //prioritize hitting targets with this effect
+
+	//give these effects to the opposing team if this is a team leader
+	Effect* fightteameffect = NULL; //the opposing team gets this effect during battle
+	Effect* fightleadeffect = NULL; //the opposing leader gets this effect during battle
 
 	vector<Effect*> effects; //the effects affecting this npc
 	map<Effect*, NPCEffect> npceffects; //map of effect to the data this npc has on the effect relating to how it's being affected by the effect

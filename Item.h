@@ -362,7 +362,7 @@ private:
 //escape/entry orbs are for guaranteeing temples can't softlock while allowing a way to reset
 class EscapeOrb : public Item {
 public:
-	EscapeOrb(const char* _name1, const char* _name2, const char* _name3, const char* _desc1, const char* _desc2, const char* _desc3, Room* _home, Room* _teleport, NPC* _boss, initializer_list<NPC*> _enemies, WorldChange escapechanges);
+	EscapeOrb(const char* _name1, const char* _name2, const char* _name3, const char* _desc1, const char* _desc2, const char* _desc3, Room* _home, Room* _teleport, NPC* _boss, initializer_list<NPC*> _enemies, const WorldChange& escapechanges);
 
 	void take(); //different stuff that happens when taking or dropping the orb
 	void drop();
@@ -389,13 +389,18 @@ private:
 	WorldChange dropchanges; //changes that happen when this orb is dropped
 };
 
+//choice orbs, for deciding between two different world changes
 class ChoiceOrb : public Item {
 public:
+	ChoiceOrb(const char* _name, const char* desc, Room* _room, const WorldChange& a, const WorldChange& b, const Conversation& _useText, const Conversation& _atext, const Conversation& _btext);
 
+	void CHOICE(); //make the choice orb choice
 private:
-	WorldChange achanges; //the changes to do
-	WorldChange bchanges; //the changes to do
-	Conversation useText;
+	WorldChange achanges; //the changes to do for choice a
+	WorldChange bchanges; //the changes to do for choice b
+	Conversation useText; //the text to say in order to present the choice
+	Conversation atext; //text that is printed when choosing choice a
+	Conversation btext; //text that is printed when choosing choice b
 };
 
 class LightOrb : public Item {

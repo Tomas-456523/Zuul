@@ -423,6 +423,11 @@ namespace Helper {
 			get<1>(data)->setExit(get<3>(data), get<0>(data)); //second room goes to first room via second exit
 			changes.exitPavings.pop();
 		}
+		while (!changes.exitDepavings.empty()) { //remove the exits
+			pair<Room*, const char*>& data = changes.exitDepavings.front();
+			data.first->removeExit(data.second);
+			changes.exitDepavings.pop();
+		}
 		while (!changes.decruitLinks.empty()) { //make unrecruitable all the npcs
 			NPC* data = changes.decruitLinks.front();
 			data->setRecruitable(false);

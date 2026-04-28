@@ -190,6 +190,12 @@ NPC* NPC::getParent() {
 void NPC::getScaleFight() {
 	return scaleFight;
 }
+Effect* NPC::getFightTeamEffect() {
+	return fightteameffect;
+}
+Effect* NPC::getFightLeadEffect() {
+	return fightleadeffect;
+}
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
 	pos.first = Clamp(pos.first, 0, pursueRooms.size());
@@ -973,6 +979,10 @@ void NPC::setScaleFight() {
 void NPC::setImmunity(Effect* effect, const Conversation& immunetext) {
 	immunities.push_back(effect);
 	immuneText = immunetext;
+}
+void NPC::setFightEffects(Effect* team, Effect* lead) {
+	fightteameffect = team;
+	fightleadeffect = lead;
 }
 //transform the npc to match the other npcs
 void NPC::transform(NPC* npc) {
