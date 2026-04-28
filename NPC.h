@@ -231,6 +231,7 @@ public: //you need to set stats on creation
 	void doCatchChanges();
 	void setParent(NPC* npc);
 	void setScaleFight();
+	void setImmunity(Effect* effect, const Conversation& immunetext);
 	void transform(NPC* npc); //transform into the given npc
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
@@ -317,6 +318,8 @@ protected:
 
 	vector<Effect*> effects; //the effects affecting this npc
 	map<Effect*, NPCEffect> npceffects; //map of effect to the data this npc has on the effect relating to how it's being affected by the effect
+	vector<Effect*> immunities; //npc is immune to these effects
+	map<Effect*, Conversation> immuneText; //stuff this npc says if immune to the effect and someone tries to apply the effect
 
 	map<Attack*, int> attackWeights; //the weight of the npc's attacks
 

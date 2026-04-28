@@ -64,6 +64,7 @@ struct Attack {
 	bool contact; //if the attacker makes contact with the target
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated
 	bool prioritizenonleader = false; //if this attack prioritizes not hitting the leader
+	bool donotplayer = false; //if we should never ever hit the player
 	bool targetself = false; //self-explanatory
 	bool targetshark = false; //if this attack should only target sharks
 

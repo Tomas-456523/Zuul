@@ -502,7 +502,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {NULL, "You put your hands on your hips."},
 					   {self, ">:|"},
 					   {NULL, "Suddenly..."}
-					   {NULL, "You are filled with the power of PLOT!"},
+					   {NULL, "You and your team are filled with the power of PLOT!"},
 					   {NULL, "Your stats rose by 100000%!"},
 					   {NULL, "You dodge the BURGER TENDRIL!"},
 					   {burgermenace, "PROCRASTINATE DYING IF YOU WANT."},
@@ -4275,6 +4275,36 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	junglenaut->addSpecialAttack(constrict);
 	junglenaut->addSpecialAttack(piledrive);
 
+	/*Attack* punch = new Attack("PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
+	punch->addDescription("Throw a simple punch at the target. (10 ATTACK)");
+	self->setBasicAttack(punch);
+
+	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
+	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target. (12 ATTACK, 10 PIERCE)");
+	self->addSpecialAttack(energyball);
+
+	Attack* kick = new Attack("KICK", "jumped at", true, 6, 15, 0, 1, 1, 1, false, 3);
+	kick->afterdesc = " with a kick";
+	kick->addDescription("Launch a flying side kick at the target. (15 ATTACK)");
+	self->addSpecialAttack(kick);
+
+	Attack* headbutt = new Attack("HEADBUTT", "flew at", true,  5, 25, 0, 1, 1, 1, false, 5);
+	headbutt->afterdesc = " like a missile";
+	headbutt->recoil = 5;
+	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
+	self->addSpecialAttack(headbutt);
+
+	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
+	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
+
+	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
+	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
+	self->addSpecialAttack(punchflurry);*/
+
+	//energize
+	
+	//sp bomb
+
 	//entering temples requires having max size party
 	//temples scale to your level
 	//you can't exit until you beat the boss (or you use the give up exit which resets everything?)
@@ -4292,13 +4322,61 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//you can use your attack APOLAGIZE TO to ask teammates to come back
 	//near the end any remaining hypnotized teammates are sent back by sos and he tells you
 
+	//MARK: make the description change depending on if he's on your side or not
+	//disguised desc: He's another you! What could be better than that?
+
+	//MARK: IMPORTANT:
+	//force use temptation at two points (90% hp and 77% hp)
+	//before the second point, do not target player if theyre below 25% hp
+	//phase 1: until 90% hp: just show off with cooler version of basic plr attacks
+	//phase 2: until 30% hp: bulk of the battle with previous moveset but also temptation
+	//phase 3: do the final player temptation and switch to more advanced player moveset (energize player while on their team, do not target player if on that team)
+	//if plr gets to 0 hp, sustain them at 1 hp (sos's energize should do that) so they can do the choice
+	//MARK: DO NOT TARGET NPC AGAIN IF THE EFFECT FAILED DUE TO IMMUNITY
+
+	//4 different 2 sp use temptation attacks, one base, 3 from choice orbs
+	//NULL, "He only cares about himself; don't you remember how he chose to buff himself over you?"
+	//NULL, "Why don't you join the better side? We got plenty of team buffs here!"
+
+	//NULL, "He only cares about himself, don't you remember?"
+	//NULL, "He chose to debuff you guys 'cause he could NEVER take one for the team..."
+	//NULL, "Why don't you join the better side? You'll never get debuffed here!"
+
+	//NULL, "Why are you with him?"
+	//NULL, "He can't help but be the star of the show!"
+	//NULL, "Keeping the cool big buff for himself at your expense!"
+	//NULL, "Join the better side! There's plenty of stardom to share here!"
+
+	//basic:
+	//NULL, "Why are you on his side?"
+	//NULL, "You could do so much better; he doesn't deserve you!"
+	//NULL, "Come join the better side!"
+
 	//cool punch
 
 	//cool energy ball
 
+	//temptation
+
 	//super side kick
 
+	//turbo punch flurry
+
+	//super swaggy enegry ball
+
+	//hindsight 20/20
+	//senseofself, "Well they're all incapacitated."
+	//senseofself, "All the credit goes to meee! >B)"
+	//self, "what?"
+	//NULL, "You blow up behind SENSE OF SELF as he looks away"
+	//NULL, "because it's cooler not to look at explosions."
+
 	//NULL, "SENSE OF SELF shrinks down to your height."
+	//OR
+	//NULL, "SENSE OF SELF catches you as you fall."
+	//SENSE OF SELF used ENERGIZE!
+	//SENSE OF SELF is maintaining SELF's hp!
+
 	//senseofself, "Hey man,"
 	//senseofself, "I'm sorry about this whole 'you but better' shtick."
 	//senseofself, "I just wanted to show you,"
@@ -4312,8 +4390,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//hey it was all just to show you you can't rely on these ppl
 	//join me and WE can defeat BURGER together!
 	//if you join him he just instakills you after you defeat your other teammates
-	//you can also REPENT if you haven't defeated them all yet
+	//you can also GO BACK if you haven't defeated them all yet
 	//then you get the antenna
+
+	//{{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, you're the least of your team anyway..."}}
 
 	//shadow creature (attacks that chip stats)
 	//shadow slap
@@ -5357,38 +5437,41 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	
 	//left path guards
 	NPC* ftlguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
-	ftboss->setLeader(true, 0, , false);
+	ftlguard1->setLeader(true, 0, , false);
 	ftlguard1->setParty({carnplant, smogfish});
-	ftboss->setScaleFight();
+	ftlguard1->setScaleFight();
 
 	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
-	ftboss->setLeader(true, 0, , false);
+	ftlguard2->setLeader(true, 0, , false);
 	ftlguard2->setParty({carnplant, carnplant});
-	ftboss->setScaleFight();
+	ftlguard2->setScaleFight();
 
 	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
-	ftboss->setLeader(true, 0, , false);
+	ftlguard3->setLeader(true, 0, , false);
 	ftlguard3->setParty({smogfish, smogfish, smogfish});
-	ftboss->setScaleFight();
+	ftlguard3->setScaleFight();
 	
 	//right path guards
 	NPC* ftrguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
-	ftboss->setLeader(true, 0, , false);
+	ftrguard1->setLeader(true, 0, , false);
 	ftrguard1->setParty({carnplant, smogfish});
-	ftboss->setScaleFight();
+	ftrguard1->setScaleFight();
 
 	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
-	ftboss->setLeader(true, 0, , false);
+	ftrguard2->setLeader(true, 0, , false);
 	ftrguard2->setParty({carnplant, carnplant});
-	ftboss->setScaleFight();
+	ftrguard2->setScaleFight();
 
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
-	ftboss->setLeader(true, 0, , false);
+	ftrguard3->setLeader(true, 0, , false);
 	ftrguard3->setParty({smogfish, smogfish, smogfish});
-	ftboss->setScaleFight();
-	
-	//f(orest temple) e(ntry/escape) orb
-	Item* feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB", "A shiny purple orb which you must TAKE in order to enter the forest temple.");
+	ftrguard3->setScaleFight();
+
+	//buff self OR buff teammates
+
+	//debuff self or debuff teammates
+
+	//BIG BUFF self and big debuff teammates or vice versa
 	
 	//the boss!
 	NPC* ftboss = new NPC(*senseofself);
@@ -5413,6 +5496,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftboss->addLinkedItem(outputantenna, foresttempleboss);
 	ftboss->setLinkedOrb(feorb);
 	ftboss->addLinkedRoom(foresttempleboss, "in the forest temple arena, cleared of any traces of smog.");
+	ftboss->setEscapable(false);
+
+	WorldChange ftodropchanges; //the changes that happen when dropping the forest temple escape orb in order to reset it
+
+	//f(orest temple) e(ntry/escape) orb
+	Item* feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB", "A shiny purple orb which you must TAKE in order to enter the forest temple.", "A fragile purple orb which you must DROP in order to exit the forest temple.", "A hard stone orb, the petrified version of the forest temple's entry/escape orb.", forestbuffer1, forestbuffer2, ftboss, {ftlguard1, ftlguard2, ftlguard3, ftrguard1, ftrguard2, ftrguard3}, ftodropchanges);
 
 
 	//
@@ -5710,6 +5799,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	}
 	//print any dialogue that is specifically printed right before battle
 	npc->printOpeningDialogue();
+	if (npc->getScaleFight()) npc->setLevel((*party)[0]); //scale the fight to the player's level if marked as necessary
 	//creates the Battle!
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
 	//initiates the battle and returns an int that represents the outcome of the battle
@@ -5902,7 +5992,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		EscapeOrb* orb = (EscapeOrb*)item;
 		cout << "\nThe temple door behind you shut!";
 		CinPause();
-		cout << "The ENTRY ORB transformed into an ESCAPE ORB!";
+		cout << "The ENTRY ORB turned into an ESCAPE ORB!";
 		orb->take();
 		CinPause(); //pause after the shatter message
 		travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getDestination()); //go into the temple
@@ -5918,11 +6008,12 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	}
 	if (!strcmp(item->getType(), "escapeorb")) { //the escape/entry orbs require extra confirmation before being dropped due to their effects
 		EscapeOrb* orb = (EscapeOrb*)item;
-		if (orb->getInert()) cout << "\nYour " << item->getName() << " will be shattered uselessly now that you've cleared its corresponding temple.";
-		else cout << "\nAll your progress in the temple will be reset.";
-		CinPause();
-		cout << "Are you sure you want to drop your " << item->getName() << "?";
-		if (!AOrB(NULL, "YES", "NO")) return;
+		if (!orb->getInert()) {
+			cout << "\nAll your progress in the temple will be reset.";
+			CinPause();
+			cout << "Are you sure you want to drop your " << item->getName() << "?";
+			if (!AOrB(NULL, "YES", "NO")) return;
+		}
 	}
 	item->setRoom(currentRoom); //puts the item in the current room
 	//erases the item from the inventory
@@ -5938,10 +6029,8 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	} else if (!strcmp(item->getType(), "escapeorb")) { //escape orbs reset their temples and teleport you out
 		CinPause();
 		EscapeOrb* orb = (EscapeOrb*)item;
-		cout << "\nThe " << item->getName() << " shattered!";
-		if (orb->getInert()) {
-			deleteItem(currentRoom, inventory, orb);
-		} else { //make it reset the temple plus a pause
+		if (!orb->getInert()) { //make it reset the temple plus a pause, but you can just drop stone orbs normally
+			cout << "\nThe " << item->getName() << " shattered!";
 			orb->drop();
 			CinPause(); //pause after the shatter message
 			travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getEntrance()); //go back to the temple entrance

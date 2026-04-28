@@ -970,6 +970,10 @@ void NPC::setParent(NPC* npc) {
 void NPC::setScaleFight() {
 	scaleFight = true;
 }
+void NPC::setImmunity(Effect* effect, const Conversation& immunetext) {
+	immunities.push_back(effect);
+	immuneText = immunetext;
+}
 //transform the npc to match the other npcs
 void NPC::transform(NPC* npc) {
 	title = npc->getTitle(); //set the identifiers

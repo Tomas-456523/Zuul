@@ -761,6 +761,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 	vector<NPC*> targets;
 	//check each target in the team this attack would target and add it if it's a valid target for the attack
 	for (NPC* target : choices) {
+		if (!attack->targetFainted && target->getHealth() <= 0) continue; //can't target non-fainted if bro is fainted
 		if (attack->targetFainted && target->getHealth() > 0) continue; //can't target fainted if bro isn't fainted
 		if (attack->power < 0 && target->getHealth() >= target->getHealthMax()) continue; //can't (shouldn't) heal if bro is at full health
 		if (attack->take && (target->getBoss() || target->getPlayerness() || target == npc)) continue; //taking attacks can't target bosses, the player (not player otherwise it would be boring gameplay waiting for your teammates to beat the guy), or the attacker (taking yourself would be some real cartoon stuff)
@@ -769,6 +770,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->risky && target->getHealth() < target->getHealthMax()/2) continue; //can't use risky moves if they have below half health because that would be risky
 		if (attack->targetshark && !target->getShark()) continue; //shark-targeting attacks must have a shark to target
 		if (!attack->redundanteffect && target->getEffect(attack->appliedeffect, true)) continue; //if the attack shouldn't target npcs who already have the applied effect but the guy does have it
+		if (attack->donotplayer && target->getPlayerness()) continue; //don't hit the player if the attack says so
 		if (attack->protect) { //protect attacks have various conditions
 			if (target == npc) continue; //don't protect yourself because that would be wasting SP to do literally nothing (you're already taking your hits for yourself)
 			if (npc->getGuarding() && npc->getGuarding()->getHealth() > 0) continue; //no guarding moves if we're already guarding someone still capacitated (don't switch person being guarded, that would be like "oh lol nope yeah I'm actually not defending you anymore have fun")

@@ -390,7 +390,12 @@ private:
 };
 
 class ChoiceOrb : public Item {
+public:
 
+private:
+	WorldChange achanges; //the changes to do
+	WorldChange bchanges; //the changes to do
+	Conversation useText;
 };
 
 class LightOrb : public Item {

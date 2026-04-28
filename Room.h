@@ -56,6 +56,7 @@ public:
 	void removeNPC(NPC* npc, bool alt = false); //removes the thing from the room
 	void removeItem(Item* item);
 	void setExit(const char* direction, Room* room, const char* blocktype = NULL, const char* _reason = NULL); //sets an exit to another room
+	void removeExit(const char* direction); //removes an exit to another room
 	void setRedirect(Room* room); //sets a redirect to another room
 	void setStation(bool stat = true); //sets if this room is a station
 	void setGym(bool _gym = true); //sets if this room is a gym

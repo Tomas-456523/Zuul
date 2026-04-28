@@ -221,6 +221,10 @@ void Room::setExit(const char* direction, Room* room, const char* blocktype, con
 		blockExit(direction, blocktype, _reason);
 	}
 }
+//removes an exit to the room
+void removeExit(const char* direction) {
+	
+}
 void Room::setRedirect(Room* room) {
 	redirect = room;
 	for (Item* item : getItems()) { //moves all this room's items to the redirect room, in case the player dropped some items here
