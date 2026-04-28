@@ -108,6 +108,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	const char* COVER = "COVER";
 	const char* FIRE = "FIRE";
 
+	//you can usually dismiss teammates except for some select areas because it makes mechanical and narrative sense to restrict that there
+	WorldState[CANDISMISS] = true;
+
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms (WW)
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
@@ -462,6 +465,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* foresttemple4 = new Room("in a long hallway of the forest temple. You don't see any flora past this point.");
 	Room* foresttemple5 = new Room("at the end of the hallway. Lots of purple smog flows from the room to the NORTH.");
 	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");
+	Room* dirtplain = new Room("in the dirt plain where the forest temple entrance used to be.\nSoon, the grass will grow here again.");
 
 	Room* deserttemple = new Room("in the desert temple.");
 
@@ -4409,16 +4413,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//{{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, you're the least of your team anyway..."}}
 
-	//shadow creature (attacks that chip stats)
+	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(30, 0, 10, 0, 20, 30, 9));
+	Effect* decayed;
 	//shadow slap
 
-	//masky (no basic attack)
-	//:D - good to teammate
-	//D: - bad to enemy
+	NPC* masky = new NPC("", "MASKY", "Plain white mask floating in the air who warps the world depending on its fluctuating mood.\nIts resting expression is ¦|", limbo, 0, Stats(20, 25, 7, 45, 4, 11, 9));
+	//:D - heal teammate, buff teammate (unchip stats), or make teammate radiant
+	//D: - damage enemy, big chip enemy stats, or turn them into stone
 
-	//NPC* pyramid = new NPC("", "PYRAMON", "Floa");
-	//laser
+	NPC* pyramid = new NPC("", "PYRAMON", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.", limbo, 0, Stats(250, 30, 10, 30, 4, 25, 9));
 	//pyradon
+	//laser
 	//hypnotize or something
 
 	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(8000, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
@@ -5440,7 +5445,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	basementguard->setDialogue("...");
 	basementguard->addRejectionDialogue("...");
 
-	NPC* burgercultists = new NPC(*burgercultist);
+	NPC* burgercultists = new NPC(*burgercultist); //MARK: FINISH THESE GUYS
 	burgercultists->setMask("", "BURGER CULTISTS", "A group of hooded figures in yellow robes cursing the BURGERs on the assembly line.");
 	burgercultists->setLeader(true, 25, burgplate);
 	burgercultists->setParty({burgercultist, burgercultist, burgercultist, burgercultist});
@@ -5448,7 +5453,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgercultists->addRejectionDialogue("...");
 	burgercultists->addLinkedRoom(burgplate, ""); //MARK: what the heck is this?
 
-	//choice orb effects
+
+
+
+
+
+
+	//choice orb effects MARK: forest temple stuff
 	Effect* fbuff = new Effect("TEMPLE BUFF", 2147483647, 0, 0, 1.5, 1.5, 1.5, 1.5, 1.5);
 	Effect* debuff = new Effect("TEMPLE DEBUFF", 2147483647, 0, 0, .75, .75, .75, .75, .75);
 	Effect* superswaggy = new Effect("SUPER SWAGGY", 2147483647, 0, 0, 3, 3, 3, 3, 3);
@@ -5456,57 +5467,72 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	
 	//left path guards
 	NPC* ftlguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
-	ftlguard1->setLeader(true, 0, , false);
+	ftlguard1->setLeader(true, 0, forestbranchw, false);
 	ftlguard1->setParty({carnplant, smogfish});
+	ftlguard1->blockExit(SOUTHEAST, ENEMY, "guarded by the CARNIVOROUS PLANT.");
 	ftlguard1->setScaleFight();
 	ftlguard1->setFightEffects(NULL, fbuff); //buff self but not teammates
+	ftlguard1->setDialogue({{NULL, "CARNIVOROUS PLANT - *snapping biting noises*"}});
+	ftlguard1->addRejectionDialogue({{NULL, "CARNIVOROUS PLANT - *snapping hissing noises*"}});
+	ftlguard1->addLinkedDialogue(ftlguard1, {{NULL, "Your TEMPLE BUFF faded..."}});
+	ftlguard1->setTalkOnDefeat();
 
 	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
-	ftlguard2->setLeader(true, 0, , false);
+	ftlguard2->setLeader(true, 0, forestbranchw2, false);
 	ftlguard2->setParty({carnplant, carnplant});
+	ftlguard2->blockExit(SOUTH, ENEMY, "guarded by the JUNGLENAUT.");
 	ftlguard2->setScaleFight();
 	ftlguard1->setFightEffects(NULL, debuff); //debuff self but not teammates
+	ftlguard2->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
+	ftlguard2->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
+	ftlguard2->addLinkedDialogue(ftlguard2, {{NULL, "Your TEMPLE DEBUFF faded..."}});
+	ftlguard2->setTalkOnDefeat();
 
 	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
-	ftlguard3->setLeader(true, 0, , false);
+	ftlguard3->setLeader(true, 0, forestbranchw3, false);
 	ftlguard3->setParty({smogfish, smogfish, smogfish});
+	ftlguard3->blockExit(EAST, ENEMY, "guarded by the JUNGLENAUT.");
 	ftlguard3->setScaleFight(prettyswaggy, prettyswaggy);
-	ftlguard1->setFightEffects(prettyswaggy, prettyswaggy); //share buff with whole team including self
+	ftlguard3->setFightEffects(prettyswaggy, prettyswaggy); //share buff with whole team including self
+	ftlguard3->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
+	ftlguard3->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
+	ftlguard3->addLinkedDialogue(ftlguard3, {{NULL, "Your team's SWAGGY faded..."}});
+	ftlguard3->setTalkOnDefeat();
 	
 	//right path guards
 	NPC* ftrguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
-	ftrguard1->setLeader(true, 0, , false);
+	ftrguard1->setLeader(true, 0, forestbranche, false);
 	ftrguard1->setParty({carnplant, smogfish});
+	ftrguard1->blockExit(SOUTH, ENEMY, "guarded by the CARNIVOROUS PLANT.");
 	ftrguard1->setScaleFight();
 	ftrguard1->setFightEffects(fbuff, NULL); //buff teammates but not self
+	ftrguard1->setDialogue({{NULL, "CARNIVOROUS PLANT - *snapping biting noises*"}});
+	ftrguard1->addRejectionDialogue({{NULL, "CARNIVOROUS PLANT - *snapping hissing noises*"}});
+	ftrguard1->addLinkedDialogue(ftrguard1, {{NULL, "Your teammates' TEMPLE BUFF faded..."}});
+	ftrguard1->setTalkOnDefeat();
 
 	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
-	ftrguard2->setLeader(true, 0, , false);
+	ftrguard2->setLeader(true, 0, forestbranche2, false);
 	ftrguard2->setParty({carnplant, carnplant});
+	ftrguard2->blockExit(SOUTHWEST, ENEMY, "guarded by the JUNGLENAUT.");
 	ftrguard2->setScaleFight();
-	ftrguard1->setFightEffects(debuff, NULL); //debuff teammates but not self
+	ftrguard2->setFightEffects(debuff, NULL); //debuff teammates but not self
+	ftrguard2->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
+	ftrguard2->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
+	ftrguard2->addLinkedDialogue(ftrguard2, {{NULL, "Your teammates' TEMPLE DEBUFF faded..."}});
+	ftrguard2->setTalkOnDefeat();
+
 
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
-	ftrguard3->setLeader(true, 0, , false);
+	ftrguard3->setLeader(true, 0, forestbranche3, false);
 	ftrguard3->setParty({smogfish, smogfish, smogfish});
+	ftrguard3->blockExit(SOUTHEAST, ENEMY, "guarded by the JUNGLENAUT.");
 	ftrguard3->setScaleFight();
-	ftrguard1->setFightEffects(NULL, superswaggy); //keep all the buff to yourself
-
-	/*Room* forestbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
-	Room* forestbuffer2 = new Room("fully in the forest temple. You must DROP the ESCAPE ORB if you wish to leave.");
-	forestbuffer2->shareItems(forestbuffer1); //share items because it's the same room
-	Room* foresttemple = new Room("in the forest temple.\nYou are presented with a CHOICE ORB.");
-	Room* forestbranchw = new Room("on the western branch of the forest temple. Plants and purple smog seep through the walls.");
-	Room* forestbranche = new Room("on the eastern branch of the forest temple. Plants and purple smog seep through the walls.");
-	Room* foresttemple2 = new Room("in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB.");
-	Room* forestbranchw2 = new Room("on the western branch of the forest temple. Carnivorous moss lines the walls and floor.");
-	Room* forestbranche2 = new Room("on the eastern branch of the forest temple. Carnivorous moss lines the walls and floor.");
-	Room* foresttemple3 = new Room("in the forest temple. Large purple flowers are flowering here.\nYou are presented with a CHOICE ORB.");
-	Room* forestbranchw3 = new Room("on the western branch of the forest temple. The structural integrity of this hallway is questionable.");
-	Room* forestbranche3 = new Room("on the eastern branch of the forest temple. The structural integrity of this hallway is questionable.");
-	Room* foresttemple4 = new Room("in a long hallway of the forest temple. You don't see any flora past this point.");
-	Room* foresttemple5 = new Room("at the end of the hallway. Lots of purple smog flows from the room to the NORTH.");
-	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");*/
+	ftrguard3->setFightEffects(NULL, superswaggy); //keep all the buff to yourself
+	ftrguard3->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
+	ftrguard3->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
+	ftrguard3->addLinkedDialogue(ftrguard3, {{NULL, "Your SUPER SWAGGY faded..."}});
+	ftrguard3->setTalkOnDefeat();
 	
 	//the boss!
 	NPC* ftboss = new NPC(*senseofself);
@@ -5530,8 +5556,38 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftboss->setForceBattle();
 	ftboss->addLinkedItem(outputantenna, foresttempleboss);
 	ftboss->setLinkedOrb(feorb);
+	ftboss->addPaveLink(forestbuffer2, foresttemplestairs, NORTH, SOUTH); //make it so you can just walk out of the temple now
+	ftboss->addRedirect(forestbuffer1, forestbuffer2); //cause they're the same room
 	ftboss->addLinkedRoom(foresttempleboss, "in the forest temple arena, cleared of any traces of smog.");
 	ftboss->setEscapable(false);
+	ftboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
+
+	shared_ptr<WorldChange> ftsink = make_shared<WorldChange>(); //when the forest temple sinks into the ground
+	ftsink->exitPavings.push(make_tuple(dirtplain, foresttempleentrance, NORTH, SOUTH)); //very cool, there is a dirt plain here now
+	ftsink->exitPavings.push(make_tuple(dirtplain, forest, SOUTH, NORTH));
+	ftsink->exitPavings.push(make_tuple(dirtplain, forestright, EAST, WEST));
+	ftsink->exitPavings.push(make_tuple(dirtplain, forestleft, WEST, EAST));
+	ftsink->redirectRooms.push({foresttemplestairs, foresttempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the output antenna (for some reason)
+	ftsink->redirectRooms.push({forestbuffer1, foresttempleentrance});
+	ftsink->redirectRooms.push({forestbuffer2, foresttempleentrance});
+	ftsink->redirectRooms.push({foresttemple, foresttempleentrance});
+	ftsink->redirectRooms.push({forestbranchw, foresttempleentrance});
+	ftsink->redirectRooms.push({forestbranche, foresttempleentrance});
+	ftsink->redirectRooms.push({foresttemple2, foresttempleentrance});
+	ftsink->redirectRooms.push({forestbranchw2, foresttempleentrance});
+	ftsink->redirectRooms.push({forestbranche2, foresttempleentrance});
+	ftsink->redirectRooms.push({foresttemple3, foresttempleentrance});
+	ftsink->redirectRooms.push({forestbranchw3, foresttempleentrance});
+	ftsink->redirectRooms.push({forestbranche3, foresttempleentrance});
+	ftsink->redirectRooms.push({foresttemple4, foresttempleentrance});
+	ftsink->redirectRooms.push({foresttemple5, foresttempleentrance});
+	ftsink->redirectRooms.push({foresttempleboss, foresttempleentrance});
+	ftboss->addEnterChanges(foresttempleentrance, ftsink);
+	ftboss->addLinkedWelcome(foresttempleentrance, {{NULL, "The ground rumbles..."},
+		{NULL, "The forest temple starts sinking into the ground!"},
+		{NULL, "Leaves are shaken from the trees around you..."},
+		{NULL, "The ground closes up above the temple!"},
+		{NULL, "A dirt plain lies where the forest temple once stood."}});
 	
 	Item* choice1; //forwards reference the orb so it can move itself with the world changes
 	WorldChange choicea1;
@@ -5614,15 +5670,24 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 								"A hard stone orb, the petrified version of the forest temple's entry/escape orb.",
 								forestbuffer1, forestbuffer2, ftboss, {ftlguard1, ftlguard2, ftlguard3, ftrguard1, ftrguard2, ftrguard3}, ftodropchanges);
 
-	//
+	//MARK: desert temple stuff
+	//shadow shadow
 
-	//
+	//shadow shadow masky
 
-	//
+	//shadow masky masky
 
-	//
+	//pyramon shadow masky
+
+	//pyramon shadow shadow
+
+	//pyramon pyramon masky masky shadow shadow
+
+	//pyramon pyramon pyramon masky masky masky
 
 	//dtboss
+
+	//MARK: volcano temple stuff
 
 	//
 
@@ -5633,6 +5698,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//
 
 	//vtboss
+
+	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
+	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000, 1000);
 
 	//finalboss
 
@@ -6104,7 +6172,8 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		CinPause();
 		cout << "The ENTRY ORB turned into an ESCAPE ORB!";
 		orb->take();
-		CinPause(); //pause after the shatter message
+		CinPause(); //pause after the transformation message
+		WorldState[CANDISMISS] = false; //can't dismiss teammates in temple
 		travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getDestination()); //go into the temple
 	}
 }
@@ -6143,6 +6212,7 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 			cout << "\nThe " << item->getName() << " shattered!";
 			orb->drop();
 			CinPause(); //pause after the shatter message
+			WorldState[CANDISMISS] = true; //can dismiss teammates outside of temple
 			travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getEntrance()); //go back to the temple entrance
 		}
 	}
@@ -6492,6 +6562,9 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		inventory->push_back(product); //adds it to the inventory
 		printConversation(&blender->getUseText(), true); //prints the blender's use text
 		cout << "\nYou got the " << product->getName() << "!";
+	//choice orbs give you a choice between choice A and choice B
+	} else if (!strcmp(item->getType(), "choiceorb")) {
+		((ChoiceOrb*)item)->CHOICE(); //do the choosing
 	//you can't use materials; they get a unique error message
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
@@ -6580,8 +6653,8 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		npc->printDismissalRejection();
 		cout << "\n" << npcname << " was not dismissed.";
 		return;
-	}
-	if (WorldState[TEAMCLINGY]) {
+	} //you can't dismiss the npc because it's in a temple where you need your team or the final boss prelude where you wouldn't be able to get them back
+	if (!WorldState[CANDISMISS]) {
 		cout << "\nYour team has no way to go back home right now!";
 		return;
 	} //removes the npc from your party
@@ -6680,6 +6753,7 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 		npc = NULL;
 	}
 	if (npc != NULL) { //prints the data of the npc that was found
+		if (npc->getScaleFight()) npc->setLevel((*party)[0]); //if the npc scales to the player's level make sure it's that level before printing the stats
 		printNPCData(npc);
 		return;
 	} //if no npc was found, we try to find an item in the current room

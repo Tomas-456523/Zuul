@@ -423,11 +423,11 @@ void Battle::checkOpeners(const vector<NPC*>& checks) {
 void Battle::checkFightEffects() {
 	Effect* teameffect = enemy->getFightTeamEffect();
 	if (Effect* leadeffect = enemy->getFightLeadEffect()) {
-		attachEffect(playerTeam[0]->setEffect(leadeffect)); //give the leader effect to the leader (player)
+		attachEffect(playerTeam[0]->setEffect(leadeffect, NULL)); //give the leader effect to the leader (player)
 	}
 	if (!teameffect) return; //don't apply NULL effects
 	for (NPC* npc : playerTeam) { //give the team effect to all the non-leaders
-		if (!npc->getLeader()) attachEffect(npc->setEffect(teameffect));
+		if (!npc->getLeader()) attachEffect(npc->setEffect(teameffect, NULL));
 	}
 }
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item

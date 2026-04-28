@@ -978,7 +978,7 @@ void NPC::setScaleFight() {
 }
 void NPC::setImmunity(Effect* effect, const Conversation& immunetext) {
 	immunities.push_back(effect);
-	immuneText = immunetext;
+	immuneText[effect] = immunetext;
 }
 void NPC::setFightEffects(Effect* team, Effect* lead) {
 	fightteameffect = team;
@@ -1011,6 +1011,15 @@ void NPC::addLinkedGift(NPC* npc, Item* item) {
 void NPC::setLinkedOrb(Item* orb) {
 	changes.back().linkedOrb = orb;
 }
+void NPC::addPaveLink(Room* from, Room* to, const char* dir1, const char* dir2) {
+	changes.back().exitPavings.push(make_tuple(from, to, dir1, dir2));
+}
+void NPC::addEnterChanges(Room* room, shared_ptr<WorldChange> changes) {
+	changes.back().linkedEnterChanges.push({room, changes});
+}
+void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
+	changes.back().linkedWelcomes.push({room, welcome});
+}
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }
@@ -1019,6 +1028,14 @@ void NPC::setForceBattle(bool force) { //set if the npc forces battle after talk
 }
 //sets an effect on the npc, affected by the given affector. Affector is also treated as the way to know if it's in battle or not MARK: set effect
 NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
+	if (find(immunities.begin(), immunities.end(), effect) != immunities.end()) {
+		const Conversation& convo = immuneText[effect]
+		if (!convo.empty()) printConversation(&convo, true); //print the dialogue for this immunity
+		convo = {}; //only say the conversation once
+		cout << name << " was not affected!";
+		CinPause();
+		return;
+	}
 	if (isBoss && (effect->remove || effect->hypnotize)) { //usually attacks that set these are filtered out for bosses before being launched, but we check for it here in case the player did that
 		cout <<"\n" << name << " was not affected by the attack's " << effect->name << "!";
 		CinPause();

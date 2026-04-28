@@ -404,6 +404,10 @@ private:
 };
 
 class LightOrb : public Item {
+public:
 
+private:
+	NPC* teammate;
+	
 };
 #endif
