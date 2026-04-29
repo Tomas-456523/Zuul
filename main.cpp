@@ -115,7 +115,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
 
 	//the player! defined here so the temple opening dialogues can use the player name
-	NPC* self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", limbo, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
+	NPC* self;
 
 	//create all WANING WOODLANDS rooms
 	Room* village = new Room("in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.");
@@ -505,7 +505,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {NULL, "THE BURGER MENACE throws a BURGER TENDRIL at you like a speeding train."},
 					   {NULL, "You put your hands on your hips."},
 					   {self, ">:|"},
-					   {NULL, "Suddenly..."}
+					   {NULL, "Suddenly..."},
 					   {NULL, "You and your team are filled with the power of PLOT!"},
 					   {NULL, "Your stats rose by 100000%!"},
 					   {NULL, "You dodge the BURGER TENDRIL!"},
@@ -513,30 +513,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {burgermenace, "YOU ARE NOTHING TO ME."}});
 					   //BATTLE BEGIN!
 
-	//ENTRY ORB
-	//ESCAPE ORB
-	//{NULL, "You try to take the ENTRY ORB."}
-	//{NULL, "It doesn't budge."}
-	//{NULL, "You need a full team of four to take it out!"}
-
-	//{NULL, "You took the ENTRY ORB."}
-	//{NULL, "The temple door closes behind you."}
-	//{NULL, "The way forward opens!"}
-	//{NULL, "Your ENTRY ORB transforms into an ESCAPE ORB."}
-	//{NULL, "DROP the ESCAPE ORB to shatter it and escape the temple."}
-
-	//{NULL, "You dropped the ESCAPE ORB."}
-	//{NULL, "The ESCAPE ORB shattered!"}
-	//(room text) (or doesn't do anything if the temple boss has already been beaten)
+	Room* timemachine = new Room("in the time machine! It's much bigger on the inside, complete with a donut-shaped layout.");
+	Room* simulatorroom = new Room("in the simulator room, for simulating battles.");
+	Room* vendingroom = new Room("in the vending machine room. It's a whole warehouse of vending machines for anything you can think of!");
+	Room* statsroom = new Room("in the statistics room, for getting the statistics of your life.");
 	
-	//CHOICE ORB
-	//LIGHT ORB
-	//ICE ORB
+	Room* home = new Room("in Henry Jerry's multiuse bed/dining/living room.");
+	Room* juiceroom = new Room("in Henry Jerry's portal juice room.");
+	Room* yard = Room("at Henry Jerry's backyard, in the void.");
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
 
 	//Create NPCs and items MARK: make npcs, items, etc.
+	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
 	self->addRecruitedDialogue("Huh?"); //player defined above before all the rooms
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -1512,6 +1502,41 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//{hj, "Shame the portal's busted because we could probably actually pick it up now,"},
 	//{hj, "with this game's brand new multi-word parsing."}
 
+	//{hj, "Back in my day,"},
+	//{hj, "we didn't have any of these fancy commands,"},
+	//{hj, "like FIGHT"},
+	//{hj, "or RECRUIT"},
+	//{hj, "or ASK"},
+	//{hj, "or SAVE..."},
+	//{self, "That sounds like simpler times."}
+
+	//I need to get a hobby.
+	//And a new job.
+	//Because everyone is skeletons now at my old job.
+
+	//recruited: {hj, "Wow so this is what the world looks like."}
+	//in abyss: {hj, "This place reminds me of the negative first universe."},
+	//			{hj, "But like it has actual ground."}
+
+	//{hj, "Uhhhhhhhhhhhhhhhhhhh..."},
+	//{hj, "I have a headache..."}
+
+	//{hj, "Man, I did a lot of bad things as the BURGER MAN..."},
+	//{hj, "Can I go with you?"},
+	//{hj, "I want to do something against BURGER..."},
+	//{self, "Yeah I was about to ask you."},
+	//{hj, "Well that works out pretty well then."}
+
+	//{self, "Hey wanna join my team?"},
+	//{hj, "?"},
+	//{hj, "Isn't the game already over?"},
+	//{self, "Yeah but you can still walk around"},
+	//{self, "and 100% the game and stuff."},
+	//{hj, "Sure why not"}
+
+	//{hj, "I'm just gonna head back to the restaurant I guess."},
+	//{hj, "It has a good view, that's one good thing about it."}
+
 	//briefbase
 	
 	//MARK: other npcs
@@ -2095,9 +2120,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Conversation forgorending = {{burgerman, "YOU ARE REALLY STUPID."},
 								 {burgerman, "YOU CAME BACK WITHOUT THE PLOT DEVICE?"},
 								 {NULL, "\nThe BURGER MAN punches through your head."},
-								 {NULL, "\n<<< BURGER QUEST COMPLETE T_T >>>"},
-								 {NULL,   "<<<      ENDING ACHIEVED:     >>>"},
-								 {NULL,   "<<<   YOU FORGOR THE DEVICE   >>>"}};
+								 {NULL, "\n\t<<< BURGER QUEST COMPLETE T_T >>>"
+								        "\n\t<<<      ENDING ACHIEVED:     >>>"
+								        "\n\t<<<   YOU FORGOR THE DEVICE   >>>"}};
 	shared_ptr<WorldChange> forgorchanges = make_shared<WorldChange>(); //to mark the game as ended and move the player outside the restaurant so they're not softlocked
 	forgorchanges->worldcon = GAMEEND;
 	forgorchanges->defeatRooms.push({self, elevatortop});
@@ -2422,29 +2447,29 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	switchhelper2->setConveyor(conveyor4);
 	switchhelper2->setConveyor(conveyor5);
 
-	//The BURGER MENACE has been subdued.
-	//All around the world, all the BURGERs fade to ashes.
-	//The BURGER RESTAUANT has been left to rot in the depths.
-	//The BURGER corporation has been deprived of its leadership...
-	//and its source of revenue.
-	//BURGER's grasp on the world has been completely dissolved.
-	//<<< BURGER QUEST COMPLETE! >>>
-	//<<<    ENDING ACHIEVED:    >>>
-	//<<<      BURG NO MORE      >>>
+	//{{NULL, "The BURGER MENACE has been subdued."},
+	//{NULL, "All around the world, all the BURGERs fade to ashes."},
+	//{NULL, "The BURGER RESTAUANT has been left to rot in the depths."},
+	//{NULL, "The BURGER corporation has been deprived of its leadership..."},
+	//{NULL, "and its source of revenue."},
+	//{NULL, "BURGER's grasp on the world has been completely dissolved."},
+	//{NULL, "\n\t<<< BURGER QUEST COMPLETE! >>>"
+	//       "\n\t<<<    ENDING ACHIEVED:    >>>"
+	//       "\n\t<<<      BURG NO MORE      >>>"},
 	
-	//HENRY JERRY - Well, in the end, this has truly been a BURGER QUEST too.
-	//self - Say that again?
+	//{NULL, "\nHENRY JERRY - \"Well, in the end, this has truly been a BURGER QUEST too.\""}, //I have to do the NULL "fake speaker" trick here so I can have an extra newline at the start
+	//{self, "Say that again?"},
 
-	//Thank you so much for playing BURGER QUEST 2: ELECTRIC BOOGALOO all the way to the end!
-	//I hope this has been an enjoyable and meaningful experience.
-	//May we meet again on the road ahead!
-	//- Tomas
+	//{NULL, "\nThank you so much for playing BURGER QUEST 2: ELECTRIC BOOGALOO all the way to the end!"},
+	//{NULL, "I hope this has been an enjoyable and meaningful experience."},
+	//{NULL, "May we meet again on the road ahead!"},
+	//{NULL, "- Tomas"}}
 
-	//hj, "Well I'm gonna go home I guess."
-	//self, "Alright cya."
-	//NULL, "HENRY JERRY went back to his house."
-	//self, "..."
-	//self, "Wait how are we supposed to get back?"
+	//{{hj, "Well I'm gonna go home I guess."},
+	//{self, "Alright cya."},
+	//{NULL, "HENRY JERRY went back to his house."},
+	//{self, "..."},
+	//{self, "Wait how are we supposed to get back?"}}
 
 	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant and owner of the desert store. He really wants your monies.", limbo, 12);
 	merchant->setDialogue("Welcome, my friend, to my store.");
@@ -4511,7 +4536,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//MARK: make sure all the 0 hit and 0 target moves actually make sense with that
 	//MARK: probably no attack should have 0 damage and non-0 hits
 	//MARK: all 0 target attacks should be for affecting self or summoning stuff like that, nothing to do with the other team (except makinhg a summon for them)
-	//MARK: make sure we NO ATTACKS accidentally don't have a bool as the third slot
+	//MARK: make sure NO ATTACKS accidentally don't have a bool as the third slot
 
 	//set up overworld enemies  MARK: enemies (world)
 	NPC* forestguard = new NPC(*grassman);
@@ -5492,7 +5517,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard3->setLeader(true, 0, forestbranchw3, false);
 	ftlguard3->setParty({smogfish, smogfish, smogfish});
 	ftlguard3->blockExit(EAST, ENEMY, "guarded by the JUNGLENAUT.");
-	ftlguard3->setScaleFight(prettyswaggy, prettyswaggy);
+	ftlguard3->setScaleFight();
 	ftlguard3->setFightEffects(prettyswaggy, prettyswaggy); //share buff with whole team including self
 	ftlguard3->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
 	ftlguard3->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
@@ -5555,6 +5580,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftboss->setTalkOnDefeat();
 	ftboss->setForceBattle();
 	ftboss->addLinkedItem(outputantenna, foresttempleboss);
+	Item* feorb; //we implement this last after the rest of the forest temple stuff
 	ftboss->setLinkedOrb(feorb);
 	ftboss->addPaveLink(forestbuffer2, foresttemplestairs, NORTH, SOUTH); //make it so you can just walk out of the temple now
 	ftboss->addRedirect(forestbuffer1, forestbuffer2); //cause they're the same room
@@ -5601,10 +5627,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	choiceb1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
 	choiceb1.linkedItems.push({choice1, limbo});
 	choice1 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple, choicea1, choiceb1,
-								  {{NULL, "CHOICE ORB - \"I present you with a choice:\""},
-								   {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE BUFF.\""},
-								   {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE BUFF.\""},
-								   {NULL, "Which choice will you choose? (A or B)"}});
+								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								 {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE BUFF.\""},
+								 {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE BUFF.\""},
+								 {NULL, "Which choice will you choose? (A or B)"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your TEMPLE BUFF.\""},
+								 {NULL, "An exit opened to the SOUTHWEST!"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, your teammates shall have their TEMPLE BUFF.\""},
+								 {NULL, "An exit opened to the SOUTH!"}});
 	choice1->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
 
 	Item* choice2;
@@ -5619,10 +5649,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	choiceb2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
 	choiceb2.linkedItems.push({choice2, limbo});
 	choice2 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple2, choicea2, choiceb2,
-								  {{NULL, "CHOICE ORB - \"I present you with a choice:\""},
-								   {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE DEBUFF.\""},
-								   {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE DEBUFF.\""},
-								   {NULL, "Which choice will you choose? (A or B)"}});
+								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								 {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE DEBUFF.\""},
+								 {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE DEBUFF.\""},
+								 {NULL, "Which choice will you choose? (A or B)"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your TEMPLE DEBUFF.\""},
+								 {NULL, "An exit opened to the SOUTH!"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, your teammates shall have their TEMPLE DEBUFF.\""},
+								 {NULL, "An exit opened to the SOUTHEAST!"}});
 	choice2->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
 	
 	Item* choice3;
@@ -5636,11 +5670,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	choiceb3.exitPavings.push(make_tuple(foresttemple4, forestbranche3, NORTHEAST, SOUTHWEST));
 	choiceb3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
 	choiceb3.linkedItems.push({choice3, limbo});
-	Item* choice3 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple3, choicea3, choiceb3,
-								  {{NULL, "CHOICE ORB - \"I present you with a choice:\""},
-								   {NULL, "CHOICE ORB - \"A - Share a buff with your team.\""},
-								   {NULL, "CHOICE ORB - \"B - Keep the buff to yourself, hugely increasing your power.\""},
-								   {NULL, "Which choice will you choose? (A or B)"}});
+	choice3 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple3, choicea3, choiceb3,
+								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								 {NULL, "CHOICE ORB - \"A - Share a buff with your team.\""},
+								 {NULL, "CHOICE ORB - \"B - Keep the buff to yourself, hugely increasing your power.\""},
+								 {NULL, "Which choice will you choose? (A or B)"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, your team shall share the SWAGGY effect.\""},
+								 {NULL, "An exit opened to the SOUTH!"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your SUPER SWAGGY effect.\""},
+								 {NULL, "An exit opened to the SOUTHWEST!"}});
 	choice3->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
 
 	WorldChange ftodropchanges; //the changes that happen when dropping the forest temple escape orb in order to reset it
@@ -5664,7 +5702,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftodropchanges.linkedItems.push({choice3, foresttemple3});
 
 	//f(orest temple) e(ntry/escape) orb
-	Item* feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
+	feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
 								"A shiny purple orb which you must TAKE in order to enter the forest temple.",
 								"A fragile purple orb which you must DROP in order to exit the forest temple.",
 								"A hard stone orb, the petrified version of the forest temple's entry/escape orb.",
@@ -5700,7 +5738,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//vtboss
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
-	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000, 1000);
+	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
 
 	//finalboss
 
@@ -5977,7 +6015,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	}
 	//print any dialogue that is specifically printed right before battle
 	npc->printOpeningDialogue();
-	if (npc->getScaleFight()) npc->setLevel((*party)[0]); //scale the fight to the player's level if marked as necessary
+	if (npc->getScaleFight()) npc->setLevel((*party)[0]->getLevel()); //scale the fight to the player's level if marked as necessary
 	//creates the Battle!
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());
 	//initiates the battle and returns an int that represents the outcome of the battle
@@ -6029,7 +6067,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			CinPause();
 			//also apply any attacks to the player if they were given a weapon item
 			if (!strcmp(item->getType(), "weapon")) {
-				applyWeaponAttack(player, (*party)[0]);
+				applyWeaponAttack((*party)[0], item);
 				CinPause();
 			}
 		}
@@ -6128,11 +6166,11 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	}
 	if (!strcmp(item->getType(), "escapeorb") && player->getParty()->size() < 4) { //escape orbs must be taken with 4 people so that the temples can actually use their themes and stuff 
 		size_t partysize = player->getParty()->size();	//here we say the together for emphasis unless it's just you
-		cout << "\nYou tried to take the ENTRY ORB " << (partysize > 1 ? "together " << "") << "with your party of " << partysize << ".";
+		cout << "\nYou tried to take the ENTRY ORB " << (partysize > 1 ? "together " : "") << "with your party of " << partysize << ".";
 		CinPause();
 		cout << "The ENTRY ORB didn't budge!";
 		CinPause();
-		cout << "You need a full team of 4 people to take it out of its slot!"
+		cout << "You need a full team of 4 people to take it out of its slot!";
 		return;
 	} //you're not allowed to take items not marked as takable
 	if (!item->getTakable()) {
@@ -6327,20 +6365,28 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
 		EducationItem* edu = (EducationItem*)item; //converts to the corresponding subclass
-		bool learned = false; //if we learned something which we can use immediately given our current level
 		NPC* player = (*party)[0];
-		cout << "\n";
-		//adds all the item's attacks to the player's vector of attacks
-		for (Attack* attack : edu->getAttacks()) {
-			player->addSpecialAttack(attack);
-			if (attack->minLevel <= player->getLevel()) { //print the description and name of any attacks we have just learned
-				cout << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
-				learned = true; //we have, in fact, learned an attack just now
-				CinPause();
+		vector<Attack*> attacks = edu->getAttacks(); //get all the item's attacks to add them to the player's vector of attacks
+		vector<Attack*> futureattacks;
+		for (Attack* attack : attacks) { //move all currently unusable attacks to the future attacks vector
+			if (attack->minLevel > player->getLevel()) {
+				futureattacks.push_back(attack);
+				attacks.erase(remove(attacks.begin(), attacks.end(), attack), attacks.end());
 			}
 		}
-		if (!learned) { //prints motivational message if none of these attacks are usable yet
-			cout << "You're not LEVELED UP enough to use any of these new attacks.\nKeep training and you'll get there eventually!";
+		size_t amount = attacks.size(); //get this so we can easily check if we shouldn't CinPause() at the end
+		for (size_t i = 0; i < amount; i++) { //add and describe all the new attacks we learned
+			Attack* attack = attacks[i]; //get the attack to add
+			player->addSpecialAttack(attack);
+			//print the description and name of any attacks we have just learned
+			cout << "\n" << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
+			if (i < amount) CinPause(); //do not print the final pause cause then the > looks bad
+		}
+		for (Attack* attack : futureattacks) player->addSpecialAttack(attack); //add all the remaining attacks to the pool for use in the future but do not announce them
+		if (attacks.empty()) { //prints motivational message if none of these attacks are usable yet
+			cout << "\nYou're not LEVELED UP enough to use any of these new attacks.\nKeep training and you'll get there eventually!";
+		} else if (!futureattacks.empty()) { //print this message so the player knows they will also learn more attacks in the future
+			cout << "\nYou're not LEVELED UP enough to use " << (futureattacks.size() > 1 ? "some" : "one") << " of these new attacks.\nKeep training and you'll get there eventually!";
 		}
 	//summons the tunnel lobster to the current train station
 	} else if (!strcmp(item->getType(), "caller")) {
@@ -6497,9 +6543,9 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 				cout << "!";
 				//also make sure that weapon items give their attack
 				for (size_t i = 0; i < amount; i++) {
-					if (!strcmp(weapon->getType(), "weapon")) {
+					if (!strcmp(items[i]->getType(), "weapon")) {
 						CinPause(); //pauses the last weapon printing, and also all the previous stuff!
-						applyWeaponAttack(player, weapon);
+						applyWeaponAttack((*party)[0], items[i]);
 					}
 				}
 			}
@@ -6707,7 +6753,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		//also apply any attacks to the player if they were given a weapon item
 		if (!strcmp(item->getType(), "weapon")) {
 			CinPause();
-			applyWeaponAttack(player, (*party)[0]);
+			applyWeaponAttack((*party)[0], item);
 		}
 	}
 	//some npcs fight you immediately after talking so if that's the case we initiate battle here
@@ -6753,7 +6799,7 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 		npc = NULL;
 	}
 	if (npc != NULL) { //prints the data of the npc that was found
-		if (npc->getScaleFight()) npc->setLevel((*party)[0]); //if the npc scales to the player's level make sure it's that level before printing the stats
+		if (npc->getScaleFight()) npc->setLevel((*party)[0]->getLevel()); //if the npc scales to the player's level make sure it's that level before printing the stats
 		printNPCData(npc);
 		return;
 	} //if no npc was found, we try to find an item in the current room

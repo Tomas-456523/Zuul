@@ -222,7 +222,7 @@ void Room::setExit(const char* direction, Room* room, const char* blocktype, con
 	}
 }
 //removes an exit to the room
-void removeExit(const char* direction) {
+void Room::removeExit(const char* direction) {
 	exits.erase(direction);
 }
 void Room::setRedirect(Room* room) {

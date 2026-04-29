@@ -27,7 +27,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	isLeader = _isleader;
 	isPlayer = _player;
 	if (isLeader) { //adds itself to its own party if it's a leader npc (fightable or the player)
-		party.push_back({&*this});
+		party.push_back({this});
 	}
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 	id = npcID++; //get this npc's id and increment it for the next one
@@ -36,7 +36,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	else basestats = Stats::genBaseStats(id); //if none were passed, generate some new ones
 	stats = basestats; //effective stats start as base stats
 	if (!_scale.empty()) scale = _scale;
-	else Stats::getStatScale(basestats); //make a default scaling based on the base stats
+	else scale = Stats::getStatScale(basestats); //make a default scaling based on the base stats
 	health = stats.hpmax; //xp starts at max
 	sp = stats.spmax / 3; //start battle at a third of max sp and has to be built up
 
@@ -187,7 +187,7 @@ pair<int, int> NPC::getPurPos(Room* room) {
 NPC* NPC::getParent() {
 	return parent;
 }
-void NPC::getScaleFight() {
+bool NPC::getScaleFight() {
 	return scaleFight;
 }
 Effect* NPC::getFightTeamEffect() {
@@ -641,7 +641,7 @@ void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn, bool bos
 	isBoss = boss;
 	if (isLeader) {
 		setLevel(_level); //set the level
-		party.front().push_back(&*this); //adds itself to its own party
+		party.push_back({this}); //adds itself to its own party
 		if (room != NULL) { //puts itself in the given room
 			setRoom(room);
 		}
@@ -1014,8 +1014,8 @@ void NPC::setLinkedOrb(Item* orb) {
 void NPC::addPaveLink(Room* from, Room* to, const char* dir1, const char* dir2) {
 	changes.back().exitPavings.push(make_tuple(from, to, dir1, dir2));
 }
-void NPC::addEnterChanges(Room* room, shared_ptr<WorldChange> changes) {
-	changes.back().linkedEnterChanges.push({room, changes});
+void NPC::addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges) {
+	changes.back().linkedEnterChanges.push({room, enterchanges});
 }
 void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
 	changes.back().linkedWelcomes.push({room, welcome});
@@ -1029,12 +1029,12 @@ void NPC::setForceBattle(bool force) { //set if the npc forces battle after talk
 //sets an effect on the npc, affected by the given affector. Affector is also treated as the way to know if it's in battle or not MARK: set effect
 NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (find(immunities.begin(), immunities.end(), effect) != immunities.end()) {
-		const Conversation& convo = immuneText[effect]
+		Conversation& convo = immuneText[effect];
 		if (!convo.empty()) printConversation(&convo, true); //print the dialogue for this immunity
 		convo = {}; //only say the conversation once
 		cout << name << " was not affected!";
 		CinPause();
-		return;
+		return NULL;
 	}
 	if (isBoss && (effect->remove || effect->hypnotize)) { //usually attacks that set these are filtered out for bosses before being launched, but we check for it here in case the player did that
 		cout <<"\n" << name << " was not affected by the attack's " << effect->name << "!";
@@ -1064,8 +1064,10 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (!stacking) { //place the effect normally
 		effects.push_back(effect);
 		npceffects[effect] = NPCEffect(effect, this, affector);
-		if (affector) cout << "\n" << name << " now has " << effect->name << "!";
-		CinPause();
+		if (affector) {
+			cout << "\n" << name << " now has " << effect->name << "!";
+			CinPause();
+		}
 	}
 
 	//MARK: non-multiplier effects

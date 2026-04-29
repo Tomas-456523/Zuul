@@ -292,7 +292,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		reciever->addExtraLives(attack->extralives);
 		cout << "\n" << reciever->getName() << " got " << attack->extralives << " extra li" << (attack->extralives == 1 ? "fe" : "ves") << "!";
 	}
-	if (Attack* recoilatt = eciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
+	if (Attack* recoilatt = reciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
 		carryOutAttack(recoilatt, reciever, attacker, true);
 	}
 }
@@ -405,8 +405,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		bool forenemy = attack->enemysummon; //enemy and team summons are reversed when hypnotized
 		addNPC(attack->summon, attacker, (attacker->getHypnotized() ? !forenemy : forenemy));
 	}
-	if (attack->transformtotar) attack->transform = target; //transform into the target if that's what the attack does
-	if (NPC* transformation = attack->transform) { //if the attack makes the attacker transform we make it transform into that
+	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
+	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
 		attacker->transform(transformation);
 	}
 }
@@ -795,6 +795,13 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		vector<NPC*> _targets; //store non-away npcs to see if prioritization would remove all valid targets
 		for (NPC* target : targets) {
 			if (!target->getAway()) _targets.push_back(target); //add the target if they are not away
+		}
+		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
+	}
+	if (!attack->targetAlly && targets.size() > 1) { //filter out fifth npcs if the attacker attacking the opposite team and there's other non-fifth npcs, so that the fifth npcs don't affect enemy targeting too much
+		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
+		for (NPC* target : targets) {
+			if (!target->getFifth()) _targets.push_back(target); //add the target if they are not fifth
 		}
 		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
 	}

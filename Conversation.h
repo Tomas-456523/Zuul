@@ -37,11 +37,11 @@ struct Conversation {
 		return false;
 	}
 
-	bool getOutdated() {
+	bool getOutdated() const {
 		return (goToAlt() && !altdialogue);
 	}
 
-	bool empty() {
+	bool empty() const {
 		return (goToAlt() ? (alt && alt->empty()) : lines.empty());
 	}
 

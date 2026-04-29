@@ -255,7 +255,7 @@ public: //you need to set stats on creation
 	void addLinkedGift(NPC* npc, Item* item);
 	void setLinkedOrb(Item* orb);
 	void addPaveLink(Room* from, Room* to, const char* dir1, const char* dir2);
-	void addEnterChanges(Room* room, shared_ptr<WorldChange> changes);
+	void addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges);
 	void addLinkedWelcome(Room* room, const Conversation& welcome);
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing

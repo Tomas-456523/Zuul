@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "Item.h"
 #include "Room.h"
+#include "NPC.h"
 #include "Helper.h"
 using namespace std;
 using namespace Helper;
@@ -566,7 +567,7 @@ bool EscapeOrb::getInert() {
 	return boss->getDefeated();
 }
 void EscapeOrb::printUseError() {
-	if (name == _name1) cout << "\nThe ENTRY ORB can't be used! You must TAKE it instead!";
+	if (name == name1) cout << "\nThe ENTRY ORB can't be used! You must TAKE it instead!";
 	else cout << "\nThe ESCAPE ORB can't be used! You must DROP it instead!";
 }
 //get where the orb takes you to when dropped
@@ -588,7 +589,7 @@ ChoiceOrb::ChoiceOrb(const char* _name, const char* desc, Room* _room, const Wor
 	btext = _btext;
 }
 //make the choice
-ChoiceOrb::CHOICE() {
+void ChoiceOrb::CHOICE() {
 	printConversation(&useText, false); //print the choice
 	WorldChange changes; //we copy the changes so they can be done multiple times
 	if (AOrB(NULL, "A", "B")) { //choice a
