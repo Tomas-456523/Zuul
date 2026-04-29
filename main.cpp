@@ -19,6 +19,7 @@
 #include "Effect.h"
 #include "Conversation.h"
 #include "Stats.h"
+#include "Save.h"
 
 using namespace std;
 using namespace Helper; //my Helper namespace has a bunch of helpful functions that I also use in other files
@@ -520,13 +521,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	
 	Room* home = new Room("in Henry Jerry's multiuse bed/dining/living room.");
 	Room* juiceroom = new Room("in Henry Jerry's portal juice room.");
-	Room* yard = Room("at Henry Jerry's backyard, in the void.");
+	Room* yard = new Room("at Henry Jerry's backyard, in the void.");
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
 
 	//Create NPCs and items MARK: make npcs, items, etc.
-	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 90, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
+	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
 	self->addRecruitedDialogue("Huh?"); //player defined above before all the rooms
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -548,7 +549,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	self->addSpecialAttack(headbutt);
 	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
-	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
+	Attack* punchflurry = new Attack("PUNCH FLURRY", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
 	self->addSpecialAttack(punchflurry);
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
@@ -5967,7 +5968,7 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 		roomCanidate->setItem(roomgift); //put the item in the room
 	} //do any changes the room might have to make
 	roomCanidate->doEnterChanges();
-	PrintRoomData(currentRoom, (*party)[0]); //prints the data of the current room
+	PrintRoomData(roomCanidate, (*party)[0]); //prints the data of the new current room
 }
 
 //initiates battle with an npc MARK: fight
@@ -6644,7 +6645,9 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 		return;
 	} //you can't recruit yourself because you're obviously in your own party
 	if (npc->getPlayerness()) {
-		cout << "\n" << npcname << " - \"Huh?\"\n\nYou are already in your own party? ...";
+		cout << "\n" << npcname << " - \"Huh?\"";
+		CinPause();
+		cout << "\nYou are already in your own party? ...";
 		return;
 	} //if the npc isn't recruitable we give error message and the npc says something
 	if (!npc->getRecruitable()) {
@@ -6655,21 +6658,21 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	if (npc->getRecruited()) {
 		cout << "\n" << npcname << " is already in your party...";
 		return;
-	} //I guess a better name for fifth teammates would be extra teammates but the only two of these in the game never overlap anyway so it works
-	size_t newpartysize = 0;
-	for (NPC* npc : *party) {
-		if (!npc->getFifth()) newpartysize++;
 	} //you're not allowed to have more than 4 party members (including yourself) otherwise that would be very unbalanced
-	if (newpartysize >= maxParty && !npc->getFifth()) {
+	if (newpartysize >= maxParty && !npc->getFifth()) { //I guess a better name for fifth teammates would be extra teammates but the only two of these in the game never overlap anyway so it works
 		cout << "\nYour party is full!";
 		return;
 	}
 	//adds the npc to your party
 	party->push_back(npc);
+	size_t newpartysize = 0; //count the size of the new party
+	for (NPC* npc : *party) {
+		if (!npc->getFifth()) newpartysize++;
+	}
 	npc->printRecruitmentDialogue(); //print the recruitment dialogue
 	npc->Recruit(); //sets the npc to recruited
 	cout << "\n" << npcname << " was added to your party!"; //prints success text
-	if (!npc->getFifth()) cout << "(Party size: " << newpartysize << "/" << maxParty << ")";
+	if (!npc->getFifth()) cout << " (Party size: " << newpartysize << "/" << maxParty << ")";
 	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
 		printLvlUpData(npc);
 		npc->setGymStart(0); //no longer training so we reset training time
@@ -7054,6 +7057,8 @@ int main() {
 
 	CinPause();
 
+	//get a vector of all the saves
+
 	printHelp(validCommands, NULL, 7, 0); //prints what to do right off the bat
 	cout << "\nWhat would you like to do?"; //beginning prompt
 	
@@ -7073,12 +7078,6 @@ int main() {
 		promptline = true; //make sure the next > will probably be in a new line
 
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
-
-		Room* currentRoom = self->getRoom(); //sets the current room to the player's position
-
-		if (currentRoom->getGym()) { //if we're in a gym, update all the traning teammates' levels before doing the action
-			currentRoom->scaleNPCs(self->getLevel()-1);
-		}
 
 		if (!strcmp(commandWord, "SAVES")) { //for printing out all the save files
 			

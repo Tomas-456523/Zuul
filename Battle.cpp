@@ -198,6 +198,7 @@ void Battle::handleKnockout(NPC* npc) {
 		npc->directDamage(-npc->getHealthMax());
 		return;
 	} else { //make sure the player understands this npc is incapacitated
+		CinPause();
 		cout << "\n" << npc->getName() << " is incapacitated!";
 		CinPause();
 	}
@@ -261,6 +262,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if ((reciever->getInvincible() && attack->power < 0) || (!reciever->getInvincible() && attack->power != 0)) { //hit normally if healing or (damaging and not invincible), never apply damage for 0 power attacks since their point isn't to affect health if that's the case
 			int damage = reciever->damage(effectiveAttack, effectivePierce);
 			if (attack->lifesteal) attacker->damage(damage * -attack->lifesteal, 0); //heal the attacker based on the lifesteal
+			CinPause();
 		}
 		if (crit) { //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or "oh shoot" if you got hit)
 			cout << "\nCRITICAL " << (attack->power > 0 ? "HIT" : "HEAL") << "!";
@@ -270,6 +272,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
 			CinPause();
 		}
+		if (reciever->getHealth() <= 0) break; //stop hitting because the guy is already incapacitated
 	}
 	if (!hits) cout << "\nThe attack missed!";
 	if (reciever->popKO()) handleKnockout(reciever); //apply knockout stuff to the reciever
@@ -385,6 +388,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	}
 	if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 		attacker->damage(attack->recoil * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0, 0);
+		CinPause();
 	}
 	if (attack->guardset) attacker->setGuard(attack->guardset, true); //set the guard if the attack does that, add it to the current guard unless it's negative, then it goes from 0 because getGuard returns that for values < 0
 	if (attack->protect) { //handle guarding here and not in hitTargets because we it only guards one person anyway
@@ -863,7 +867,7 @@ Attack* Battle::chooseAttack(NPC* npc) {
 //npcs decide what to do on their turn here MARK: npc turn
 void Battle::npcTurn(NPC* npc, bool opener) {
 	if (!opener) { //don't print that it's their turn if it's just an opening attack
-		cout << "\n" << npc->getName() << "'s turn!"; //prints whose turn it is
+		cout << "\n\n" << npc->getName() << "'s turn!"; //prints whose turn it is
 		CinPause();
 	}
 
@@ -939,19 +943,19 @@ int Battle::FIGHT() {
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk
 		} else if (current->getFrozen()) { //prints how the npc wanted to move but couldn't due to freezing
-			cout << "\n" << current->getName() << " is frozen in place!";
+			cout << "\n\n" << current->getName() << " is frozen in place!";
 			CinPause();
 		} else if (current->getRecovering()) {
-			cout << "\n" << current->getName() << " is recovering!";
+			cout << "\n\n" << current->getName() << " is recovering!";
 			CinPause();
 		} else if (current->getAway()) {
-			cout << "\n" << current->getName() << " is currently away!";
+			cout << "\n\n" << current->getName() << " is currently away!";
 			CinPause();
 		} else if (!current->getBasicAttack() && current->getSpecialAttacks().empty()) { //say idle text when there are no attacks
 			cout << current->getName() << " is " << idleText[rand()%5];
 			CinPause();
 		} else if (current->getPlayerness() && !current->getHypnotized()) { //starts the player turn!
-			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
+			cout << "\n\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn(current);
 		} else { //does the npc's turn
 			npcTurn(current);
