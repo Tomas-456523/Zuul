@@ -6607,6 +6607,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		product->unRoom(); //removes the item from the room
 		inventory->push_back(product); //adds it to the inventory
 		printConversation(&blender->getUseText(), true); //prints the blender's use text
+		applyWorldChange(blender->getChanges());
 		cout << "\nYou got the " << product->getName() << "!";
 	//choice orbs give you a choice between choice A and choice B
 	} else if (!strcmp(item->getType(), "choiceorb")) {
@@ -6838,28 +6839,17 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 }
 
 //prints all the available commands MARK: help
-void printHelp(const char* validCommands[16], const char* flavorText[16]) {
-	cout << "\n"; //prints a random flavor text
-	cout << flavorText[rand() % 16];
-	cout << "\nValid commands:"; //prints all the valid commands
-	for (int i = 0; i < 16; i++) {
+void printHelp(const char** validCommands, const char** flavorText, size_t commandAmount, size_t flavorAmount) {
+	cout << "\n"; //prints a random flavor text if we passed any
+	if (flavorText) cout << flavorText[rand() % flavorAmount];
+	cout << "\nCommands:"; //prints all the valid commands
+	for (int i = 0; i < commandAmount; i++) {
 		cout << "\n" << validCommands[i];
 	}
 }
 
-//the main function where everything is called MARK: main
-int main() {
-	cout << "\nBURGER QUEST 2:"
-			"\nELECTRIC BOOGALOO"
-			"\n"
-			"\nVersion 1.0"
-			"\n(c) 2026 Tomas Carranza Echaniz"
-			"\n"
-			"\nPaste existing save data, or press ENTER to begin a new quest!"
-			"\n> " << fixed << setprecision(2);
-	
-	srand(time(NULL)); //seeds random
-
+//the main game function for exploring the world MARK: play
+void play() {
 	vector<Item*>* inventory = new vector<Item*>; //the inventory of items
 		
 	//sets up the game world and places the player at the current room
@@ -6912,6 +6902,8 @@ int main() {
 
 	//welcome message
 	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO!\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
+
+	//MARK: OR: welcome back!
 
 	//you get to name yourself!
 	cout << "\n             (type your name here!)\nYour name is ";
@@ -7000,7 +6992,7 @@ int main() {
 		} else if (!strcmp(commandWord, "BUY")) { //for buying items for sale
 			buy(currentRoom, inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands
-			printHelp(validCommands, flavorText);
+			printHelp(validCommands, flavorText, 17, 16);
 		} else if (!strcmp(commandWord, "SAVE")) { //for saving and also possibly quitting
 			//continuing = saveWorld(currentRoom, inventory, party, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game
@@ -7015,9 +7007,6 @@ int main() {
 
 		if (WorldState[GAMEEND]) continuing = false; //if we got an ending, we quit the game
 	}
-	
-	//gives a friendly farewell to the player unless the player got an ending, so that we can give custom farewells for those
-	if (!WorldState[GAMEEND]) cout << "\nCya!\n";
 	
 	//deletes all the rooms
 	for (Room* room : roomsH) {
@@ -7038,10 +7027,82 @@ int main() {
 	delete inventory;
 }
 
-//SAVES
-//LOAD
-//NEW GAME
-//IMPORT
-//EXPORT
-//HELP
-//QUIT
+//the title screen! MARK: main (title screen)
+int main() {
+	srand(time(NULL)); //seeds random
+	play(); //MARK: just testing the game right now
+	return 1;
+
+	//a list of the valid commands (and extensions) to be printed by printHelp()
+	const char* validCommands[7] = {
+		"SAVES",
+		"NEW GAME",
+		"LOAD [save file]",
+		"IMPORT [save string]",
+		"EXPORT [save file]",
+		"HELP",
+		"EXIT"
+	};
+
+	cout << "\nBURGER QUEST 2:"
+			"\nELECTRIC BOOGALOO"
+			"\n"
+			"\nVersion Alpha 0.8"
+			"\n(c) 2026 Tomas Carranza Echaniz"
+			"\n"
+			"\nPress ENTER to begin." << fixed << setprecision(2);
+
+	CinPause();
+
+	printHelp(validCommands, NULL, 7, 0); //prints what to do right off the bat
+	cout << "\nWhat would you like to do?"; //beginning prompt
+	
+	bool promptline = true;
+	bool continuing = true; //we continue until the player quits
+	while (continuing) { //the main loop!
+		char command[255] = ""; //the charray that the player inputs into
+
+		char commandWord[255]; //the first word of the player input (the command)
+		char commandExtension[255]; //the rest of the player's command (minus the space)
+
+		if (promptline) cout << "\n";
+		cout << "> "; //The > signifies it's time to type in a command. If there is no >, it's a cutscene or dialogue or something like that and you just have to ENTER until you get to the >.
+		cin.getline(command, 255);
+		AllCaps(command); //capitalizes the command for easier parsing
+
+		promptline = true; //make sure the next > will probably be in a new line
+
+		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
+
+		Room* currentRoom = self->getRoom(); //sets the current room to the player's position
+
+		if (currentRoom->getGym()) { //if we're in a gym, update all the traning teammates' levels before doing the action
+			currentRoom->scaleNPCs(self->getLevel()-1);
+		}
+
+		if (!strcmp(commandWord, "SAVES")) { //for printing out all the save files
+			
+		} else if (!strcmp(commandWord, "NEW GAME")) { //for starting a new save file
+			
+		} else if (!strcmp(commandWord, "LOAD")) { //for loading an existing save file
+			
+		} else if (!strcmp(commandWord, "IMPORT")) { //for importing save data from elsewhere (this and export are in case I ever put this on a website or something where you can't access the files easily)
+			
+		} else if (!strcmp(commandWord, "EXPORT")) { //for exporting save data in a copy-pastable way
+			
+		} else if (!strcmp(commandWord, "HELP")) { //for asking what the valid commands are
+			printHelp(validCommands, NULL, 7, 0);
+		} else if (!strcmp(commandWord, "EXIT")) { //for quitting the game
+			continuing = false;
+		} else if (!strlen(command)) { //don't print error if the player just entered nothing
+			promptline = false;
+		} else { //prints an error message if the player typed something that isn't an actual command
+			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
+		}
+
+		CinIgnoreAll(); //clears extra or faulty input
+	}
+
+	//gives a friendly farewell to the player
+	cout << "\nCya!\n";
+}

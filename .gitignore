@@ -2,3 +2,5 @@ main
 *.exe
 *.jpeg
 *:Zone.Identifier
+*.o
+*.bq2
