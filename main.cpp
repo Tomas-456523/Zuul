@@ -78,7 +78,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	const char* TO_BURGERSBURG = "TO BURGERSBURG";
 	const char* TO_THE_BASEMENT = "TO THE BASEMENT";
 
-	//set the direction reverser map in Helper
+	//set the direction reverser map in Helper MARK: reverse directions
 	ReverseDirection[NORTH] = SOUTH;
 	ReverseDirection[SOUTH] = NORTH;
 	ReverseDirection[EAST] = WEST;
@@ -92,7 +92,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ReverseDirection[SOUTHEAST] = NORTHWEST;
 	ReverseDirection[SOUTHWEST] = NORTHEAST;
 
-	//set up blockage reaons
+	//set up blockage reaons MARK: blockage reasons
 	const char* ENEMY = "ENEMY";
 	const char* CHASM = "CHASM";
 	const char* RIVER = "RIVER";
@@ -110,16 +110,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	const char* COVER = "COVER";
 	const char* FIRE = "FIRE";
 
-	//you can usually dismiss teammates except for some select areas because it makes mechanical and narrative sense to restrict that there
-	WorldState[CANDISMISS] = true;
-
-	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms (WW)
-	Room* limbo = new Room("not supposed to be in this room; seriously how did you get here?");
+	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms
+	Room* limbo = new Room("not supposed to be in this room... if you break something by editing your save that's not my fault.\nHere I put all the stuff that's not in any accessible room,\nstuff like the original copy of things you can buy,\nor enemy templates.");
 
 	//the player! defined here so the temple opening dialogues can use the player name
 	NPC* self;
 
-	//create all WANING WOODLANDS rooms
+	//create all WANING WOODLANDS rooms MARK: WW
 	Room* village = new Room("in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.");
 	Room* villageleft = new Room("at the westernmost end of the village, where the second-tallest tent stands.\nIt's only two stories, but it's comparatively a tent mansion.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
@@ -529,6 +526,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Create NPCs and items MARK: make npcs, items, etc.
 	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
+	npcChar[self] = 'a'; //self's character representation is a because I name him A so it's easier to type his name
 	self->addRecruitedDialogue("Huh?"); //player defined above before all the rooms
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
@@ -613,6 +611,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Flower Girl Floria is primarily a healer with some other stuff for variety as well MARK: Floria
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 0));
+	npcChar[floria] = 'f'; //Floria's character representation is f for flower
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely? :>"},
 							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."},
 							 {NULL, "FLORIA - :>"},
@@ -675,6 +674,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Science Gramps Egadwick is a support + some heavy damage MARK: Egadwick
 	NPC* egadwick = new NPC("SCIENCE GRAMPS", "EGADWICK", "Your grandpa who lives in a secluded corner of the village.\nHe's always advancing science to the dismay of high school chemistry students.", tentlab, 5, Stats(15, 2, 3, 10, 10, 2, 9), Stats(0, 0, 1, 1, 1, 0, 0));
+	npcChar[egadwick] = 'e'; //Egadwick's character representation is e for egads
 	egadwick->setDialogue({{egadwick, "Ah hello kiddo. How's it going?"}, {self, "Pretty good."}, {egadwick, "Ah, that's good to hear."}});
 	egadwick->addGymDialogue({{egadwick, "Eh, exercise isn't really my thing."}, {egadwick, "I gain experience by working out my mind!"}});
 	Conversation egadwreject1 = {{self, "Yo Gramps wanna join my BURGER QUEST?"},
@@ -753,6 +753,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	
 	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 0));
+	npcChar[forestknight] = 'k'; //Absolom's character representation is k for knight
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
 										{forestknight, "I shan't assist you; this is an object of sin."},
@@ -821,6 +822,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Miner Maniac Mike is a good damage teammate with the risk of friendly fire MARK: Mike
 	NPC* mike = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a reckless mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
+	npcChar[mike] = 'm'; //Mike's character representation is m for Mike and miner and maniac to a lesser extent
 	mike->addConversation({{NULL, "MIKE is throwing dynamite at the rocky wall."},
 						   {self, "That doesn't look very safe."},
 						   {mike, "HAHAHAHA Aren't the blasts just music to your ears?"},
@@ -889,6 +891,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
 	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
+	npcChar[cacty] = 'c'; //Cacty's character representation is c for cactus
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
@@ -926,6 +929,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
 	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", factorykitchen, 10, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
+	npcChar[michelin] = 'j'; //Michelin's character representation is j for Jim
 	michelin->addConversation({{michelin, "Oh hi."},
 							   {self, "hi"},
 							   {michelin, "Hey can you help me with something?"},
@@ -1044,6 +1048,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Hackerman Carlos is a disruptor MARK: Carlos
 	NPC* carlos = new NPC("HACKERMAN", "CARLOS", "Black hat hacker with no hat and no vitamin D. He has a space invaders hoodie.", factorytower, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
+	npcChar[carlos] = 'x'; //Carlos' character representation is x for the common xX_epic_gamertag_Xx gamertag naming convention
 	carlos->setDialogue({{carlos, "get out i cant focus with you here"}, {carlos, "im so close to hacking into microsofts mony supply"}});
 	carlos->addRejectionDialogue({{carlos, "what"}, {carlos, "get outta my room im tryna focus"}});
 	carlos->addRecruitmentDialogue({{self, "Hey wanna join my team?"}, {carlos, "no"}, {self, "Come on you gotta get some vitamin D."}, {carlos, "no i gotta start over stealing microsofts monies >:("}, {self, "If you want monies we get a lot just by fighting random enemies."}, {carlos, "..."}, {carlos, "fine ill join you"}});
@@ -1108,6 +1113,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Princess Plum is support MARK: Plum
 	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", limbo, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 0));
+	npcChar[plum] = 'p'; //Plum's character representation is p for Plum
 	plum->addDismissalDialogue({{plum, "Well, I'll be heading back to my kingdom!"}, {plum, "Bye bye!"}});
 	plum->addRecruitedDialogue({{plum, "Ahh, sure beats a diet of pure fungus!"}});
 	plum->addRecruitmentDialogue({{self, "Hey before you head back to your kingdom, wanna join my team?"}, {plum, "It would be my pleasure!"}});
@@ -1152,6 +1158,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Gambler Graham is the rng guy MARK: Graham
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(24, 12, 12, 12, 12, 12, 9), Stats(1, 1, 1, 0, 0, 0, 0));
+	npcChar[graham] = 'g'; //Graham's character representation is g for Graham
 	Conversation gramconvo = {{self, "You should stop gambling."}, {graham, "What?"}, {graham, "Haven't you heard that 99% of gamblers quit right before hitting it big?"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}};
 	gramconvo.skipcondition = {NOGAMBLING};
 	graham->addConversation(gramconvo);
@@ -1283,6 +1290,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Rich Guy Richie is the summoner MARK: Richie
 	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(10, 0, 15, 0, 0, 14, 9), Stats(1, 0, 1, 0, 0, 1, 0));
+	npcChar[richie] = 'r'; //Richie's character representation is r for Richie
 	Conversation richrej = {{richie, "No, everyone in this city is either rich and trying to get me to join some BURGER cult,"}, {richie, "or not rich and trying to rob me."}, {richie, "No offense but I don't really trust you."}};
 	shared_ptr<Conversation> richrej2 = make_shared<Conversation>(Conversation({{self, "Hey you wanna help me fight these BURGER guys?"},
 		{richie, "In that building over there?"},
@@ -1450,6 +1458,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
 	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER.\nHe wears a formal business suit and a traumatized expression.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
+	npcChar[hj] = 'h'; //Henry Jerry's character representation is h for Henry Jerry
 	//something about bright light and lighning or something
 	//{NULL, "The BURGER MAN's BURGERy shell fades to ashes."},
 	//{NULL, "You can make out a figure left behind in the cloud..."},
@@ -1654,6 +1663,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	cloakingchange.worldcon = CLOAKED;
 	
 	NPC* child = new NPC("", "JILLY", "The daughter of Matilda who was kidnapped by the BURGER corporation, even younger than your sister.", limbo, 3, Stats(10, 2, 8, 3, 0, 7, 9));
+	npcChar[child] = 'l'; //Jilly's character representation is l for the two l's in her name
 	Attack* dillydally = new Attack("DILLYDALLY", "is watching you battle", false, -5, 0, 0, 0, 0, 0);
 	Attack* flyingkick = new Attack("FLYING KICK", "flew at", true, 6, 20, 0, 1, 1, 1);
 	flyingkick->afterdesc = " with a kick";
@@ -4755,6 +4765,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//set up teammate viola MARK: Viola
 	NPC* viola = new NPC(*tkviola);
+	npcChar[viola] = 'v'; //Viola's character representation is v for Viola
 	viola->setLeader(true, 10, cliff2);
 	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
 							{viola, "So what if I did?"},
@@ -5225,6 +5236,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 										  {NULL, "RATMAN grappling hooks away carrying a tied up MARGE."}});
 	
 	theratman = new NPC(*ratman); //MARK: Ratman
+	npcChar[theratman] = 'b'; //Ratman's character representation is b for Batman
 	theratman->setLeader(true, 22, rightstreet3);
 	theratman->setDialogue("I'm Ratman.");
 	theratman->addRecruitedDialogue("I'm Ratman.");
@@ -5817,6 +5829,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
+
+	//MARK:
 
 	return self; //returns the player character
 }
@@ -6868,7 +6882,7 @@ void printHelp(const char** validCommands, const char** flavorText, size_t comma
 	}
 }
 
-//save the game so we can store it as a file, and return if we want to keep going after saving
+//save the game so we can store it as a file, and return if we want to keep going after saving MARK: save world
 bool saveWorld(Save*& save, vector<Item*>* inventory, int monies, time_t& savetime, const char* andwhat) {
 	cout << "\nSaving..."; //print loading because it looks nice in case there's some lag
 
@@ -6891,7 +6905,7 @@ bool saveWorld(Save*& save, vector<Item*>* inventory, int monies, time_t& saveti
 	return false;
 }
 
-//make sure the player is really sure about quitting without saving, and return if we are continuing
+//make sure the player is really sure about quitting without saving, and return if we are continuing MARK: confirm quit
 bool confirmQuit(time_t savetime) {
 	long long seconds = difftime(time(NULL), savetime);
 	long long minutes = seconds/60; //use minutes if possible, precise reports of game time
@@ -6901,8 +6915,8 @@ bool confirmQuit(time_t savetime) {
 
 	//make the player understand what they're doing so they don't accidentally do something dumb
 	cout << "\nYou will lose ";
-	if (hours) cout << hours << "h";
-	if (minutes || hours) cout << minutes << "m"; //print minutes even if 0 if hours did print for better looking times
+	if (hours) cout << hours << "h ";
+	if (minutes || hours) cout << minutes << "m "; //print minutes even if 0 if hours did print for better looking times
 	cout << seconds << "s of progress!\nAre you sure you want to quit without saving? (YES or NO)";
 
 	if (!AOrB(NULL, "YES", "NO")) { //get the player choice
@@ -6915,10 +6929,12 @@ bool confirmQuit(time_t savetime) {
 
 //the main game function for exploring the world MARK: play
 void play(Save*& save) {
-	vector<Item*>* inventory = new vector<Item*>; //the inventory of items
+	vector<Item*> inventory; //the inventory of items
 		
 	//sets up the game world and places the player at the current room
-	NPC* self = SetupWorld(inventory);
+	NPC* self = SetupWorld(&inventory);
+
+	double playtime = 0; //how long the player has played on this save
 	
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
@@ -7009,7 +7025,7 @@ void play(Save*& save) {
 
 	time_t savetime = time(NULL); //the last time this session was saved, to get total save file time and how much progress will be lost when quitting without saving
 
-	bool promptline = true; //if the prompting > should be in a newline, only false for typing nothing
+	bool promptline = true; //if the prompting > should be in a newline, only false after typing nothing
 	bool continuing = true; //we continue until this is set to false (when the player quits or gets an ending)
 	while (continuing) { //the main loop!
 		char command[255] = ""; //the charray that the player inputs into
@@ -7033,21 +7049,21 @@ void play(Save*& save) {
 		}
 
 		if (!strcmp(commandWord, "GO")) { //for going in a direction
-			travel(currentRoom, &commandExtension[0], party, inventory);
+			travel(currentRoom, &commandExtension[0], party, &inventory);
 		} else if (!strcmp(commandWord, "TAKE")) { //for taking an item
-			takeItem(currentRoom, inventory, &commandExtension[0], self);
+			takeItem(currentRoom, &inventory, &commandExtension[0], self);
 		} else if (!strcmp(commandWord, "DROP")) { //for dropping an item
-			dropItem(currentRoom, inventory, &commandExtension[0], self);
+			dropItem(currentRoom, &inventory, &commandExtension[0], self);
 		} else if (!strcmp(commandWord, "USE")) { //for using an item (or tunnel lobster)
-			useItem(currentRoom, inventory, party, &commandExtension[0], mony);
+			useItem(currentRoom, &inventory, party, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "RECRUIT")) { //for recruiting npcs
 			recruitNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "DISMISS")) { //for dismissing npcs
 			dismissNPC(currentRoom, &commandExtension[0], party);
 		} else if (!strcmp(commandWord, "ASK")) { //for getting the dialogue of npcs
-			printNPCDialogue(currentRoom, &commandExtension[0], inventory, party, mony);
+			printNPCDialogue(currentRoom, &commandExtension[0], &inventory, party, mony);
 		} else if (!strcmp(commandWord, "INVENTORY")) { //for printing the contents of your inventory and your monies
-			printInventory(inventory, mony);
+			printInventory(&inventory, mony);
 		} else if (!strcmp(commandWord, "PARTY")) { //for printing everyone in your party and their level
 			printParty(party);
 		} else if (!strcmp(commandWord, "ATTACKS")) { //for printing the player's attacks
@@ -7055,15 +7071,15 @@ void play(Save*& save) {
 		} else if (!strcmp(commandWord, "ROOM")) { //for reprinting the contents of the current room (it was annoying having to scroll back up after doing a bunch of stuff in order to check the room data)
 			PrintRoomData(currentRoom, self);
 		} else if (!strcmp(commandWord, "ANALYZE")) { //for getting the data of an item or npc
-			analyze(currentRoom, &commandExtension[0], party, inventory);
+			analyze(currentRoom, &commandExtension[0], party, &inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) { //for initiating battle with npcs
-			fight(currentRoom, party, inventory, &commandExtension[0], mony);
+			fight(currentRoom, party, &inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "BUY")) { //for buying items for sale
-			buy(currentRoom, inventory, &commandExtension[0], mony);
+			buy(currentRoom, &inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands
 			printHelp(validCommands, flavorText, 17, 16);
 		} else if (!strcmp(commandWord, "SAVE")) { //for saving and also possibly quitting
-			continuing = saveWorld(save, inventory, mony, savetime, &commandExtension[0]);
+			continuing = saveWorld(save, &inventory, mony, savetime, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game without saving
 			continuing = confirmQuit(savetime);
 		} else if (!strlen(command)) { //don't print error if the player just entered nothing
@@ -7093,22 +7109,96 @@ void play(Save*& save) {
 	for (Effect* effect : effectsH) {
 		delete effect;
 	}
-	delete inventory;
+	relaysH.clear(); //get rid of the shared pointers
+	npcID = 0; //we just deleted all the npcs so reset the npc ID
+}
+
+//print a list of all the player's saves MARK: print saves
+void printSaves(vector<Save*>& saves) {
+	//for each save, print their number, the player level, their monies, and total game time
+	//example: SAVE 1 - SELF, Lvl 15, 12980 Monies, 5h 56m 7s
+	//error text: SAVE 8 - Save data is faulty.
+	//we still load faulty saves (from the file system) to preserve save number
+	for (size_t i = 0; i < saves.size(); i++) {
+		Save* save = saves[i];
+		cout << "\nSAVE " << i << " - ";
+	}
+}
+
+//make a new game and manage the NULL member of the saves vector if the player saved it MARK: new game
+void newGame(vector<Save*>& saves) {
+	saves.push_back(NULL); //push a null save so we can put the Save* there if we make one
+	Save*& savey = saves.back(); //get a reference to the NULL thingy
+	play(savey); //play the game with the reference to the NULL save
+	if (!savey) saves.pop_back(); //if we didn't save before quitting, we get rid of the NULL thingy
+}
+
+//load an existing save MARK: load save
+void loadSave() {
+
+}
+
+//delete one of the saves and rearrange the files accordingly MARK: delete save
+void deleteSave() {
+	
+}
+
+//import save data and try to make a save file for it MARK: import save
+void importSave() {
+	int i = 2398; //MARK: make this actually be determined
+	cout << "\nSuccessfully imported your save data into SAVE " << i << "!";
+}
+
+//export save data in a copy-pastable way MARK: export save
+void exportSave() {
+	cout << "\nHere is your save data!\n\n";
+
+	//MARK: print save data
+
+	cout << "\n\nMake sure to copy everything between the BQ2 and = (including the BQ2 and =)."
+			"\nYou're probably in a terminal, so prefer Ctrl + Insert or Ctrl + Shift + C over Ctrl + C."
+			"\nIMPORT this save data whenever you want to use it!"
+			"\nI am not responsible for issues with your game if you manually edit your save file."
+			"\nStore it in a safe location!";
+}
+
+//loads all the saves the player has in their files MARK: load saves
+//this only works if all the files are in the format saveN.bq2 and there are no gaps, which should be the case unless the player was messing around with the files, which isn't my fault
+void loadSaves(vector<Save*>& saves, bool reload = false) {
+	for (Save* save : saves) delete save; //delete all the old saves
+	saves.clear(); //reset the vector in case we were reloading
+	char filename[255]; //we use this to get the current name of the file
+	//load all the saves in the order of the number in their name
+	for (size_t i = 0;; i++) {
+		snprintf(filename, 255, "save%d.bq2", i); //get what the name of the current file should be
+		ifstream savefile(filename); //try to get the file
+		if (!savefile) break; //stop getting files if no such file was found
+		streamsize filelen = savefile.tellg(); //get the length of the save file data
+		char* savedata = new char[filelen+1]; //allocate a charray to write the data into
+		savefile.read(savedata, filelen); //write the save file data into the charray so the program can use it
+		savedata[filelen] = '\0'; //null terminate the data
+		saves.push_back(new Save(savedata)); //make a new save file with the new data
+		delete[] savedata;
+	}
+	if (reload) { //tells the player what just happened and how many files were found during the reloading
+		if (saves.size()) cout << "\nSaves successfully reloaded! Found " << saves.size() << " saves.";
+		else cout << "\nNo save files were found."; //lets the player know there were no save files found
+	}
 }
 
 //the title screen! MARK: main (title screen)
 int main() {
 	srand(time(NULL)); //seeds random
-	play(); //MARK: just testing the game right now
-	return 1;
 
 	//a list of the valid commands (and extensions) to be printed by printHelp()
-	const char* validCommands[7] = {
+	const char* validCommands[8] = {
 		"SAVES",
 		"NEW GAME",
 		"LOAD [save file]",
-		"IMPORT [save string]",
+		"DELETE [save file]"
+		"IMPORT [save data]",
 		"EXPORT [save file]",
+		"RELOAD",
 		"HELP",
 		"EXIT"
 	};
@@ -7123,7 +7213,8 @@ int main() {
 
 	CinPause();
 
-	vector<Save>
+	vector<Save*> saves; //all the player's saves
+	loadSaves(saves); //get all the player's saves
 
 	printHelp(validCommands, NULL, 7, 0); //prints what to do right off the bat
 	cout << "\nWhat would you like to do?"; //beginning prompt
@@ -7147,17 +7238,21 @@ int main() {
 
 		if (!strcmp(commandWord, "SAVES")) { //for printing out all the save files
 			
-		} else if (!strcmp(commandWord, "NEW GAME")) { //for starting a new save file
+		} else if (!strcmp(command, "NEW GAME")) { //for starting a new save file
 			
 		} else if (!strcmp(commandWord, "LOAD")) { //for loading an existing save file
+			
+		} else if (!strcmp(commandWord, "DELETE")) { //for deleting a file
 			
 		} else if (!strcmp(commandWord, "IMPORT")) { //for importing save data from elsewhere (this and export are in case I ever put this on a website or something where you can't access the files easily)
 			
 		} else if (!strcmp(commandWord, "EXPORT")) { //for exporting save data in a copy-pastable way
 			
+		} else if (!strcmp(commandWord, "RELOAD")) { //for reloading your save files to match the os files
+			loadSaves(saves, true);
 		} else if (!strcmp(commandWord, "HELP")) { //for asking what the valid commands are
-			printHelp(validCommands, NULL, 7, 0);
-		} else if (!strcmp(commandWord, "EXIT")) { //for quitting the game
+			printHelp(validCommands, NULL, 9, 0);
+		} else if (!strcmp(commandWord, "EXIT")) { //for exiting the game
 			continuing = false;
 		} else if (!strlen(command)) { //don't print error if the player just entered nothing
 			promptline = false;
@@ -7170,4 +7265,9 @@ int main() {
 
 	//gives a friendly farewell to the player
 	cout << "\nCya!\n";
+
+	//delete all the saves because they are allocated data and their contents are saves as files anyway
+	for (Save* save : saves) {
+		delete save;
+	}
 }

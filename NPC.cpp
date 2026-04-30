@@ -64,6 +64,9 @@ const char* NPC::getName() {
 const char* NPC::getDescription() {
 	return description;
 }
+int NPC::getID() {
+	return id;	
+}
 void NPC::printRejectionDialogue() {
 	printDialogue(true, &rejectionDialogue.front());
 	if (rejectionDialogue.size() != 1) rejectionDialogue.pop();
@@ -148,6 +151,9 @@ int NPC::getSPMax() {
 }
 int NPC::getLevel() {
 	return level;
+}
+int NPC::getXP() {
+	return xp;
 }
 int NPC::xpForNextLevel() { //arbitrary formula for the level curve, it just looked good and that's how I chose it
 	return level * level + 9 - xp;

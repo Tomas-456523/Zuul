@@ -45,6 +45,7 @@ namespace Helper {
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
+	extern std::map<NPC*, char> npcChar; //map to find the char that represents each recruitable npc, used by the save system
 	
 	extern std::vector<Room*> roomsH; //a bunch of vectors for every object created in the game, so they can all be deleted later
 	extern std::vector<NPC*> npcsH;
@@ -54,5 +55,7 @@ namespace Helper {
 	extern std::vector<std::shared_ptr<Conversation>> relaysH; //conversation relays use weak_ptrs to avoid infinite loops so we store them here so the conversations don't get deleted
 
 	extern int npcID; //ids for the npcs (their index in npcsH) so we can track them in the save system and also for determining their random stat scale deterministically
+	extern int roomID: //ids for the items and rooms so it's easier to find their place in the vectors from the save system
+	extern int itemID;
 }
 #endif

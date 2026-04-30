@@ -227,12 +227,16 @@ namespace Helper {
 	}
 	//loops until the player chooses either option A or B, and returns true if A was chosen and false if B was chosen
 	bool AOrB(const char* prompt, const char* A, const char* B) {
+		bool promptline = true; //if the prompting > should be in a newline, only false for typing nothing
 		while (true) { //loops until valid response, after which the loop is returned out of
 			char command[255] = ""; //the charray that the player inputs into
 
 			if (prompt) cout << "\n" << prompt;
-			cout << "\n> "; //The amazing >
+			if (promptline) cout << "\n";
+			cout << "> "; //The amazing >
 			cin.getline(command, 255); //gets the player input
+
+			promptline = true; //reset promptline status after using the previous status
 
 			AllCaps(command); //capitalizes the command for easier parsing
 
@@ -240,6 +244,8 @@ namespace Helper {
 				return true;
 			} else if (!strcmp(command, B)) { //choose option B
 				return false;
+			} else if (!strcmp(command, "")) { //don't add an extra ugly newline or Invalid response "" if the player typed nothing
+				promptline = false;
 			} else { //prints the invalid input
 				cout << "\nInvalid response \"" << command << "\".";
 			}
@@ -539,8 +545,11 @@ namespace Helper {
 		return !strcmp(direction, "NORTH") || !strcmp(direction, "SOUTH") || !strcmp(direction, "EAST") || !strcmp(direction, "WEST") || !strcmp(direction, "NORTHEAST") || !strcmp(direction, "NORTHWEST") || !strcmp(direction, "SOUTHEAST") || !strcmp(direction, "SOUTHWEST") || !strcmp(direction, "UP") || !strcmp(direction, "DOWN"); //never seat eoggy waffles
 	}
 
-	//map to find the opposite of the given direction (eg. ReverseDirection[SOUTH] == NORTH)
+	//map to find the opposite of the given direction (e.g. ReverseDirection[SOUTH] == NORTH)
 	map<const char*, const char*> ReverseDirection;
+
+	//map to find the char that represents each recruitable npc (e.g. npcChar[self] == a)
+	map<NPC*, char> npcChar;
 
 	vector<Room*> roomsH; //vectors of everything in memory so we can deallocate them all later
 	vector<NPC*> npcsH;
@@ -552,5 +561,5 @@ namespace Helper {
 	bool WorldState[NEVER+1] = {false}; //every world state starts as false (NEVER + 1 because the last enumerator is equal enum size minus 1, since it starts at 0)
 
 	int npcID = 0; //npcID starts at 0, since it's the npcsH index
-
+	int 
 }

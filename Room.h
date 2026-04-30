@@ -27,6 +27,7 @@ public:
 	~Room();
 
 	const char* getDescription(); //get the description of the room
+	int getID(); //get the id of the room
 	vector<Item*>& getItems(); //gets the room's items
 	vector<Item*>& getStock(); //gets the items for sale in this room
 	vector<NPC*>& getNpcs(bool alt = false); //gets the npcs in this room
@@ -81,6 +82,7 @@ public:
 	void undefeatEnemies(); //makes the enemies in the room not defeated anymore
 private:
 	const char* description; //describes the player's surroundings in this room (eg. (You are ) "in an amazingly incredible room full of stuff.")
+	int id; //the room's id, its index in roomsH
 	
 	Conversation welcomeText; //message that is played when the player first gets here
 

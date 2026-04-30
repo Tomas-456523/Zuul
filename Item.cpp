@@ -23,10 +23,12 @@ Item::Item(const char* _name, const char* _description, Room* _room, bool _takab
 		setRoom(_room);
 	}
 	itemsH.push_back(this); //store a pointer to this item in the items vector
+	id = itemID++;
 }
 Item::Item(const Item& other) { //copy constructor
 	*this = other;
 	itemsH.push_back(this); //store a pointer to this item in the items vector
+	id = itemID++;
 }
 //returns the name of the item
 const char* Item::getName() {
@@ -35,6 +37,10 @@ const char* Item::getName() {
 //returns the description of the item
 const char* Item::getDescription() {
 	return description;
+}
+//returns the item's id
+int Item::getID() {
+	return id;
 }
 //returns what room the item is in
 Room* Item::getRoom() {

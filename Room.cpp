@@ -15,6 +15,7 @@ using namespace Helper;
 Room::Room(const char* _description) {
 	description = _description;
 	roomsH.push_back(this); //store a pointer to this room in the rooms vector
+	id = roomID++;
 }
 //destructor for the room
 Room::~Room() {
@@ -23,6 +24,10 @@ Room::~Room() {
 //a bunch of functions for getting room variables
 const char* Room::getDescription() {
 	return description;
+}
+//get the id of the room
+int Room::getID() {
+	return id;
 }
 vector<Item*>& Room::getItems() { //used in this same room's functions in case there it shares items with another room
 	return sharedItems ? *sharedItems : items;

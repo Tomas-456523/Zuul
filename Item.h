@@ -23,6 +23,7 @@ public:
 
 	const char* getName(); //gets the name of the item
 	const char* getDescription(); //gets the description of the item
+	int getID(); //gets the item's id
 	Room* getRoom(); //get what room the item is in
 	const char* getType(); //gets the type of the item (eg. "key")
 	bool getTakable(); //gets if you can take the item
@@ -51,6 +52,8 @@ protected:
 	const char* name; //what the item is called
 	const char* description; //describes the item and what it's used for
 	const char* type; //what subclass of item it is
+
+	int id; //the item's id
 
 	bool takable; //if you can take the item
 	const char* denyDescription = ""; //description of why you can't take the item

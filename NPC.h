@@ -45,6 +45,8 @@ public: //you need to set stats on creation
 	//a bunch of functions to get npc variables
 	const char* getTitle(); //gets the title of the character
 	const char* getName(); //gets the name of the character
+	const char* getDescription(); //gets the description of the character
+	int getID(); //get the npc id of the npc
 	bool getRecruitable(); //gets the recruitable status of the character
 	bool getDismissable();
 	bool getRecruited(); //gets the recruited status of the npc (if they're already in the party)
@@ -61,6 +63,7 @@ public: //you need to set stats on creation
 	Room* getHome(); //gets the home location of the npc
 	Room* getRoom(bool alt = false); //get current room or the adjecent one it's blocking
 	int getLevel(); //gets the level of the npc
+	int getXP(); //get how much extra xp this npc has stored up
 	int xpForNextLevel();
 	int xpForLevel(int level); //for the level from 0
 	vector<NPC*>* getParty(size_t wave = 0);
@@ -273,7 +276,6 @@ public: //you need to set stats on creation
 
 	void printDamage(int damage, const char* status = NULL);
 	void printEffects();
-	const char* getDescription(); //gets the description of the character
 	
 	bool getTalkOnDefeat(); //gets if the npc talks after being defeated
 	void setTalkOnDefeat(bool talk = true); //sets if the npc talks after being defeated
