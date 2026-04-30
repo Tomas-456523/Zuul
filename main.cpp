@@ -10,6 +10,7 @@
 #include <vector>
 #include <cstring>
 #include <algorithm>
+#include <ctime>
 #include "NPC.h"
 #include "Room.h"
 #include "Item.h"
@@ -535,7 +536,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* punch = new Attack("PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
 	punch->addDescription("Throw a simple punch at the target. (10 ATTACK)");
 	self->setBasicAttack(punch);
-	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
+	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", false, 3, 12, 10, 1, 1, 1, false, 1);
 	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target. (12 ATTACK, 10 PIERCE)");
 	self->addSpecialAttack(energyball);
 	Attack* kick = new Attack("KICK", "jumped at", true, 6, 15, 0, 1, 1, 1, false, 3);
@@ -654,11 +655,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
 	aprilshower->addEffect(spshower);
 	floria->addSpecialAttack(aprilshower);
-	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -9999999, 20, 1, 1, 1, true, 12);
+	Attack* nitroheal = new Attack("NITROSYNTHESIS", "restored", false, 8, -999, 20, 1, 1, 1, true, 12);
 	nitroheal->afterdesc = " to peak health";
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
-	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 25, -9999999, 20, 1, 1, 1, true, 15);
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 25, -999, 20, 1, 1, 1, true, 15);
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
@@ -787,6 +788,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	forestknight->addBlock(elevatorbottom, TO_THE_TOP);
 	forestknight->setBlockMessage({{forestknight, "The BURGER RESTAURANT?"}, {forestknight, "I shall not be seen there."}, {forestknight, "Let us continue on a better quest!"}});
 	forestknight->setBlockUnless(TEMPLEQUEST);
+	forestknight->setDialogue({{forestknight, "What a beautiful forest..."}, {forestknight, "I shall protect it 'till my last breath!"}});
 	
 	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 15, 10, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
@@ -1187,13 +1189,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	gramchanges.roomChanges.push({casinobase, "in the casino's basement. The energy core is glowing extra blue."});
 
 	NPC* icosahedrongus = new NPC("", "ICOSAHEDRONGUS", "Floating yellow icosahedral construct from Graham's icosahedral die.", limbo, 0, Stats(20, 10, 20, 10, 20, 20, 9));
-	Attack* laser = new Attack("LASER", "fired a laser at", -5, 12, 12, 1, 1, 1);
+	Attack* laser = new Attack("LASER", "fired a laser at", false, -5, 12, 12, 1, 1, 1);
 	laser->afterdesc = " from one of its vertices";
-	Attack* bonk = new Attack("BONK", "flew into", 8, 24, 24, 1, 1, 1);
+	Attack* bonk = new Attack("BONK", "flew into", true, 8, 24, 24, 1, 1, 1);
 	bonk->afterdesc = "'s head";
 	Effect* hypnotized = new Effect("HYPNOTIZED", 2);
 	hypnotized->hypnotize = true;
-	Attack* hypnotize = new Attack("HYPNOTIZE", "emitted hypnotizing waves at", 15, 0, 0, 1, 1, 1);
+	Attack* hypnotize = new Attack("HYPNOTIZE", "emitted hypnotizing waves at", false, 15, 0, 0, 1, 1, 1);
 	hypnotize->addEffect(hypnotized);
 	icosahedrongus->setBasicAttack(laser);
 	icosahedrongus->addSpecialAttack(bonk);
@@ -1204,7 +1206,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	nat1->targetself = true;
 	nat1->instakill = true;
 	graham->addSpecialAttack(nat1);
-	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -9999999, 0, 1, 1, 1); //2 - enemy gets fully healed
+	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -999, 0, 1, 1, 1); //2 - enemy gets fully healed
 	nat2->afterdesc = " was fully healed";
 	graham->addSpecialAttack(nat2);
 	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 7, true); //3 - freeze team
@@ -1265,7 +1267,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	nat16->summon = icosahedrongus;
 	nat16->summonamount = 1;
 	graham->addSpecialAttack(nat16);
-	Attack* nat17 = new Attack("DICE ROLL", "rolled a 17!", false, 0, -9999999, 0, 1, 1, 1, true); //17 - teammate gets fully healed
+	Attack* nat17 = new Attack("DICE ROLL", "rolled a 17!", false, 0, -999, 0, 1, 1, 1, true); //17 - teammate gets fully healed
 	nat17->afterdesc = " was fully healed";
 	graham->addSpecialAttack(nat17);
 	Attack* nat18 = new Attack("DICE ROLL", "rolled an 18! A big burst of energy appeared at", false, 0, 30, 50, 1, 1, 3); //18 - big bomb
@@ -2140,7 +2142,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 2.0, 2.0, 2.0, 2.0);
 	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5, 2.5, 2.5, 2.5);
 	
-	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 9999999); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
+	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 999); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
 
 	//tent store stock
 	Item* apple = new HpItem("HEALTHY APPLE", "A healthy red apple. (heals 10 HP)", limbo, 10);
@@ -2492,7 +2494,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 2147483647);
 	desertshopfixed->setStock(magnesium, 2147483647, 100, {{merchant, "Thank you for your monies."}});
 
-	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 9999999);
+	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 999);
 	desertshopfixed->setStock(reviveroot, 2147483647, 300, {{merchant, "Thank you for your monies."}});
 	
 	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", burgstore, 10);
@@ -2648,7 +2650,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							   {franklin, "I simply must thank you for saving our humble town!"},
 							   {franklin, "Here, have this desert delicacy!"},
 							   {self, "Oh thanks!"}});
-	Item* desertdelicacy = new HpItem("DESERT DELICACY", "A very nice desert pie, featuring rare desert fruit. (heals all HP)", limbo, 9999999);
+	Item* desertdelicacy = new HpItem("DESERT DELICACY", "A very nice desert pie, featuring rare desert fruit. (heals all HP)", limbo, 999);
 	franklin->setGift(desertdelicacy);
 	franklin->addConversation({{franklin, "I don't like sand."},
 							   {franklin, "It's coarse and rough and irritating and it gets everywhere."},
@@ -4019,11 +4021,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	crimmind->addSpecialAttack(tossaside);
 
 	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats(30, 100, 30, 50, 10, 10, 9));
-	Attack* shell = new Attack("SHELL", "fired a shell at", -5, 20, 20, 1, 1, 1);
-	Attack* rollover = new Attack("RUN OVER", "ran over", 4, 50, 0, 1, 1, 1);
-	Attack* flammpanzer = new Attack("FLAMMPANZER", "spewed a stream of napalm at", 8, 20, 10, 1, 1, 1);
+	Attack* shell = new Attack("SHELL", "fired a shell at", false, -5, 20, 20, 1, 1, 1);
+	Attack* rollover = new Attack("RUN OVER", "ran", true, 4, 50, 0, 1, 1, 1);
+	rollover->afterdesc = " over";
+	Attack* flammpanzer = new Attack("FLAMMPANZER", "spewed a stream of napalm at", false, 8, 20, 10, 1, 1, 1);
 	flammpanzer->addEffect(extrafire);
-	Attack* supershell = new Attack("SUPERSHELL", "fired a supershell at", 10, 30, 20, 1, 1, 3);
+	Attack* supershell = new Attack("SUPERSHELL", "fired a supershell at", false, 10, 30, 20, 1, 1, 3);
 	minipanzer->setBasicAttack(shell);
 	minipanzer->addSpecialAttack(rollover);
 	minipanzer->addSpecialAttack(flammpanzer);
@@ -4064,7 +4067,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* tailwind = new Attack("TAILWIND", "is boosting its team's speed", false, 0, 0, 0, 1, 1, 9, true);
 	tailwind->focushits = false;
 	tailwind->addEffect(tailwinded);
-	Attack* thingfling = new Attack("THING FLING", "flung around random debris", -5, 20, 0, 3, 5, 1);
+	Attack* thingfling = new Attack("THING FLING", "flung around random debris", false, -5, 20, 0, 3, 5, 1);
 	thingfling->focushits = false;
 	Attack* updraft = new Attack("UPDRAFT", "sucked", false, 6, 0, 0, 1, 1, 1);
 	updraft->afterdesc = " into its updraft";
@@ -4192,7 +4195,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgerlawyer->addSpecialAttack(injunction);
 	
 	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats(45, 25, 20, 20, 10, 18, 9));
-	Attack* nightstick = new Attack("NIGHTSTICK", "thwacked", -5, 20, 25, 1, 1, 1);
+	Attack* nightstick = new Attack("NIGHTSTICK", "thwacked", true, -5, 20, 25, 1, 1, 1);
 	nightstick->afterdesc = " with a nightstick";
 	Attack* beatdown = new Attack("BEATDOWN", "beat up", true, 4, 10, 0, 3, 3, 1); //funny cause up and down are opposites but here they mean the same thing
 	Effect* tackled = new Effect("TACKLED", 0);
@@ -5860,8 +5863,10 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 	}
 	//we print an error message based on the reason roomCanidate is NULL
 	if (roomCanidate == NULL) {
+		if (!strcmp(direction, "")) { //give a better-looking error message than Invalid direction ""
+			cout << "\nGo where?";
 		//if the player gave a direction that doesn't match the commonly given ones, we call it an invalid direction
-		if (!getCardinal(direction)) {
+		} else if (!getCardinal(direction)) {
 			cout << "\nInvalid direction \"" << direction << "\".";
 		} else { //if there was a valid direction
 			cout << "\nThere is no exit in that direction.";
@@ -6148,17 +6153,17 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	Item* item = getItemInVector(currentRoom->getItems(), itemname);
 	//prints the reason you can't take the item based on the circumstances
 	if (item == NULL) {
+		if (!strcmp(itemname, "")) { //better error message than There is no "" here. imo
+			cout << "\nTake what?"
 		//if the player tried to take an item on sale we say you can't steal
-		if (getItemInVector(currentRoom->getStock(), itemname) != NULL) {
+		} else if (getItemInVector(currentRoom->getStock(), itemname) != NULL) {
 			cout << "\nThe " << itemname << " is for sale! You can't just take it.";
-			return;
 		//you can't take an item if you already took it
 		} else if (getItemInVector(*inventory, itemname) != NULL) {
 			cout << "\nYou're already carrying this item!";
-			return;
+		} else { //otherwise the player is trying to take something that isn't even there
+			cout << "\nThere is no \"" << itemname << "\" here.";
 		}
-		//otherwise the player is trying to take something that isn't even there
-		cout << "\nThere is no \"" << itemname << "\" here.";
 		return;
 	} //you're not allowed to take items if they're being guarded
 	if (NPC* guard = item->getGuard()) {
@@ -6221,7 +6226,11 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname, NPC* player) { //pass player for the same reason as takeItem
 	Item* item = getItemInVector(*inventory, itemname); //finds the item in the inventory
 	if (item == NULL) { //gives error message if we have no itemname
-		cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
+		if (!strcmp(itemname, "")) { //cool error message, very natural response
+			cout << "\nDrop what?";
+		} else { //if the player actually did try to drop something weird
+			cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
+		}
 		return;
 	}
 	if (!strcmp(item->getType(), "escapeorb")) { //the escape/entry orbs require extra confirmation before being dropped due to their effects
@@ -6323,17 +6332,19 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 			npc = getNPCInVector(*party, npcName);
 			if (!item->getTargetNeeded()) { //no need to clarify the target if one isn't required (we check for this because I thought the commands would look weird otherwise, like "USE SWITCH ON BOB", like what does Bob have to do with this? It's a switch!)
 				cout << "\nThe " << itemName << " doesn't need a target!";
-				return;
 			} else if (npc == NULL) { //print if no npc matching the name was found, also since we're not in battle you can only use targeted items on your party
 				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
-				return;
 			}
+			return;
 		//if the item IS null and the name of the item isn't nothing (player didn't "USE " or "USE" <-- like that's the command we're checking for)
 		} else if (strcmp(itemName, "")) {
 			itemname = itemName; //makes the null item print not say "You have no [item] ON [npc]"
 		}
 	}
-	if (item == NULL) { //print that no item called itemname was found
+	if (!strcmp(itemname, "")) { //error message if the player didn't clarify what exactly to use
+		cout << "\nUse what?";
+		return;
+	} else if (item == NULL) { //print that no item called itemname was found
 		cout << "\nYou have no \"" << itemname << "\".";
 		return;
 	} else if (NPC* guard = item->getGuard()) { //can't use items being guarded
@@ -6641,7 +6652,8 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 		npc = NULL;
 	}
 	if (npc == NULL) { //error message if nobody in the current room is named npcname
-		cout << "\nThere is nobody named \"" << npcname << "\" here.";
+		if (!strcmp(npcname, "")) cout << "\nRecruit who?"; //or if the player typed nothing
+		else cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
 	} //you can't recruit yourself because you're obviously in your own party
 	if (npc->getPlayerness()) {
@@ -6658,17 +6670,17 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	if (npc->getRecruited()) {
 		cout << "\n" << npcname << " is already in your party...";
 		return;
+	} //I guess a better name for fifth teammates would be extra teammates but the only two of these in the game never overlap anyway so it works
+	size_t newpartysize = 1; //count the size of the new party, starting with 1 due to the new teammate which we're trying to add
+	for (NPC* npc : *party) {
+		if (!npc->getFifth()) newpartysize++;
 	} //you're not allowed to have more than 4 party members (including yourself) otherwise that would be very unbalanced
-	if (newpartysize >= maxParty && !npc->getFifth()) { //I guess a better name for fifth teammates would be extra teammates but the only two of these in the game never overlap anyway so it works
+	if (newpartysize > maxParty && !npc->getFifth()) {
 		cout << "\nYour party is full!";
 		return;
 	}
 	//adds the npc to your party
 	party->push_back(npc);
-	size_t newpartysize = 0; //count the size of the new party
-	for (NPC* npc : *party) {
-		if (!npc->getFifth()) newpartysize++;
-	}
 	npc->printRecruitmentDialogue(); //print the recruitment dialogue
 	npc->Recruit(); //sets the npc to recruited
 	cout << "\n" << npcname << " was added to your party!"; //prints success text
@@ -6686,6 +6698,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
 	}
 	if (npc == NULL) { //error text if no npc named npcname was found
+		if (!strcmp(npcname, "")) cout << "\nDismiss who?"; //or if the player typed nothing
 		cout << "\nThere is nobody named \"" << npcname << "\" in your party.";
 		return;
 	} //you can't dismiss yourself/the main character because that makes no sense
@@ -6735,10 +6748,11 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 	if (npc == NULL) { //open the temple if we were just ASKing NICELY and it's the temple quest and we're at a temple entrance
 		if (WorldState[TEMPLEQUEST] && currentRoom->getTempleEntrance() && !strcmp(npcname, "NICELY")) {
 			currentRoom->openTemple();
-			return; //return so we don't print that error message
+		} else if (!strcmp(npcname, "")) { //error if the player just didn't give a name
+			cout << "\nAsk who?";
+		} else { //error message if no such npc is in the current room
+			cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		}
-		//error message if no such npc is in the current room
-		cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		return;
 	} 
 	if (NPC* pursuer = npc->getPursuing()) { //if trying to ask the pursuer they just catch the player
@@ -6817,22 +6831,25 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 	if (item != NULL) {
 		printItemData(item);
 		return;
-	} //error message for invalid name
-	cout << "\nThere is no item or person named \"" << name << "\" here.";
+	} //error message for not specifying what to analyze
+	if (!strcmp(name, "")) cout << "\nAnalyze what?";
+	//error message for invalid name
+	else cout << "\nThere is no item or person named \"" << name << "\" here.";
 }
 
 //buys an item from the current room's catalogue //MARK: buy
 void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getStock(), name); //finds the item in the current room's stock
 	if (item == NULL) { //gives error message based on other conditions
-		if (getItemInVector(currentRoom->getItems(), name) != NULL) { //if the item isn't for sale and it's just on the ground or something
+		if (!strcmp(npcname, "")) { //if the player didn't give a name for what to buy
+			cout << "\nBuy what?";
+		} else if (getItemInVector(currentRoom->getItems(), name) != NULL) { //if the item isn't for sale and it's just on the ground or something
 			cout << "\nNobody is selling the " << name << "; you can just take it.";
-			return;
 		} else if (getItemInVector(*inventory, name) != NULL) { //if you're trying to buy your own item which you already own and are holding
 			cout << "\nYou already own this item!";
-			return;
-		} //error message if no item found of the given name
-		cout << "\nThere is no \"" << name << "\" here.";
+		} else { //error message if no item found of the given name
+			cout << "\nThere is no \"" << name << "\" here.";
+		}
 		return;
 	} //buys the item, subtracts the cost from the player's mony, and adds it to the inventory
 	item->buy(mony, inventory);
@@ -6851,8 +6868,53 @@ void printHelp(const char** validCommands, const char** flavorText, size_t comma
 	}
 }
 
+//save the game so we can store it as a file, and return if we want to keep going after saving
+bool saveWorld(Save*& save, vector<Item*>* inventory, int monies, time_t& savetime, const char* andwhat) {
+	cout << "\nSaving..."; //print loading because it looks nice in case there's some lag
+
+	//MARK: save the game
+
+	savetime = time(NULL); //update the time we last saved because we just saved
+
+	if (strcmp(andwhat, "AND QUIT")) {
+		cout << "\rSuccessfully saved your progress!"; //success message! unless we were also quitting
+		if (strcmp(andwhat, "")) { //if we typed something in addition to SAVE but it wasn't AND QUIT
+			CinPause();
+			cout << "\nYou seem to have also typed something uninterpretable after SAVE.\nAre you trying to SAVE AND QUIT? (YES or NO)"; //in case there was a typo or something, idk why else you would type something after SAVE
+			if (!AOrB(NULL, "YES", "NO")) {
+				cout << "\nAlrighty then."; //carry on message
+				return true;
+			} //the YES path continues down to that return false down there
+		}
+	}
+	cout << "\rLoading..."; //it's loading the loading screen (and deleting the world since we're leaving the game in this path)
+	return false;
+}
+
+//make sure the player is really sure about quitting without saving, and return if we are continuing
+bool confirmQuit(time_t savetime) {
+	long long seconds = difftime(time(NULL), savetime);
+	long long minutes = seconds/60; //use minutes if possible, precise reports of game time
+	seconds %= 60; //get rid of the extra seconds
+	long long hours = minutes/60; //go further to hours if possible
+	minutes %= 60; //get rid of the extra minutes
+
+	//make the player understand what they're doing so they don't accidentally do something dumb
+	cout << "\nYou will lose ";
+	if (hours) cout << hours << "h";
+	if (minutes || hours) cout << minutes << "m"; //print minutes even if 0 if hours did print for better looking times
+	cout << seconds << "s of progress!\nAre you sure you want to quit without saving? (YES or NO)";
+
+	if (!AOrB(NULL, "YES", "NO")) { //get the player choice
+		cout << "\nAlrighty then."; //carry on message
+		return true;
+	}
+	cout << "\rLoading..."; //it's loading the loading screen (and deleting the world since we're leaving the game in this path)
+	return false;
+}
+
 //the main game function for exploring the world MARK: play
-void play() {
+void play(Save*& save) {
 	vector<Item*>* inventory = new vector<Item*>; //the inventory of items
 		
 	//sets up the game world and places the player at the current room
@@ -6903,45 +6965,49 @@ void play() {
 		"QUIT"
 	};
 
-	//welcome message
-	cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO!\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
+	if (!save) { //if no existing save was provided, do the new game process, starting with the welcome message!
+		cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO!\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
 
-	//MARK: OR: welcome back!
+		//you get to name yourself!
+		cout << "\n             (type your name here!)\nYour name is ";
 
-	//you get to name yourself!
-	cout << "\n             (type your name here!)\nYour name is ";
+		//gets the player's input and puts it into the player name
+		char name[255];
+		cin.getline(name, 255);
 
-	//gets the player's input and puts it into the player name
-	char name[255];
-	cin.getline(name, 255);
+		AllCaps(&name[0]); //capitalizes the name because everything is capitalized (no it isn't)
 
-	AllCaps(&name[0]); //capitalizes the name because everything is capitalized (no it isn't)
+		if (!strcmp(name, "")) { //the main character complains if you didn't name him
+			cout << "\nSELF - \"Ok I guess I just don't have a name then.\"";
+			CinPause();
+		} else { //otherwise we set the name to whatever the player inputted
+			self->setName(name);
+		} 
+		if (!strcmp(name, "BERNARD")) { //Bernard is the character's canonical name
+			cout << "\nBERNARD - \"Oh wow that's my actual name!\"";
+			WorldState[ISBERNARD] = true;
+			CinPause();
+		} else if (!strcmp(name, "HELP")) { //Help complains if you followed the previous instructions and typed HELP (for help)
+			cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
+			CinPause();
+		//if the player typed anything by following the instructions too literally, the main character remarks on that
+		} else if (!strcmp(name, "YOUR NAME HERE!)")) {
+			cout << "\n" << name << " - \"You don't include the parenthesis cause it's closing the one from before...\"";
+			CinPause();
+		} else if (!strncmp(name, "HELP FOR HELP", 13) || !strncmp(name, "YOUR NAME", 9)) {
+			cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
+			CinPause();
+		}
 
-	if (!strcmp(name, "")) { //the main character complains if you didn't name him
-		cout << "\nSELF - \"Ok I guess I just don't have a name then.\"";
-		CinPause();
-	} else { //otherwise we set the name to whatever the player inputted
-		self->setName(name);
-	} 
-	if (!strcmp(name, "BERNARD")) { //Bernard is the character's canonical name
-		cout << "\nBERNARD - \"Oh wow that's my actual name!\"";
-		WorldState[ISBERNARD] = true;
-		CinPause();
-	} else if (!strcmp(name, "HELP")) { //Help complains if you followed the previous instructions and typed HELP (for help)
-		cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
-		CinPause();
-	//if the player typed anything by following the instructions too literally, the main character remarks on that
-	} else if (!strcmp(name, "YOUR NAME HERE!)")) {
-		cout << "\n" << name << " - \"You don't include the parenthesis cause it's closing the one from before...\"";
-		CinPause();
-	} else if (!strncmp(name, "HELP FOR HELP", 13) || !strncmp(name, "YOUR NAME", 9)) {
-		cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
+		CinIgnoreAll(); //clears extra characters or invalid input
+	} else { //welcome the player back if they are using existing save data
+		cout << "\nWelcome back!";
 		CinPause();
 	}
 
-	CinIgnoreAll(); //clears extra characters or invalid input
-
 	PrintRoomData(self->getRoom()); //prints the data of the starting room
+
+	time_t savetime = time(NULL); //the last time this session was saved, to get total save file time and how much progress will be lost when quitting without saving
 
 	bool promptline = true; //if the prompting > should be in a newline, only false for typing nothing
 	bool continuing = true; //we continue until this is set to false (when the player quits or gets an ending)
@@ -6997,9 +7063,9 @@ void play() {
 		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands
 			printHelp(validCommands, flavorText, 17, 16);
 		} else if (!strcmp(commandWord, "SAVE")) { //for saving and also possibly quitting
-			//continuing = saveWorld(currentRoom, inventory, party, &commandExtension[0], mony);
-		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game
-			continuing = false;
+			continuing = saveWorld(save, inventory, mony, savetime, &commandExtension[0]);
+		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game without saving
+			continuing = confirmQuit(savetime);
 		} else if (!strlen(command)) { //don't print error if the player just entered nothing
 			promptline = false;
 		} else { //prints an error message if the player typed something that isn't an actual command
@@ -7057,7 +7123,7 @@ int main() {
 
 	CinPause();
 
-	//get a vector of all the saves
+	vector<Save>
 
 	printHelp(validCommands, NULL, 7, 0); //prints what to do right off the bat
 	cout << "\nWhat would you like to do?"; //beginning prompt

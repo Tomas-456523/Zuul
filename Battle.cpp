@@ -977,7 +977,7 @@ int Battle::FIGHT() {
 				newwave = true;
 			} else return 0; //lose
 		} else if (aliveCount(enemyTeam) <= 0) {
-			if (++ewave < player->getWaves()) {
+			if (++ewave < enemy->getWaves()) {
 				setupWave(true, ewave, scaleEnemies);
 				newwave = true;
 			} else return 1; //win

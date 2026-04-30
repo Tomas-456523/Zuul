@@ -405,7 +405,7 @@ namespace Helper {
 		}
 		while (!changes.guardedItems.empty()) { //unguard all the items
 			changes.guardedItems.front()->setGuard(NULL);
-			changes.redirectRooms.pop();
+			changes.guardedItems.pop();
 		}
 		while (!changes.exitUnblocks.empty()) { //unblock the exits
 			pair<Room*, const char*>& data = changes.exitUnblocks.front();

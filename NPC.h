@@ -383,7 +383,7 @@ protected:
 	bool nofight = false; //if it looks like you can fight the npc but you can't
 	bool resetnofight = true; //if you can only try to fight nofight npcs once, then after that it just says you can't fight them
 	int depositedmonies = 0;
-	time_t deposittime; //track time monies were deposited so we can add interest
+	time_t deposittime = 0; //track time monies were deposited so we can add interest
 
 	//npc stats
 	Stats basestats; //base stats
