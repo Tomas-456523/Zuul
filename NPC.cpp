@@ -30,7 +30,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 		party.push_back({this});
 	}
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
-	parentid = id = npcID++; //get this npc's id and increment it for the next one, parent id is just itself for parentless npcs
+	id = npcID++; //get this npc's id and increment it for the next one, parent id is just itself for parentless npcs
 
 	if (!_basestats.empty()) basestats = _basestats; //set base stats if specified ones were passed
 	else basestats = Stats::genBaseStats(id); //if none were passed, generate some new ones
@@ -53,7 +53,7 @@ NPC::NPC(const NPC& other) { //copy constructor, we do not need to set the stats
 	*this = other;
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 	id = npcID++; //get this npc's id and increment it for the next one
-	//the old parent id stays the same, tying to the initial instance of this npc type
+	parent = &other; //we just copied this from the parent so we store a pointer to the parent
 }
 //a bunch of functions for getting npc varaibles
 const char* NPC::getTitle() {
@@ -69,9 +69,9 @@ const char* NPC::getDescription() {
 int NPC::getID() {
 	return id;
 }
-//get the npc template id, the one this was derived from
-int NPC::getParentID() {
-	return parentid;
+//get the npc template, the one this was derived from
+NPC* NPC::getParent() {
+	return parent;
 }
 void NPC::printRejectionDialogue() {
 	printDialogue(true, &rejectionDialogue.front());

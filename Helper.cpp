@@ -95,7 +95,7 @@ namespace Helper {
 		return NULL; //no valid item was found so return null
 	}
 	//finds an item in the given vector that has the given type
-	Item* getItemTypeInVector(std::vector<Item*>& the_vector, const char* itemtype) {
+	Item* getItemTypeInVector(vector<Item*>& the_vector, const char* itemtype) {
 		for (Item* item : the_vector) { //if the item's type matches, we return that
 			if (!strcmp(item->getType(), itemtype)) {
 				return item;
@@ -104,7 +104,7 @@ namespace Helper {
 		return NULL; //no valid item was found so return null
 	}
 	//finds an attack in the given vector that has the given name
-	Attack* getAttackInVector(const std::vector<Attack*>& the_vector, const char* attackname) {
+	Attack* getAttackInVector(const vector<Attack*>& the_vector, const char* attackname) {
 		for (Attack* attack : the_vector) { //if the attack's name matches, we return that
 			if (!strcmp(attack->name, attackname)) {
 				return attack;
@@ -553,19 +553,57 @@ namespace Helper {
 			 "\n(c) 2026 Tomas Carranza Echaniz"
 			 "\n";
 	}
-	//reverse the npc to char map so we can get the npc from the char
-	void buildCharNPC() {
+	//set up all the npc maps, including reversing the npc to char map so we can get the npc from the char
+	void buildNPCData() {
 		for (map<NPC*, char>::iterator npcchar = npcChar.begin(); npcchar != npcChar.end(); npcchar++) {
-			charNPC[npcchar.second] = npcchar.first;
+			charNPC[npcchar.second] = npcchar.first; //reverse the npc map for convenience
+			//set up the npc statistic maps if it isn't the banker or the tunnel lobster because they don't fight (well the lobster fights like once but this is more for the player team)
+			if (npcchar.second != 'n' && npcchar.second != 't') {
+				attackslaunched[npc.first] = 0;
+				helpslaunched[npc.first] = 0;
+				damagedealt[npc.first] = 0;
+				healthhealed[npc.first] = 0;
+				healthrecovered[npc.first] = 0;
+				damagerecieved[npc.first] = 0;
+				knockouts[npc.first] = 0;
+				revives[npc.first] = 0;
+			}
 		}
+	}
+	//go to the parents until we reach the template
+	NPC* getBase(NPC* npc) {
+		for (; npc->getParent(); npc = npc->getParent()); //go to the parent until there is no parent
+		return npc; //this one has no parent so this is the base npc so we return this
 	}
 
 	//map to find the opposite of the given direction (e.g. ReverseDirection[SOUTH] == NORTH)
 	map<const char*, const char*> ReverseDirection;
 
+	//stuff that we need to be able to update as we play the game, that the save system uses, or npc statistics
+
 	//map to find the char that represents each recruitable npc (e.g. npcChar[self] == a)
 	map<NPC*, char> npcChar;
 	map<char, NPC*> charNPC; //map to get the npc from the char
+
+	char* sectionW; //build section W as we play
+	char* sectionT; //build section T as we play
+
+	int stats[18] = {0}; //count how many times we used each command
+	int invalidmove = 0;
+	int sessions = 0; //how many times the player has booted up this save
+
+	//track these for every teammate
+	map<NPC*, int> attackslaunched; //how many times each npc attacked
+	map<NPC*, int> helpslaunched; //how many times each npc did a beneficial attack
+	map<NPC*, long long> damagedealt; //total damage this npc has dealt
+	map<NPC*, long long> healthhealed; //total healing this npc has done to other npcs
+	map<NPC*, long long> healthrecovered; //how much this npc has healed in total
+	map<NPC*, long long> damagerecieved; //how much damage this npc has tanked
+	map<NPC*, int> knockouts; //how many npcs this npc incapacitated
+	map<NPC*, int> revives; //how many npcs this npc recapacitated
+
+	set<NPC*> encountered; //all the npcs we've ever fought
+	set<NPC*> recruited; //all the npcs we've ever recruited
 
 	vector<Room*> roomsH; //vectors of everything in memory so we can deallocate them all later
 	vector<NPC*> npcsH;
@@ -577,5 +615,6 @@ namespace Helper {
 	bool WorldState[NEVER+1] = {false}; //every world state starts as false (NEVER + 1 because the last enumerator is equal enum size minus 1, since it starts at 0)
 
 	int npcID = 0; //npcID starts at 0, since it's the npcsH index
-	int 
+	int itemID = 0; //same thing for these vectors
+	int roomID = 0;
 }

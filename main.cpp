@@ -473,6 +473,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Create the finale and post-game rooms MARK: TA
 	NPC* burgermenace;
+	Room* abyssrestaurant = new Room("");
+	Room* abysselevatortop = new Room("");
+	Room* abysselevator = new Room("");
+	Room* abysselevatorbottom = new Room("");
 	Room* abyss = new Room("right outside the BURGER RESTAURANT in the depths of the world.");
 	abyss->setWelcome({{NULL, "You are unbelievably deep underground."},
 					   {NULL, "The high temperatures of the deep have been replaced with coldness."},
@@ -755,11 +759,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 0));
 	npcChar[forestknight] = 'k'; //Absolom's character representation is k for knight
+	forestknight->setRoaming(forestknight); //Absolom roams after going to his room, meaning you beat Jim Shady
+	forestknight->setRoamRooms({forest, forestleft, forestright, foresttempleentrance, forestfork, forestgate, forestwall, forestgrave, forestspork, bossgrove, forestnice, treasuregrove, flowerfield});
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
 										{forestknight, "I shan't assist you; this is an object of sin."},
 										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
-	forestknight->addConversation({{forestknight, "For years, that fiend has kept me trapped here with the graves of my fallen compatriots."},
+	forestknight->addConversation({{forestknight, "For years, that shrimple fiend has kept me trapped with the graves of my fallen compatriots."},
 								   {forestknight, "No matter what I tried, he countered my every technique."},
 								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's grasp."},
 								   {self, "Yeah no problem."}});
@@ -1423,6 +1429,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
 	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(40, 50, 20, 50, 0, 25, 9), Stats());
+	npcChar[buford] = 'u'; //Buford's character representation is u for the second letter of Buford
 	richie->setGuardian(buford);
 	buford->setGuarding(richie);
 	buford->setDialogue("...");
@@ -2397,7 +2404,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "because I wrote it before the one that led to the current story,"},
 	 {developer, "and so it was that you left a bad review on the BURGER RESTAURANT"},
 	 {developer, "and they put you in BURGER prison for doing that,"},
-	 {developer, "so the game would be escaping the prison."},
+	 {developer, "so the game would be about escaping the prison."},
 	 {developer, "I'm glad I wrote that down because I completely forgot that."}}
 	{{developer, "This document that I used to plan this game says that this game is supposed to take place in..."},
 	 {NULL, "\"GENERIC FANTASY LAND\""},
@@ -2417,7 +2424,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	{{developer, "A duration of 2 for enemy freezing effects (like the enemy is the one doing the affecting) is really the sweet spot."},
 	 {developer, "1 would be too short and meaningless but 3 might get annoying,"},
 	 {developer, "So 2 is good for general purposes."},
-	 {developer, "I mean probably I haven't actually tested my game as of writing this :P"}}*/
+	 {developer, "I mean probably, I haven't actually tested my game as of writing this :P"}}*/
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
@@ -2679,12 +2686,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							   {franklin, "I'll bring it up with the HOA."}});
 	franklin->addRejectionDialogue("I must watch over the town, I'm afraid I haven't got time for adventuring.");
 	franklin->setDialogue("I'm happy to see this town back in its lively state!");
-
-	/*NPC* olivia = new NPC("", "OLIVIA", "Lady who lives in this house.", limbo, 7);
-	olivia->setDialogue({})*/
-
-	//*...*
-	//____ is frozen in the air.
 
 	Item* valve = new WorldChangeItem("WATER VALVE", "A valve on the pipe managing the spring's water. It's currently redirecting the water away from the oasis.", minespring, {{NULL, "You turn the valve counterclockwise."}, {NULL, "The spring's water is now flowing to the oasis!"}});
 	WorldChange& valvechanges = ((WorldChangeItem*)valve)->getChanges();
@@ -2957,6 +2958,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* outputantenna = new MaterialItem("OUTPUT ANTENNA OF HUMILITY", "A component of THE PLOT DEVICE; humbly carries out the will of God.", limbo);
 	Item* bigredbutton = new MaterialItem("BIG RED BUTTON OF HOPE", "A component of THE PLOT DEVICE which the user must press with hope that God's will be done.", limbo);
 	Item* plotometer = new MaterialItem("PLOTOMETER OF PATIENCE", "A component of THE PLOT DEVICE; patiently waits for the right time to act.", limbo);
+
+
+	NPC* cheryl = new NPC("SCIENTIST", "CHERYL", "Invented the time machine and respawning, quite the innovative scientist.", limbo, 9);
+	cheryl->setDialogue({{cheryl, "Hi, the developer sent me to come pick you up."},
+						 {cheryl, "Because you seem quite stuck here."},
+						 {cheryl, "So feel free to use my time machine if you want to leave."},
+						 {NULL, "CHERYL uses her time machine key."},
+						 {NULL, "The time machine makes a car chirping noise."},
+						 {NULL, "You can go IN TIME MACHINE now!"},
+						 {cheryl, "Well I'll be in the time machine."},
+						 {cheryl, "..."},
+						 {cheryl, "Bye."}});
 
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -5225,6 +5238,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	evilgrandma->setLeader(true, 22, rightstreet3, false);
 	evilgrandma->setMask("GRANDMA", "MARGE", "She looks like a poor grandma getting beat up and robbed by Ratman.");
 	evilgrandma->setTalkOnDefeat();
+	evilgrandma->setDialogue({{grandma, "AHHHHHHHH!"},
+							  {grandma, "HELP ME, DEARIE!"},
+							  {grandma, "FIGHT this bad man!"}});
+	evilgrandma->addRejectionDialogue({{grandma, "I can't dearie!"},
+									   {grandma, "Not while this bad man is beating me up!"},
+									   {grandma, "FIGHT him!"}});
 	evilgrandma->addOpeningDialogue({{grandma, "HAH! I wasn't convincing enough, was I?"},
 									 {grandma, "You're a smart cookie, you!"},
 									 {grandma, "Bless your heart."},
@@ -5612,7 +5631,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftsink->exitPavings.push(make_tuple(dirtplain, forest, SOUTH, NORTH));
 	ftsink->exitPavings.push(make_tuple(dirtplain, forestright, EAST, WEST));
 	ftsink->exitPavings.push(make_tuple(dirtplain, forestleft, WEST, EAST));
-	ftsink->exitDepavings.push((foresttempleentrance, IN_TEMPLE)); //can't go in the temple anymore
+	ftsink->exitDepavings.push({foresttempleentrance, IN_TEMPLE}); //can't go in the temple anymore
 	ftsink->redirectRooms.push({foresttemplestairs, foresttempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the output antenna (for some reason)
 	ftsink->redirectRooms.push({forestbuffer1, foresttempleentrance});
 	ftsink->redirectRooms.push({forestbuffer2, foresttempleentrance});
@@ -5834,7 +5853,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
 
-	buildCharNPC(); //make the reversed char to npc map for the save system now that all the npcs have been registered
+	buildNPCData(); //build all the npc stuff in helper now that all the teammates and npcs have been set up
 
 	return self; //returns the player character
 }
@@ -6172,7 +6191,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	//prints the reason you can't take the item based on the circumstances
 	if (item == NULL) {
 		if (!strcmp(itemname, "")) { //better error message than There is no "" here. imo
-			cout << "\nTake what?"
+			cout << "\nTake what?";
 		//if the player tried to take an item on sale we say you can't steal
 		} else if (getItemInVector(currentRoom->getStock(), itemname) != NULL) {
 			cout << "\nThe " << itemname << " is for sale! You can't just take it.";
@@ -6761,9 +6780,9 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		return;
 	}
 	if (npc->getBanker()) { //if using the bank
-		bool intro = getConvoSize(); //get if this is the first time ASKing the banker, so we don't start the banking yet if so
+		bool intro = npc->getConvoSize(); //get if this is the first time ASKing the banker, so we don't start the banking yet if so
 		npc->printDialogue(true); //hiiii frieeeeend
-		if (!intro) banker->depositMonies(mony); //start the bank account managing process if this isn't the first time asking the banker
+		if (!intro) npc->depositMonies(mony); //start the bank account managing process if this isn't the first time asking the banker
 		return; //return because we already printed the dialogue and stuff
 	}
 	if (NPC* pursuer = npc->getPursuing()) { //if trying to ask the pursuer they just catch the player
@@ -6852,7 +6871,7 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mony) {
 	Item* item = getItemInVector(currentRoom->getStock(), name); //finds the item in the current room's stock
 	if (item == NULL) { //gives error message based on other conditions
-		if (!strcmp(npcname, "")) { //if the player didn't give a name for what to buy
+		if (!strcmp(name, "")) { //if the player didn't give a name for what to buy
 			cout << "\nBuy what?";
 		} else if (getItemInVector(currentRoom->getItems(), name) != NULL) { //if the item isn't for sale and it's just on the ground or something
 			cout << "\nNobody is selling the " << name << "; you can just take it.";
@@ -7188,7 +7207,7 @@ void loadSave(vector<Save*>& saves, const char* savename) {
 		cout << "\nLoad what?";
 		return;
 	}
-	int num = getFileNum(which); //get the save file the player is trying to access
+	int num = getFileNum(savename); //get the save file the player is trying to access
 	if (num < 0) { //<0 num means error number, so we print that the input was bad + instructions
 		cout << "\nInvalid save name \"" << savename << "\". (Must be SAVE [number] or just [number])";
 		return;
@@ -7298,7 +7317,7 @@ void exportSave(vector<Save*>& saves, const char* savename) {
 		return;
 	}
 	cout << "\nHere is your save data!\n\n" //print all the save data so the player can copy it, pretty straightforward
-		 << saves[num-1]->data;
+		 << saves[num-1]->data
 		 << "\n\nMake sure to copy everything between the \"BQ2\" and \"=\" (including the BQ2 and =)."
 			"\nYou're probably in a terminal, so prefer Ctrl + Insert or Ctrl + Shift + C over Ctrl + C."
 			"\nIMPORT this save data whenever you want to use it!"
@@ -7322,7 +7341,7 @@ int main() {
 		"EXIT"
 	};
 
-	cout << "\n" << printTitle() << "\nPress ENTER to begin." << fixed << setprecision(2);
+	cout << "\n" << getTitle() << "\nPress ENTER to begin." << fixed << setprecision(2);
 
 	CinPause();
 
@@ -7377,7 +7396,7 @@ int main() {
 	//gives a friendly farewell to the player
 	cout << "\nCya!\n";
 
-	//delete all the saves because they are allocated data and their contents are saves as files anyway
+	//delete all the saves because they are allocated data and their contents are saved as files anyway
 	for (Save* save : saves) {
 		delete save;
 	}

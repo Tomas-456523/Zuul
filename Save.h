@@ -45,7 +45,7 @@ struct Save {
 	*    e - Egadwick	v - Viola	x - Carlos		r - Richie
 	*    k - Absolom	c - Cacty	p - Plum		b - Ratman
 	*  - Worth mentioning, these aren't npcs but have their own letter:
-	*    t - Florian	n - Banker
+	*    t - Florian	n - Banker	u - Buford
 	*  - Then level, xp, room, and finally, time left in gym (0 if not in gym)
 	*  - Everything connected to the NPC is seperated by .
 	*  - So, this section would look something like: Rf[level].[xp].[room].[gym time]
@@ -65,42 +65,8 @@ struct Save {
 	//MARK: roaming npc positions are not saved?
 	*/
 
-	/*stats we might want to save
-	times moved in a direction
-	attacks launched
-	items used
-	damage dealt
-	damage recieved
-	enemies incapacitated
-	enemies discovered /
-	enemy encounters defeated /
-	bosses defeated /
-	times gone in an invalid direction
-	teammates recruited /
-	moves learned /
-	times used each command
-
-	Times QUIT without saving: idk
-
-	*/
-
 	size_t savesize = 1000; //we double the save size when we need to, starts with a reasonable length of 1000
-	char* data; //the save data
-
-	//MARK: make sure these are deleted at some point
-	static char* sectionW; //build section W as we play
-	static char* sectionT; //build section T as we play
-
-	static int stats[18] = {0}; //count how many times we used each command
-	static long long damagedealt;
-	static long long damagerecieved;
-	static int knockouts;
-	static int invalidmove;
-
-	static vector<Save*> getSaves
-
-	static set<NPC*> encountered; //all the npcs we've ever fought
-	static set<NPC*> recruited; //all the npcs we've ever recruited
+	char* data; //the save data	
 
 	//
 	void reset() {
@@ -124,17 +90,17 @@ struct Save {
 	}
 
 	//adds the given data to section W
-	static void addW(const char* data) {
+	void addW(const char* data) {
 		addChunk(data, sectionW);
 	}
 
 	//adds the given data to section T
-	static void addT(const char* data) {
+	void addT(const char* data) {
 		addChunk(data, sectionT);
 	}
 
 	//format the given name to have a \ before |, =, \, and , (the returned name must be deleted afterwards)
-	char* formatName(const char* _name) {
+	static char* formatName(const char* _name) {
 		char* name = new char[strlen(_name)*2+1](); //make a new name with enough space to fit the name with a \ before all its characters if necessary
 		size_t len = strlen(_name); //get the length so we don't do strlen too much
 		size_t p = 0; //the current position we're writing in since it can drift apart from i after addings \'s
@@ -153,7 +119,7 @@ struct Save {
 		//add beginning and section V version number (we are in version 0)
 		save->addChunk("BQ2|V0|N");
 		//Section N, add the name
-		{ char* name = formatName(npcsH[0]->getName()); //format the name to have escape codes so we can have special characters in the name
+		{ char* name = formatName(Helper::npcsH[0]->getName()); //format the name to have escape codes so we can have special characters in the name
 		save->addChunk(name);
 		delete[] name; } //delete the name because it was made with new
 		//Section M, monies, only if we actually have any
@@ -168,7 +134,7 @@ struct Save {
 			save->addChunk(sectionW);
 		}
 		//Section U, track pursuer if we have one
-		if (NPC* pursuer = npcsH[0]->getPursuer()) {
+		if (NPC* pursuer = Helper::npcsH[0]->getPursuer()) {
 			char sectionU[20];
 			snprintf(sectionU, 20, "|U%d", pursuer->getRoom()->getID());
 			save->addChunk(sectionU);
@@ -179,15 +145,15 @@ struct Save {
 			NPC* teammate = *teamiterator;
 			char sectionR[100];
 			//the teammate section  included the identifying char, then the level, xp, room id, and gym starting time
-			snprintf(sectionR, 100, "%c%d.%d.%d.%d", npcChar[teammate], teammate->getLevel(), teammate->getXP(), teammate->getRoom()->getID(), teammate->getGymStart());
+			snprintf(sectionR, 100, "%c%d.%d.%d.%d", Helper::npcChar[teammate], teammate->getLevel(), teammate->getXP(), teammate->getRoom()->getID(), teammate->getGymStart());
 			save->addChunk(sectionR);
 			if (next(teamiterator) != recruited.end()) save->addChunk(","); //dividing comma
 		}
 		//Section P, save the player's party
 		{char team[12] = "|P"; //build the team here starting with the P section identifier then all their representing chars in order
-		size_t plen = npcsH[0]->getParty()->size();
+		size_t plen = Helper::npcsH[0]->getParty()->size();
 		for (size_t i = 0; i < plen; i++) { //add all the party characters to the string
-			team[i+2] = npcChar[(*npcsH[0]->getParty())[i]];
+			team[i+2] = Helper::npcChar[(*Helper::npcsH[0]->getParty())[i]];
 		}
 		team[plen+2] = '\0'; //null terminate it!
 		save->addChunk(team);} //add the team chunk
@@ -201,17 +167,17 @@ struct Save {
 		}
 		//Section I, saves every item's position
 		save->addChunk("|I");
-		for (vector<Item*>::iterator itemiterator = itemsH.begin(); itemiterator != itemsH.end(); itemiterator++) {
+		for (vector<Item*>::iterator itemiterator = Helper::itemsH.begin(); itemiterator != Helper::itemsH.end(); itemiterator++) {
 			Item* item = *itemiterator;
 			int roomid = (item->getRoom() ? item->getRoom()->getID() : -1);
 			char sectionI[21];
 			snprintf(sectionI, 21, "%d.%d", item->getID(), roomid);
 			save->addChunk(sectionI);
-			if (next(itemiterator) != itemsH.end()) save->addChunk(","); //dividing comma
+			if (next(itemiterator) != Helper::itemsH.end()) save->addChunk(","); //dividing comma
 		}
 		//Section L, store lobster name and room
 		save->addChunk("|L");
-		NPC* lobster = charNPC['t']; //get the lobster NPC* for easier use
+		NPC* lobster = Helper::charNPC['t']; //get the lobster NPC* for easier use
 		if (strlen(lobster->getTitle())) { //if the lobster doesn't have a title, we don't record a name (because that's how the game knows to not change the original name), also accounting for people who named their tunnel lobster TUNNEL LOBSTER for some reason
 			char* lname = formatName(lobster->getName()); //same process as player name
 			save->addChunk(lname);
@@ -226,7 +192,7 @@ struct Save {
 			save->addChunk(sectionT);
 		}
 		//Section B, store current bank balance and the last time used the bank
-		NPC* banker = charNPC['n']; //get the banker
+		NPC* banker = Helper::charNPC['n']; //get the banker
 		if (!banker->getConvoSize()) {
 			char bankstuff[100]; //print the bank data into this charray
 			snprintf(bankstuff, 100, "|B%d,%d", banker->getBalance(), banker->getDepositTime());
@@ -234,8 +200,8 @@ struct Save {
 		}
 		//Section S, store all the world states except for never
 		save->addChunk("|S");
-		for (size_t i = 0; i < WorldState.size()-1; i++) {
-			save->addChunk(WorldState[i] ? "1" : "0");
+		for (size_t i = 0; i < Helper::WorldState.size()-1; i++) {
+			save->addChunk(Helper::WorldState[i] ? "1" : "0");
 		}
 		//Section Q, store how long the player has played on this file
 		playtime += difftime(time(NULL), lastsave); //this might lose one second per save (command), but that's basically nothing so that's fine
