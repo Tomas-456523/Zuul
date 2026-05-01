@@ -15,7 +15,7 @@ class Item;
 //custom comparator used by the turn queue to sort all the fighters by speed
 struct speedComparer {
 	bool operator()(NPC* a, NPC* b) const {
-		return a->getSpeed()*a->getSpeedMultiplier() > b->getSpeed()*b->getSpeedMultiplier();
+		return a->getSpeed()*a->getSpeedMultiplier() < b->getSpeed()*b->getSpeedMultiplier();
 	}
 };
 

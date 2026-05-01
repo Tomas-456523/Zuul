@@ -544,12 +544,28 @@ namespace Helper {
 	bool getCardinal(const char* direction) {
 		return !strcmp(direction, "NORTH") || !strcmp(direction, "SOUTH") || !strcmp(direction, "EAST") || !strcmp(direction, "WEST") || !strcmp(direction, "NORTHEAST") || !strcmp(direction, "NORTHWEST") || !strcmp(direction, "SOUTHEAST") || !strcmp(direction, "SOUTHWEST") || !strcmp(direction, "UP") || !strcmp(direction, "DOWN"); //never seat eoggy waffles
 	}
+	//get the title screen so we can print it. This is so I can modify it from one place since it gets printed in the beginning but also endings
+	const char* getTitle() {
+		return "BURGER QUEST 2:"
+			 "\nELECTRIC BOOGALOO"
+			 "\n"
+			 "\nVersion Alpha 1.0"
+			 "\n(c) 2026 Tomas Carranza Echaniz"
+			 "\n";
+	}
+	//reverse the npc to char map so we can get the npc from the char
+	void buildCharNPC() {
+		for (map<NPC*, char>::iterator npcchar = npcChar.begin(); npcchar != npcChar.end(); npcchar++) {
+			charNPC[npcchar.second] = npcchar.first;
+		}
+	}
 
 	//map to find the opposite of the given direction (e.g. ReverseDirection[SOUTH] == NORTH)
 	map<const char*, const char*> ReverseDirection;
 
 	//map to find the char that represents each recruitable npc (e.g. npcChar[self] == a)
 	map<NPC*, char> npcChar;
+	map<char, NPC*> charNPC; //map to get the npc from the char
 
 	vector<Room*> roomsH; //vectors of everything in memory so we can deallocate them all later
 	vector<NPC*> npcsH;

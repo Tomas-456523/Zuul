@@ -44,6 +44,8 @@ struct Save {
 	*    f - Floria		m - Mike	j - Michelin	g - Graham
 	*    e - Egadwick	v - Viola	x - Carlos		r - Richie
 	*    k - Absolom	c - Cacty	p - Plum		b - Ratman
+	*  - Worth mentioning, these aren't npcs but have their own letter:
+	*    t - Florian	n - Banker
 	*  - Then level, xp, room, and finally, time left in gym (0 if not in gym)
 	*  - Everything connected to the NPC is seperated by .
 	*  - So, this section would look something like: R'f[level].[xp].[room].[gym time]
@@ -85,6 +87,7 @@ struct Save {
 	size_t savesize = 1000; //we double the save size when we need to, starts with a reasonable length of 1000
 	char* data; //the save data
 
+	//MARK: make sure these are deleted at some point
 	static char* sectionW; //build section W as we play
 	static char* sectionT; //build section T as we play
 
@@ -93,41 +96,64 @@ struct Save {
 	static set<NPC*> encountered; //all the npcs we've ever fought
 	static set<NPC*> recruited; //all the npcs we've ever recruited
 
-	//returns an empty save with zero data for making a new game
-	static Save NewGame() {
-		return Save("BQ2=");
-	}
-
 	//
 	void reset() {
-		delete data;
+		delete[] data;
 		savesize = 1000;
 		data = new char[savesize]();
 		data[0] = '\0';
 	}
 
-	//adds a chunk to the save data and extending the save data length if needed
-	void addChunk(const char* chunk) {
-		while (strlen(data) + strlen(chunk) >= savesize) {
+	//adds a chunk to the given char and extending the data length if needed
+	void addChunk(const char* chunk, char* dest = NULL) {
+		if (!dest) dest = data; //default to affecting the data
+		while (strlen(dest) + strlen(chunk) >= savesize) {
 			savesize *= 2;
 			char* newdata = new char[savesize]();
-			strcpy(newdata, data);
-			delete data;
-			data = newdata;
+			strcpy(newdata, dest);
+			delete[] dest;
+			dest = newdata;
 		}
-		strcat(data, chunk);
+		strcat(dest, chunk);
+	}
+
+	//adds the given data to section W
+	static void addW(const char* data) {
+		addChunk(data, sectionW);
+	}
+
+	//adds the given data to section T
+	static void addT(const char* data) {
+		addChunk(data, sectionT);
+	}
+
+	//format the given name to have a \ before |, =, \, and , (the returned name must be deleted afterwards)
+	char* formatName(const char* _name) {
+		char* name = new char[strlen(_name)*2+1](); //make a new name with enough space to fit the name with a \ before all its characters if necessary
+		size_t len = strlen(_name); //get the length so we don't do strlen too much
+		size_t p = 0; //the current position we're writing in since it can drift apart from i after addings \'s
+		for (size_t i = 0; i < len; i++) { //checks all the characters of the _name individually
+			char c = _name[i]; //get the char for easy access
+			if (c == '\\' || c == '|' || c == '=' || c == ',') name[p++] = '\\'; //adds the \ if c is one of these given characters
+			name[p++] = c; //then add c itself
+		}
+		name[p] = '\0'; //null terminate the thingy
+		return name; //return the name we got!
 	}
 
 	//gets the variables in main and serializes it into save data
-	static void SaveGame(Save* save, std::vector<Item*>* inventory, int monies, double& playtime, time_t lastsave) {
+	static void SaveGame(Save* save, int monies, double& playtime, time_t lastsave) {
 		save->reset(); //reset the current save string so we can rebuild it, easier to edit that way
 		//add beginning and section V version number (we are in version 0)
 		save->addChunk("BQ2|V0|N");
-		//Section N, add the name MARK: DOES NOT DO THE CHECKS YET!
-		save->addChunk(npcsH[0]->getName());
-		if (monies > 0) { //Section M, monies, only if we actually have any
-			char sectionM[10];
-			snprintf(sectionM, 10, "|M%d", monies);
+		//Section N, add the name
+		{ char* name = formatName(npcsH[0]->getName()); //format the name to have escape codes so we can have special characters in the name
+		save->addChunk(name);
+		delete[] name; } //delete the name because it was made with new
+		//Section M, monies, only if we actually have any
+		if (monies > 0) {
+			char sectionM[20];
+			snprintf(sectionM, 20, "|M%d", monies);
 			save->addChunk(sectionM);
 		}
 		//Section W, this is built during gameplay, so we just add it if we've done any changes
@@ -147,13 +173,18 @@ struct Save {
 			NPC* teammate = *teamiterator;
 			char sectionR[100];
 			//the teammate section  included the identifying char, then the level, xp, room id, and gym starting time
-			snprintf(sectionR, 100, "%c%d.%d.%d", npcChar[teammate], teammate->getLevel(), teammate->getXP(), teammate->getRoom()->getID(), teammate->getGymStart());
+			snprintf(sectionR, 100, "%c%d.%d.%d.%d", npcChar[teammate], teammate->getLevel(), teammate->getXP(), teammate->getRoom()->getID(), teammate->getGymStart());
 			save->addChunk(sectionR);
 			if (next(teamiterator) != recruited.end()) save->addChunk(","); //dividing comma
 		}
 		//Section P, save the player's party
-		save->addChunk("|P"); //add the P section identifier then all their representing chars in order
-		for (NPC* npc : npcsH[0]->getParty()) save->addChunk(&npcChar[npc]);
+		{char team[12] = "|P"; //build the team here starting with the P section identifier then all their representing chars in order
+		size_t plen = npcsH[0]->getParty()->size();
+		for (size_t i = 0; i < plen; i++) { //add all the party characters to the string
+			team[i+2] = npcChar[(*npcsH[0]->getParty())[i]];
+		}
+		team[plen+2] = '\0'; //null terminate it!
+		save->addChunk(team);} //add the team chunk
 		//Section E, save all encountered enemy types
 		save->addChunk("|E");
 		for (set<NPC*>::iterator enemyiterator = encountered.begin(); enemyiterator != encountered.end(); enemyiterator++) {
@@ -166,21 +197,35 @@ struct Save {
 		save->addChunk("|I");
 		for (vector<Item*>::iterator itemiterator = itemsH.begin(); itemiterator != itemsH.end(); itemiterator++) {
 			Item* item = *itemiterator;
-			int roomid = (item->getRoom() ? item->getRoom()->getID() : -1)
+			int roomid = (item->getRoom() ? item->getRoom()->getID() : -1);
 			char sectionI[21];
 			snprintf(sectionI, 21, "%d.%d", item->getID(), roomid);
 			save->addChunk(sectionI);
 			if (next(itemiterator) != itemsH.end()) save->addChunk(","); //dividing comma
 		}
-		//Section L, store lobster name and room MARK: implement this
-
+		//Section L, store lobster name and room
+		save->addChunk("|L");
+		NPC* lobster = charNPC['t']; //get the lobster NPC* for easier use
+		if (strlen(lobster->getTitle())) { //if the lobster doesn't have a title, we don't record a name (because that's how the game knows to not change the original name), also accounting for people who named their tunnel lobster TUNNEL LOBSTER for some reason
+			char* lname = formatName(lobster->getName()); //same process as player name
+			save->addChunk(lname);
+			delete[] lname;
+		}
+		char lobroom[11]; //get the lobster' room (plus the dividing comma since it's convenient)
+		snprintf(lobroom, 11, ",%d", lobster->getRoom()->getID());
+		save->addChunk(lobroom);
 		//Section T, store opened temple entrances, which is built during gameplay so we just record it
 		if (strlen(sectionT)) {
 			save->addChunk("|T");
 			save->addChunk(sectionT);
 		}
-		//Section B, store the last time used the bank and current bank balance MARK: implement this
-
+		//Section B, store current bank balance and the last time used the bank
+		NPC* banker = charNPC['n']; //get the banker
+		if (!banker->getConvoSize()) {
+			char bankstuff[100]; //print the bank data into this charray
+			snprintf(bankstuff, 100, "|B%d,%d", banker->getBalance(), banker->getDepositTime());
+			save->addChunk(bankstuff); //add the banking section!
+		}
 		//Section S, store all the world states except for never
 		save->addChunk("|S");
 		for (size_t i = 0; i < WorldState.size()-1; i++) {
@@ -189,7 +234,7 @@ struct Save {
 		//Section Q, store how long the player has played on this file
 		playtime += difftime(time(NULL), lastsave); //this might lose one second per save (command), but that's basically nothing so that's fine
 		char sectionQ[100];
-		snprintf(sectionQ, 100, "|Q%i", playtime)
+		snprintf(sectionQ, 100, "|Q%.0f", playtime);
 		save->addChunk(sectionQ);
 		//cap it off with a =
 		save->addChunk("=");
@@ -203,6 +248,7 @@ struct Save {
 
 		//reset all the extern variables in Helper and Stats static trackers
 
+		//while checking used items, track "discontinuity" which is incremented each time an item is consumed. every time we check an index in itemsH that is greater than itemsH.size()-1, subtract that index by the discontinuity, and that should give the actual item
 	}
 
 	Save(const char* _data) { //make a new save with the given save data
@@ -212,5 +258,6 @@ struct Save {
 		data = new char[savesize]();
 		data[0] = '\0';
 		strcat(data, _data);
+		//MARK: truncate whitespace?
 	}
 };

@@ -68,7 +68,7 @@ struct Effect {
 
 	//gets (estimates) if you want to have this effect, like buffs or heals and stuff like that
 	bool getBeneficial() {
-		if (damage < 0 || spleak < 0 || invincible || evasive || attackbuff > 1 || defensebuff > 1 || toughbuff > 1 || piercebuff > 1 || speedbuff > 1|| spusage < 1 || damagebuff < 1 || guardset) return false; //obvious positives
+		if (damage < 0 || spleak < 0 || invincible || evasive || attackbuff > 1 || defensebuff > 1 || toughbuff > 1 || piercebuff > 1 || speedbuff > 1|| spusage < 1 || damagebuff < 1 || guardset) return true; //obvious positives
 		if (damage > 0 || spleak > 0 || freeze || hypnotize || attackbuff < 1 || defensebuff < 1 || toughbuff < 1 || piercebuff < 1 || speedbuff < 1|| spusage > 1 || damagebuff > 1) return false; //obvious negatives
 		if (falldamage < 0 || attackeffect) return true; //lower priority positives
 		if (falldamage > 0 || remove || tiring) return false; //lower priority negatives

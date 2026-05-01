@@ -161,6 +161,7 @@ void Battle::checkEffects(NPC* npc) {
 }
 //add the effect to the alleffects vector while handling duplicates MARK: attach effect
 void Battle::attachEffect(NPCEffect* effect) {
+	if (!effect) return; //if the effect was not able to be applied we don't do anything
 	if (effect->effect->hypnotize) { //when changing hypnosis status, untake anyone they may be taking
 		effect->affected->setTaking(NULL);
 	}
@@ -367,7 +368,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	if (attack->affectselfbeforeattack) {
 		if (attack->selfeffect != NULL) attachEffect(attacker->setEffect(attack->selfeffect));
 		if (attack->selfcancel != NULL) {
-			detatchEffect(attacker->removeEffect(attack->selfeffect, NULL));
+			detatchEffect(attacker->removeEffect(attack->selfcancel, NULL));
 			if (attacker->popKO()) handleKnockout(attacker); //handle ko stuff if the attacker was just incapacitated due to fall damage
 		}
 	}
@@ -401,7 +402,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	if (!attack->affectselfbeforeattack) {
 		if (attack->selfeffect != NULL) attachEffect(attacker->setEffect(attack->selfeffect));
 		if (attack->selfcancel != NULL) {
-			detatchEffect(attacker->removeEffect(attack->selfeffect, NULL));
+			detatchEffect(attacker->removeEffect(attack->selfcancel, NULL));
 			if (attacker->popKO()) handleKnockout(attacker); //handle ko stuff if the attacker was just incapacitated due to fall damage
 		}
 	}
@@ -644,6 +645,7 @@ void Battle::reorder() { //put everyone in the priority queue based on their spe
 bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax) {
 	char tcother[255] = ""; //track the invalid portion of the command when it was partially correct so we can give better error messages (e.g. unsuccessfully using PUNCH FLURRY shouldn't say anything about the move PUNCH)
 	char acother[255] = ""; //name is a(ttack) or t(arget) c(andidate) other cause it was the other to the valid candidate
+	char acandidate[255] = ""; //attack candidate that we found
 
 	//we have to check multiple times, since attacks may have 0 or more spaces in them
 	for (int i = checkMax-1; i >= 0; i--) {
@@ -697,6 +699,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 			strcpy(tcother, commandWordP);
 		} else if (attack && strlen(commandExtensionP) > strlen(acother)) { //track the invalid target when the attack was valid (also prefer longer ones for the same reason)
 			strcpy(acother, commandExtensionP);
+			strcpy(acandidate, commandWordP); //also track the attack candidate so we can give the "typed nothing"-error-styled error if the player typed nothing
 		}
 	} //from here the attack launching was unsuccessful
 
@@ -978,7 +981,7 @@ int Battle::FIGHT() {
 			} else return 0; //lose
 		} else if (aliveCount(enemyTeam) <= 0) {
 			if (++ewave < enemy->getWaves()) {
-				setupWave(true, ewave, scaleEnemies);
+				setupWave(false, ewave, scaleEnemies);
 				newwave = true;
 			} else return 1; //win
 		}

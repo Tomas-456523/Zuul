@@ -42,10 +42,13 @@ namespace Helper {
 	void applyWorldChange(WorldChange& changes); //apply the changes to the world which are in the given stuff to change
 	void applyWeaponAttack(NPC* player, Item* item); //gives the player the attack the weapon item has, weapon items can be gotten through different places so we have this helper
 	bool getCardinal(const char* direction); //get if the direction given is a cardinal direction
+	const char* getTitle(); //get the title screen text, this is so I can modify it from one place since it gets printed in the beginning but also endings
+	void buildCharNPC(); //reverse the npc to char map so we can get the npc from the char
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
 	extern std::map<NPC*, char> npcChar; //map to find the char that represents each recruitable npc, used by the save system
+	extern std::map<char, NPC*> charNPC; //the last map but reversed
 	
 	extern std::vector<Room*> roomsH; //a bunch of vectors for every object created in the game, so they can all be deleted later
 	extern std::vector<NPC*> npcsH;

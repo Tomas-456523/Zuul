@@ -47,6 +47,7 @@ public: //you need to set stats on creation
 	const char* getName(); //gets the name of the character
 	const char* getDescription(); //gets the description of the character
 	int getID(); //get the npc id of the npc
+	int getParentID(); //get the npc template id, the one this was derived from
 	bool getRecruitable(); //gets the recruitable status of the character
 	bool getDismissable();
 	bool getRecruited(); //gets the recruited status of the npc (if they're already in the party)
@@ -118,6 +119,8 @@ public: //you need to set stats on creation
 	bool getRoaming();
 	Effect* getTargetEffect();
 	bool getBanker();
+	int getBalance();
+	time_t getDepositTime();
 	bool getThief();
 	bool getShark();
 	bool popNoFight();
@@ -307,6 +310,7 @@ protected:
 	Room* currentRoom;
 
 	int id; //npc's index in npcsH
+	int parentid; //the parent's id, for duplicated npcs
 
 	vector<vector<NPC*>> party; //the npc's party if it is a leader (and supports multiple waves)
 

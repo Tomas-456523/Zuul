@@ -11,6 +11,7 @@
 #include <cstring>
 #include <algorithm>
 #include <ctime>
+#include <cctype>
 #include "NPC.h"
 #include "Room.h"
 #include "Item.h"
@@ -371,7 +372,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* casinoback = new Room("in the casino's back room. There's a staircase heading to the basement,\nand crates full of gambling addicts' monies.");
 	Room* casinobase = new Room("in the casino's basement, housing the massive energy core required to power all the lights.");
 	Room* darkalley = new Room("in a dark alley, a characteristic of those about to be mugged.");
-	Room* bankalley = new Room("in a dark alley. There is a really shady bank set up here.\nIf you'd like to deposit your monies, simply USE BANK."); //shady as in it's dark
+	Room* bankalley = new Room("in a dark alley. There is a really shady bank set up here.\nYou can deposit your monies here..."); //shady as in it's dark
 	Room* shrimpartment1 = new Room("in an apartment building. There's a spiral staircase going all the way up.");
 	Room* shrimpartment2 = new Room("on the second floor. The wallpaper has a shrimp pattern.");
 	Room* shrimpartment3 = new Room("on the third floor. There is a cat poster here.");
@@ -2793,7 +2794,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	panepeople->addRejectionDialogue({{NULL, "You walk up to the guys to recruit them."}, {NULL, "GLASS STORE OWNER - \"HEY!\""}, {NULL, "GLASS STORE OWNER - \"STOP STEALING MY GLASS!\""}, {NULL, "GUY 1 - \"Hahahaha! You'll never catch us!\""}, {NULL, "The two guys run away with the pane of glass."}, {self, "..."}});
 
 	NPC* banker = new NPC("SHADY BANKER", "SHAUN", "He is a very reliable banker with a constant smile who has set up this bank in this shady alley.", bankalley, 16);
-	banker->addConversation({{banker, "Hiii, frieeend."}, {banker, "Feel free to leave your monies heeeere with meeee."}, {banker, "They will be saaaafe and sooound..."}});
+	npcChar[banker] = 'n'; //Shaun's character representation is n for the third letter of banker
+	banker->addConversation({{banker, "Hiii, frieeend."}, {banker, "The world can be suuuch a dangerous plaaace..."}, {banker, "This is why I set up this baaank."}, {banker, "Feel free to leave your monies heeeere with meeee."}, {banker, "They will be saaaafe and sooound..."}, {banker, "Just ASK if you'd liiike..."}});
 	banker->setDialogue({{banker, "Hiii, frieeend."}, {banker, "Are you looking to manage your accooount?"}});
 	banker->addRejectionDialogue({{banker, "No, friend."}, {banker, "I'm a banker, not an adventurer."}, {banker, "How can I take care of everyone's monies if I leeave?"}});
 	banker->setBanker();
@@ -4748,6 +4750,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	
 	//MARK: Lobster
 	florian = new NPC(*tunnellobster);
+	npcChar[florian] = 't'; //Florian's character representation is t for tunnel lobster
 	florian->setLobster(tunnels);
 	florian->setLeader(true, 10, desertstation, false);
 	florian->setTunnelDirection(tentstation, TO_THE_VILLAGE);
@@ -5609,6 +5612,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftsink->exitPavings.push(make_tuple(dirtplain, forest, SOUTH, NORTH));
 	ftsink->exitPavings.push(make_tuple(dirtplain, forestright, EAST, WEST));
 	ftsink->exitPavings.push(make_tuple(dirtplain, forestleft, WEST, EAST));
+	ftsink->exitDepavings.push((foresttempleentrance, IN_TEMPLE)); //can't go in the temple anymore
 	ftsink->redirectRooms.push({foresttemplestairs, foresttempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the output antenna (for some reason)
 	ftsink->redirectRooms.push({forestbuffer1, foresttempleentrance});
 	ftsink->redirectRooms.push({forestbuffer2, foresttempleentrance});
@@ -5830,7 +5834,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
 
-	//MARK:
+	buildCharNPC(); //make the reversed char to npc map for the save system now that all the npcs have been registered
 
 	return self; //returns the player character
 }
@@ -6314,19 +6318,6 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		travel(currentRoom, NULL, party, inventory, true, lobster->getHome());
 		return;
 	}
-	if (!strcmp(itemname, "BANK")) { //if using the bank
-		NPC* banker = NULL; //we loop through the rooms npcs to find the banker
-		for (NPC* npc : currentRoom->getNpcs()) {
-			if (npc->getBanker()) {
-				banker = npc;
-				break; //break because the banker was found
-			}
-		}
-		if (banker) { //if we found a banker do the banking
-			banker->depositMonies(mony);
-			return; //return so we don't print error saying "There is no BANK here!"
-		}
-	}
 	//this is actually using item code
 	Item* item = getItemInVector(*inventory, itemname); //finds the item in our inventory
 	char itemName[255] = "";
@@ -6768,7 +6759,13 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 			cout << "\nThere is nobody named \"" << npcname << "\" here.";
 		}
 		return;
-	} 
+	}
+	if (npc->getBanker()) { //if using the bank
+		bool intro = getConvoSize(); //get if this is the first time ASKing the banker, so we don't start the banking yet if so
+		npc->printDialogue(true); //hiiii frieeeeend
+		if (!intro) banker->depositMonies(mony); //start the bank account managing process if this isn't the first time asking the banker
+		return; //return because we already printed the dialogue and stuff
+	}
 	if (NPC* pursuer = npc->getPursuing()) { //if trying to ask the pursuer they just catch the player
 		pursuer->printCatchDialogue();
 		pursuer->doCatchChanges();
@@ -6872,11 +6869,12 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 	}
 }
 
-//prints all the available commands MARK: help
+//prints all the available commands MARK: print help
 void printHelp(const char** validCommands, const char** flavorText, size_t commandAmount, size_t flavorAmount) {
-	cout << "\n"; //prints a random flavor text if we passed any
-	if (flavorText) cout << flavorText[rand() % flavorAmount];
-	cout << "\nCommands:"; //prints all the valid commands
+	if (flavorText) { //prints a random flavor text if we passed any
+		cout << "\n" << flavorText[rand() % flavorAmount];
+	}
+	cout << "\nCommands: "; //prints all the valid commands (the trailing space is important to replace the final period of the Loading... after quitting)
 	for (int i = 0; i < commandAmount; i++) {
 		cout << "\n" << validCommands[i];
 	}
@@ -6901,8 +6899,7 @@ bool saveWorld(Save*& save, vector<Item*>* inventory, int monies, time_t& saveti
 			} //the YES path continues down to that return false down there
 		}
 	}
-	cout << "\rLoading..."; //it's loading the loading screen (and deleting the world since we're leaving the game in this path)
-	return false;
+	return false; //quit the game in addition to saving
 }
 
 //make sure the player is really sure about quitting without saving, and return if we are continuing MARK: confirm quit
@@ -6923,8 +6920,7 @@ bool confirmQuit(time_t savetime) {
 		cout << "\nAlrighty then."; //carry on message
 		return true;
 	}
-	cout << "\rLoading..."; //it's loading the loading screen (and deleting the world since we're leaving the game in this path)
-	return false;
+	return false; //yep the player did indeed want to quit
 }
 
 //the main game function for exploring the world MARK: play
@@ -6982,7 +6978,7 @@ void play(Save*& save) {
 	};
 
 	if (!save) { //if no existing save was provided, do the new game process, starting with the welcome message!
-		cout << "Welcome to BURGER QUEST 2: ELECTRIC BOOGALOO!\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
+		cout << "\rWelcome to BURGER QUEST 2: ELECTRIC BOOGALOO!\nYou're going on a quest to get a BURGER (not to be confused with a burger).\nType HELP for help.\n";
 
 		//you get to name yourself!
 		cout << "\n             (type your name here!)\nYour name is ";
@@ -7017,7 +7013,7 @@ void play(Save*& save) {
 
 		CinIgnoreAll(); //clears extra characters or invalid input
 	} else { //welcome the player back if they are using existing save data
-		cout << "\nWelcome back!";
+		cout << "\rWelcome back!";
 		CinPause();
 	}
 
@@ -7092,6 +7088,8 @@ void play(Save*& save) {
 
 		if (WorldState[GAMEEND]) continuing = false; //if we got an ending, we quit the game
 	}
+
+	cout << "\nLoading..."; //it's loading the main menu
 	
 	//deletes all the rooms
 	for (Room* room : roomsH) {
@@ -7111,14 +7109,45 @@ void play(Save*& save) {
 	}
 	relaysH.clear(); //get rid of the shared pointers
 	npcID = 0; //we just deleted all the npcs so reset the npc ID
+
+	if (WorldState[GAMEEND]) { //give a unique title screen that says continue instead of begin after getting an ending
+		cout << getTitle() << "\nPress ENTER to continue.";
+		CinPause();
+	}
+}
+
+//loads all the saves the player has in their files, we call this every time we do one of the other commands to make sure it's up to date with anything modified externally MARK: load saves
+//this only works if all the files are in the format saveN.bq2 and there are no gaps, which should be the case unless the player was messing around with the files, which isn't my fault
+void loadSaves(vector<Save*>& saves) {
+	for (Save* save : saves) delete save; //delete all the old saves
+	saves.clear(); //reset the vector in case we were reloading
+	char filename[255]; //we use this to get the current name of the file
+	//load all the saves in the order of the number in their name
+	for (size_t i = 1;; i++) {
+		snprintf(filename, 255, "save%d.bq2", i); //get what the name of the current file should be
+		ifstream savefile(filename); //try to get the file
+		if (!savefile) break; //stop getting files if no such file was found
+		savefile.seekg(0, ios::end); //go to the end of the file so we can get the length via tellg
+		streamsize filelen = savefile.tellg(); //get the length of the save file data
+		savefile.seekg(0, ios::beg); //go to the beginning of the file so we can read it normally
+		char* savedata = new char[filelen+1]; //allocate a charray to write the data into
+		savefile.read(savedata, filelen); //write the save file data into the charray so the program can use it
+		savedata[filelen] = '\0'; //null terminate the data
+		saves.push_back(new Save(savedata)); //make a new save file with the new data
+		delete[] savedata;
+	}
 }
 
 //print a list of all the player's saves MARK: print saves
 void printSaves(vector<Save*>& saves) {
+	loadSaves(saves); //load the saves from the files to stay up to date
 	//for each save, print their number, the player level, their monies, and total game time
 	//example: SAVE 1 - SELF, Lvl 15, 12980 Monies, 5h 56m 7s
 	//error text: SAVE 8 - Save data is faulty.
 	//we still load faulty saves (from the file system) to preserve save number
+
+	//MARK: MAKE IT ACTYUALLT PRINT THE STUFF
+
 	for (size_t i = 0; i < saves.size(); i++) {
 		Save* save = saves[i];
 		cout << "\nSAVE " << i << " - ";
@@ -7127,63 +7156,154 @@ void printSaves(vector<Save*>& saves) {
 
 //make a new game and manage the NULL member of the saves vector if the player saved it MARK: new game
 void newGame(vector<Save*>& saves) {
+	loadSaves(saves); //load the saves from the files to stay up to date
 	saves.push_back(NULL); //push a null save so we can put the Save* there if we make one
 	Save*& savey = saves.back(); //get a reference to the NULL thingy
+	cout << "\nLoading..."; //print loading text in case SetupWorld takes a noticeable amount of time
 	play(savey); //play the game with the reference to the NULL save
 	if (!savey) saves.pop_back(); //if we didn't save before quitting, we get rid of the NULL thingy
 }
 
-//load an existing save MARK: load save
-void loadSave() {
+//try to interpret what the player typed as a file number MARK: interpret file num
+int getFileNum(const char* savename) {
+	if (!strncmp(savename, "SAVE ", 5)) savename += 5; //ignore the "SAVE " so we just read the number
+	long long num = 0; //build up the number here, long long so we can detect > INT_MAX instead of just overflowing and doing something weird
+	bool foundnum = false; //if we found a number so we can differentiate between a "we did nothing" 0 and "the player typed 0" 0
+	for (; isdigit((unsigned char)*savename); savename++) { //keeps going until we run out of numbers
+		num = num*10 + (*savename-'0'); //move the number digits forward
+		foundnum = true; //we found a number! because the thing went at all
+		if (num > 2147483647) return -1; //we went past the int limit, this is definitely not a valid save number so return error number
+	}
+	if (!foundnum || *savename != '\0') return -1; //we return an error number because we either didn't find any numbers or there was stuff after the number(s)
+	return num; //return the number we found!
+}
 
+//load an existing save MARK: load save
+void loadSave(vector<Save*>& saves, const char* savename) {
+	loadSaves(saves); //load the saves from the files to stay up to date
+	if (saves.empty()) { //error because nothing the player could possibly try would load a nonexistant save
+		cout << "\nYou don't have any saves, try starting a NEW GAME!";
+		return;
+	} if (!strcmp(savename, "")) { //player said to load but didn't say what
+		cout << "\nLoad what?";
+		return;
+	}
+	int num = getFileNum(which); //get the save file the player is trying to access
+	if (num < 0) { //<0 num means error number, so we print that the input was bad + instructions
+		cout << "\nInvalid save name \"" << savename << "\". (Must be SAVE [number] or just [number])";
+		return;
+	} if (!num) { //there is no save 0, so clarify that in case it wasn't clear
+		cout << "\nThere's no save 0.";
+		return;
+	} if (num > saves.size()) { //let the player know they are going over the amount they can choose from
+		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
+		return;
+	} //valid save number! play the game with the save we found!
+	cout << "\nLoading..."; //print loading text in case SetupWorld takes a noticeable amount of time
+	play(saves[num-1]); //decrement since we start at 1 and not 0
 }
 
 //delete one of the saves and rearrange the files accordingly MARK: delete save
-void deleteSave() {
-	
+void deleteSave(vector<Save*>& saves, const char* savename) {
+	loadSaves(saves); //load the saves from the files to stay up to date
+	if (saves.empty()) { //error because there's nothing to delete
+		cout << "\nYou don't have any saves to delete.";
+		return;
+	} if (!strcmp(savename, "")) { //player said to delete but didn't say what
+		cout << "\nDelete what?";
+		return;
+	}
+	int num = getFileNum(savename); //get the save file the player is trying to delete
+	if (num < 0) { //<0 num means error number, so we print that the input was bad + instructions
+		cout << "\nInvalid save name \"" << savename << "\". (Must be SAVE [number] or just [number])";
+		return;
+	} if (!num) { //there is no save 0, so clarify that in case it wasn't clear
+		cout << "\nThere's no save 0.";
+		return;
+	} if (num > saves.size()) { //let the player know they are going over the amount they can choose from
+		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
+		return;
+	} //MARK: make it get the time!!!!
+	cout << "\nYou have " << "[][][][][][][]" << " of playtime on SAVE " << num << ".\nAre you sure you want to delete it? (YES or NO)";
+	if (!AOrB(NULL, "YES", "NO")) { //make sure the player is really sure about this because it's a very destructive action
+		cout << "\nAlrighty then; did not delete SAVE " << num << ".";
+		return;
+	} //valid save number, so start deleting it
+	char filename[255];
+	snprintf(filename, 255, "save%d.bq2", num); //get what the name of the file should be
+	if (remove(filename)) { //try to delete the file from the system
+		cout << "\nFailed to delete the file \"save" << num << ".bq2\"."; //give error message to give the player a heads up
+		return; //and return cause we couldn't delete it so we're not sure what to do now
+	} //rename all the other files, so that the program can recognize them
+	cout << "\nSuccessfully deleted SAVE " << num << "!"; //delete the file corresponding to the save, then success text!
+	int total = saves.size();
+	char newname[255]; //we use this to rename the files after the deleted one
+	for (int i = num+1; i <= total; i++) { //start with the file after the one we just deleted and go until we've renamed the last file which should correspond with the size of the saves vector
+		snprintf(filename, 255, "save%d.bq2", i); //decrement their number
+		snprintf(newname, 255, "save%d.bq2", i-1);
+		if (rename(filename, newname)) { //try to rename the file, and do error stuff if it fails
+			CinPause(); //pause and give these instructions if something went wrong
+			cout << "\nFailed to rename the file \"save" << i << ".bq2\".\nThe game may not recognize some files; ensure there is no gap in the files' numbers by renaming them.\n(i.e. There must be a save" << i-1 << ".bq2 for the game to recognize save" << i << ".bq2 and onward)";
+			return; //return because there was an issue so yeah
+		}
+	}
+	//don't modify the internal saves because they get reloaded on every command anyway
 }
 
 //import save data and try to make a save file for it MARK: import save
-void importSave() {
-	int i = 2398; //MARK: make this actually be determined
-	cout << "\nSuccessfully imported your save data into SAVE " << i << "!";
+void importSave(vector<Save*>& saves, const char* savedata) {
+	if (!strcmp(savedata, "")) { //player said to import but didn't say what
+		cout << "\nImport what?";
+		return;
+	}
+	//get rid of leading whitespace (I thought it would be fair just for this command, since you might accidentally copy some whitespace along with the text). Trailing whitespace is handled by the save constructor
+	while (isspace((unsigned char)*savedata)) savedata++;
+	if (false) { //MARK: make it actually detect it
+		cout << "\nThis save data is faulty and cannot be imported. Make sure your pasted text starts with \"BQ2\" and ends with \"=\".";
+		return;
+	}
+
+	loadSaves(saves); //load the saves from the files to stay up to date
+	char filename[255]; //get the name of the new file
+	snprintf(filename, 255, "save%d.bq2", saves.size()+1);
+	ofstream newfile(filename); //make the new file and write into it the new data
+	if (!newfile) { //print error if something went wrong
+		cout << "\nFailed to create new save file.";
+		return;
+	}
+	newfile << savedata;
+	cout << "\nSuccessfully imported your save data into SAVE " << saves.size()+1 << "!"; //success text!
+	//the new save will be added to the vector at the start of each function via their reload
 }
 
 //export save data in a copy-pastable way MARK: export save
-void exportSave() {
-	cout << "\nHere is your save data!\n\n";
-
-	//MARK: print save data
-
-	cout << "\n\nMake sure to copy everything between the BQ2 and = (including the BQ2 and =)."
+void exportSave(vector<Save*>& saves, const char* savename) {
+	loadSaves(saves); //load the saves from the files to stay up to date
+	if (saves.empty()) { //error because there's nothing to export
+		cout << "\nYou don't have any saves to export.";
+		return;
+	} if (!strcmp(savename, "")) { //player said to export but didn't say what
+		cout << "\nExport what?";
+		return;
+	}
+	int num = getFileNum(savename); //get the save file the player is trying to export
+	if (num < 0) { //<0 num means error number, so we print that the input was bad + instructions
+		cout << "\nInvalid save name \"" << savename << "\". (Must be SAVE [number] or just [number])";
+		return;
+	} if (!num) { //there is no save 0, so clarify that in case it wasn't clear
+		cout << "\nThere's no save 0.";
+		return;
+	} if (num > saves.size()) { //let the player know they are going over the amount they can choose from
+		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
+		return;
+	}
+	cout << "\nHere is your save data!\n\n" //print all the save data so the player can copy it, pretty straightforward
+		 << saves[num-1]->data;
+		 << "\n\nMake sure to copy everything between the \"BQ2\" and \"=\" (including the BQ2 and =)."
 			"\nYou're probably in a terminal, so prefer Ctrl + Insert or Ctrl + Shift + C over Ctrl + C."
 			"\nIMPORT this save data whenever you want to use it!"
 			"\nI am not responsible for issues with your game if you manually edit your save file."
 			"\nStore it in a safe location!";
-}
-
-//loads all the saves the player has in their files MARK: load saves
-//this only works if all the files are in the format saveN.bq2 and there are no gaps, which should be the case unless the player was messing around with the files, which isn't my fault
-void loadSaves(vector<Save*>& saves, bool reload = false) {
-	for (Save* save : saves) delete save; //delete all the old saves
-	saves.clear(); //reset the vector in case we were reloading
-	char filename[255]; //we use this to get the current name of the file
-	//load all the saves in the order of the number in their name
-	for (size_t i = 0;; i++) {
-		snprintf(filename, 255, "save%d.bq2", i); //get what the name of the current file should be
-		ifstream savefile(filename); //try to get the file
-		if (!savefile) break; //stop getting files if no such file was found
-		streamsize filelen = savefile.tellg(); //get the length of the save file data
-		char* savedata = new char[filelen+1]; //allocate a charray to write the data into
-		savefile.read(savedata, filelen); //write the save file data into the charray so the program can use it
-		savedata[filelen] = '\0'; //null terminate the data
-		saves.push_back(new Save(savedata)); //make a new save file with the new data
-		delete[] savedata;
-	}
-	if (reload) { //tells the player what just happened and how many files were found during the reloading
-		if (saves.size()) cout << "\nSaves successfully reloaded! Found " << saves.size() << " saves.";
-		else cout << "\nNo save files were found."; //lets the player know there were no save files found
-	}
 }
 
 //the title screen! MARK: main (title screen)
@@ -7195,21 +7315,14 @@ int main() {
 		"SAVES",
 		"NEW GAME",
 		"LOAD [save file]",
-		"DELETE [save file]"
+		"DELETE [save file]",
 		"IMPORT [save data]",
 		"EXPORT [save file]",
-		"RELOAD",
 		"HELP",
 		"EXIT"
 	};
 
-	cout << "\nBURGER QUEST 2:"
-			"\nELECTRIC BOOGALOO"
-			"\n"
-			"\nVersion Alpha 0.8"
-			"\n(c) 2026 Tomas Carranza Echaniz"
-			"\n"
-			"\nPress ENTER to begin." << fixed << setprecision(2);
+	cout << "\n" << printTitle() << "\nPress ENTER to begin." << fixed << setprecision(2);
 
 	CinPause();
 
@@ -7217,7 +7330,7 @@ int main() {
 	loadSaves(saves); //get all the player's saves
 
 	printHelp(validCommands, NULL, 7, 0); //prints what to do right off the bat
-	cout << "\nWhat would you like to do?"; //beginning prompt
+	cout << "\n\nWhat would you like to do?"; //beginning prompt
 	
 	bool promptline = true;
 	bool continuing = true; //we continue until the player quits
@@ -7237,21 +7350,19 @@ int main() {
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
 
 		if (!strcmp(commandWord, "SAVES")) { //for printing out all the save files
-			
+			printSaves(saves);
 		} else if (!strcmp(command, "NEW GAME")) { //for starting a new save file
-			
+			newGame(saves);
 		} else if (!strcmp(commandWord, "LOAD")) { //for loading an existing save file
-			
+			loadSave(saves, commandExtension);
 		} else if (!strcmp(commandWord, "DELETE")) { //for deleting a file
-			
+			deleteSave(saves, commandExtension);
 		} else if (!strcmp(commandWord, "IMPORT")) { //for importing save data from elsewhere (this and export are in case I ever put this on a website or something where you can't access the files easily)
-			
+			importSave(saves, commandExtension);
 		} else if (!strcmp(commandWord, "EXPORT")) { //for exporting save data in a copy-pastable way
-			
-		} else if (!strcmp(commandWord, "RELOAD")) { //for reloading your save files to match the os files
-			loadSaves(saves, true);
+			exportSave(saves, commandExtension);
 		} else if (!strcmp(commandWord, "HELP")) { //for asking what the valid commands are
-			printHelp(validCommands, NULL, 9, 0);
+			printHelp(validCommands, NULL, 8, 0);
 		} else if (!strcmp(commandWord, "EXIT")) { //for exiting the game
 			continuing = false;
 		} else if (!strlen(command)) { //don't print error if the player just entered nothing

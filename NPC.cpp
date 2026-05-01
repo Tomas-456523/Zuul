@@ -30,7 +30,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 		party.push_back({this});
 	}
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
-	id = npcID++; //get this npc's id and increment it for the next one
+	parentid = id = npcID++; //get this npc's id and increment it for the next one, parent id is just itself for parentless npcs
 
 	if (!_basestats.empty()) basestats = _basestats; //set base stats if specified ones were passed
 	else basestats = Stats::genBaseStats(id); //if none were passed, generate some new ones
@@ -53,6 +53,7 @@ NPC::NPC(const NPC& other) { //copy constructor, we do not need to set the stats
 	*this = other;
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 	id = npcID++; //get this npc's id and increment it for the next one
+	//the old parent id stays the same, tying to the initial instance of this npc type
 }
 //a bunch of functions for getting npc varaibles
 const char* NPC::getTitle() {
@@ -64,8 +65,13 @@ const char* NPC::getName() {
 const char* NPC::getDescription() {
 	return description;
 }
+//get the npc id of the npc
 int NPC::getID() {
-	return id;	
+	return id;
+}
+//get the npc template id, the one this was derived from
+int NPC::getParentID() {
+	return parentid;
 }
 void NPC::printRejectionDialogue() {
 	printDialogue(true, &rejectionDialogue.front());
@@ -182,7 +188,7 @@ pair<Room*, const char*>& NPC::getPurPlayerData() {
 //get coordinates relative to the pursuit grid
 pair<int, int> NPC::getPurPos(Room* room) {
 	for (int i = 0; i < pursueRooms.size(); i++) {
-		for (int j = 0; j < pursueRooms.size(); j++) {
+		for (int j = 0; j < pursueRooms[i].size(); j++) {
 			if (room == pursueRooms[i][j]) {
 				return {i, j};
 			}
@@ -204,8 +210,8 @@ Effect* NPC::getFightLeadEffect() {
 }
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
-	pos.first = Clamp(pos.first, 0, pursueRooms.size());
-	pos.second = Clamp(pos.second, 0, pursueRooms[0].size());
+	pos.first = Clamp(pos.first, 0, pursueRooms.size()-1);
+	pos.second = Clamp(pos.second, 0, pursueRooms[0].size()-1);
 	return pursueRooms[pos.first][pos.second];
 }
 bool NPC::getLeader() {
@@ -369,6 +375,12 @@ Effect* NPC::getTargetEffect() { //get the effect this npc like to prioritize wh
 }
 bool NPC::getBanker() {
 	return banker;
+}
+int NPC::getBalance() {
+	return depositedmonies;
+}
+time_t NPC::getDepositTime() {
+	return deposittime;
 }
 bool NPC::getThief() {
 	return thief;
@@ -870,6 +882,7 @@ void NPC::setBaseStats(Stats _stats) { //reset base stats and calculate new curr
 }
 void NPC::setBasicAttack(Attack* attack) {
 	standard_attack = attack;
+	calculateWeights();
 }
 void NPC::setRecoilAttack(Attack* attack, bool contact) {
 	recoilattack = attack;
@@ -883,9 +896,11 @@ void NPC::setOpener(Attack* attack) {
 }
 void NPC::addSpecialAttack(Attack* attack) {
 	special_attacks.push_back(attack);
+	calculateWeights();
 }
 void NPC::removeSpecialAttack(Attack* attack) {
 	special_attacks.erase(remove(special_attacks.begin(), special_attacks.end(), attack), special_attacks.end());
+	calculateWeights();
 }
 void NPC::setEscapable(bool _escapable) {
 	escapable = _escapable;
