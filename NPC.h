@@ -291,7 +291,7 @@ public: //you need to set stats on creation
 	void setLobsterChanges(const WorldChange& changes); //set lobster changes for that one scene
 	void doLobsterChanges(); //does the lobster changes
 
-	const char* getTunnelDirection(Room* room); //gets the direction back to the given room from the tunnels (for lobster only)
+	void paveTunnel(Room* room); //paves an exit back to the given room from the tunnels (for lobster only)
 	void setTunnelDirection(Room* room, const char* direction); //sets tunnel directions (for lobster only)
 
 	void defeat(); //set the enemy to defeated and do a bunch of defeated processes if applicable

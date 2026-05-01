@@ -6468,7 +6468,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		}
 		//sets the tunnel exit back to the station. This way, you can only go to a station if you've already been there
 		//a side effect is that the desert fast travel is whichever one you fast travelled from first (since there's two), but they're right next to each other so it doesn't really matter
-		npc->getHome()->setExit(npc->getTunnelDirection(currentRoom), currentRoom);
+		npc->paveTunnel(currentRoom);
 	//donation?????
 	} else if (!strcmp(item->getType(), "toll")) {
 		TollItem* toll = (TollItem*)item;

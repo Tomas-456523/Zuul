@@ -490,8 +490,8 @@ void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc t
 void NPC::setRecruitCondition(size_t cond) {
 	recruitcondition = cond;
 }
-const char* NPC::getTunnelDirection(Room* room) { //gets the direction back to the lobster's current position from the tunnel
-	return tunnelLinks[room];
+void NPC::paveTunnel(Room* room) { //sets the direction back to the lobster's current position from the tunnel
+	home->setExit(tunnelLinks[room], currentRoom);
 }
 Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because there's only one gift
 	if (battleReward) return NULL; //don't give gift if you have to fight first

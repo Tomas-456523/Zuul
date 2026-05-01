@@ -48,7 +48,7 @@ struct Save {
 	*    t - Florian	n - Banker
 	*  - Then level, xp, room, and finally, time left in gym (0 if not in gym)
 	*  - Everything connected to the NPC is seperated by .
-	*  - So, this section would look something like: R'f[level].[xp].[room].[gym time]
+	*  - So, this section would look something like: Rf[level].[xp].[room].[gym time]
 	*  Section P: What the player's party actually is, using the above codes (e.g. ajbhl) would mean a party of Self, Michelin, Ratman, Henry Jerry, and Jilly in that order
 	*  Section E: Enemy types that have been encountered
 	*  Section I: Every item's room, or -1 if it's in the inventory (saved in order, so the items in the rooms and in the inventory remain in the same order) (-1 instead of 0 because 0 is a valid room ID, being limbo, so -1 translates to NULL room here)
@@ -90,6 +90,12 @@ struct Save {
 	//MARK: make sure these are deleted at some point
 	static char* sectionW; //build section W as we play
 	static char* sectionT; //build section T as we play
+
+	static int stats[18] = {0}; //count how many times we used each command
+	static long long damagedealt;
+	static long long damagerecieved;
+	static int knockouts;
+	static int invalidmove;
 
 	static vector<Save*> getSaves
 
