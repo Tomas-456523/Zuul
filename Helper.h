@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <set>
 
 class Room;
 class NPC;
@@ -15,6 +16,7 @@ struct Attack;
 struct Effect;
 struct Conversation;
 struct WorldChange;
+struct Save;
 
 namespace Helper {
 	void CinIgnoreAll(bool force = false); //clears extra or faulty input
@@ -44,9 +46,13 @@ namespace Helper {
 	bool getCardinal(const char* direction); //get if the direction given is a cardinal direction
 	const char* getTitle(); //get the title screen text, this is so I can modify it from one place since it gets printed in the beginning but also endings
 	void buildNPCData(); //set up all the npc maps, including reversing the npc to char map so we can get the npc from the char
-	NPC* getBase(NPC* npc); //go to the parents until we reach the template
+	const NPC* getBase(const NPC* npc); //go to the parents until we reach the template
+	void emptyExterns(); //reset all the external maps and thingymadoodles to not be full of garbage data
+	void loadSaves(); //update the saves here to match the file system's save files
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
+	extern std::vector<Save*> saves; //all the player's saves
+
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
 	extern std::map<NPC*, char> npcChar; //map to find the char that represents each recruitable npc, used by the save system
 	extern std::map<char, NPC*> charNPC; //the last map but reversed
@@ -61,24 +67,30 @@ namespace Helper {
 	//these are a bunch of stuff that the save system uses that we track as we play the game
 
 	extern char* sectionW; //build section W as we play
-	extern char* sectionT; //build section T as we play
+	extern Room* sectionT[5]; //edit section T as we play
 
-	extern int stats[18]; //count how many times we used each command
+	extern int commandcount[18]; //count how many times we used each command
+	extern int invalidcommand;
 	extern int invalidmove;
+	extern int invalidnpc;
+	extern int invaliditem;
+	extern long long nothingtosay; //how many times player entered nothing into a >, long long since you can just hold down ENTER so theoretically you could inflate this stat a lot easily
+	extern int actionwhat; //how many times the player tried to use a command but never specified who or what the command was directed towards
 	extern int sessions; //how many times the player has booted up this save
+	double playtime; //total time the player has played in this save for
 
 	//track these for every teammate
 	extern std::map<NPC*, int> attackslaunched; //how many times each npc attacked
 	extern std::map<NPC*, int> helpslaunched; //how many times each npc did a beneficial attack
 	extern std::map<NPC*, long long> damagedealt; //total damage this npc has dealt
 	extern std::map<NPC*, long long> healthhealed; //total healing this npc has done to other npcs
-	extern std::map<NPC*, long long> healthrecovered; //how much this npc has healed in total
 	extern std::map<NPC*, long long> damagerecieved; //how much damage this npc has tanked
+	extern std::map<NPC*, long long> healthrecovered; //how much this npc has healed in total
 	extern std::map<NPC*, int> knockouts; //how many npcs this npc incapacitated
 	extern std::map<NPC*, int> revives; //how many npcs this npc recapacitated
 
-	extern set<NPC*> encountered; //all the npcs we've ever fought
-	extern set<NPC*> recruited; //all the npcs we've ever recruited
+	extern std::set<NPC*> encountered; //all the npcs we've ever fought
+	extern std::set<NPC*> recruited; //all the npcs we've ever recruited
 
 	extern int npcID; //ids for the npcs (their index in npcsH) so we can track them in the save system and also for determining their random stat scale deterministically
 	extern int roomID; //ids for the items and rooms so it's easier to find their place in the vectors from the save system

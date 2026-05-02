@@ -213,7 +213,7 @@ void Battle::handleKnockout(NPC* npc) {
 
 	//remove bond effects from the parent
 	if (npc->getOpener() && npc->getOpener()->appliedeffect && npc->getOpener()->appliedeffect->bond) {
-		NPC* leader = (!npc->getParent() ? (npc->getEnemy() ? enemyTeam : playerTeam)[0] : npc->getParent());
+		NPC* leader = (!npc->getSummoner() ? (npc->getEnemy() ? enemyTeam : playerTeam)[0] : npc->getSummoner());
 		detatchEffect(leader->removeEffect(npc->getOpener()->appliedeffect, npc));
 		if (leader->popKO()) handleKnockout(leader); //handle ko stuff if the leader was just incapacitated due to fall damage
 	}
@@ -457,8 +457,10 @@ bool Battle::useItem(const char* itemname) {
 			if (npc == NULL) {
 				if (item->getForEnemy()) { //if it was for targeting the enemy
 					cout << "\nThere is nobody named \"" << npcName << "\" on the enemy team!";
+					invalidnpc++;
 				} else { //if it was for targeting your team
 					cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
+					invalidnpc++;
 				}
 				return false;
 			} else if (npc->getAway()) { //can't use item on missing npc
@@ -470,7 +472,13 @@ bool Battle::useItem(const char* itemname) {
 		}
 	} //error if you have no item of the given name
 	if (item == NULL) {
-		cout << "\nYou have no \"" << itemname << "\".";
+		if (!strcmp(itemname, "")) { //didn't say what to use
+			cout << "\nUse what?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
+		} else { //they have no whatever the player typed
+			cout << "\nYou have no \"" << itemname << "\".";
+			invaliditem++;
+		}
 		return false;
 	//if the item needed a target but none was given
 	} else if (item->getTargetNeeded() && npc == NULL) {
@@ -548,6 +556,7 @@ bool Battle::useItem(const char* itemname) {
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
 		cout << "\n" << info->getText(); //prints the info item's information
+		commandcount[3]++; //increment successful item usings
 		return false;
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items are another way of just using their attack
 		WeaponItem* weapon = (WeaponItem*)item;
@@ -559,6 +568,7 @@ bool Battle::useItem(const char* itemname) {
 	if (item->getConsumable()) {
 		deleteItem(NULL, inventory, item);
 	}
+	commandcount[3]++; //increment successful item usings because we just successfully used an item if we're at this point
 	return true; //if we got here everything went well so we return true to move on from the player's turn
 }
 //prints the given team's data MARK: print team
@@ -587,27 +597,37 @@ void Battle::printInventory() {
 	for (Item* item : *inventory) { //prints all the items like normal
 		cout << "\n" << item->getName();
 	}
+	commandcount[7]++; //increment successful inventorying
 }
 //prints all the members of the player party MARK: print party
 void Battle::printParty() {
 	cout << "\nMembers of your party:";
 	printTeam(playerTeam, true, true); //we print their sp and level, and we do print fainted teammates
+	commandcount[8]++; //increment successful partying
 }
 //prints all the members of the enemy party
 void Battle::printEnemies() {
 	cout << "\nEnemy party:";
 	printTeam(enemyTeam, true, false, false); //we do not print their sp but yes their level, and not the fainted enemies
+	commandcount[16]++; //increment successful enemiesing
 }
 //prints an analysis of the given item or npc MARK: analyze
 void Battle::analyze(const char* name) {
+	if (!strcmp(name, "")) { //player typed nothing to analyze how silly
+		cout << "\nAnalyze what?";
+		actionwhat++; //didn't specify so we increment the didn't specify stat
+		return;
+	}
 	NPC* npc = getNPCInVector(everyone, name); //finds the npc in the list of everyone
 	if (npc != NULL) { //prints the data!
 		printNPCData(npc, true);
+		commandcount[11]++; //increment successful analyzing
 		return;
 	} //finds the item in the inventory, no ground items here!
 	Item* item = getItemInVector(*inventory, name);
 	if (item != NULL) { //prints the data!
 		printItemData(item);
+		commandcount[11]++; //increment successful analyzing
 		return;
 	} //error message if nothing matches the given name
 	cout << "\nThere is no item or person named \"" << name << "\" here!";
@@ -620,11 +640,13 @@ void Battle::printHelp() {
 	for (int i = 0; i < 9; i++) { //prints all the valid commands
 		cout << "\n" << validCommands[i];
 	}
+	commandcount[14]++; //increment successful helping
 }
 //tries to escape the battle MARK: run away
 bool Battle::runAway() {
 	if (escapable) {
 		cout << "\nYou successfully ran away!";
+		commandcount[17]++; //increment successful running
 		CinPause();
 	} else {
 		cout << "\nThere is no escape.";
@@ -708,6 +730,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 	else if (strlen(tcother)) cout << "\nInvalid command or attack \"" << tcother << "\". (Type HELP for help)"; //invalid attack or command error
 	else if (strlen(acother)) cout << "\nInvalid target \"" << acother << "\". (Type HELP for help)"; //invalid target error
 	else cout << "\nInvalid command or attack \"" << commandP << "\". (Type HELP for help)"; //"their whole input was inilegible" error
+
+	//MARK: invalidcommand++; //this was an invalid command so yeah increment it
+
+	//MARK: [attack] what?
 		
 	return false; //nothing was successfully launched
 }
@@ -724,6 +750,7 @@ bool Battle::playerTurn(NPC* plr) {
 		char commandExtension[255]; //the rest of the command
 
 		if (promptline) cout << "\n"; //print a newline for the > if we should
+		else nothingtosay++; //player said nothing so increment the number
 		cout << "> "; //prompt to input something
 		cin.getline(command, 255); //gets the player input
 		AllCaps(command); //capitalizes the input
@@ -831,13 +858,13 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 	}
 	if (attack->prioritizeleader) { //leader-prioritizing moves either prioritize their parent or team leader depending on if they're a summon or not, or if they're hypnotized
 		//if there is no parent or the parent is not in the same team (meaning the npc is hypnotized or just targetting the other team's leader), we default to the team leader
-		NPC* leader = ((!npc->getParent() || !getNPCInVector(choices, npc->getParent()->getName())) ? choices[0] : npc->getParent()); //or just choose the actual parent
+		NPC* leader = ((!npc->getSummoner() || !getNPCInVector(choices, npc->getSummoner()->getName())) ? choices[0] : npc->getSummoner()); //or just choose the actual parent
 		//check if the leader is one of the available targets and choose it if so
 		if (getNPCInVector(targets, leader->getName())) return {leader};
 	}
 	if (attack->prioritizenonleader) { //non-leader-prioritizing moves prioritize not hitting the leader
 		//if there is no parent or the parent is not in the same team (meaning the npc is hypnotized or just targetting the other team's leader), we default to the team leader
-		NPC* leader = ((!npc->getParent() || !getNPCInVector(choices, npc->getParent()->getName())) ? choices[0] : npc->getParent()); //or just choose the actual parent
+		NPC* leader = ((!npc->getSummoner() || !getNPCInVector(choices, npc->getSummoner()->getName())) ? choices[0] : npc->getSummoner()); //or just choose the actual parent
 		//if removing the leader wouldn't make it an empty list, we try to filter it out
 		if (targets.size() != 1) targets.erase(remove(targets.begin(), targets.end(), leader), targets.end());
 	}

@@ -5859,7 +5859,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 }
 
 //prints all the properties of the given room MARK: print room data
-void PrintRoomData(Room* currentRoom, NPC* player = NULL) {
+void PrintRoomData(Room* currentRoom, NPC* player = NULL, bool track = false) {
 	currentRoom->printWelcome(); //some rooms have messages they print on arrival
 	cout << "\nYou are " << currentRoom->getDescription();
 	currentRoom->printExits();
@@ -5867,6 +5867,7 @@ void PrintRoomData(Room* currentRoom, NPC* player = NULL) {
 	currentRoom->printItems();
 	currentRoom->printStock(); //prints buyable items in this room
 	currentRoom->printBlocks(); //prints which exits are blocked
+	if (track) commandcount[10]++; //increment successful room data printing
 	if (player && player->getPursuer()) { //print pursuer logic if needed
 		NPC* pursuer = player->getPursuer();
 		pair<int, int> pcoords = pursuer->getPurPos(currentRoom);
@@ -5902,11 +5903,14 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 	if (roomCanidate == NULL) {
 		if (!strcmp(direction, "")) { //give a better-looking error message than Invalid direction ""
 			cout << "\nGo where?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
 		//if the player gave a direction that doesn't match the commonly given ones, we call it an invalid direction
 		} else if (!getCardinal(direction)) {
 			cout << "\nInvalid direction \"" << direction << "\".";
+			invalidmove++; //we tried to move in a nonexistant direction so increment that counter
 		} else { //if there was a valid direction
 			cout << "\nThere is no exit in that direction.";
+			invalidmove++; //we tried to move in a nonexistant direction so increment that counter
 		}
 		return;
 	//if there is a valid room to go to, but the exit is blocked
@@ -6011,10 +6015,11 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 	} //do any changes the room might have to make
 	roomCanidate->doEnterChanges();
 	PrintRoomData(roomCanidate, (*party)[0]); //prints the data of the new current room
+	if (!forceTravel) commandcount[0]++; //increment go counter because successful going if this was from the main command getting area
 }
 
 //initiates battle with an npc MARK: fight
-void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, const char* name, int& mony) {
+void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, const char* name, int& mony, bool track = false) {
 	NPC* npc = getNPCInVector(currentRoom->getNpcs(), name); //try to find the given npc in the room
 	if (npc == NULL) { //try to find npc in adjacent exits
 		npc = getNPCInVector(currentRoom->getNpcs(true), name);
@@ -6024,7 +6029,13 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		npc = NULL;
 	}
 	if (npc == NULL || npc->getDefeated()) { //print error message if they're not here (or defeated and not supposed to be there technically)
-		cout << "\nThere is nobody named \"" << name << "\" here.";
+		if (!strcmp(name, "")) { //didn't specify and stuff
+			cout << "\nFight who?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
+		} else {
+			cout << "\nThere is nobody named \"" << name << "\" here.";
+			invalidnpc++; //track that the player tried to interact with this invalid npc
+		}
 		return;
 	}
 	if (NPC* pursuer = npc->getPursuing()) { //if trying to fight the pursuer they just catch the player
@@ -6180,6 +6191,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		}
 	}
 	if (roamio) party->erase(remove(party->begin(), party->end(), roamio), party->end());
+	if (track) commandcount[12]++; //increment successful fighting, as in successfully did the command
 	//prints the room data after battle so that the player can reorient themselves
 	PrintRoomData(currentRoom);
 }
@@ -6192,6 +6204,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	if (item == NULL) {
 		if (!strcmp(itemname, "")) { //better error message than There is no "" here. imo
 			cout << "\nTake what?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
 		//if the player tried to take an item on sale we say you can't steal
 		} else if (getItemInVector(currentRoom->getStock(), itemname) != NULL) {
 			cout << "\nThe " << itemname << " is for sale! You can't just take it.";
@@ -6200,6 +6213,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 			cout << "\nYou're already carrying this item!";
 		} else { //otherwise the player is trying to take something that isn't even there
 			cout << "\nThere is no \"" << itemname << "\" here.";
+			invaliditem++; //track trying to interact with this nonexistant item
 		}
 		return;
 	} //you're not allowed to take items if they're being guarded
@@ -6228,6 +6242,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	item->unRoom(); //removes the item from the room
 	inventory->push_back(item); //adds it to the inventory
 	cout << "\nYou took the " << itemname << ".";
+	commandcount[1]++; //increment successful item takings
 	//taking manhole covers reveals a new exit below! (only the first time you take it)
 	if (!strcmp(item->getType(), "manhole")) {
 		//gets the item in its true form (the subclass)
@@ -6265,8 +6280,10 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	if (item == NULL) { //gives error message if we have no itemname
 		if (!strcmp(itemname, "")) { //cool error message, very natural response
 			cout << "\nDrop what?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
 		} else { //if the player actually did try to drop something weird
 			cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
+			invaliditem++; //track interaction with item not there
 		}
 		return;
 	}
@@ -6283,6 +6300,7 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	//erases the item from the inventory
 	inventory->erase(remove(inventory->begin(), inventory->end(), item), inventory->end());
 	cout << "\nYou dropped the " << itemname << ".";
+	commandcount[2]++; //increment successful item droppenings
 	if (!strcmp(item->getType(), "weapon")) { //weapon items enable the use of their move
 		CinPause();
 		WeaponItem* weapon = (WeaponItem*)item;
@@ -6358,6 +6376,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 				cout << "\nThe " << itemName << " doesn't need a target!";
 			} else if (npc == NULL) { //print if no npc matching the name was found, also since we're not in battle you can only use targeted items on your party
 				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
+				invalidnpc++;
 			}
 			return;
 		//if the item IS null and the name of the item isn't nothing (player didn't "USE " or "USE" <-- like that's the command we're checking for)
@@ -6367,9 +6386,11 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	}
 	if (!strcmp(itemname, "")) { //error message if the player didn't clarify what exactly to use
 		cout << "\nUse what?";
+		actionwhat++; //didn't specify so we increment the didn't specify stat
 		return;
 	} else if (item == NULL) { //print that no item called itemname was found
 		cout << "\nYou have no \"" << itemname << "\".";
+		invaliditem++;
 		return;
 	} else if (NPC* guard = item->getGuard()) { //can't use items being guarded
 		cout << "\nThe " << itemname << " is being guarded by " << guard->getName() << ".";
@@ -6436,6 +6457,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		if (!npc->getLeader()) { //if the lobster is tamed
 			if (npc->getRoom() == currentRoom) { //if the lobster is already here he just dances
 				cout << "\n" << npc->getName() << " did a lobstery dance.";
+				commandcount[3]++; //increment successful item usings
 				return;
 			} //moves the lobster to the station
 			npc->setRoom(currentRoom);
@@ -6527,6 +6549,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
 				printConversation(&mover->getUseText(), true); //prints what exactly the movement item did
 				travel(currentRoom, exit, party, inventory, true); //force travels to the found room
+				commandcount[3]++; //increment successful item usings
 				return; //returns so we don't teleport to another room (and movement items don't get used up anyway, so no need for the deletion check)
 			}
 		} //prints error message if no matching blocked exit was found
@@ -6663,6 +6686,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	if (item->getConsumable()) {
 		deleteItem(currentRoom, inventory, item);
 	}
+	commandcount[3]++; //increment successful item usings because we successfully used the item at this point
 }
 
 //recruit an npc into the player party MARK: recruit
@@ -6676,8 +6700,13 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 		npc = NULL;
 	}
 	if (npc == NULL) { //error message if nobody in the current room is named npcname
-		if (!strcmp(npcname, "")) cout << "\nRecruit who?"; //or if the player typed nothing
-		else cout << "\nThere is nobody named \"" << npcname << "\" here.";
+		if (!strcmp(npcname, "")) { //or if the player typed nothing
+			cout << "\nRecruit who?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
+		} else {
+			cout << "\nThere is nobody named \"" << npcname << "\" here.";
+			invalidnpc++;
+		}
 		return;
 	} //you can't recruit yourself because you're obviously in your own party
 	if (npc->getPlayerness()) {
@@ -6713,6 +6742,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 		printLvlUpData(npc);
 		npc->setGymStart(0); //no longer training so we reset training time
 	}
+	commandcount[4]++; //increment successful recruitings
 }
 
 //decruit npcs from your party MARK: dismiss
@@ -6722,8 +6752,13 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		npc = getNPCInVector(currentRoom->getNpcs(true), npcname);
 	}
 	if (npc == NULL) { //error text if no npc named npcname was found
-		if (!strcmp(npcname, "")) cout << "\nDismiss who?"; //or if the player typed nothing
-		cout << "\nThere is nobody named \"" << npcname << "\" in your party.";
+		if (!strcmp(npcname, "")) { //or if the player typed nothing
+			cout << "\nDismiss who?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
+		} else {
+			cout << "\nThere is nobody named \"" << npcname << "\" in your party.";
+			invalidnpc++;
+		}
 		return;
 	} //you can't dismiss yourself/the main character because that makes no sense
 	if (npc->getPlayerness()) {
@@ -6757,6 +6792,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 	}
 	//sets the npc to dismissed
 	npc->Dismiss(!gym);
+	commandcount[5]++; //increment successful dismissings
 }
 
 //prints anything the targeted npc has to say MARK: print dialogue
@@ -6772,10 +6808,13 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 	if (npc == NULL) { //open the temple if we were just ASKing NICELY and it's the temple quest and we're at a temple entrance
 		if (WorldState[TEMPLEQUEST] && currentRoom->getTempleEntrance() && !strcmp(npcname, "NICELY")) {
 			currentRoom->openTemple();
+			commandcount[6]++; //increment successful askings, this is successful and it's from ask so yeah
 		} else if (!strcmp(npcname, "")) { //error if the player just didn't give a name
 			cout << "\nAsk who?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
 		} else { //error message if no such npc is in the current room
 			cout << "\nThere is nobody named \"" << npcname << "\" here.";
+			invalidnpc++;
 		}
 		return;
 	}
@@ -6783,6 +6822,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		bool intro = npc->getConvoSize(); //get if this is the first time ASKing the banker, so we don't start the banking yet if so
 		npc->printDialogue(true); //hiiii frieeeeend
 		if (!intro) npc->depositMonies(mony); //start the bank account managing process if this isn't the first time asking the banker
+		commandcount[6]++; //increment successful askings
 		return; //return because we already printed the dialogue and stuff
 	}
 	if (NPC* pursuer = npc->getPursuing()) { //if trying to ask the pursuer they just catch the player
@@ -6809,6 +6849,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		cout << "\n";
 		fight(currentRoom, party, inventory, npcname, mony);
 	}
+	commandcount[6]++; //increment successful askings
 }
 
 //prints the player's monies and inventory items MARK: print inventory
@@ -6822,6 +6863,7 @@ void printInventory(vector<Item*>* inventory, int monies) {
 	for (Item* item : *inventory) { //prints the names of each item
 		cout << "\n" << item->getName();
 	}
+	commandcount[7]++; //increment successful inventorying
 }
 
 //prints the player's party MARK: print party
@@ -6834,6 +6876,7 @@ void printParty(vector<NPC*>* party) {
 		}
 		cout << npc->getName() << " - LEVEL " << npc->getLevel();
 	}
+	commandcount[8]++; //increment successful partying
 }
 
 //analyzes either an item or npc of the given name MARK: analyze
@@ -6849,6 +6892,7 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 	if (npc != NULL) { //prints the data of the npc that was found
 		if (npc->getScaleFight()) npc->setLevel((*party)[0]->getLevel()); //if the npc scales to the player's level make sure it's that level before printing the stats
 		printNPCData(npc);
+		commandcount[11]++; //increment successful analyzing
 		return;
 	} //if no npc was found, we try to find an item in the current room
 	Item* item = getItemInVector(currentRoom->getItems(), name);
@@ -6860,11 +6904,16 @@ void analyze(Room* currentRoom, const char* name, vector<NPC*>* party, vector<It
 	} //prints the data of the item if one was found
 	if (item != NULL) {
 		printItemData(item);
+		commandcount[11]++; //increment successful analyzing
 		return;
 	} //error message for not specifying what to analyze
-	if (!strcmp(name, "")) cout << "\nAnalyze what?";
+	if (!strcmp(name, "")) {
+		cout << "\nAnalyze what?";
+		actionwhat++; //didn't specify so we increment the didn't specify stat
+	}
 	//error message for invalid name
 	else cout << "\nThere is no item or person named \"" << name << "\" here.";
+	//can't track this with the fun statistics because idk if the player is trying to analyze an npc or item
 }
 
 //buys an item from the current room's catalogue //MARK: buy
@@ -6873,12 +6922,14 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 	if (item == NULL) { //gives error message based on other conditions
 		if (!strcmp(name, "")) { //if the player didn't give a name for what to buy
 			cout << "\nBuy what?";
+			actionwhat++; //didn't specify so we increment the didn't specify stat
 		} else if (getItemInVector(currentRoom->getItems(), name) != NULL) { //if the item isn't for sale and it's just on the ground or something
 			cout << "\nNobody is selling the " << name << "; you can just take it.";
 		} else if (getItemInVector(*inventory, name) != NULL) { //if you're trying to buy your own item which you already own and are holding
 			cout << "\nYou already own this item!";
 		} else { //error message if no item found of the given name
 			cout << "\nThere is no \"" << name << "\" here.";
+			invaliditem++;
 		}
 		return;
 	} //buys the item, subtracts the cost from the player's mony, and adds it to the inventory
@@ -6886,24 +6937,31 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 	if (item->getStock() <= 0) { //if we bought all of the item, we delete it from the store
 		currentRoom->removeStock(item);
 	}
+	commandcount[13]++; //increment successful buying
 }
 
 //prints all the available commands MARK: print help
-void printHelp(const char** validCommands, const char** flavorText, size_t commandAmount, size_t flavorAmount) {
+void printHelp(const char** validCommands, const char** flavorText, size_t commandAmount, size_t flavorAmount, bool track = false) {
 	if (flavorText) { //prints a random flavor text if we passed any
 		cout << "\n" << flavorText[rand() % flavorAmount];
 	}
-	cout << "\nCommands: "; //prints all the valid commands (the trailing space is important to replace the final period of the Loading... after quitting)
+	cout << "\nCommands: "; //prints all the valid commands
 	for (int i = 0; i < commandAmount; i++) {
 		cout << "\n" << validCommands[i];
 	}
+	if (track) commandcount[14]++; //increment successful helping
 }
 
 //save the game so we can store it as a file, and return if we want to keep going after saving MARK: save world
-bool saveWorld(Save*& save, vector<Item*>* inventory, int monies, time_t& savetime, const char* andwhat) {
+bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat) {
 	cout << "\nSaving..."; //print loading because it looks nice in case there's some lag
 
-	//MARK: save the game
+	if (track) commandcount[15]++; //increment successful saving before actually saving it so it goes in the data
+
+	if (!save) save = new Save("", saves.size()); //make a new Save for the save if it's NULL so it's never been saved before
+	SaveGame(save, monies, savetime); //save the game!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	//MARK: save it to the files MARK
 
 	savetime = time(NULL); //update the time we last saved because we just saved
 
@@ -6922,7 +6980,7 @@ bool saveWorld(Save*& save, vector<Item*>* inventory, int monies, time_t& saveti
 }
 
 //make sure the player is really sure about quitting without saving, and return if we are continuing MARK: confirm quit
-bool confirmQuit(time_t savetime) {
+bool confirmQuit(Save* save, time_t savetime) {
 	long long seconds = difftime(time(NULL), savetime);
 	long long minutes = seconds/60; //use minutes if possible, precise reports of game time
 	seconds %= 60; //get rid of the extra seconds
@@ -6938,6 +6996,27 @@ bool confirmQuit(time_t savetime) {
 	if (!AOrB(NULL, "YES", "NO")) { //get the player choice
 		cout << "\nAlrighty then."; //carry on message
 		return true;
+	}
+	if (!save && WorldState[LAVADRAINED]) { //extra confirmation because why not. I'm not sure why you would go this far writhout saving (and why you would quit without saving after all that)
+		cout << "\nDude you are like really far into the game.\nAre you really sure you want to quit without saving? (YES or NO)";
+		if (!AOrB(NULL, "YES", "NO")) { //get the player choice
+			cout << "\nAlrighty then."; //carry on message
+			return true;
+		}
+	}
+	if (!save && WorldState[TEMPLEQUEST]) { //extra extraconfirmation because why not
+		cout << "\nOk but like you even started the final quest and everything.\nAre you really really sure you want to quit without saving? (YES or NO)";
+		if (!AOrB(NULL, "YES", "NO")) { //get the player choice
+			cout << "\nAlrighty then."; //carry on message
+			return true;
+		}
+	}
+	if (!save && WorldState[BURGERMANDEF]) { //extra extra extra confirmation because why not
+		cout << "\nYou are literally about to beat the game!\nAre you really really really sure you want to quit without saving? (YES or NO)";
+		if (!AOrB(NULL, "YES", "NO")) { //get the player choice
+			cout << "\nAlrighty then."; //carry on message
+			return true;
+		}
 	}
 	return false; //yep the player did indeed want to quit
 }
@@ -6955,7 +7034,7 @@ void play(Save*& save) {
 
 	int mony = 0; //monies are the currency in the BURGER QUEST universe.
 
-	//flavor text printed by printHelp()
+	//flavor text printed by printHelp
 	const char* flavorText[16] = {
 		"What even is a BURGER?",
 		"You consider the state of the economy.",
@@ -6975,7 +7054,7 @@ void play(Save*& save) {
 		"You take a potato chip... and eat it."
 	};
 
-	//a list of the valid commands (and extensions) to be printed by printHelp()
+	//a list of the valid commands (and extensions) to be printed by printHelp
 	const char* validCommands[17] = {
 		"GO [direction]",
 		"TAKE [item]",
@@ -7036,6 +7115,8 @@ void play(Save*& save) {
 		CinPause();
 	}
 
+	sessions++; //we have one more session since we're playing!
+
 	PrintRoomData(self->getRoom()); //prints the data of the starting room
 
 	time_t savetime = time(NULL); //the last time this session was saved, to get total save file time and how much progress will be lost when quitting without saving
@@ -7049,6 +7130,7 @@ void play(Save*& save) {
 		char commandExtension[255]; //the rest of the player's command (minus the space)
 
 		if (promptline) cout << "\n";
+		else nothingtosay++; //player said nothing so increment the number
 		cout << "> "; //The > signifies it's time to type in a command. If there is no >, it's a cutscene or dialogue or something like that and you just have to ENTER until you get to the >.
 		cin.getline(command, 255);
 		AllCaps(command); //capitalizes the command for easier parsing
@@ -7084,7 +7166,7 @@ void play(Save*& save) {
 		} else if (!strcmp(commandWord, "ATTACKS")) { //for printing the player's attacks
 			printAttacks(self);
 		} else if (!strcmp(commandWord, "ROOM")) { //for reprinting the contents of the current room (it was annoying having to scroll back up after doing a bunch of stuff in order to check the room data)
-			PrintRoomData(currentRoom, self);
+			PrintRoomData(currentRoom, self, true);
 		} else if (!strcmp(commandWord, "ANALYZE")) { //for getting the data of an item or npc
 			analyze(currentRoom, &commandExtension[0], party, &inventory);
 		} else if (!strcmp(commandWord, "FIGHT")) { //for initiating battle with npcs
@@ -7092,15 +7174,16 @@ void play(Save*& save) {
 		} else if (!strcmp(commandWord, "BUY")) { //for buying items for sale
 			buy(currentRoom, &inventory, &commandExtension[0], mony);
 		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands
-			printHelp(validCommands, flavorText, 17, 16);
+			printHelp(validCommands, flavorText, 17, 16, true);
 		} else if (!strcmp(commandWord, "SAVE")) { //for saving and also possibly quitting
-			continuing = saveWorld(save, &inventory, mony, savetime, &commandExtension[0]);
+			continuing = saveWorld(save, mony, savetime, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game without saving
-			continuing = confirmQuit(savetime);
+			continuing = confirmQuit(save, savetime);
 		} else if (!strlen(command)) { //don't print error if the player just entered nothing
 			promptline = false;
 		} else { //prints an error message if the player typed something that isn't an actual command
 			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
+			invalidcommand++; //this was an invalid command so yeah increment it
 		}
 
 		CinIgnoreAll(); //clears extra or faulty input
@@ -7126,40 +7209,34 @@ void play(Save*& save) {
 	for (Effect* effect : effectsH) {
 		delete effect;
 	}
-	relaysH.clear(); //get rid of the shared pointers
-	npcID = 0; //we just deleted all the npcs so reset the npc ID
+	emptyExterns(); //reset all the stuff in helper so the next game session doens't have garbage data
 
+	//say a prompt or something for reentering the title screen
 	if (WorldState[GAMEEND]) { //give a unique title screen that says continue instead of begin after getting an ending
-		cout << getTitle() << "\nPress ENTER to continue.";
+		cout << "\r" << getTitle() << "\nPress ENTER to continue.";
 		CinPause();
-	}
-}
-
-//loads all the saves the player has in their files, we call this every time we do one of the other commands to make sure it's up to date with anything modified externally MARK: load saves
-//this only works if all the files are in the format saveN.bq2 and there are no gaps, which should be the case unless the player was messing around with the files, which isn't my fault
-void loadSaves(vector<Save*>& saves) {
-	for (Save* save : saves) delete save; //delete all the old saves
-	saves.clear(); //reset the vector in case we were reloading
-	char filename[255]; //we use this to get the current name of the file
-	//load all the saves in the order of the number in their name
-	for (size_t i = 1;; i++) {
-		snprintf(filename, 255, "save%d.bq2", i); //get what the name of the current file should be
-		ifstream savefile(filename); //try to get the file
-		if (!savefile) break; //stop getting files if no such file was found
-		savefile.seekg(0, ios::end); //go to the end of the file so we can get the length via tellg
-		streamsize filelen = savefile.tellg(); //get the length of the save file data
-		savefile.seekg(0, ios::beg); //go to the beginning of the file so we can read it normally
-		char* savedata = new char[filelen+1]; //allocate a charray to write the data into
-		savefile.read(savedata, filelen); //write the save file data into the charray so the program can use it
-		savedata[filelen] = '\0'; //null terminate the data
-		saves.push_back(new Save(savedata)); //make a new save file with the new data
-		delete[] savedata;
+	} else { //the player quit normally so print message depending on game state
+		if (!save) { //player never saved
+			if (WorldState[TEMPLEQUEST]) cout << "\rYou give up on your quest to destroy BURGER."; //this message in-game is very annoying to get to
+			else if (WorldState[JILLYQUEST]) cout << "\rYou give up on your quest to save JILLY.";
+			else cout << "\rYou give up on your quest to get the BURGER.";
+		} else { //player has saved at some point like a normal person
+			if (WorldState[TEMPLEQUEST]) cout << "\rYou take a nap. You will continue on your quest to destroy BURGER later!";
+			else if (WorldState[JILLYQUEST]) cout << "\rYou take a nap. You will continue on your quest to save JILLY later!";
+			else cout << "\rYou take a nap. You will continue on your quest to get the BURGER later!";
+		}
+		CinPause();
+		cout << "\nWhat would you like to do? (Type HELP for help)";
 	}
 }
 
 //print a list of all the player's saves MARK: print saves
-void printSaves(vector<Save*>& saves) {
-	loadSaves(saves); //load the saves from the files to stay up to date
+void printSaves() {
+	loadSaves(); //load the saves from the files to stay up to date
+	if (saves.empty()) {
+		cout << "\nYou don't have any saves; try starting a NEW GAME!";
+		return;
+	}
 	//for each save, print their number, the player level, their monies, and total game time
 	//example: SAVE 1 - SELF, Lvl 15, 12980 Monies, 5h 56m 7s
 	//error text: SAVE 8 - Save data is faulty.
@@ -7174,13 +7251,13 @@ void printSaves(vector<Save*>& saves) {
 }
 
 //make a new game and manage the NULL member of the saves vector if the player saved it MARK: new game
-void newGame(vector<Save*>& saves) {
-	loadSaves(saves); //load the saves from the files to stay up to date
+void newGame() {
+	loadSaves(); //load the saves from the files to stay up to date
 	saves.push_back(NULL); //push a null save so we can put the Save* there if we make one
 	Save*& savey = saves.back(); //get a reference to the NULL thingy
 	cout << "\nLoading..."; //print loading text in case SetupWorld takes a noticeable amount of time
 	play(savey); //play the game with the reference to the NULL save
-	if (!savey) saves.pop_back(); //if we didn't save before quitting, we get rid of the NULL thingy
+	if (savey->empty()) saves.pop_back(); //if we didn't save before quitting, we get rid of the NULL thingy
 }
 
 //try to interpret what the player typed as a file number MARK: interpret file num
@@ -7198,10 +7275,10 @@ int getFileNum(const char* savename) {
 }
 
 //load an existing save MARK: load save
-void loadSave(vector<Save*>& saves, const char* savename) {
-	loadSaves(saves); //load the saves from the files to stay up to date
+void loadSave(const char* savename) {
+	loadSaves(); //load the saves from the files to stay up to date
 	if (saves.empty()) { //error because nothing the player could possibly try would load a nonexistant save
-		cout << "\nYou don't have any saves, try starting a NEW GAME!";
+		cout << "\nYou don't have any saves to load; try starting a NEW GAME!";
 		return;
 	} if (!strcmp(savename, "")) { //player said to load but didn't say what
 		cout << "\nLoad what?";
@@ -7223,8 +7300,8 @@ void loadSave(vector<Save*>& saves, const char* savename) {
 }
 
 //delete one of the saves and rearrange the files accordingly MARK: delete save
-void deleteSave(vector<Save*>& saves, const char* savename) {
-	loadSaves(saves); //load the saves from the files to stay up to date
+void deleteSave(const char* savename) {
+	loadSaves(); //load the saves from the files to stay up to date
 	if (saves.empty()) { //error because there's nothing to delete
 		cout << "\nYou don't have any saves to delete.";
 		return;
@@ -7270,7 +7347,7 @@ void deleteSave(vector<Save*>& saves, const char* savename) {
 }
 
 //import save data and try to make a save file for it MARK: import save
-void importSave(vector<Save*>& saves, const char* savedata) {
+void importSave(const char* savedata) {
 	if (!strcmp(savedata, "")) { //player said to import but didn't say what
 		cout << "\nImport what?";
 		return;
@@ -7284,7 +7361,7 @@ void importSave(vector<Save*>& saves, const char* savedata) {
 
 	loadSaves(saves); //load the saves from the files to stay up to date
 	char filename[255]; //get the name of the new file
-	snprintf(filename, 255, "save%d.bq2", saves.size()+1);
+	snprintf(filename, 255, "save%zu.bq2", saves.size()+1);
 	ofstream newfile(filename); //make the new file and write into it the new data
 	if (!newfile) { //print error if something went wrong
 		cout << "\nFailed to create new save file.";
@@ -7296,7 +7373,7 @@ void importSave(vector<Save*>& saves, const char* savedata) {
 }
 
 //export save data in a copy-pastable way MARK: export save
-void exportSave(vector<Save*>& saves, const char* savename) {
+void exportSave(const char* savename) {
 	loadSaves(saves); //load the saves from the files to stay up to date
 	if (saves.empty()) { //error because there's nothing to export
 		cout << "\nYou don't have any saves to export.";
@@ -7329,11 +7406,11 @@ void exportSave(vector<Save*>& saves, const char* savename) {
 int main() {
 	srand(time(NULL)); //seeds random
 
-	//a list of the valid commands (and extensions) to be printed by printHelp()
+	//a list of the valid commands (and extensions) to be printed by printHelp
 	const char* validCommands[8] = {
-		"SAVES",
 		"NEW GAME",
 		"LOAD [save file]",
+		"SAVES",
 		"DELETE [save file]",
 		"IMPORT [save data]",
 		"EXPORT [save file]",
@@ -7345,11 +7422,9 @@ int main() {
 
 	CinPause();
 
-	vector<Save*> saves; //all the player's saves
-	loadSaves(saves); //get all the player's saves
+	loadSaves(); //get all the player's saves
 
-	printHelp(validCommands, NULL, 7, 0); //prints what to do right off the bat
-	cout << "\n\nWhat would you like to do?"; //beginning prompt
+	cout << "\nType HELP for help.\nWhat would you like to do?"; //beginning prompt
 	
 	bool promptline = true;
 	bool continuing = true; //we continue until the player quits
@@ -7369,17 +7444,17 @@ int main() {
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
 
 		if (!strcmp(commandWord, "SAVES")) { //for printing out all the save files
-			printSaves(saves);
+			printSaves();
 		} else if (!strcmp(command, "NEW GAME")) { //for starting a new save file
-			newGame(saves);
+			newGame();
 		} else if (!strcmp(commandWord, "LOAD")) { //for loading an existing save file
-			loadSave(saves, commandExtension);
+			loadSave(commandExtension);
 		} else if (!strcmp(commandWord, "DELETE")) { //for deleting a file
-			deleteSave(saves, commandExtension);
+			deleteSave(commandExtension);
 		} else if (!strcmp(commandWord, "IMPORT")) { //for importing save data from elsewhere (this and export are in case I ever put this on a website or something where you can't access the files easily)
-			importSave(saves, commandExtension);
+			importSave(commandExtension);
 		} else if (!strcmp(commandWord, "EXPORT")) { //for exporting save data in a copy-pastable way
-			exportSave(saves, commandExtension);
+			exportSave(commandExtension);
 		} else if (!strcmp(commandWord, "HELP")) { //for asking what the valid commands are
 			printHelp(validCommands, NULL, 8, 0);
 		} else if (!strcmp(commandWord, "EXIT")) { //for exiting the game

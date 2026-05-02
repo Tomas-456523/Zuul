@@ -5,6 +5,7 @@
 #include "NPC.h"
 #include "Item.h"
 #include "Room.h"
+#include "Save.h"
 #include <cstring>
 #include <iostream>
 #include <limits>
@@ -162,6 +163,7 @@ namespace Helper {
 				cout << "\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
 			}
 		}
+		commandcount[9]++; //increment successful attacksing
 	}	
 	//deletes the item from existence and removes it from the inventory or current room based on where it was
 	void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item) {
@@ -233,6 +235,7 @@ namespace Helper {
 
 			if (prompt) cout << "\n" << prompt;
 			if (promptline) cout << "\n";
+			else nothingtosay++; //player said nothing so increment the number
 			cout << "> "; //The amazing >
 			cin.getline(command, 255); //gets the player input
 
@@ -248,6 +251,7 @@ namespace Helper {
 				promptline = false;
 			} else { //prints the invalid input
 				cout << "\nInvalid response \"" << command << "\".";
+				invalidcommand++; //this was an invalid response so we increment the invalid command counter
 			}
 
 			CinIgnoreAll(); //clears extra or faulty input
@@ -556,25 +560,87 @@ namespace Helper {
 	//set up all the npc maps, including reversing the npc to char map so we can get the npc from the char
 	void buildNPCData() {
 		for (map<NPC*, char>::iterator npcchar = npcChar.begin(); npcchar != npcChar.end(); npcchar++) {
-			charNPC[npcchar.second] = npcchar.first; //reverse the npc map for convenience
+			charNPC[npcchar->second] = npcchar->first; //reverse the npc map for convenience
 			//set up the npc statistic maps if it isn't the banker or the tunnel lobster because they don't fight (well the lobster fights like once but this is more for the player team)
-			if (npcchar.second != 'n' && npcchar.second != 't') {
-				attackslaunched[npc.first] = 0;
-				helpslaunched[npc.first] = 0;
-				damagedealt[npc.first] = 0;
-				healthhealed[npc.first] = 0;
-				healthrecovered[npc.first] = 0;
-				damagerecieved[npc.first] = 0;
-				knockouts[npc.first] = 0;
-				revives[npc.first] = 0;
+			if (npcchar->second != 'n' && npcchar->second != 't') {
+				attackslaunched[npcchar->first] = 0;
+				helpslaunched[npcchar->first] = 0;
+				damagedealt[npcchar->first] = 0;
+				healthhealed[npcchar->first] = 0;
+				healthrecovered[npcchar->first] = 0;
+				damagerecieved[npcchar->first] = 0;
+				knockouts[npcchar->first] = 0;
+				revives[npcchar->first] = 0;
 			}
 		}
 	}
+	//reset all the external maps and thingymadoodles to not be full of garbage data
+	void emptyExterns() {
+		ReverseDirection.clear();
+		npcChar.clear();
+		chaNPC.clear();
+		memset(commandcount, 0, sizeof(commandcount));
+		attackslaunched.clear();
+		helpslaunched.clear();
+		damagedealt.clear();
+		healthhealed.clear();
+		healthrecovered.clear();
+		damagerecieved.clear();
+		knockouts.clear();
+		revives.clear();
+		encountered.clear();
+		recruited.clear();
+		roomsH.clear();
+		npcsH.clear();
+		itemsH.clear();
+		attacksH.clear();
+		effectsH.clear();
+		relaysH.clear();
+		invalidcommand = 0; //reset all these stats also
+		invalidnpc = 0;
+		invalidmove = 0;
+		invaliditem = 0;
+		nothingtosay = 0;
+		actionwhat = 0;
+		sessions = 0;
+		playtime = 0;
+		npcID = 0; //reset ids as well!
+		itemID = 0;
+		roomID = 0;
+		//all world states are reset to false
+		for (size_t i = 0; i <= NEVER) WorldState[i] = 0;
+		delete[] sectionW; //delete the world change tracker
+		memset(sectionT, NULL, sizeof(sectionT)); //use sizeof since pointer size may vary by system
+	}
 	//go to the parents until we reach the template
-	NPC* getBase(NPC* npc) {
+	const NPC* getBase(const NPC* npc) {
 		for (; npc->getParent(); npc = npc->getParent()); //go to the parent until there is no parent
 		return npc; //this one has no parent so this is the base npc so we return this
 	}
+	//loads all the saves the player has in their files, we call this every time we do one of the other commands to make sure it's up to date with anything modified externally MARK: load saves
+	//this only works if all the files are in the format saveN.bq2 and there are no gaps, which should be the case unless the player was messing around with the files, which isn't my fault
+	void loadSaves() {
+		for (Save* save : saves) delete save; //delete all the old saves
+		saves.clear(); //reset the vector in case we were reloading
+		char filename[255]; //we use this to get the current name of the file
+		//load all the saves in the order of the number in their name
+		for (size_t i = 1;; i++) {
+			snprintf(filename, 255, "save%zu.bq2", i); //get what the name of the current file should be
+			ifstream savefile(filename); //try to get the file
+			if (!savefile) break; //stop getting files if no such file was found
+			savefile.seekg(0, ios::end); //go to the end of the file so we can get the length via tellg
+			streamsize filelen = savefile.tellg(); //get the length of the save file data
+			savefile.seekg(0, ios::beg); //go to the beginning of the file so we can read it normally
+			char* savedata = new char[filelen+1]; //allocate a charray to write the data into
+			savefile.read(savedata, filelen); //write the save file data into the charray so the program can use it
+			savedata[filelen] = '\0'; //null terminate the data
+			saves.push_back(new Save(savedata, saves.size()+1)); //make a new save file with the new data
+			delete[] savedata;
+		}
+	}
+
+	//all the player's saves
+	vector<Save*> saves;
 
 	//map to find the opposite of the given direction (e.g. ReverseDirection[SOUTH] == NORTH)
 	map<const char*, const char*> ReverseDirection;
@@ -586,19 +652,25 @@ namespace Helper {
 	map<char, NPC*> charNPC; //map to get the npc from the char
 
 	char* sectionW; //build section W as we play
-	char* sectionT; //build section T as we play
+	Room* sectionT[5] = {NULL};
 
-	int stats[18] = {0}; //count how many times we used each command
+	int commandcount[18] = {0}; //count how many times we used each command
+	int invalidcommand = 0;
+	int invalidnpc = 0;
 	int invalidmove = 0;
+	int invaliditem = 0;
+	long long nothingtosay = 0; //how many times player entered nothing into a >
+	int actionwhat = 0; //how many times the player tried to use a command but never specified who or what the command was directed towards
 	int sessions = 0; //how many times the player has booted up this save
+	double playtime = 0; //total time the player has played in this save for
 
 	//track these for every teammate
 	map<NPC*, int> attackslaunched; //how many times each npc attacked
 	map<NPC*, int> helpslaunched; //how many times each npc did a beneficial attack
 	map<NPC*, long long> damagedealt; //total damage this npc has dealt
 	map<NPC*, long long> healthhealed; //total healing this npc has done to other npcs
-	map<NPC*, long long> healthrecovered; //how much this npc has healed in total
 	map<NPC*, long long> damagerecieved; //how much damage this npc has tanked
+	map<NPC*, long long> healthrecovered; //how much this npc has healed in total
 	map<NPC*, int> knockouts; //how many npcs this npc incapacitated
 	map<NPC*, int> revives; //how many npcs this npc recapacitated
 

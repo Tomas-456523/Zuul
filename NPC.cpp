@@ -70,7 +70,7 @@ int NPC::getID() {
 	return id;
 }
 //get the npc template, the one this was derived from
-NPC* NPC::getParent() {
+const NPC* NPC::getParent() const {
 	return parent;
 }
 void NPC::printRejectionDialogue() {
@@ -196,8 +196,8 @@ pair<int, int> NPC::getPurPos(Room* room) {
 	}
 	return {-1, -1};
 }
-NPC* NPC::getParent() {
-	return parent;
+NPC* NPC::getSummoner() {
+	return summoner;
 }
 bool NPC::getScaleFight() {
 	return scaleFight;
@@ -417,7 +417,9 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 	int amount;
 	if (cin >> amount) {
 		CinIgnoreAll(true);
-		if (!amount) cout << "\n" << name << "Just checking your balance, I seee.";
+		if (!amount) {
+			cout << "\n" << name << "Just checking your balance, I seee.";
+		}
 		else if (amount > 0) { //deposit
 			if (amount > monies) cout << "\n" << name << "Youuu do not have this kind of moniiiiies...";
 			else {
@@ -435,6 +437,8 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 		}
 	} else {
 		cout << "\n" << name << "This issss... not a number I know of.";
+		invalidcommand++; //clearly whatever the player entered was unrelated to the banking
+		//cin >> can't detect blank inputs so we can't handle nothingtosay++ in this one thingy I guess
 	}
 
 	CinIgnoreAll();
@@ -491,7 +495,14 @@ void NPC::setRecruitCondition(size_t cond) {
 	recruitcondition = cond;
 }
 void NPC::paveTunnel(Room* room) { //sets the direction back to the lobster's current position from the tunnel
-	home->setExit(tunnelLinks[room], currentRoom);
+	size_t exitnum = 0; //we go by iterator instead of just using the key so we can get the number for section T of the save system
+	for (map<Room*, const char*>::iterator tunafish = tunnelLinks.begin(); tunafish != tunnelLinks.end(); tunafish++) { //you can tune a fish, but you can't tuna piano
+		if (tunafish->first = currentRoom) { //if the rooms match we set the exit to this room
+			home->setExit(tunafish->second, currentRoom);
+			sectionT[exitnum] = currentRoom; //get that the exit we just set goes to this room at the moment
+		}
+		exitnum++; //we didn't find it in this index so increment it
+	}
 }
 Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because there's only one gift
 	if (battleReward) return NULL; //don't give gift if you have to fight first

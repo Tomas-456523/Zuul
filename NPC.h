@@ -47,7 +47,7 @@ public: //you need to set stats on creation
 	const char* getName(); //gets the name of the character
 	const char* getDescription(); //gets the description of the character
 	int getID(); //get the npc id of the npc
-	NPC* getParent(); //get the npc template, the one this was derived from
+	const NPC* getParent() const; //get the npc template, the one this was derived from
 	bool getRecruitable(); //gets the recruitable status of the character
 	bool getDismissable();
 	bool getRecruited(); //gets the recruited status of the npc (if they're already in the party)
@@ -135,7 +135,7 @@ public: //you need to set stats on creation
 	pair<Room*, const char*>& getPurPlayerData(); //get a reference to the player data
 	pair<int, int> getPurPos(Room* room); //get coordinates relative to the pursuit grid
 	Room* getPurRoom(pair<size_t, size_t>& pos); //coordinates to room
-	NPC* getParent();
+	NPC* getSummoner();
 	const Stats& getBaseStats();
 	const Stats& getStatScale();
 	bool getScaleFight();
@@ -310,11 +310,11 @@ protected:
 	Room* currentRoom;
 
 	int id; //npc's index in npcsH
-	NPC* parent = NULL; //the parent, for duplicated npcs
+	const NPC* parent = NULL; //the parent, for duplicated npcs
 
 	vector<vector<NPC*>> party; //the npc's party if it is a leader (and supports multiple waves)
 
-	NPC* parent = NULL; //npc that summoned this one in battle
+	NPC* summoner = NULL; //npc that summoned this one in battle
 
 	Attack* standard_attack = NULL; //the npc's normal attack for generating sp
 	vector<Attack*> special_attacks; //the npc's special attacks that cost sp
