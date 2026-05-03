@@ -230,17 +230,15 @@ public:
 
 	void addBlocker(Room* room, const char* direction, const char* reason, const char* floorreason); //block the room in that direction
 	void setStationBlock(const char* message);
-	void addDropChange(Room* room, WorldChange& changes); //make world changes on take and on drop
-	void addTakeChange(Room* room, WorldChange& changes);
+	void addDropBlock(Room* droproom, Room* blocked, const char* direction, const char* blocktype, const char* reason); //block this exit when dropped in the first room
 
 	const char* getBlocked(Room* currentroom, const char* direction); //check if this hose is blocking going in this direction from this room, return why if so
 	const char* getStationBlock();
-	void doDropChanges(Room* currentroom); //do the changes when needed
-	void doTakeChanges(Room* currentroom);
+	void drop(Room* currentroom); //block exits if dropped in the corresponding room
+	void take(Room* currentroom); //unblock exits if taken from the corresponding room
 private:
 	vector<tuple<Room*, const char*, const char*, const char*>> blockers; //you cannot go in this direction in these rooms for that reason if you have the item
-	vector<pair<Room*, WorldChange>> dropchanges; //if the hose is dropped in this room make these changes
-	vector<pair<Room*, WorldChange>> takechanges; //if the hose is taken in this room make these changes
+	vector<tuple<Room*, Room*, const char*, const char*, const char*>> dropblocks; //if the hose is dropped in this room it blocks the exit in the second room
 	const char* stationblock = NULL; //text after getting blocked from fast travel
 };
 

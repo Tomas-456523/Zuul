@@ -23,7 +23,7 @@ struct Attack {
 	int cost; //how much sp the attack costs to use
 	int power; //how much damage the attack does, added onto npc's base attack
 	int pierce; //how much defense the attack pierces through
-	int targets; //how many targets the attack hits (1 hits just the target, 3 hits their surrounding allies, and 4 hits their entire team, and I don't really use 2)
+	int targets; //how many targets the attack hits (1 hits just the target, 3 hits their surrounding allies, and 5 goes further, etc. there are no even target amounts)
 	int minhits; //the attack can hit from minhits to maxhits amount of times
 	int maxhits;
 	bool targetAlly = false; //if the attack is supposed to hit your own team

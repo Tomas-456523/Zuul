@@ -517,6 +517,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {burgermenace, "YOU ARE NOTHING TO ME."}});
 					   //BATTLE BEGIN!
 
+	////////////////////////
+	/////
+
+	/////
+
+	//MARK: When you put the redirect in mainstreet5, make sure you can't go in the hole with the hose
+
 	Room* timemachine = new Room("in the time machine! It's much bigger on the inside, complete with a donut-shaped layout.");
 	Room* simulatorroom = new Room("in the simulator room, for simulating battles.");
 	Room* vendingroom = new Room("in the vending machine room. It's a whole warehouse of vending machines for anything you can think of!");
@@ -532,7 +539,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//Create NPCs and items MARK: make npcs, items, etc.
 	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
 	npcChar[self] = 'a'; //self's character representation is a because I name him A so it's easier to type his name
-	self->addRecruitedDialogue("Huh?"); //player defined above before all the rooms
+	self->addRecruitedDialogue("Huh?"); //player is always recruited because he's in his own team
 	self->Recruit();
 	self->addXp(3); //make it so the first enemy gives you just enough xp to level up
 
@@ -710,6 +717,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	egadwick->addRecruitedDialogue({{egadwick, "So, what science class are you in right now?"}, {self, "I don't go to school."}, {egadwick, "Ah."}});
 	egadwick->addRecruitedDialogue("I love science!");
 	egadwick->addDismissalDialogue({{egadwick, "Great hanging out with you, kiddo!"},  {egadwick, "I'll be in my tent if you need me!"}});
+	egadwick->setTalkOnRecruit(true);
 	
 	//egadwick attacks
 	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "blasted", false, -5, 10, 15, 1, 1, 1);
@@ -797,6 +805,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	forestknight->setBlockMessage({{forestknight, "The BURGER RESTAURANT?"}, {forestknight, "I shall not be seen there."}, {forestknight, "Let us continue on a better quest!"}});
 	forestknight->setBlockUnless(TEMPLEQUEST);
 	forestknight->setDialogue({{forestknight, "What a beautiful forest..."}, {forestknight, "I shall protect it 'till my last breath!"}});
+	forestknight->setTalkOnRecruit(true);
 	
 	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 15, 10, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
@@ -904,6 +913,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	cacty->addRecruitmentDialogue({{self, "Hey cactus man wanna join me?"}, {NULL, "CACTY - *affirmative cactus noises*"}});
 	cacty->addRecruitedDialogue({{NULL, "CACTY - *adventuring cactus noises*"}});
 	cacty->addGymDialogue({{NULL, "CACTY - *exercising cactus noises*"}});
+	cacty->setTalkOnRecruit(true);
 
 	Attack* loosespines = new Attack("CACTUS SPINES", " pricked", false, 0, 8, 15, 1, 3, 1);
 	loosespines->afterdesc = " with his spines";
@@ -1125,6 +1135,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	plum->addRecruitedDialogue({{plum, "Ahh, sure beats a diet of pure fungus!"}});
 	plum->addRecruitmentDialogue({{self, "Hey before you head back to your kingdom, wanna join my team?"}, {plum, "It would be my pleasure!"}});
 	plum->addGymDialogue({{plum, "This is a very nice gym!"}, {plum, "I love playing tennis!"}});
+	plum->setTalkOnRecruit(true);
 	//some of plum's dialogue logic is tied to Browser below in the enemies section
 
 	Attack* racket = new Attack("RACKET", "whacked", true, -5, 10, 0, 1, 1, 1);
@@ -1176,6 +1187,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	graham->addDismissalDialogue({{graham, "I'm just gonna go check if they've fixed the casino yet."}});
 	graham->setRecruitDialogueChange({{graham, "Come onnnnn....."}, {graham, "What's taking them so long to fix this place?"}});
 	graham->addGymDialogue("This place is out of my comfort zone.");
+	graham->setTalkOnRecruit(true);
 	
 	Item* grambutton4 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "Emergency sirens start blaring!"}, {NULL, "Thick protective shields envelop the energy core!"}, {NULL, "The energy core explodes within the casing!"}, {NULL, "The protective shields almost hit your face."}, {self, "Oh oops O_O"}});
 	WorldChange& gramchanges4 = ((WorldChangeItem*)grambutton4)->getChanges();
@@ -1421,7 +1433,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* buybot = new Attack("AMAZON PRIME", "bought a ROBOCOP on Amazon", false, 15, 0, 0, 0, 0, 0);
 	buybot->summon = guardbot;
 	buybot->summonamount = 1;
-	richie->addSpecialAttack(nat7);
+	richie->addSpecialAttack(buybot);
 	Attack* buymech = new Attack("AMAZON PRIME", "bought a MARINE MECH on Amazon", false, 20, 0, 0, 0, 0, 0);
 	buymech->summon = marinemech;
 	buymech->summonamount = 1;
@@ -1839,6 +1851,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	jillybag->setDenial("You try to take the bag but it punches you in the gut.");
 	WorldChange& jbchanges = ((WorldChangeItem*)jillybag)->getChanges();
 	jbchanges.defeatRooms.push({child, burgstorage});
+	
+	//MARK: BURGER stuff
 
 	Conversation burgabtconv = {{NULL, "You finally have your BURGER!"},
 								{NULL, "This is what you came for."},
@@ -1899,6 +1913,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
 	BURGER->setFreebie({{burgerman, "YOU CAN'T AFFORD A BURGER?"}, {burgerman, "I BELIEVE THERE SHOULD BE NO FINANCIAL BARRIERS TO ENJOYING A BURGER."}, {burgerman, "HERE, HAVE ONE ON THE HOUSE!"}, {self, "Oh thanks!"}});
 	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
+	burgerman->addRejectionDialogue({{self, "Hey wanna join my team?"}, {burgerman, "I'M SORRY."}, {burgerman, "IF I JOINED YOUR TEAM,"}, {burgerman, "HOW COULD I ENSURE EVERYONE GETS A BURGER?"}});
+	//MARK: Hey wanna help me destroy BURGERs?
+	//burgerman, "..."
+	//burgerman, "YOU'RE EVEN STUPIDER THAN I THOUGHT."
+	//ENDING ACHIEVED: WHAT THE HECK ARE YOU DOING
 	Conversation burgdeciet = {{burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
 							   {self, "I'm sorry :("},
 							   {self, "But like your employees kidnapped this kid,"},
@@ -2135,7 +2154,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	templequest->linkedDescriptions.push({burgerman, "The manager and mascot of BURGER. He has a BURGER for a head and an uncanny stature."});
 	templequest->recruitLinks.push(forestknight);
 	templequest->recruitLinks.push(richie);
-	templequest->recruitLinks.push(theratman);
+	templequest->conditionalRecruits.push(make_tuple(theratman, BEATRATMAN, NEVER)); //make Ratman recruitable only if the player did his little battle sidequest I guess you could call it that
+	templequest->conditionalRecruits.push(make_tuple(theratman, BEATMARGE, NEVER));
 	templequest->clingyLinks.push({child, NEVER});
 	templequest->defeatRooms.push({burgerman, burgbasene});
 	Conversation forgorending = {{burgerman, "YOU ARE REALLY STUPID."},
@@ -2234,12 +2254,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(67, 67, 67, 67, 67, 67, 0));
 	developer->setDialogue("Yo wassup.");
-	Conversation devconvo = {{developer, "Ayy BERNARD how's it going?"},
+	Conversation devconvo = {{developer, "Ayy Bernard how's it going?"},
 							{self, "Pretty good I think but the player actually named me that."},
-							{NULL, "\n^"
-								   "\n|"
-								   "\n|"
-								   "\n|"},
+							{NULL, "^"
+								 "\n|"
+								 "\n|"
+								 "\n|"},
 	// (\               				// (\               				// (\               			// (\               
 	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,
 	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |
@@ -2253,12 +2273,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{developer, "Well that's pretty unfortunate."},
 							{self, "Why did you let them name me. T_T"}, //this is annoyed face not crying
 							{developer, "Sorry I came up with your name after the naming feature."},
-							{developer, "Don't worry you will always truly be BERNARD."},
+							{developer, "Don't worry you will always truly be Bernard."},
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
 							{self, "Yoooo nice thanks.\n\n\n"}}; //MARK: is there a reason there's three newlines here?
 	devconvo.skipcondition = {ISBERNARD};
-	shared_ptr<Conversation> devconvo2 = make_shared<Conversation>(Conversation({{developer, "Ayy BERNARD how's it going?"},
+	shared_ptr<Conversation> devconvo2 = make_shared<Conversation>(Conversation({{developer, "Ayy Bernard how's it going?"},
 							{self, "Pretty good!"},
 							{self, "The player actually named me the correct name!"},
 							{developer, "Yo nice."},
@@ -2438,6 +2458,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* pickthrow = new Attack("PICKAXE THROW", "threw a pickaxe at", false, 0, 1, 2, 1, 1, 1);
 	Attack* knifethrow = new Attack("KNIFE THROW", "threw a knife at", false, 0, 1, 1, 1, 1, 1);
 	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", false, 0, 80, 0, 1, 1, 1);
+	Attack* sporkthrow = new Attack("SPORK THROW", "threw a spork at", false, 0, 8000, 8000, 1, 1, 1);
 
 	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope. You see an orbital office building!", tentlab);
 	telescope->setDenial("The TELESCOPE is actually one of those observatory telescopes, so not the kind you can carry around.");
@@ -2515,7 +2536,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 999);
 	desertshopfixed->setStock(reviveroot, 2147483647, 300, {{merchant, "Thank you for your monies."}});
 	
-	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", burgstore, 10);
+	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", limbo, 10);
+	Item* freerot = new ReviveItem(*rotrevroot);
+	freerot->setRoom(burgstore);
 
 	Item* crowbar = new MaterialItem("MYSTERY EGG", "This egg is containing a special item and will hatch in a future update.", limbo);
 	Item* memorycrowbar1 = new MaterialItem("MYSTERY EGG", "This egg is containing a special item and will hatch in a future update.", limbo);
@@ -2759,6 +2782,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	scissorliftnw->setTakable(false);
 	scissorliftse->setTakable(false);
 	scissorliftne->setTakable(false);
+	scissorliftsw->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
+	scissorliftnw->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
+	scissorliftse->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
+	scissorliftne->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
 
 	Item* rbtree = new InfoItem("RED-BLACK TREE", "A very cool tree with red and black fruits, rebalancing itself as it grows.", "You tried to grab one of the fruits but the tree rebalanced itself and you fell.", mountainpeak);
 	rbtree->setDenial("And how do you plan to TAKE an entire tree, exactly?");
@@ -2832,23 +2859,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	hose->setStationBlock("You started going into the tunnels but got pulled off your lobster by your fully extended FIRE HOSE!");
 
 	WorldChange hsdropceoele1; //changes if you drop the hose in the floor 1 ceo elevator
-	hsdropceoele1.exitBlocks.push(make_tuple(ceolobby2, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move.")); //fire exit because you just dropped the thing that can unblock that type
-	hose->addDropChange(ceoelevator1, hsdropceoele1);
-	WorldChange hsdropceoele2; //changes if you drop the hose in the floor 2 ceo elevator
-	hsdropceoele1.exitBlocks.push(make_tuple(ceolobby, IN_ELEVATOR, FIRE, "closed because the hose you dropped below isn't letting it move."));
-	hose->addDropChange(ceoelevator2, hsdropceoele2);
-	WorldChange hstakeceoele1; //changes if you take the hose from the floor 1 ceo elevator
-	hstakeceoele1.exitUnblocks.push({ceolobby2, IN_ELEVATOR});
-	hose->addDropChange(ceoelevator1, hstakeceoele1);
-	WorldChange hstakeceoele2; //changes if you take the hose from the floor 2 ceo elevator
-	hstakeceoele2.exitUnblocks.push({ceolobby, IN_ELEVATOR});
-	hose->addDropChange(ceoelevator2, hstakeceoele2);
-	WorldChange hsdropburgele; //changes if you drop the hose in the restaurant elevator
-	hsdropburgele.exitBlocks.push(make_tuple(burgerbasement, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move."));
-	hose->addDropChange(elevator, hsdropburgele);
-	WorldChange hstakeburgele; //changes if you take the hose from the restaurant elevator
-	hstakeburgele.exitUnblocks.push({burgerbasement, IN_ELEVATOR});
-	hose->addDropChange(elevator, hstakeburgele);
+	hose->addDropBlock(ceoelevator1, ceolobby2, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move."); //fire exit because you just dropped the thing that can unblock that type
+	hose->addDropBlock(ceoelevator2, ceolobby, IN_ELEVATOR, FIRE, "closed because the hose you dropped below isn't letting it move.");
+	hose->addDropBlock(elevator, burgerbasement, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move."); //no reverse because you can't go to the basement with the hose
 
 	NPC* ninjasmith = new NPC("", "NINJA SMITH", "An expert smith and ninja, maker of all the ninja's fine weapons.", ninjaforge, 20, Stats(61, 21, 43, 32, 50, 30, 9));
 	Conversation smithconv = {{ninjasmith, "I have made many weapon here."},
@@ -2959,7 +2972,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* bigredbutton = new MaterialItem("BIG RED BUTTON OF HOPE", "A component of THE PLOT DEVICE which the user must press with hope that God's will be done.", limbo);
 	Item* plotometer = new MaterialItem("PLOTOMETER OF PATIENCE", "A component of THE PLOT DEVICE; patiently waits for the right time to act.", limbo);
 
-
 	NPC* cheryl = new NPC("SCIENTIST", "CHERYL", "Invented the time machine and respawning, quite the innovative scientist.", limbo, 9);
 	cheryl->setDialogue({{cheryl, "Hi, the developer sent me to come pick you up."},
 						 {cheryl, "Because you seem quite stuck here."},
@@ -2971,6 +2983,35 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 						 {cheryl, "..."},
 						 {cheryl, "Bye."}});
 
+	Item* simulator = new MaterialItem("SIMULATOR", "", limbo);
+	Item* statsanalyzer = new MaterialItem("STATISTICS ANALYZER", "", limbo);
+	//mythical mango
+
+	//rotten revive root	
+
+	Item* salesmoothie = new EffectItem("SUPERSMOOTHIE", "Prismatic smoothie blended from three special berries. Not really meant for consumption, it might have some multipositional effects.", limbo, multiposition);
+	Item* salefish = new HpItem("HEALTHY FISH", "A healthy fish that is fishy in that it's a fish. (heals 15 HP)", limbo, 15);
+	Item* salefork = new ManholeItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", limbo, forkthrow);
+	Item* salepick = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", limbo, pickthrow);
+	Item* saleknife = new ManholeItem("KNIFE", "\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", limbo, knifethrow);
+	Item* salecover = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", limbo, coverthrow);
+	Item* salespork = new ManholeItem("SPORK","\".\"\n- Oxford Languages", limbo, sporkthrow); //MARK: find the definition
+
+	Item* tv = new MaterialItem("TV", "", limbo);
+	Item* hblender = new MaterialItem("BLENDER", "", limbo);
+	Item* sign = new MaterialItem("SIGN", "", limbo);
+
+	Item* placeholderitem = new MaterialItem("PLACEHOLDER ITEM", "", limbo); //placeholder items for adding more items in the future withouut affecting my item ids
+	Item* placeholderitem2 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* placeholderitem3 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* placeholderitem4 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* placeholderitem5 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* placeholderitem6 = new MaterialItem("PLACEHOLDER ITEM", "", limbo); 
+	Item* placeholderitem7 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* placeholderitem8 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* placeholderitem9 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* placeholderitem10 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
 	village->setExit(EAST, forestentrance);
@@ -4465,6 +4506,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//you can also GO BACK if you haven't defeated them all yet
 	//then you get the antenna
 
+	NPC* placeholder = new NPC("", "PLACEHOLDER MAN", "", limbo, 0); //I'm putting these here so I can edit the temples later without messing up my test saves from before I made the temples due to offset npc ids
+	NPC* placeholder2 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
+	NPC* placeholder3 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
+	NPC* placeholder4 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
+	NPC* placeholder5 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
+
 	//{{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, you're the least of your team anyway..."}}
 
 	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(30, 0, 10, 0, 20, 30, 9));
@@ -4493,15 +4540,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//jumpscare
 
-	NPC* bolide;
+	NPC* bolide = new NPC("", "BOLIDE", "", limbo, 0);
 	//impact
 
-	NPC* firefly;
+	NPC* firefly = new NPC("", "FIREFLY", "", limbo, 0);
 	//firethrower
 	//
 
-	NPC* monkeystatue;
-	NPC* infernobo;
+	NPC* monkeystatue = new NPC("", "MONKEY STATUE", "", limbo, 0);
+	NPC* infernobo = new NPC("", "INFERNOBO", "", limbo, 0);
 	//infernobo
 	//
 	//
@@ -4827,6 +4874,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	viola->setTalkOnDefeat();
 	viola->setForceBattle();
 	viola->setEscapable(false);
+	viola->setTalkOnRecruit(true);
 
 	NPC* springguard = new NPC(*greer);
 	springguard->setLeader(true, 20, NULL, false);
@@ -5285,7 +5333,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	theratman->addDefeatRoom(evilgrandma, limbo);
 	theratman->setWorldCondition(BEATRATMAN);
 	theratman->addLinkedDesc(theratman, "The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
-	theratman->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
+	theratman->addRecruitLink(theratman, JILLYQUEST, JILLYSAVED); //you can recruit Ratman after beating him if you're saving jilly UNLESS you already saved Jilly, UNLESS you started the temple quest so you CAN in that case
+	theratman->addRecruitLink(theratman, TEMPLEQUEST);
 	theratman->addBlock(elevator, TO_THE_TOP);
 	theratman->addBlock(elevatorbottom, TO_THE_TOP);
 	theratman->setBlockMessage({{theratman, "I thought we weren't just going to get fast food."}, {theratman, "I got serious buiness to attend to, kid."}, {theratman, "Because I'm Ratman."}});
@@ -5295,7 +5344,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	evilgrandma->addDefeatRoom(grandma, limbo);
 	evilgrandma->setWorldCondition(BEATMARGE);
 	evilgrandma->addLinkedDesc(theratman, "The dark knight, the caped crusader, etc.\nHe's not the hero this city deserves, and he's not the hero this city needs, but he's the hero this city has.");
-	evilgrandma->addRecruitLink(theratman, JILLYQUEST); //MARK: UNLESS Jilly is already saved, then add new recruit links in temple quest
+	evilgrandma->addRecruitLink(theratman, JILLYQUEST, JILLYSAVED); //you can recruit Ratman after beating the grandma if you're saving jilly UNLESS you already saved Jilly, UNLESS you started the temple quest so you CAN in that case
+	evilgrandma->addRecruitLink(theratman, TEMPLEQUEST);
 	matilda->addRecruitLink(theratman, BEATRATMAN); //we can just add both for many possible conditions :D
 	matilda->addRecruitLink(theratman, BEATMARGE);
 	theratman->addRejectionDialogue({{self, "Hey rat man wanna join me on my BURGER QUEST?"},
@@ -5774,6 +5824,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//
 
+	Item* lightorb1 = new MaterialItem("LIGHT ORB", "", limbo); 
+	Item* lightorb2 = new MaterialItem("LIGHT ORB", "", limbo);
+	Item* lightorb3 = new MaterialItem("LIGHT ORB", "", limbo);
+
+	Item* deorb = new MaterialItem("ENTRY ORB", "", limbo);
+
+	Item* coldorb1 = new MaterialItem("COLD ORB", "", limbo); 
+	Item* coldorb2 = new MaterialItem("COLD ORB", "", limbo);
+	Item* coldorb3 = new MaterialItem("COLD ORB", "", limbo);
+	
+	Item* veorb = new MaterialItem("ENTRY ORB", "", limbo);
+
 	//vtboss
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
@@ -5946,17 +6008,18 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 		NPC* self = (*party)[0]; //get player for convenience
 		if (!getCardinal(direction)) pursuer->setRoom(currentRoom); //pursuer teleports to outside room if you go in a side room
 		//because of that, when you go in the elevator, the pursuer is guaranteed to be right outside
-		//MARK: pursuer should not move if player is moving towards them
 		pair<Room*, const char*>& special = pursuer->getSpecial();
 		//catch the player when they're going up in the elevator
 		if (currentRoom == special.first && direction == special.second) {
 			pursuer->printCatchDialogue(true);
 			pursuer->doCatchChanges();
+			logW("p", pursuer->getID()); //log that the player got caught
 			return;
 		//catch the player if they're in the same room and trying to leave BUT let them go into the elevator for false hope or something
 		} if (pursuer->getRoom() == currentRoom && roomCanidate != special.first) {
 			pursuer->printCatchDialogue();
 			pursuer->doCatchChanges();
+			logW("p", pursuer->getID()); //log that the player got caught
 			return;
 		} //pursuer movement logic
 		pair<int, int> pcoords = pursuer->getPurPos(currentRoom);
@@ -6197,7 +6260,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 }
 
 //takes an item from the current room and adds it to the inventory MARK: take item
-void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname, NPC* player) { //I don't want to have to pass player here but we need to teach player attacks when taking weapon items
+void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname, NPC* player) {
 	//finds the item in the room based on the name
 	Item* item = getItemInVector(currentRoom->getItems(), itemname);
 	//prints the reason you can't take the item based on the circumstances
@@ -6251,15 +6314,18 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 			currentRoom->setExit(cover->getDirection(), cover->getRoom());
 			cover->getRoom()->unblockExit(ReverseDirection[cover->getDirection()]); //also unblock the exit from below
 			cout << "\nAn exit DOWNwards was revealed!";
+			logW("u", item->getID(), currentRoom->getID()); //track that we just created an exit
 		}
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items enable the use of their move
 		CinPause();
 		applyWeaponAttack(player, item);
+		//the attack is saved via adding the weapon to the player's inventory during loading
 	} else if (!strcmp(item->getType(), "worldchange")) {
 		WorldChangeItem* changer = (WorldChangeItem*)item;
 		if (!changer->getTakeToUse()) return;
 		applyWorldChange(changer->getChanges()); //do the changes
 		printConversation(&changer->getUseText(), false); //prints what the player did and what it accomplished
+		logW("u", item->getID(), currentRoom->getID()); //track the changes
 		deleteItem(currentRoom, inventory, item); //we shouldn't keep world change items because the taking was the using and they're consumables
 	} else if (!strcmp(item->getType(), "escapeorb")) { //escape orbs make you enter the temple when taken
 		CinPause();
@@ -6271,11 +6337,14 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		CinPause(); //pause after the transformation message
 		WorldState[CANDISMISS] = false; //can't dismiss teammates in temple
 		travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getDestination()); //go into the temple
+		//don't track the orb taking in section W because we can just do the changes after detecting it's in the inventory in section I
+	}else if (!strcmp(item->getType(), "hose")) { //deapply any blocks the hose does in this room
+		((HoseItem*)item)->take(currentRoom);
 	}
 }
 
 //drops an item from the inventory into the current room MARK: drop item
-void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname, NPC* player) { //pass player for the same reason as takeItem
+void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname, NPC* player) {
 	Item* item = getItemInVector(*inventory, itemname); //finds the item in the inventory
 	if (item == NULL) { //gives error message if we have no itemname
 		if (!strcmp(itemname, "")) { //cool error message, very natural response
@@ -6317,7 +6386,10 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 			CinPause(); //pause after the shatter message
 			WorldState[CANDISMISS] = true; //can dismiss teammates outside of temple
 			travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getEntrance()); //go back to the temple entrance
+			logW("o", item->getID()); //track the orb droppening
 		}
+	} else if (!strcmp(item->getType(), "hose")) { //apply any blocks the hose does in this room
+		((HoseItem*)item)->drop(currentRoom);
 	}
 }
 
@@ -6457,7 +6529,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		if (!npc->getLeader()) { //if the lobster is tamed
 			if (npc->getRoom() == currentRoom) { //if the lobster is already here he just dances
 				cout << "\n" << npc->getName() << " did a lobstery dance.";
-				commandcount[3]++; //increment successful item usings
+				commandcount[3]++; //increment successful item usings, but don't do the rest of the tracking because it didn't change anything
 				return;
 			} //moves the lobster to the station
 			npc->setRoom(currentRoom);
@@ -6549,7 +6621,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
 				printConversation(&mover->getUseText(), true); //prints what exactly the movement item did
 				travel(currentRoom, exit, party, inventory, true); //force travels to the found room
-				commandcount[3]++; //increment successful item usings
+				commandcount[3]++; //increment successful item usings, but we don't have to track it because it only does moving changes which are tracked elsewhere
 				return; //returns so we don't teleport to another room (and movement items don't get used up anyway, so no need for the deletion check)
 			}
 		} //prints error message if no matching blocked exit was found
@@ -6671,6 +6743,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	//choice orbs give you a choice between choice A and choice B
 	} else if (!strcmp(item->getType(), "choiceorb")) {
 		((ChoiceOrb*)item)->CHOICE(); //do the choosing
+		return; //return so we don't double track (CHOICE tracks it so we can also add the extension showing the choice made)
 	//you can't use materials; they get a unique error message
 	} else if (!strcmp(item->getType(), "material")) {
 		cout << "\nYou can't use the " << itemname << "!";
@@ -6686,7 +6759,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	if (item->getConsumable()) {
 		deleteItem(currentRoom, inventory, item);
 	}
-	commandcount[3]++; //increment successful item usings because we successfully used the item at this point
+	trackItemUse(item, currentRoom);
 }
 
 //recruit an npc into the player party MARK: recruit
@@ -6743,6 +6816,7 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 		npc->setGymStart(0); //no longer training so we reset training time
 	}
 	commandcount[4]++; //increment successful recruitings
+	Rnpcs.insert(npc); //track this npc in section R because we just recruited them
 }
 
 //decruit npcs from your party MARK: dismiss
@@ -6809,6 +6883,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		if (WorldState[TEMPLEQUEST] && currentRoom->getTempleEntrance() && !strcmp(npcname, "NICELY")) {
 			currentRoom->openTemple();
 			commandcount[6]++; //increment successful askings, this is successful and it's from ask so yeah
+			logW("t", currentRoom->getID()); //log that the player opened the temple here
 		} else if (!strcmp(npcname, "")) { //error if the player just didn't give a name
 			cout << "\nAsk who?";
 			actionwhat++; //didn't specify so we increment the didn't specify stat
@@ -6938,6 +7013,8 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 		currentRoom->removeStock(item);
 	}
 	commandcount[13]++; //increment successful buying
+	//track the buying in save section W
+	logW("b", item->getID(), currentRoom->getID());
 }
 
 //prints all the available commands MARK: print help
@@ -6961,7 +7038,17 @@ bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat) {
 	if (!save) save = new Save("", saves.size()); //make a new Save for the save if it's NULL so it's never been saved before
 	SaveGame(save, monies, savetime); //save the game!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	//MARK: save it to the files MARK
+	char filename[255]; //get the name of the new file
+	snprintf(filename, 255, "save%zu.bq2", save->savenum);
+	ofstream savefile(filename); //make the new file or open an existing file and write into it the new data
+
+	if (!savefile) { //couldn't save the file for some reason
+		cout << "\nFailed to create new save file. Would you like to EXPORT your save data instead,\nso you can IMPORT it in the main menu when you want to continue? (YES or NO)";
+		if (AOrB(NULL, "YES", "NO")) exportSave(save->data); //print the data to export it, this way the player isn't forced to lose their data
+		else cout << "\nAlrighty then."; //alrighty then message
+		return true; //just don't quit if we got an error
+	}
+	savefile << save->data;
 
 	savetime = time(NULL); //update the time we last saved because we just saved
 
@@ -7247,6 +7334,7 @@ void printSaves() {
 	for (size_t i = 0; i < saves.size(); i++) {
 		Save* save = saves[i];
 		cout << "\nSAVE " << i << " - ";
+
 	}
 }
 
@@ -7258,6 +7346,7 @@ void newGame() {
 	cout << "\nLoading..."; //print loading text in case SetupWorld takes a noticeable amount of time
 	play(savey); //play the game with the reference to the NULL save
 	if (savey->empty()) saves.pop_back(); //if we didn't save before quitting, we get rid of the NULL thingy
+	//we make a file in saveWorld(), so it will be caught by subsequent loadSaves()s
 }
 
 //try to interpret what the player typed as a file number MARK: interpret file num
@@ -7293,6 +7382,12 @@ void loadSave(const char* savename) {
 		return;
 	} if (num > saves.size()) { //let the player know they are going over the amount they can choose from
 		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
+		return;
+	} if (saves[num-1]->getValid()) { //bad data so no play
+		cout << "\nThis save's data is faulty and cannot be played.";
+		return;
+	} if (saves[num-1]->getVersion() != '0') { //we be too outdated, no play
+		cout << "\nThis save is for a later version of the game. You need to update to a newer version to play it.";
 		return;
 	} //valid save number! play the game with the save we found!
 	cout << "\nLoading..."; //print loading text in case SetupWorld takes a noticeable amount of time
@@ -7393,13 +7488,7 @@ void exportSave(const char* savename) {
 		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
 		return;
 	}
-	cout << "\nHere is your save data!\n\n" //print all the save data so the player can copy it, pretty straightforward
-		 << saves[num-1]->data
-		 << "\n\nMake sure to copy everything between the \"BQ2\" and \"=\" (including the BQ2 and =)."
-			"\nYou're probably in a terminal, so prefer Ctrl + Insert or Ctrl + Shift + C over Ctrl + C."
-			"\nIMPORT this save data whenever you want to use it!"
-			"\nI am not responsible for issues with your game if you manually edit your save file."
-			"\nStore it in a safe location!";
+	exportSave(saves[num-1]->data); //print the data to export it
 }
 
 //the title screen! MARK: main (title screen)

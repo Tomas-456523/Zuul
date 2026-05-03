@@ -341,11 +341,8 @@ void HoseItem::addBlocker(Room* room, const char* direction, const char* reason,
 void HoseItem::setStationBlock(const char* message) {
 	stationblock = message;
 }
-void HoseItem::addDropChange(Room* room, WorldChange& changes) { //make world changes on take and on drop
-	dropchanges.push_back({room, changes});
-}
-void HoseItem::addTakeChange(Room* room, WorldChange& changes) {
-	takechanges.push_back({room, changes});
+void HoseItem::addDropBlock(Room* droproom, Room* blocked, const char* direction, const char* blocktype, const char* reason) { //block this exit when dropped in the first room
+	dropblocks.push_back(make_tuple(room, blocked, direction, blocktype, reason));
 }
 const char* HoseItem::getBlocked(Room* currentroom, const char* direction) { //check if this hose is blocking going in this direction from this room, return why if so
 	for (tuple<Room*, const char*, const char*, const char*>& blocker : blockers) {
@@ -356,14 +353,14 @@ const char* HoseItem::getBlocked(Room* currentroom, const char* direction) { //c
 const char* HoseItem::getStationBlock() {
 	return stationblock;
 }
-void HoseItem::doDropChanges(Room* currentroom) { //do the changes when needed
-	for (pair<Room*, WorldChange> changes : dropchanges) { //by value so we don't get rid of the changes
-		if (changes.first == currentroom) applyWorldChange(changes.second);
+void HoseItem::drop(Room* currentroom) { //do drop blocks for the current room
+	for (tuple<Room*, Room*, const char*, const char*, const char*>& block : dropblocks) {
+		if (get<0>(block) == currentroom) get<1>(block)->blockExit(get<2>(block), get<3>(block), get<4>(block));
 	}
 }
-void HoseItem::doTakeChanges(Room* currentroom) {
-	for (pair<Room*, WorldChange> changes : takechanges) { //by value so we don't get rid of the changes
-		if (changes.first == currentroom) applyWorldChange(changes.second);
+void HoseItem::take(Room* currentroom) { //undo drop blocks for the current room
+	for (tuple<Room*, Room*, const char*, const char*, const char*>& block : dropblocks) {
+		if (get<0>(block) == currentroom) get<1>(block)->unblockExit(get<2>(block));
 	}
 }
 
@@ -599,11 +596,13 @@ void ChoiceOrb::CHOICE() {
 	printConversation(&useText, false); //print the choice
 	WorldChange changes; //we copy the changes so they can be done multiple times
 	if (AOrB(NULL, "A", "B")) { //choice a
-		changes = achanges;
+		trackItemUse(item, currentRoom, true, ".a"); //track that we used the item and made choice a
 		printConversation(&atext, false);
+		changes = achanges;
 	} else { //choice b
-		changes = bchanges;
+		trackItemUse(item, currentRoom, true, ".b"); //track that we used the item and made choice b
 		printConversation(&btext, false);
+		changes = bchanges;
 	}
 	applyWorldChange(changes);
 }

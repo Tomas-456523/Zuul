@@ -182,7 +182,7 @@ public: //you need to set stats on creation
 	void levelUp(bool trackLevelUp = false, int instant = 0);
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
 	int damage(double power, double pierce); //affect the npc's health and return how much the health was affected by
-	void directDamage(int damage, const char* status = NULL);
+	int directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level); //only used for enemy parties
 	void setBasicAttack(Attack* attack);
 	void setRecoilAttack(Attack* attack, bool contact = true); //set a recoil attack (retaliation) with the option deciding if it should only be for contact attacks
@@ -194,7 +194,7 @@ public: //you need to set stats on creation
 	void setEscapable(bool _escapable);
 	void calculateWeights();
 	void setEnemy(bool _enemy);
-	void alterSp(int amount, const char* status = NULL);
+	int alterSp(int amount, const char* status = NULL);
 	void setLevelUp(bool _leveledUp);
 	void addSuffix(const char* suffix); //add suffix to end of npc name
 	void setGuard(int _guard, bool additive); //set guard to block attacks
@@ -237,6 +237,7 @@ public: //you need to set stats on creation
 	void setCatchText(const Conversation& text);
 	void setPursueSpecial(Room* special, const char* dir, const Conversation& text);
 	void doCatchChanges();
+	void setSummoner(NPC* npc);
 	void setParent(NPC* npc);
 	void setScaleFight();
 	void setImmunity(Effect* effect, const Conversation& immunetext);
@@ -244,7 +245,7 @@ public: //you need to set stats on creation
 	void transform(NPC* npc); //transform into the given npc
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
-	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER);
+	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER, size_t unless = Helper::NEVER);
 	void addDecruitLink(NPC* npc, size_t condition = Helper::NEVER);
 	void addDefeatRoom(NPC* npc, Room* room);
 	void addLinkedDialogue(NPC* speaker, const Conversation& dialogue);

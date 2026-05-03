@@ -49,6 +49,14 @@ namespace Helper {
 	const NPC* getBase(const NPC* npc); //go to the parents until we reach the template
 	void emptyExterns(); //reset all the external maps and thingymadoodles to not be full of garbage data
 	void loadSaves(); //update the saves here to match the file system's save files
+	void exportSave(const char* data); //print save data with exporting instructions
+	void addChunk(char* dest, const char* chunk); //adds a chunk to the given place and extends the data length if needed
+	void logW(const char* letter, int id1, int id2 = -2); //log something in section W
+	void trackItemUse(Item* item, Room* room, bool wasuse = true, const char* extension = NULL); //track item usage in section W and other tracker variables
+	void trackConv(NPC* npc, const char* extension = NULL); //track item conversation, with this helper it's easier to put the extension
+	bool trackNPC(const NPC* npc); //get if this is an npc whose stats we track
+	long long getID(const char* data, size_t range); //get the id that this chunk of data is representing, or -2 if it's nothing
+	char* getName(const char* data); //get the name from save data but return NULL if it's invalid for whatever reason. Also make sure to delete whatever this returns
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::vector<Save*> saves; //all the player's saves
@@ -79,18 +87,25 @@ namespace Helper {
 	extern int sessions; //how many times the player has booted up this save
 	double playtime; //total time the player has played in this save for
 
+	extern int biggestspbomb; //what's the biggest sp bomb the player launched
+	extern int successfulparries;
+
 	//track these for every teammate
-	extern std::map<NPC*, int> attackslaunched; //how many times each npc attacked
+	extern std::map<NPC*, int> attackslaunched; //how many times each npc attacked total (basic and special)
+	extern std::map<NPC*, int> basicslaunched; //how many basic attacks this npc has done
 	extern std::map<NPC*, int> helpslaunched; //how many times each npc did a beneficial attack
 	extern std::map<NPC*, long long> damagedealt; //total damage this npc has dealt
 	extern std::map<NPC*, long long> healthhealed; //total healing this npc has done to other npcs
 	extern std::map<NPC*, long long> damagerecieved; //how much damage this npc has tanked
 	extern std::map<NPC*, long long> healthrecovered; //how much this npc has healed in total
 	extern std::map<NPC*, int> knockouts; //how many npcs this npc incapacitated
-	extern std::map<NPC*, int> revives; //how many npcs this npc recapacitated
+	extern std::map<NPC*, int> incapacitations; //how many npcs this npc got incapacitated
+	extern std::map<NPC*, int> specialstat; //track any special stats for each npc, that being revives for Floria, summons for Richie (and Graham too I guess (and technically the player)), and times recoiled for Mike
+	extern std::map<NPC*, long long> spusedup; //how much sp this npc has used
+	//no sp generated because it's gonna be pretty much the same as used up
 
 	extern std::set<NPC*> encountered; //all the npcs we've ever fought
-	extern std::set<NPC*> recruited; //all the npcs we've ever recruited
+	extern std::set<NPC*> Rnpcs; //all the npcs we've recruited or encountered in battle who are recruitable or part of the team in some way
 
 	extern int npcID; //ids for the npcs (their index in npcsH) so we can track them in the save system and also for determining their random stat scale deterministically
 	extern int roomID; //ids for the items and rooms so it's easier to find their place in the vectors from the save system

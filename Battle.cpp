@@ -40,8 +40,10 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	vector<NPC*>& team = (pteam ? playerTeam : enemyTeam); //gets the affected team
 	NPC* worldleader = (pteam ? player : enemy); //gets the team leader (in the world)
 	for (NPC* npc : team) { //delete the old team if there was one
+		for (Effect* effect : npc->getEffects()) {
+			detatchEffect(npc->getEffect(effect)); //remove the npc's associated npceffects because they would all be dangling now
+		}
 		everyone.erase(remove(everyone.begin(), everyone.end(), npc), everyone.end());
-		//MARK: remove their npceffects
 		delete npc;
 	}
 	team.clear(); //empty the old team vector to make room for the new team
@@ -51,6 +53,8 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 		NPC* npc = new NPC(*_npc);
 		npc->setEnemy(worldleader->getEnemy()); //make eneminess match the leader
 		team.push_back(npc);
+		encountered.insert(getBase(_npc)); //we have encountered the npc so we track it as one that was encountered
+		if (trackNPC(_npc)) Rnpcs.insert(_npc->getParent()); //start tracking the trackable npc's stats in section R now because they've been encountered in battle
 		vector<NPC*> guards = npc->getGuardians();
 		for (NPC* _guard : guards) { //update all guardian links so they're not pointing to outside battle
 			npc->removeGuardian(_guard); //get rid of the one in world
@@ -63,7 +67,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	}
 
 	//add everyone to a list of everyone for convenience
-	everyone.insert(everyone.begin(), team.begin(), team.end());	
+	everyone.insert(everyone.begin(), team.begin(), team.end());
 
 	//de-duplicating the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
 	vector<char*> names; //each name
@@ -116,7 +120,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	}
 }
 //creates a new npc and adds it to the battle MARK: add npc
-void Battle::addNPC(NPC* npc, NPC* parent, bool altteam) {
+NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	vector<NPC*>* team = NULL; //gets which side the enemy is on
 	if (npc->getEnemy() || altteam && !npc->getEnemy()) { //we must manually set enemy earlier or else EVERY new npc will go to the player team
 		team = &enemyTeam;
@@ -142,12 +146,14 @@ void Battle::addNPC(NPC* npc, NPC* parent, bool altteam) {
 		newguy->addSuffix(suffix); //apply the suffix
 	}
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
-	newguy->setParent(parent);
+	newguy->setSummoner(summoner);
 	team->push_back(newguy);
 	everyone.push_back(newguy);
 	if (newguy->getOpener()) { //do the opening attack if they have one
 		checkOpeners({newguy});
 	}
+	encountered.insert(getBase(npc)); //we have encountered the npc so we track it as one that was encountered
+	return newguy; //return the guy we just newly created
 }
 //checks all the effects that the given npc has for if they've run out, for duration 0 moves MARK: check effects
 void Battle::checkEffects(NPC* npc) {
@@ -217,6 +223,8 @@ void Battle::handleKnockout(NPC* npc) {
 		detatchEffect(leader->removeEffect(npc->getOpener()->appliedeffect, npc));
 		if (leader->popKO()) handleKnockout(leader); //handle ko stuff if the leader was just incapacitated due to fall damage
 	}
+
+	if (trackNPC(npc)) incapacitations[npc->getParent()]++; //track that the npc got ko'd if we track them
 }
 //does the hitting stuff for only one of the targets MARK: hit target
 void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry) {
@@ -249,6 +257,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			CinPause();
 			reciever->setParrying(NULL); //don't parry other attacks or hits
 			hitTarget(attack, attacker, attacker, 1, true); //send the hit right back at double power!
+			successfulparries++; //track the successful parry!
 			hits -= 1; //subtract one hit because we just parried it
 			continue; //don't apply the damage of this hit to the npc
 		}
@@ -263,6 +272,11 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if ((reciever->getInvincible() && attack->power < 0) || (!reciever->getInvincible() && attack->power != 0)) { //hit normally if healing or (damaging and not invincible), never apply damage for 0 power attacks since their point isn't to affect health if that's the case
 			int damage = reciever->damage(effectiveAttack, effectivePierce);
 			if (attack->lifesteal) attacker->damage(damage * -attack->lifesteal, 0); //heal the attacker based on the lifesteal
+			if (trackNPC(attacker)) {
+				if (attack->power > 0) damagedealt[attacker->getParent()] += damage;
+				else healthhealed[attacker->getParent()] += damage;
+				if (damage < 0 && -damage = reciever->getHealth()) specialstat[attacker->getParent()]++; //the revives special stat is Floria's, and we defo just revived someone if the amount we healed by is their total health
+			}
 			CinPause();
 		}
 		if (crit) { //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or "oh shoot" if you got hit)
@@ -273,10 +287,13 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
 			CinPause();
 		}
-		if (reciever->getHealth() <= 0) break; //stop hitting because the guy is already incapacitated
+		if (reciever->getHealth() <= 0 && !attack->targetFainted) break; //stop hitting because the guy is already incapacitated
 	}
 	if (!hits) cout << "\nThe attack missed!";
-	if (reciever->popKO()) handleKnockout(reciever); //apply knockout stuff to the reciever
+	if (reciever->popKO()) { //if the target was just ko'd
+		handleKnockout(reciever); //apply knockout stuff to the reciever
+		if (trackNPC(attacker)) knockouts[attacker->getParent()]++; //increase ko count of the attacker if we track them
+	}
 	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
 	if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
 		attachEffect(reciever->setEffect(attack->appliedeffect));
@@ -288,7 +305,8 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if (reciever->popKO()) handleKnockout(reciever); //handle ko stuff if the reciever was just incapacitated due to effect fall damage
 	}
 	for (int i = 0; i < attack->copyamount; i++) { //copy the target for copying attacks
-		addNPC(reciever); //duplicate the target with no parent on the same team as the target
+		NPC* otherguy = addNPC(reciever); //duplicate the target with no parent on the same team as the target
+		otherguy->setParent(reciever->getParent()); //use the same parent because it's like they're both the original or something
 	}
 	if (attack->targuard) reciever->setGuard(attack->targuard, true); //adds target guards on the target
 	if (attack->spleak) reciever->alterSp(-attack->spleak); //alter sp how the attack does that
@@ -327,13 +345,15 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 }
 //carries out the attack (makes it hit the target) MARK: carry out attack
 void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil) {
-	attacker->alterSp(-Round(attack->cost*attacker->getSPUseMultiplier())); //removes sp from the attacker
+	int spchange = attacker->alterSp(-Round(attack->cost*attacker->getSPUseMultiplier())); //removes sp from the attacker
 	if (attack->spbomb) { //if it's this one move, we have to do stuff related to its unique functionality
 		attack->power = 0; //starts at 0 damage
 		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
 			attack->power += npc->getSP();
-			npc->alterSp(-npc->getSP());
+			int contribution = npc->alterSp(-npc->getSP());
+			if (trackNPC(npc)) spusedup[npc->getParent()] -= contribution; //I mean we kinda used it for them but it's still their sp being used so track as sp usage
 		}
+		biggestspbomb = max(attack->power, biggestspbomb); //update the tracker for the biggest sp bomb
 		cout << attacker->getName() << " gathered the team's SP into an SP BOMB!";
 		CinPause();
 		if (!attack->power) { //if nobody has sp
@@ -341,13 +361,33 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			return;
 		}
 		cout << "\n" << attack->power << " SP went into the attack!\nIt's ";
-		if (attack->power < 12) cout << "a small glowing orb!";
-		else if (attack->power < 30) cout << "really big!";
-		else if (attack->power < 60) cout << "a boulder of energy!";
-		else if (attack->power < 80) cout << "a huge attack!";
-		else if (attack->power < 100) cout << "super big!";
-		else cout << "massive!";
+		if (attack->power < 12) {
+			cout << "a sizable ball of energy!";
+			attack->targets = 3; //also dynamically scale size to match the flavor text (so I guess it's not just flavor anymore)
+		} else if (attack->power < 30) { 
+			cout << "really big!";
+			attack->targets = 5;
+		} else if (attack->power < 60) {
+			cout << "a boulder of energy!";
+			attack->targets = 7;
+		} else if (attack->power < 80) {
+			cout << "a huge attack!";
+			attack->targets = 9;
+		} else if (attack->power < 100) {
+			cout << "super big!";
+			attack->targets = 11;
+		} else {
+			cout << "massive!";
+			attack->targets = 13;
+		}
 		CinPause();
+	}
+	//update the attack stats if we track this npc('s parent in world)
+	if (trackNPC(attacker)) {
+		if (!attack->getBeneficial()) attackslaunched[attacker->getParent()]++; //update this npc's attack counter if applicable
+		else helpslaunched[attacker->getParent()]++;
+		if (attack == attacker->getBasicAttack()) basicslaunched[attacker->getParent()]++; //update basic attack counter
+		else spusedup[attacker->getParent()] -= spchange; //increase sp usage tracker if this is a special attack which spends sp
 	}
 	//says what happened depending on if it was normal or due to recoil
 	if (!recoil) cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //using normal attack
@@ -409,6 +449,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	for (int i = 0; i < attack->summonamount; i++) { //add adds for how many this attack summons
 		bool forenemy = attack->enemysummon; //enemy and team summons are reversed when hypnotized
 		addNPC(attack->summon, attacker, (attacker->getHypnotized() ? !forenemy : forenemy));
+		if (trackNPC(attacker)) specialstats[attacker->getParent()]++; //summons are Richie's (and the player and Graham can technically summon as well but they don't have a conflicting special stat) special stat so we increment it here
 	}
 	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
 	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
@@ -504,11 +545,14 @@ bool Battle::useItem(const char* itemname) {
 			cout << npc->getName() << " is too damaged for the " << itemname << " to work!";
 			return false;
 		} //directly applies the health to the target
-		npc->directDamage(-hp->getHp());
+		int hp = npc->directDamage(-hp->getHp());
+		helpslaunched[player]++; //this was helpful so increase the player help counter
+		healthhealed[player] += hp;
 	//sp items restore sp for the target
 	} else if (!strcmp(item->getType(), "sp")) {
 		SpItem* sp = (SpItem*)item; //converts to the corresponding subclass
 		npc->alterSp(sp->getSp()); //alters the sp of the target
+		helpslaunched[player]++; //this was helpful so increase the player help counter
 	//revive items are just healing items but you can only use them on incapacitated teammates
 	} else if (!strcmp(item->getType(), "revive")) {
 		ReviveItem* revive = (ReviveItem*)item; //converts to the corresponding subclass
@@ -517,7 +561,9 @@ bool Battle::useItem(const char* itemname) {
 			return false;
 		} //gives success message and revives the teammate
 		cout << npc->getName() << " was recapacitated!";
-		npc->directDamage(-revive->getHp());
+		int hp = npc->directDamage(-revive->getHp());
+		helpslaunched[player]++; //this was helpful so increase the player help counter
+		healthhealed[player] += hp;
 	//effect items apply an effect to the target
 	} else if (!strcmp(item->getType(), "effect")) {
 		EffectItem* affecter = (EffectItem*)item; //converts to the corresponding subclass
@@ -526,6 +572,8 @@ bool Battle::useItem(const char* itemname) {
 			return false;
 		} //sets the effect on the target
 		attachEffect(npc->setEffect(affecter->getEffect()));
+		if (effect->getBeneficial()) helpslaunched[player]++; //this was helpful so increase the player help counter
+		else attackslaunched[player]++; //this was detrimental so increase the player attack counter
 		//the SUPERSMOOTHIE has this specific battle-handled effect
 		for (int i = 0; i < affecter->getEffect()->multipositioning; i++) {
 			playerTeam.push_back(npc); //add a shallow copy to the team lists so they're just in multiple positions, very cool
@@ -539,6 +587,7 @@ bool Battle::useItem(const char* itemname) {
 			return false;
 		} //carries out the attack on the target
 		carryOutAttack(key->getAttack(), playerTeam[0], npc);
+		attackslaunched[player]++; //key items only have attacking attacks
 	//some movement items have attacks as well
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
@@ -547,11 +596,13 @@ bool Battle::useItem(const char* itemname) {
 			return false;
 		} //carries out the attack on the target
 		carryOutAttack(mover->getAttack(), playerTeam[0], npc);
+		attackslaunched[player]++; //movement items only have attacking attacks
 	//manhole items' names are misleading. They're just random stuff on the ground that you can find and throw at enemies as an attack
 	} else if (!strcmp(item->getType(), "manhole")) {
 		ManholeItem* cover = (ManholeItem*)item; //converts to the corresponding subclass
 		//they all have attacks so we don't check for it, we just launch the attack onto the target
 		carryOutAttack(cover->getAttack(), playerTeam[0], npc);
+		attackslaunched[player]++; //manhole items only have attacking attacks
 	//info items give information as usual
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
@@ -561,11 +612,14 @@ bool Battle::useItem(const char* itemname) {
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items are another way of just using their attack
 		WeaponItem* weapon = (WeaponItem*)item;
 		carryOutAttack(weapon->getAttack(), playerTeam[0], npc);
+		if (weapon->getAttack()->getBeneficial()) helpslaunched[player]++;
+		else attackslaunched[player]++;
 	} else { //otherwise the player tried to use an item that is only usable in the overworld so we give an error message
 		cout << "\nThe " << itemname << " can't be used in battle!";
 		return false;
 	} //if the item gets used up after use, we delete it! (since deleteItem checks inventory first, we can get away with passing NULL for room)
 	if (item->getConsumable()) {
+		logW("x", item->getID()); //track that we just used up this item
 		deleteItem(NULL, inventory, item);
 	}
 	commandcount[3]++; //increment successful item usings because we just successfully used an item if we're at this point
@@ -712,7 +766,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 				} //if there's no one else to target, then just let the player try to hit the away npc because there's nothing better to do while waiting for them to come back
 			}
 			if (plr->getSP() < attack->cost) { //we don't launch the attack if we don't have enough sp
-				cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << attack->cost << ")";
+				cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << Round(attack->cost * plr->getSPUseMultiplier()) << ")";
 				return false; //could not launch attack
 			}
 			carryOutAttack(attack, plr, target);
@@ -725,16 +779,22 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 		}
 	} //from here the attack launching was unsuccessful
 
-	//prints error message and returns false because no attack was launched successfully, so the player must type something else
-	if (strlen(tcother) && strlen(acother)) cout << "\nInvalid target \"" << acother << "\" or invalid command or attack \"" << tcother << "\". (Type HELP for help)"; //one or the other is wrong just print ambiguous error
-	else if (strlen(tcother)) cout << "\nInvalid command or attack \"" << tcother << "\". (Type HELP for help)"; //invalid attack or command error
-	else if (strlen(acother)) cout << "\nInvalid target \"" << acother << "\". (Type HELP for help)"; //invalid target error
-	else cout << "\nInvalid command or attack \"" << commandP << "\". (Type HELP for help)"; //"their whole input was inilegible" error
-
-	//MARK: invalidcommand++; //this was an invalid command so yeah increment it
-
-	//MARK: [attack] what?
-		
+	//prints error message and then returns false because no attack was launched successfully, so the player must type something else
+	if (strlen(acandidate && !strlen(acother))) { //didn't clarify who to attack but they needed to
+		cout << adandidate << " who?";
+		actionwhat++;
+	} else if (strlen(tcother) && strlen(acother)) cout << "\nInvalid target \"" << acother << "\" or invalid command or attack \"" << tcother << "\". (Type HELP for help)"; //one or the other is wrong just print ambiguous error
+	else if (strlen(tcother)) { //invalid attack or command error
+		cout << "\nInvalid command or attack \"" << tcother << "\". (Type HELP for help)";
+		invalidcommand++;
+	} else if (strlen(acother)) { //invalid target error
+		cout << "\nInvalid target \"" << acother << "\". (Type HELP for help)";
+		invalidnpc++;
+	} else { //"their whole input was inilegible" error
+		cout << "\nInvalid command or attack \"" << commandP << "\". (Type HELP for help)";
+		invalidcommand++;
+	}
+	
 	return false; //nothing was successfully launched
 }
 //the player's controls. Returns whether the player did a valid action or not MARK: player turn
@@ -927,6 +987,7 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 	if (attack->recoilatt && ((double)rand()/RAND_MAX < attack->recoilchance)) { //handle recoiling attacks
 		vector<NPC*> rtargets = getTargets(npc, attack->recoilatt); //get the targets which is just the npc's own team
 		carryOutAttack(attack->recoilatt, npc, rtargets[rand()%rtargets.size()], true); //launches the attack!
+		if (trackNPC(npc)) specialstat[npc->getParent()]++; //recoil attacks are Mike's special stat so we update it
 		if (!WorldState[RECOILED]) { //clarify that it was an accident if it was the first time
 			cout << "\n" << npc->getName() << " - \"Oops.\"";
 			CinPause();

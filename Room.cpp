@@ -93,6 +93,7 @@ void Room::doEnterChanges() { //don't do the change if it has none or if the con
 	if (!hasenterchanges || !WorldState[enterchangecondition] && enterchangecondition != NEVER) return;
 	applyWorldChange(enterchange);
 	hasenterchanges = false; //don't do it again
+	logW("e", id); //track the enter changes because we just did some
 }
 //prints all the exits from this room; I tried just returning the map, but it was annoying because of the custom comparator so I just do this
 void Room::printExits() {
@@ -194,6 +195,7 @@ void Room::printWelcome() {
 	welcome = false; //we only do the welcome once
 	if (welcomeText.getOutdated()) return; //don't do outdated welcomes
 	printConversation(&welcomeText, true);
+	logW("w", id); //log this welcome we just did
 }
 void Room::setItem(Item* item) {
 	getItems().push_back(item);

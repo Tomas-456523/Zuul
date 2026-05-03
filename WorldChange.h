@@ -18,7 +18,7 @@ struct Attack;
 struct WorldChange {
     std::queue<NPC*> recruitLinks; //these npcs are set to recruitable
 	std::queue<std::pair<std::vector<NPC*>*, NPC*>> dismissLinks; //these npcs are dismissed from this party if recruited
-	std::queue<std::pair<NPC*, size_t>> conditionalRecruits; //these npcs are set to recruitable if the given world condition is true
+	std::queue<std::tuple<NPC*, size_t, size_t>> conditionalRecruits; //these npcs are set to recruitable if the given world condition is true UNLESS the second condition is true
 	std::queue<std::pair<NPC*, Conversation>> linkedConversations; //we add these conversations to the npc
 	std::queue<std::pair<NPC*, Conversation>> linkedDialogue; //we set the linked npcs' dialogue to this
 	std::queue<std::pair<NPC*, const char*>> linkedTitles; //we reset these npc's titles

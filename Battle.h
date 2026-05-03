@@ -52,7 +52,7 @@ public:
 	void checkOpeners(const vector<NPC*>& checks); //check the given npcs for if they have opening moves
 	void checkFightEffects(); //check the enemy leader for if they have any team effects to apply to the player team
 	
-	void addNPC(NPC* npc, NPC* parent = NULL, bool altteam = false); //creates a new npc mid-battle
+	NPC* addNPC(NPC* npc, NPC* summoner = NULL, bool altteam = false); //creates a new npc mid-battle
 
 	int getXpReward(); //gets how much xp was earned as a result of a victory
 	int getMonyReward(); //gets how many monies were earned as a result of a victory

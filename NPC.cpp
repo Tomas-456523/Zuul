@@ -75,7 +75,10 @@ const NPC* NPC::getParent() const {
 }
 void NPC::printRejectionDialogue() {
 	printDialogue(true, &rejectionDialogue.front());
-	if (rejectionDialogue.size() != 1) rejectionDialogue.pop();
+	if (rejectionDialogue.size() != 1) {
+		rejectionDialogue.pop();
+		trackConv(this, ".j"); //track that we said this since we used up a conversation
+	}
 }
 void NPC::printRecruitmentDialogue() {
 	if (speakOnRecruit && !conversations.empty()) { //if we have to print normal dialogue before regular dialogue
@@ -85,20 +88,25 @@ void NPC::printRecruitmentDialogue() {
 	if (recruitmentDialogue.empty()) return;
 	printDialogue(true, &recruitmentDialogue.front());
 	recruitmentDialogue.pop();
+	trackConv(this, ".r"); //track that we said this since we used up a conversation
 }
 void NPC::printDismissalDialogue() {
 	if (dismissalDialogue.empty()) return;
 	printDialogue(true, &dismissalDialogue.front());
 	dismissalDialogue.pop();
+	trackConv(this, ".d"); //track that we said this since we used up a conversation
 }
 void NPC::printDismissalRejection() {
+	if (dismissalRejection.empty()) return;
 	printDialogue(true, &dismissalRejection.front());
 	if (dismissalRejection.size() != 1) dismissalRejection.pop();
+	trackConv(this, ".i"); //track that we said this since we used up a conversation
 }
 void NPC::printOpeningDialogue() {
 	if (openingDialogue.empty()) return;
 	printDialogue(true, &openingDialogue.front());
 	openingDialogue.pop();
+	trackConv(this, ".o"); //track that we said this since we used up a conversation
 }
 void NPC::printBlockDialogue(bool finalpause) {
 	printConversation(&blockreason, finalpause);
@@ -858,10 +866,15 @@ int NPC::damage(double power, double pierce) {
 		koCheck = false;
 	}
 
+	if (trackNPC(this)) { //log how much damage/undamage we just took if this is a tracked npc instance
+		if (totalDamage > 0) damagerecieved[parent] += totalDamage;
+		else healthrecovered[parent] -= totalDamage;
+	}
+
 	return totalDamage;
 }
 //directly applies damage while ignoring defense and all that
-void NPC::directDamage(int damage, const char* status) {
+int NPC::directDamage(int damage, const char* status) {
 	int totalDamage = Clamp(damage,health-stats.hpmax,health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 	bool capacitated = health > 0;
 	health -= totalDamage;
@@ -871,6 +884,11 @@ void NPC::directDamage(int damage, const char* status) {
 	} else if (!capacitated && health > 0) { //make sure we don't do any ko stuff if they were just recapacitated
 		koCheck = false;
 	}
+	if (trackNPC(this)) { //log how much damage/undamage we just took if this is a tracked npc instance
+		if (totalDamage > 0) damagerecieved[parent] += totalDamage;
+		else healthrecovered[parent] -= totalDamage;
+	}
+	return totalDamage;
 }
 void NPC::setLevel(int _level) { //manually sets the level of the npc (will not level down)
 	int lvlguard = 100; //guards the level up past a certain amount to avoid the program freezing on large level settings
@@ -924,9 +942,9 @@ void NPC::setGuard(int _guard, bool additive) {
 	else if (_guard > guard) guard = _guard; //set to the new guard if it's more than before
 }
 //all the changes editors edit the most recently added changes object and should only be called on world setup lest we segfault due to a lack of thing in queue
-void NPC::addRecruitLink(NPC* npc, size_t condition) { //links this npc to be set to recuritable later
+void NPC::addRecruitLink(NPC* npc, size_t condition, size_t unless) { //links this npc to be set to recuritable later
 	if (condition != NEVER) {
-		changes.back().conditionalRecruits.push({npc, condition});
+		changes.back().conditionalRecruits.push(make_tuple(npc, condition, unless)); //the default unless is NEVER so if we didn't pass anything, never will never be true so the unless won't affect anything if we didn't intend it to
 	} else { 
 		changes.back().recruitLinks.push(npc);
 	}
@@ -1001,6 +1019,9 @@ void NPC::setPursueSpecial(Room* special, const char* dir, const Conversation& t
 }
 void NPC::doCatchChanges() {
 	applyWorldChange(catchchanges);
+}
+void NPC::setSummoner(NPC* npc) {
+	summoner = npc;
 }
 void NPC::setParent(NPC* npc) {
 	parent = npc;
@@ -1228,7 +1249,14 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 
 			//apply fall damage (effect removal damage) if the npc isn't invincible (or the fall damage heals for some reason)
 			if (effect->falldamage && !(effect->falldamage > 0 && invincibility)) {
-				damage(effect->falldamage, 0);
+				int damag = damage(effect->falldamage, 0);
+				for (NPC* affector : npceffects[effect].affectors) {
+					if (trackNPC(affector)) { //increase damage counters for tracked affectors
+						if (damag > 0) damagerecieved[affector->getParent()] += damag;
+						else healthrecovered[affector->getParent()] -= damag;
+						if (!health && koCheck) knockouts[affector->getParent()]++; //also track the ko if the npc just got ko'd due to this fall damage
+					}
+				}
 			}
 
 			return &npceffects[effect]; //return the npceffect so Battle can check if it's fully run out
@@ -1239,20 +1267,27 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 //called by Battle to tick this npc's effects, not all at once to allow for fine tuning, only ticks duration if incapacitated MARK: tick effects
 void NPC::tickEffect(Effect* effect) {
 	NPCEffect& npceffect = npceffects[effect]; //get the npceffect for convenience
-	if (getHealth()) { //we don't affect the npc if they're unconscious
+	if (health) { //we don't affect the npc if they're unconscious
 		if (effect->damage && !(effect->damage > 0 && invincibility)) { //applies damage if not invinclible (or healing which succeeds always)
-			directDamage(effect->damage, effect->name);
-			if (effect->lifesteal) { //give life stealers the health they just took
-				for (NPC* affector : npceffect.affectors) { //only if they have health left; lifesteal is not an insurance policy for when you're incapacitated
-					if (affector->getHealth() > 0) affector->directDamage(-effect->damage*effect->lifesteal, effect->name);
+			int damag = directDamage(effect->damage, effect->name);
+			for (NPC* affector : npceffect.affectors) {
+				int lifestealdamage = 0;
+				if (effect->lifesteal) { //give life stealers the health they just took
+					if (affector->getHealth() > 0) lifestealdamage = affector->directDamage(-damag*effect->lifesteal, effect->name); //only if they have health left; lifesteal is not an insurance policy for when you're incapacitated
+				}
+				if (trackNPC(affector)) {
+					if (damag > 0) damagedealt[affector->getParent()] += damag;
+					else healthhealed[affector->getParent()] -= damag;
+					if (lifestealdamage > 0) healthhealed[affector->getParent()] -= lifestealdamage;
+					if (!health) knockouts[affector->getParent()]++; //increase ko count of the attacker if we just got ko'd, just share the credit because it's basically all their faults
 				}
 			}
 		}
 		if (effect->spleak) { //applies sp alterations
-			alterSp(-effect->spleak, effect->name);
+			int spchange = alterSp(-effect->spleak, effect->name);
 			if (effect->spsteal) { //give sp stealers the sp they just took
 				for (NPC* affector : npceffect.affectors) {
-					affector->alterSp(-effect->spleak*effect->spsteal, effect->name);
+					affector->alterSp(-spchange*effect->spsteal, effect->name);
 				}
 			}
 		}
@@ -1290,20 +1325,21 @@ void NPC::calculateWeights() {
 	}
 }
 //changes the sp amount
-void NPC::alterSp(int amount, const char* status) {
+int NPC::alterSp(int amount, const char* status) {
 	if (amount > 0) { //if there is positive change
 		int alterAmount = Clamp(amount, 0, stats.spmax - sp);
 		sp += alterAmount; //alter the amount
 		if (status != NULL) { //say why it happened
 			cout << "\n" << name << " gained " << alterAmount << " SP due to " << status << "!";
 		}
-		return;
+		return alterAmount;
 	} //if we're removing sp
 	int alterAmount = Clamp(-amount, 0, sp);
 	sp -= alterAmount;
 	if (status != NULL) { //say the reason if there is one
 		cout << "\n" << name << " leaked " << alterAmount << " SP due to " << status << "!";
 	}
+	return -alterAmount;
 }
 //stuff that happens when the npc is defeated in battle
 void NPC::defeat() {
@@ -1322,6 +1358,7 @@ void NPC::defeat() {
 		applyWorldChange(changes.front()); //apply all the world changes associated with this npc
 		if (!loopLastChange || changes.size() > 1) changes.pop(); //pop the changes if we don't need them anymore (not the last one OR it's the last one and we don't loop it)
 	}
+	logW("d", id); //log that this npc was defeated
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;
@@ -1329,12 +1366,13 @@ void NPC::undefeat() { //tells the enemy it's not defeated
 		WorldChange changes = respawnchanges.front(); //use copy so the respawn changes don't get reset in case it's the last one which is supposed to be usable forever
 		applyWorldChange(changes);
 		if (respawnchanges.size() > 1) respawnchanges.pop(); //go to the next one, unless it's the last one which loops forever
+		logW("r", id); //track the respawn changes
 	}
 }
 void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc's name
 	strcat(name, suffix);
 }
-//prints the npc's dialogue, prioritizing thisone if it's passed
+//prints the npc's dialogue, prioritizing thisone if it's passed MARK: print dialogue
 void NPC::printDialogue(bool lastpause, Conversation* thisone) {
 	Conversation conversation; //uninitialized, please initialize
 	if (thisone) { //if we passed thisone, print that one
@@ -1343,17 +1381,20 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone) {
 		conversation = recruitedDialogue.front();
 		if (recruitedDialogue.size() > 1) {
 			recruitedDialogue.pop();
+			trackConv(this, ".e"); //track that we said this since we used up a conversation
 		}
 	} else if (conversations.size() > 0) { //if there's a limited conversation to be had
 		do { //do while because conversation starts uninitialized with garbage data
 			conversation = conversations.front(); //gets the current conversation
 			conversations.pop();
 		} while (conversation.getOutdated()); //try again if the conversation is outdated, atm only regular conversations can be outdated
-		//NOTE: we MUST always have a queued dialogue after outdated dialogues
+		if (conversation.getOutdated()) conversation = dialogue; //just default to the exhausted dialogue if they were all outdated
+		else trackConv(this); //track that we said this since we used up a conversation
 	} else if (currentRoom->getGym()) { //gym dialogue if they're in the gym
 		conversation = gymDialogue.front();
 		if (gymDialogue.size() > 1) {
 			gymDialogue.pop();
+			trackConv(this, ".g"); //track that we said this since we used up a conversation
 		}
 	} else { //regular dialogue
 		conversation = dialogue;

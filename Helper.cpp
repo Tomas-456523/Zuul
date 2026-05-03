@@ -337,14 +337,14 @@ namespace Helper {
 			data.second->Dismiss();
 			changes.dismissLinks.pop();
 		}
-		while (!changes.conditionalRecruits.empty()) { //make unrecruitable all the npcs unless the condition paired to them is true
-			pair<NPC*, size_t>& data = changes.conditionalRecruits.front();
-			if (WorldState[data.second]) {
-				data.first->setRecruitable(true);
-				if (data.first->getLeader()) {
-					data.first->setLeader(false);
-					data.first->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
-					data.first->undefeat();
+		while (!changes.conditionalRecruits.empty()) { //make recruitable all the npcs if the condition paired to them is true unless the second condition is true
+			tuple<NPC*, size_t, size_t>& data = changes.conditionalRecruits.front();
+			if (WorldState[get<1>(data)] && !WorldState[get<2>(data)]) {
+				get<0>(data)->setRecruitable(true);
+				if (get<0>(data)->getLeader()) {
+					get<0>(data)->setLeader(false);
+					get<0>(data)->setBoss(false); //falsify boss just in case (so bosses like viola aren't immune to instakill attacks like shrimple beam)
+					get<0>(data)->undefeat();
 				}
 			}
 			changes.conditionalRecruits.pop();
@@ -581,13 +581,15 @@ namespace Helper {
 		chaNPC.clear();
 		memset(commandcount, 0, sizeof(commandcount));
 		attackslaunched.clear();
+		basicslaunched.clear();
 		helpslaunched.clear();
 		damagedealt.clear();
 		healthhealed.clear();
 		healthrecovered.clear();
 		damagerecieved.clear();
 		knockouts.clear();
-		revives.clear();
+		incapacitations.clear();
+		specialstat.clear();
 		encountered.clear();
 		recruited.clear();
 		roomsH.clear();
@@ -604,12 +606,15 @@ namespace Helper {
 		actionwhat = 0;
 		sessions = 0;
 		playtime = 0;
+		biggestspbomb = 0;
+		successfulparries = 0;
 		npcID = 0; //reset ids as well!
 		itemID = 0;
 		roomID = 0;
 		//all world states are reset to false
 		for (size_t i = 0; i <= NEVER) WorldState[i] = 0;
 		delete[] sectionW; //delete the world change tracker
+		sectionW = NULL; //make it null again
 		memset(sectionT, NULL, sizeof(sectionT)); //use sizeof since pointer size may vary by system
 	}
 	//go to the parents until we reach the template
@@ -638,6 +643,100 @@ namespace Helper {
 			delete[] savedata;
 		}
 	}
+	//print save data with exporting instructions, it's a helper function since we can do that from saveWorld as well as exportSave if the file saving fails
+	void exportSave(const char* data) {
+		cout << "\nHere is your save data!\n\n" //print all the save data so the player can copy it, pretty straightforward
+			 << data
+			 << "\n\nMake sure to copy everything between the \"BQ2\" and \"=\" (including the BQ2 and =)."
+				"\nYou're probably in a terminal, so prefer Ctrl + Insert or Ctrl + Shift + C over Ctrl + C."
+				"\nIMPORT this save data whenever you want to use it!"
+				"\nI am not responsible for issues with your game if you manually edit your save file."
+				"\nStore it in a safe location!";
+	}
+	//adds a chunk to the given place and extends the data length if needed
+	void addChunk(char* dest, const char* chunk) {
+		while (strlen(dest) + strlen(chunk) >= savesize) {
+			savesize *= 2;
+			char* newdata = new char[savesize]();
+			strcpy(newdata, dest);
+			delete[] dest;
+			dest = newdata;
+		}
+		strcat(dest, chunk);
+	}
+	//log something in section W, called from many places so it has this helper
+	void logW(const char* letter, int id1, int id2 = -2) {
+		if (!sectionW) { //make the w tracker have stuff if it's null
+			sectionW = new char[100]();
+			sectionW[0] = '\0';
+		//if w already has stuff, just add a dividing comma
+		} else addChunk(sectionW, ",");
+		char tracker[30]; //build the log for the stuff given
+		if (id2 >= -1) snprintf(tracker, 30, "%s%d.%d", letter, id1, id2); //-1 is our usual sentinel, so if it's at least that, that means we want to include the second id as well in the logging
+		else snprintf(tracker, 30, "%s%d", letter, id1); //id was -2 so only include the first id
+		//finally, add what we wanted to add
+		addChunk(sectionW, tracker);
+	}
+	//track item usage in section W and other tracker variables, we might call from multiple places so we have this helper
+	void trackItemUse(Item* item, Room* room, bool wasuse, const char* extension = NULL) {
+		if (wasuse) commandcount[3]++; //increment successful item usings because we successfully used the item
+		logW("u", item->getID(), room->getID()); //log the item usage
+		if (extension) addChunk(sectionW, extension); //also log any extensions we were given
+	}
+	//track item conversation, with this helper it's easier to put the extension
+	void trackConv(NPC* npc, const char* extension = NULL) {
+		logW("a", npc->getID()); //log the npc that was talked to with the a letter identifier, a for ask
+		if (extension) addChunk(sectionW, extension); //add the extra extension
+	}
+	//get if this is an npc whose stats we track
+	bool trackNPC(const NPC* npc) {
+		npc = npc->getParent(); //go to the parent because this is called from Battle where they're all copies from the original in world
+		return npcChar.count(npc) && npcChar[npc] != 't' && npcChar[npc] != 'n'; //if this one has a tracking character and it isn't the lobster or the banker, then it's an npc who we track
+	}
+	//get the id that this chunk of data is representing, or -2 if it's nothing
+	long long getID(const char* data, size_t range) {
+		int sign = 1;
+		if (data[0] == '-') {
+			sign = -1;
+			data++;
+			range--;
+			if (!range) return -2;
+		}
+		int total = 0;
+		for (size_t i = 0; i < range; i++) {
+			char c = data[i];
+			if (!isdigit(c)) return -2;
+			total = total * 10 + (c - '0');
+		}
+		return total * sign;
+	}
+	//get the name from save data but return NULL if it's invalid for whatever reason. Also make sure to delete whatever this returns
+	char* getName(const char* data) {
+		size_t len = strlen(data);
+		if (len > 254) return NULL; //names can't be that long so it's invalid
+		char* name = new char[len+1];
+		bool escaping = false;
+		size_t j = 0;
+		for (size_t i = 0; i <= len; i++) { //include the null terminator for convenience
+			if (!escaping && data[i] == '\\') {
+				escaping = true;
+			} else if (escaping && data[i] != '\\' && data[i] != ',' && data[i] != '=' && data[i] != '|') {
+				delete[] name;
+				return NULL;
+			} else if (!escaping && (data[i] == ',' || data[i] == '=' || data[i] == '|')) {
+				delete[] name;
+				return NULL;
+			} else {
+				name[j++] = data[i];
+				escaping = false;
+			}
+		}
+		if (escaping) {
+			delete[] name;
+			return NULL;
+		}
+		return name;
+	}
 
 	//all the player's saves
 	vector<Save*> saves;
@@ -651,8 +750,8 @@ namespace Helper {
 	map<NPC*, char> npcChar;
 	map<char, NPC*> charNPC; //map to get the npc from the char
 
-	char* sectionW; //build section W as we play
-	Room* sectionT[5] = {NULL};
+	char* sectionW = NULL; //build section W as we play
+	Room* sectionT[5] = {NULL}; //build section T as we play
 
 	int commandcount[18] = {0}; //count how many times we used each command
 	int invalidcommand = 0;
@@ -664,18 +763,24 @@ namespace Helper {
 	int sessions = 0; //how many times the player has booted up this save
 	double playtime = 0; //total time the player has played in this save for
 
+	int biggestspbomb = 0; //biggest sp bomb the player threw fun very interesting stat
+	int successfulparries = 0;
+
 	//track these for every teammate
-	map<NPC*, int> attackslaunched; //how many times each npc attacked
+	map<NPC*, int> attackslaunched; //how many times each npc attacked total (basic and special)
+	map<NPC*, int> basicslaunched; //how many basic attacks this npc has done
 	map<NPC*, int> helpslaunched; //how many times each npc did a beneficial attack
 	map<NPC*, long long> damagedealt; //total damage this npc has dealt
 	map<NPC*, long long> healthhealed; //total healing this npc has done to other npcs
 	map<NPC*, long long> damagerecieved; //how much damage this npc has tanked
 	map<NPC*, long long> healthrecovered; //how much this npc has healed in total
 	map<NPC*, int> knockouts; //how many npcs this npc incapacitated
-	map<NPC*, int> revives; //how many npcs this npc recapacitated
+	map<NPC*, int> incapacitations; //how many npcs this npc got incapacitated
+	map<NPC*, int> specialstat; //track any special stats for each npc, that being revives for Floria, summons for Richie (and Graham too I guess (and technically the player)), and times recoiled for Mike
+	map<NPC*, long long> spusedup; //how much sp this npc has used
 
 	set<NPC*> encountered; //all the npcs we've ever fought
-	set<NPC*> recruited; //all the npcs we've ever recruited
+	set<NPC*> Rnpcs; //all the npcs we've recruited or encountered in battle whose stats are tracked
 
 	vector<Room*> roomsH; //vectors of everything in memory so we can deallocate them all later
 	vector<NPC*> npcsH;
