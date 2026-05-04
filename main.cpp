@@ -7324,17 +7324,17 @@ void printSaves() {
 		cout << "\nYou don't have any saves; try starting a NEW GAME!";
 		return;
 	}
-	//for each save, print their number, the player level, their monies, and total game time
-	//example: SAVE 1 - SELF, Lvl 15, 12980 Monies, 5h 56m 7s
-	//error text: SAVE 8 - Save data is faulty.
-	//we still load faulty saves (from the file system) to preserve save number
 
 	//MARK: MAKE IT ACTYUALLT PRINT THE STUFF
 
 	for (size_t i = 0; i < saves.size(); i++) {
 		Save* save = saves[i];
 		cout << "\nSAVE " << i << " - ";
-
+		if (!save->getValid()) cout << "Save data is faulty.";
+		else if (save->getVersion() != '0') cout << "You need a newer version to play this save.";
+		else {
+			//name, lvl, monies, play time
+		}
 	}
 }
 
@@ -7383,7 +7383,7 @@ void loadSave(const char* savename) {
 	} if (num > saves.size()) { //let the player know they are going over the amount they can choose from
 		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
 		return;
-	} if (saves[num-1]->getValid()) { //bad data so no play
+	} if (!saves[num-1]->getValid()) { //bad data so no play
 		cout << "\nThis save's data is faulty and cannot be played.";
 		return;
 	} if (saves[num-1]->getVersion() != '0') { //we be too outdated, no play

@@ -50,7 +50,7 @@ struct Save {
 	*  - Then level, xp, room, stats (attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage), and finally, time left in gym (0 if not in gym)
 	*  - Everything connected to the NPC is seperated by .
 	*  - So, this section would look something like: R[level].[xp].[room].[attacks].[helps].[damage dealt].[health dealt].[damage taken].[health recovered].[kos].[ko'd].[special].[sp usage].[gym time]
-	*  Section P: What the player's party actually is, using the above codes (e.g. ajbhl) would mean a party of Self, Michelin, Ratman, Henry Jerry, and Jilly in that order
+	*  Section P: What the player's party actually is (apart from the player), using the above codes (e.g. jbhl) would mean a party of Self, Michelin, Ratman, Henry Jerry, and Jilly in that order
 	*  Section E: Enemy types that have been encountered
 	*  Section I: Every item's room, or -1 if it's in the inventory (saved in order, so the items in the rooms and in the inventory remain in the same order) (-1 instead of 0 because 0 is a valid room ID, being limbo, so -1 translates to NULL room here)
 	*  - Denoted by [item].[room]
@@ -82,6 +82,12 @@ struct Save {
 		
 		//unimplemented right now because Im only using my own saves currently made in the game so they should work fine
 
+		//MARK: also make sure each section is only there once
+		
+		//I changed my mind I should enforce section order
+		//at least make sure R is after W, I after W, etc. and make sure all similar cases are accounted for
+		//u after w
+
 		return true; //yay everything worked so it's valid!
 	}
 
@@ -107,7 +113,7 @@ struct Save {
 		return name; //return the name we got!
 	}
 
-	//gets the variables in main and serializes it into save data
+	//gets the variables in main and serializes it into save data MARK: save game
 	static void SaveGame(Save* save, int monies, time_t lastsave) {
 		save->reset(); //reset the current save string so we can rebuild it, easier to edit that way
 		//add beginning and section V version number (we are in version 0)
@@ -146,7 +152,7 @@ struct Save {
 		//Section P, save the player's party
 		{ char team[12] = "|P"; //build the team here starting with the P section identifier then all their representing chars in order
 		size_t plen = Helper::charNPC['a']->getParty()->size();
-		for (size_t i = 0; i < plen; i++) { //add all the party characters to the string
+		for (size_t i = 1; i < plen; i++) { //add all the party characters to the string (skipping the player because of course they're in the party)
 			team[i+2] = Helper::npcChar[(*Helper::charNPC['a']->getParty())[i]];
 		}
 		team[plen+2] = '\0'; //null terminate it!
@@ -208,10 +214,10 @@ struct Save {
 		for (size_t i = 0; i < Helper::NEVER; i++) {
 			addChunk(save->data, Helper::WorldState[i] ? "1" : "0");
 		}
-		//Section Q, store how long the player has played on this file plus some silly error data
+		//Section Q, store how long the player has played on this file plus some silly error data plus some other potentially interesting stats
 		playtime += difftime(time(NULL), lastsave); //this might lose one second per save (command), but that's basically nothing so that's fine
-		char sectionQ[100];
-		snprintf(sectionQ, 100, "|Q%.0f,%d,%d,%d,%d,%d,%d,%d,%d", playtime, sessions, invalidcommand, invalidmove, invalidnpc, invaliditem, nothingtosay, biggestspbomb, successfulparries);
+		char sectionQ[1000];
+		snprintf(sectionQ, 1000, "|Q%.0f,%d,%d,%d,%d,%d,%d,%d,%d", playtime, sessions, invalidcommand, invalidmove, invalidnpc, invaliditem, nothingtosay, biggestspbomb, successfulparries);
 		addChunk(save->data, sectionQ);
 		//cap it off with a =
 		addChunk(save->data, "=");
@@ -251,7 +257,13 @@ struct Save {
 		return total * sign;
 	}
 
-	//gets stuff which it can edit, and modifies the world to match the given save data
+	//adjust item id to get their index in itemsH, accounting for deleted items
+	static int adjustItemID(int id, set<int>& discontinuities) {
+		int discount = distance(discontinuities.begin(), discontinuities.lower_bound(id));
+		return id - discount;
+	}
+
+	//gets stuff which it can edit, and modifies the world to match the given save data MARK: load game
 	static void LoadGame(const Save* save, NPC* player, std::vector<Item*>* inventory, int& monies) {
 		//check for invalid saves (won't catch everything but you shouldn't be modifying save data anyway, this is mostly for accidentally copy/pasting wrong)
 		//check version and that it starts with BQ2 and ends with =
@@ -261,49 +273,98 @@ struct Save {
 		//after validating the save, assume it's all perfectly parsable (not necessarily correct, just parsable)
 		data += 4; //skip the BQ2|
 
+		set<int> discontinuity; //the item id discontinuities, because we delete items sometimes so
+
 		while (*data != '=') { //keep loading stuff until we reach the end
 			if (*data == '|') { //just go past the dividers
 				data++;
 			} else if (*data == 'V') { //ignore version section, if it's a future version just check outside the function
 
-			} else if (*data == 'N') {
-				if (*(++data) != '|') ParseName(charNPC['a'], ++data);
-			} else if (*data == 'M') {
+			} else if (*data == 'N') { //n for name
+				if (*(++data) != '|') ParseName(player, ++data);
+			} else if (*data == 'M') { //m for monies
 				monies = ParseNum(++data);
-			} else if (*data == 'W') {
+			} else if (*data == 'W') { //w for world change and everything that can cause it, most important section
+				//UPDATE DISCONTINUITY
+				//b
+				//u
+				//x
+				//d
+				//r
+				//a
+				//e
+				//w
+				//o
+				//p
+				//t
+			} else if (*data == 'U') { //u for second letter of pursuer
+				player->getPursuer()->setRoom(roomsH[ParseNum(++data)]); //just set their room
+			} else if (*data == 'R') { //r for recruitable, tracks recruitable npcs' stats (and buford)
+				//identifying char, then the level, xp, room id, attacks launched, helps launched, damage dealt, heals dealt, damage taken, health recovered, knockouts, incapacitations, a special stat which varies by npc, total sp used up by pecial attacks, and gym starting time
 				
-			} else if (*data == 'U') {
+
+
+
+			} else if (*data == 'P') { //p for party
+				while (*(++data) != '|') { //add the teammates until we reach the end
+					player->setParty(charNPC(*data));
+				}
+			} else if (*data == 'E') { //e for encountered enemies
+				while (*data != '|' && *data != '=') {
+					encountered->insert(npcsH[ParseNum(++data)]);
+				}
+			} else if (*data == 'I') { //i for items, set their rooms
+				while (*data != '|' && *data != '=') {
+					Item item = itemsH[adjustItemID(ParseNum(++data), discontinuity)];
+					int roomid = ParseNum(++data);
+					if (roomid != -1) { //-1 means NULL room which means they go in the inventory
+						item->unRoom();
+						inventory->push_back(item);
+						//make sure the player has their weapon items' attacks
+						if (!strcmp(item->getType(), "weapon")) player->addSpecialAttack(((WeaponItem*)item)->getAttack());
+					} else { //otherwise set the item to the room
+						item->setRoom(roomsH[roomid]);
+						//block exits that may be blocked by a hose being in the room
+						if (!strcmp(item->getType(), "hose")) ((HoseItem*)item)->drop(roomsH[roomid]);
+					} 
+				}
+			} else if (*data == 'L') { //l for lobster
+				NPC* lobster = charNPC['t'];
+				if (*(++data) != ',') ParseName(charNPC['t'], ++data);
+				else charNPC['t']->setTitle("TUNNEL LOBSTER"); //tunnel lobster only has the title if they have were named
+				lobster->setRoom(roomsH[ParseNum(++data)]); //place the lobster in its room
+			} else if (*data == 'T') { //t for tunnels, set tunnel directions
 				
-			} else if (*data == 'R') {
+
+
+
+			} else if (*data == 'B') { //b for bank
 				
-			} else if (*data == 'P') {
-				
-			} else if (*data == 'E') {
-				
-			} else if (*data == 'I') {
-				
-			} else if (*data == 'L') {
-				
-			} else if (*data == 'T') {
-				
-			} else if (*data == 'B') {
-				
-			} else if (*data == 'S') {
-				
-			} else if (*data == 'Q') {
-				
-			} else if (*data == 'C') {
-				
+
+
+
+			} else if (*data == 'S') { //s for states, set all the world states
+				for (size_t i = 0; *(++data) != '|' && *data != '='; i++) { //set all the states except for NEVER because that's not tracked by SaveWorld
+					WorldState[i] = *data - '0';
+				}
+			} else if (*data == 'Q') { //q for it's the randomest letter I could think of, random stats
+				playtime = ParseNum(++data); //yeah just set all the stats pretty simple
+				sessions = ParseNum(++data);
+				invalidcommand = ParseNum(++data);
+				invalidmove = ParseNum(++data);
+				invalidnpc = ParseNum(++data);
+				invaliditem = ParseNum(++data);
+				nothingtosay = ParseNum(++data);
+				biggestspbomb = ParseNum(++data);
+				successfulparries = ParseNum(++data);
+			} else if (*data == 'C') { //c for commands, probably (might be a coincidence)
+				for (size_t i = 0; i < 18; i++) { //set all the amounts
+					commandcount[i] = ParseNum(++data);
+				}
 			}
 		}
 
-		//reset all the extern variables in Helper and Stats static trackers
-
 		//while checking used items, track "discontinuity" which is incremented each time an item is consumed. every time we check an index in itemsH that is greater than itemsH.size()-1, subtract that index by the discontinuity, and that should give the actual item
-
-		//check weapon item attacks as we add them to the inventory
-
-		//remember to check for hose blocks when we put a hose in a room
 	}
 
 	Save(const char* _data, size_t num) { //make a new save with the given save data and identifying number

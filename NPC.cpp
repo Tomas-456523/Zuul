@@ -623,9 +623,8 @@ void NPC::setHome(Room* room) {
 //set a party for enemy leader npcs
 void NPC::setParty(initializer_list<NPC*> wave, bool newwave) {
 	if (newwave) party.push_back({}); //make the waves vector have a new party if we're making a new wave
-	for (NPC* _npc : wave) { //loops through the npcs in the wave and adds all the npcs to the party
-		if (_npc != NULL) {
-			NPC* npc = new NPC(*_npc); //duplicates the npc because there might be multiple of the same one
+	for (NPC* npc : wave) { //loops through the npcs in the wave and adds all the npcs to the party
+		if (npc != NULL) {
 			party.back().push_back(npc);
 		}
 	}
