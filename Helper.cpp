@@ -702,7 +702,7 @@ namespace Helper {
 			range--;
 			if (!range) return -2;
 		}
-		int total = 0;
+		long long total = 0;
 		for (size_t i = 0; i < range; i++) {
 			char c = data[i];
 			if (!isdigit(c)) return -2;

@@ -45,8 +45,8 @@ struct Save {
 	*    f - Floria		m - Mike	j - Michelin	g - Graham
 	*    e - Egadwick	v - Viola	x - Carlos		r - Richie
 	*    k - Absolom	c - Cacty	p - Plum		b - Ratman
-	*  - Worth mentioning, these aren't npcs but have their own letter:
-	*    t - Florian	n - Banker	u - Buford
+	*  - Worth mentioning, these aren't teammates but have their own letter:
+	*    t - Florian	n - Banker	u - Buford (buford's stats are tracked)
 	*  - Then level, xp, room, stats (attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage), and finally, time left in gym (0 if not in gym)
 	*  - Everything connected to the NPC is seperated by .
 	*  - So, this section would look something like: R[level].[xp].[room].[attacks].[helps].[damage dealt].[health dealt].[damage taken].[health recovered].[kos].[ko'd].[special].[sp usage].[gym time]
@@ -59,7 +59,7 @@ struct Save {
 	*  - The order doesn't matter in this section because the exit maps in Room sorts the exits in alphabetical order anyway
 	*  Section B: Exists after depositing money in the bank, stores current bank balance and last time used bank ([balance],[time])
 	*  Section S: All the world states as 0 or 1 (26 states as of now, not including NEVER), since some states are changed by things other than world changes
-	*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing
+	*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
 	*  Section C: 18 integers representing how many times used each command (validly), so something like C[go],[take],[drop],[use],[recruit],[dismiss],[ask],[inventory],[party],[attacks],[room],[analyze],[fight],[buy],[help],[save],[enemies],[run]
 	*  
 	*  Example save: BQ2|V0|NBOB THE BUILDER|M10|Wu123.23,x3244,e300,a123.o|U156|Ra1.3.123.0|Pavk|E43,23,67,50|C1,2,3,4,5,6,7|I12.0,234.-1,324.0,53.2,13.0,4324.3,456.201|LCOOL LOBSTER,110|T1.123,2.12,0.112|B10,2|S01010101010101111010010101|Q2198139=
@@ -80,7 +80,7 @@ struct Save {
 		if (strncmp(data, "BQ2|V", 4)) return false;
 		if (data[strlen(data)-1] != '=') return false;
 		
-		
+		//unimplemented right now because Im only using my own saves currently made in the game so they should work fine
 
 		return true; //yay everything worked so it's valid!
 	}
@@ -113,7 +113,7 @@ struct Save {
 		//add beginning and section V version number (we are in version 0)
 		addChunk(save->data, "BQ2|V0|N");
 		//Section N, add the name
-		{ char* name = formatName(Helper::npcsH[0]->getName()); //format the name to have escape codes so we can have special characters in the name
+		{ char* name = formatName(Helper::charNPC['a']->getName()); //format the name to have escape codes so we can have special characters in the name
 		addChunk(save->data, name);
 		delete[] name; } //delete the name because it was made with new
 		//Section M, monies, only if we actually have any
@@ -128,7 +128,7 @@ struct Save {
 			addChunk(save->data, Helper::sectionW);
 		}
 		//Section U, track pursuer if we have one
-		if (NPC* pursuer = Helper::npcsH[0]->getPursuer()) {
+		if (NPC* pursuer = Helper::charNPC['a']->getPursuer()) {
 			char sectionU[20];
 			snprintf(sectionU, 20, "|U%d", pursuer->getRoom()->getID());
 			addChunk(save->data, sectionU);
@@ -145,9 +145,9 @@ struct Save {
 		}
 		//Section P, save the player's party
 		{ char team[12] = "|P"; //build the team here starting with the P section identifier then all their representing chars in order
-		size_t plen = Helper::npcsH[0]->getParty()->size();
+		size_t plen = Helper::charNPC['a']->getParty()->size();
 		for (size_t i = 0; i < plen; i++) { //add all the party characters to the string
-			team[i+2] = Helper::npcChar[(*Helper::npcsH[0]->getParty())[i]];
+			team[i+2] = Helper::npcChar[(*Helper::charNPC['a']->getParty())[i]];
 		}
 		team[plen+2] = '\0'; //null terminate it!
 		addChunk(save->data, team); } //add the team chunk
@@ -211,17 +211,91 @@ struct Save {
 		//Section Q, store how long the player has played on this file plus some silly error data
 		playtime += difftime(time(NULL), lastsave); //this might lose one second per save (command), but that's basically nothing so that's fine
 		char sectionQ[100];
-		snprintf(sectionQ, 100, "|Q%.0f,%d,%d,%d,%d,%d,%d", playtime, sessions, invalidcommand, invalidmove, invalidnpc, invaliditem, nothingtosay);
+		snprintf(sectionQ, 100, "|Q%.0f,%d,%d,%d,%d,%d,%d,%d,%d", playtime, sessions, invalidcommand, invalidmove, invalidnpc, invaliditem, nothingtosay, biggestspbomb, successfulparries);
 		addChunk(save->data, sectionQ);
 		//cap it off with a =
 		addChunk(save->data, "=");
 	}
 
+	//parse name and advance save data pointer past it in the process, assumes it's given a valid save
+	static bool ParseName(NPC* named, const char*& data) {
+		bool escaping = false;
+		char* name = new char[255];
+
+		for (size_t i = 0;; data++) {
+			if (!escaping && *data == '\\') {
+				escaping = true;
+			} else if (!escaping && (*data == ',' || *data == '=' || *data == '|')) {
+				name[i] = '\0';
+				break; //we have reached the end of the name and we're in some other section now
+			} else {
+				name[i++] = *data;
+				escaping = false;
+			}
+		}
+		named->setName(name);
+		delete[] name;
+	}
+
+	//parse the number in the data currently and advance the pointer past it
+	long long ParseNum(const char*& data) {
+		int sign = 1;
+		if (*data == '-') {
+			sign = -1;
+			data++;
+		}
+		long long total = 0;
+		for (; isdigit((unsigned char)*data); data++) {
+			total = total * 10 + (*data - '0');
+		}
+		return total * sign;
+	}
+
 	//gets stuff which it can edit, and modifies the world to match the given save data
-	static void LoadGame(const Save& save, NPC* player, std::vector<Item*>* inventory, int& monies) {
+	static void LoadGame(const Save* save, NPC* player, std::vector<Item*>* inventory, int& monies) {
 		//check for invalid saves (won't catch everything but you shouldn't be modifying save data anyway, this is mostly for accidentally copy/pasting wrong)
 		//check version and that it starts with BQ2 and ends with =
-		//we can always just stop loading partway into the loading, no need to do it all at the beginning
+
+		const char* data = save->data;
+
+		//after validating the save, assume it's all perfectly parsable (not necessarily correct, just parsable)
+		data += 4; //skip the BQ2|
+
+		while (*data != '=') { //keep loading stuff until we reach the end
+			if (*data == '|') { //just go past the dividers
+				data++;
+			} else if (*data == 'V') { //ignore version section, if it's a future version just check outside the function
+
+			} else if (*data == 'N') {
+				if (*(++data) != '|') ParseName(charNPC['a'], ++data);
+			} else if (*data == 'M') {
+				monies = ParseNum(++data);
+			} else if (*data == 'W') {
+				
+			} else if (*data == 'U') {
+				
+			} else if (*data == 'R') {
+				
+			} else if (*data == 'P') {
+				
+			} else if (*data == 'E') {
+				
+			} else if (*data == 'I') {
+				
+			} else if (*data == 'L') {
+				
+			} else if (*data == 'T') {
+				
+			} else if (*data == 'B') {
+				
+			} else if (*data == 'S') {
+				
+			} else if (*data == 'Q') {
+				
+			} else if (*data == 'C') {
+				
+			}
+		}
 
 		//reset all the extern variables in Helper and Stats static trackers
 

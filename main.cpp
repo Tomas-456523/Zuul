@@ -7114,12 +7114,12 @@ void play(Save*& save) {
 		
 	//sets up the game world and places the player at the current room
 	NPC* self = SetupWorld(&inventory);
-
-	double playtime = 0; //how long the player has played on this save
 	
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
 	int mony = 0; //monies are the currency in the BURGER QUEST universe.
+
+	LoadGame(save, self, &inventory, mony);
 
 	//flavor text printed by printHelp
 	const char* flavorText[16] = {
