@@ -277,6 +277,7 @@ void Room::openTemple() {
 	this->setExit(templesettings.first, templesettings.second);
 	printConversation(&templeopenconvo, false);
 	templeentrance = false; //so we can't do all this again
+	logW("t", id); //log that the player opened the temple here
 }
 void Room::setEnterChanges(const WorldChange& changes, size_t condition) {
 	enterchange = changes;

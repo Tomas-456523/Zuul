@@ -409,7 +409,7 @@ bool NPC::getBlocked(Room* room, const char* direction) {
 	return false;
 }
 bool NPC::popNoFight() {
-	if (resetnofight) setLeader(false); //set leader to false so you can't try again
+	if (resetnofight && nofight) setLeader(false); //set leader to false so you can't try again
 	return nofight;
 }
 void NPC::depositMonies(int& monies) { //mony depositing system for the banker
@@ -502,12 +502,17 @@ void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc t
 void NPC::setRecruitCondition(size_t cond) {
 	recruitcondition = cond;
 }
-void NPC::paveTunnel(Room* room) { //sets the direction back to the lobster's current position from the tunnel
+void NPC::paveTunnel(Room* room, int specificexit) { //sets the direction back to the lobster's current position from the tunnel
+	if (specificexit >= 0) { //if we passed a specified exit, we use that
+		map<Room*, const char*>::iterator specific = (tunnelLinks.begin() + specificexit);
+		home->setExit(specific->second, room); //make the exit go to this one specifically
+		return; //return becuse we're not doing the normal thing
+	}
 	size_t exitnum = 0; //we go by iterator instead of just using the key so we can get the number for section T of the save system
 	for (map<Room*, const char*>::iterator tunafish = tunnelLinks.begin(); tunafish != tunnelLinks.end(); tunafish++) { //you can tune a fish, but you can't tuna piano
-		if (tunafish->first = currentRoom) { //if the rooms match we set the exit to this room
-			home->setExit(tunafish->second, currentRoom);
-			sectionT[exitnum] = currentRoom; //get that the exit we just set goes to this room at the moment
+		if (tunafish->first == room) { //if the rooms match we set the exit to this room
+			home->setExit(tunafish->second, room);
+			sectionT[exitnum] = room; //get that the exit we just set goes to this room at the moment
 		}
 		exitnum++; //we didn't find it in this index so increment it
 	}
@@ -749,6 +754,11 @@ void NPC::setQuantumn() {
 }
 void NPC::setBanker() {
 	banker = true;
+}
+//set the banking data manually from the save system
+void NPC::manualSetBankData(int balance, time_t time) {
+	depositedmonies = balance;
+	deposittime = deposit;
 }
 void NPC::setShark() {
 	isShark = true;
@@ -1343,6 +1353,7 @@ int NPC::alterSp(int amount, const char* status) {
 //stuff that happens when the npc is defeated in battle
 void NPC::defeat() {
 	defeated = true; //was defeated
+	bool logit = false; //if we should log the defeat, track this so grinding doesn't inflate the defeat logs in the save
 	if (exitBlocking != NULL) { //unblock blocked exits
 		currentRoom->unblockExit(exitBlocking);
 		if (altRoom != NULL) {
@@ -1350,14 +1361,19 @@ void NPC::defeat() {
 			altRoom->removeNPC(this, true);
 		}
 		exitBlocking = NULL;
+		logit = true; //log it because it did something
 	}
 	forcebattle = false; //don't force battles after dialogue anymore if we did that (for example, viola so you can't just fight her again)
-	if (battleReward) battleReward = false; //now we can give the gift
+	if (battleReward) {
+		battleReward = false; //now we can give the gift
+		logit = true; //log it because it did something
+	}
 	if (!changes.empty()) {
 		applyWorldChange(changes.front()); //apply all the world changes associated with this npc
 		if (!loopLastChange || changes.size() > 1) changes.pop(); //pop the changes if we don't need them anymore (not the last one OR it's the last one and we don't loop it)
+		logit = true; //log it because it did something
 	}
-	logW("d", id); //log that this npc was defeated
+	if (logit) logW("d", id); //log that this npc was defeated
 }
 void NPC::undefeat() { //tells the enemy it's not defeated
 	defeated = false;

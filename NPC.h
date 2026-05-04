@@ -219,6 +219,7 @@ public: //you need to set stats on creation
 	void setAway(bool isaway);
 	void setQuantumn();
 	void setBanker();
+	void manualSetBankData(int balance, time_t time); //set the banking data manually from the save system
 	void setThief(); //set if you lose all monies after beating this npc
 	void setShark(); //set if this is a shark
 	void setNoFight(bool clarify = true);
@@ -292,7 +293,7 @@ public: //you need to set stats on creation
 	void setLobsterChanges(const WorldChange& changes); //set lobster changes for that one scene
 	void doLobsterChanges(); //does the lobster changes
 
-	void paveTunnel(Room* room); //paves an exit back to the given room from the tunnels (for lobster only)
+	void paveTunnel(Room* room, int specificexit = -1); //paves an exit back to the given room from the tunnels (for lobster only)
 	void setTunnelDirection(Room* room, const char* direction); //sets tunnel directions (for lobster only)
 
 	void defeat(); //set the enemy to defeated and do a bunch of defeated processes if applicable
@@ -388,7 +389,7 @@ protected:
 	bool banker = false; //if its a banker we can withdraw or deposit monies
 	bool thief = false; //if its a thief you lose all your monies after beating them
 	bool nofight = false; //if it looks like you can fight the npc but you can't
-	bool resetnofight = true; //if you can only try to fight nofight npcs once, then after that it just says you can't fight them
+	bool resetnofight = false; //if you can only try to fight nofight npcs once, then after that it just says you can't fight them
 	int depositedmonies = 0;
 	time_t deposittime = 0; //track time monies were deposited so we can add interest
 

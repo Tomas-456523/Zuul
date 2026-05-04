@@ -56,7 +56,7 @@ struct Save {
 	*  - Denoted by [item].[room]
 	*  Section L: Exists after taming lobster, stores its name in plaintext with the same exceptions as the player name, and also the lobster's room after that (L[lobster name],[room])
 	*  Section T: The room that each tunnel direction leads to, in the order of their index in the tunnel lobster tunnel directions, -1 if the exit hasn't been discovered yet
-	*  - The order doesn't matter in this section because the exit maps in Room sorts the exits in alphabetical order anyway
+	*  - The order of exit setting doesn't matter in this section because the exit maps in Room sorts the exits in alphabetical order anyway
 	*  Section B: Exists after depositing money in the bank, stores current bank balance and last time used bank ([balance],[time])
 	*  Section S: All the world states as 0 or 1 (26 states as of now, not including NEVER), since some states are changed by things other than world changes
 	*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
@@ -268,6 +268,8 @@ struct Save {
 		//check for invalid saves (won't catch everything but you shouldn't be modifying save data anyway, this is mostly for accidentally copy/pasting wrong)
 		//check version and that it starts with BQ2 and ends with =
 
+		emptyExterns(); //make sure everything in helper is all reset
+
 		const char* data = save->data;
 
 		//after validating the save, assume it's all perfectly parsable (not necessarily correct, just parsable)
@@ -285,26 +287,67 @@ struct Save {
 			} else if (*data == 'M') { //m for monies
 				monies = ParseNum(++data);
 			} else if (*data == 'W') { //w for world change and everything that can cause it, most important section
-				//UPDATE DISCONTINUITY
-				//b
-				//u
-				//x
-				//d
-				//r
-				//a
-				//e
-				//w
-				//o
-				//p
-				//t
+				//MARK: make sure to update sectionW log
+				if (*(++data) == 'b') { //duplicate item because it was bought
+					Item* item = 
+					//make it do the conversation changes
+				} else if (*data == 'u') { //use item in world
+					//MARK: keep in mind at this point we don't know where any of the items are or if they're in the inventory
+					//xp
+					//burger
+					//education
+					//caller
+					//key/hose
+					//paver
+					//treasure
+					//switch
+					//worldchange (take and normal)
+					//blender
+					//choiceorb (skip for now) MARK: do this
+					//manhole (taking)
+
+					//UPDATE DISCONTINUITY
+				} else if (*data == 'x') { //delete item because it was used in battle
+					//unroom it first
+					//UPDATE DISCONTINUITY
+				} else if (*data == 'd') { //defeat defeated enemies
+					//defeat() logs it automatically
+				} else if (*data == 'r') { //handle respawn changes
+					//undefeat() also logs it automatically
+				} else if (*data == 'a') { //(.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
+					//do the changes, logging is done by npc automatically
+				} else if (*data == 'e') { //room enter changes
+					//this function also logs the thing automatically
+				} else if (*data == 'w') { //do room welcomes
+					//printWelcome logs it automatically
+				} else if (*data == 'o') {
+					//o - ignore for now drop escape orb MARK: WE NEED TO HANDLE ESCAPE ORBS
+				} else if (*data == 'p') { //player got caught by pursuer
+
+				} else if (*data == 't') { //open temples
+					//openTemple logs that the temple was opened automatically
+				}
 			} else if (*data == 'U') { //u for second letter of pursuer
 				player->getPursuer()->setRoom(roomsH[ParseNum(++data)]); //just set their room
-			} else if (*data == 'R') { //r for recruitable, tracks recruitable npcs' stats (and buford)
-				//identifying char, then the level, xp, room id, attacks launched, helps launched, damage dealt, heals dealt, damage taken, health recovered, knockouts, incapacitations, a special stat which varies by npc, total sp used up by pecial attacks, and gym starting time
-				
-
-
-
+			} else if (*data == 'R') { //r for recruitable, tracks recruitable npcs' stats (and Buford's)
+				for (; *data != '|' && *data != '='; data++) {
+					NPC* npc = charNPC[*(++data)];
+					npc->setLevel(ParseNum(++data));
+					npc->addXp(ParseNum(++data));
+					npc->setRoom(roomsH[ParseNum(++data)]);
+					attackslaunched[npc] = ParseNum(++data);
+					helpslaunched[npc] = ParseNum(++data);
+					damagedealt[npc] = ParseNum(++data);
+					healthhealed[npc] = ParseNum(++data);
+					damagerecieved[npc] = ParseNum(++data);
+					healthrecovered[npc] = ParseNum(++data);
+					knockouts[npc] = ParseNum(++data);
+					incapacitations[npc] = ParseNum(++data);
+					specialstat[npc] = ParseNum(++data);
+					spusedup[npc] = ParseNum(++data);
+					npc->setGymStart(ParseNum(++data));
+					Rnpcs.push_back(npc);
+				}
 			} else if (*data == 'P') { //p for party
 				while (*(++data) != '|') { //add the teammates until we reach the end
 					player->setParty(charNPC(*data));
@@ -334,15 +377,18 @@ struct Save {
 				else charNPC['t']->setTitle("TUNNEL LOBSTER"); //tunnel lobster only has the title if they have were named
 				lobster->setRoom(roomsH[ParseNum(++data)]); //place the lobster in its room
 			} else if (*data == 'T') { //t for tunnels, set tunnel directions
-				
-
-
-
-			} else if (*data == 'B') { //b for bank
-				
-
-
-
+				NPC* lobster = charNPC['t'];
+				for (size_t i = 0; i < 5; i++) {
+					int id = ParseNum(++data);
+					if (id < 0) sectionT[i] = NULL; //no exit, just set the thing in sectionT
+					else { //yes exit, set the room that it goes to
+						Room* room = roomsH[id];
+						sectionT[i] = room;
+						lobster->paveTunnel(room, i); //set this tunnel exit to go to this room specifically
+					}
+				}
+			} else if (*data == 'B') { //b for bank, set bank data
+				charNPC['n']->manualSetBankData(ParseNum(++data), ParseNum(++data)); //set the bank balance and the bank time
 			} else if (*data == 'S') { //s for states, set all the world states
 				for (size_t i = 0; *(++data) != '|' && *data != '='; i++) { //set all the states except for NEVER because that's not tracked by SaveWorld
 					WorldState[i] = *data - '0';
@@ -376,5 +422,9 @@ struct Save {
 		strcat(data, _data);
 		savenum = num;
 		//MARK: truncate whitespace?
+	}
+
+	~Save() { //delete the data on destruction
+		delete[] data;
 	}
 };

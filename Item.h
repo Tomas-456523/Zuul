@@ -196,12 +196,6 @@ private:
 	Conversation useText; //the text printed by using it
 };
 
-//toll items for paying monies
-class TollItem : public Item {
-public:
-	TollItem();
-};
-
 //key items for unlocking locked exits
 class KeyItem : public Item {
 public:

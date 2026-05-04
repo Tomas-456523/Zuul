@@ -6359,9 +6359,7 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	if (!strcmp(item->getType(), "escapeorb")) { //the escape/entry orbs require extra confirmation before being dropped due to their effects
 		EscapeOrb* orb = (EscapeOrb*)item;
 		if (!orb->getInert()) {
-			cout << "\nAll your progress in the temple will be reset.";
-			CinPause();
-			cout << "Are you sure you want to drop your " << item->getName() << "?";
+			cout << "\nAll your progress in the temple will be reset.\nAre you sure you want to drop your " << item->getName() << "?";
 			if (!AOrB(NULL, "YES", "NO")) return;
 		}
 	}
@@ -6582,9 +6580,6 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		//sets the tunnel exit back to the station. This way, you can only go to a station if you've already been there
 		//a side effect is that the desert fast travel is whichever one you fast travelled from first (since there's two), but they're right next to each other so it doesn't really matter
 		npc->paveTunnel(currentRoom);
-	//donation?????
-	} else if (!strcmp(item->getType(), "toll")) {
-		TollItem* toll = (TollItem*)item;
 	//used for unblocking blocked exits
 	} else if (!strcmp(item->getType(), "key") || !strcmp(item->getType(), "hose")) {
 		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass
@@ -6883,7 +6878,6 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 		if (WorldState[TEMPLEQUEST] && currentRoom->getTempleEntrance() && !strcmp(npcname, "NICELY")) {
 			currentRoom->openTemple();
 			commandcount[6]++; //increment successful askings, this is successful and it's from ask so yeah
-			logW("t", currentRoom->getID()); //log that the player opened the temple here
 		} else if (!strcmp(npcname, "")) { //error if the player just didn't give a name
 			cout << "\nAsk who?";
 			actionwhat++; //didn't specify so we increment the didn't specify stat
