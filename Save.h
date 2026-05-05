@@ -98,14 +98,14 @@ struct Save {
 			}
 		}
 
-		p = strchr(data, 'M')+1;
+		p = strchr(p, 'M')+1;
 		int monies;
 		if (p) monies = 0;
 		else monies = ParseNum(p);
-		p = strchr(data, 'R')+1;
-		p = strchr(data, 'a')+1;
+		p = strchr(p, 'R')+1;
+		p = strchr(p, 'a')+1;
 		int level = ParseNum(p);
-		p = strchr(data, 'Q')+1;
+		p = strchr(p, 'Q')+1;
 
 		long long seconds = ParseNum(p);
 		long long minutes = seconds/60; //use minutes if possible, precise reports of game time

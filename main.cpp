@@ -6848,7 +6848,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		cout << "\n" << npcname << " was not dismissed.";
 		return;
 	} //you can't dismiss the npc because it's in a temple where you need your team or the final boss prelude where you wouldn't be able to get them back
-	if (!WorldState[CANDISMISS]) {
+	if (false /*!WorldState[CANDISMISS]*/) { //MARK: fix this
 		cout << "\nYour team has no way to go back home right now!";
 		return;
 	} //removes the npc from your party
@@ -7522,19 +7522,24 @@ int main() {
 	bool promptline = true;
 	bool continuing = true; //we continue until the player quits
 	while (continuing) { //the main loop!
-		char command[255] = ""; //the charray that the player inputs into
+		char command[10000] = ""; //the charray that the player inputs into
 
-		char commandWord[255]; //the first word of the player input (the command)
-		char commandExtension[255]; //the rest of the player's command (minus the space)
+		char commandWord[10000]; //the first word of the player input (the command)
+		char commandExtension[10000]; //the rest of the player's command (minus the space)
 
 		if (promptline) cout << "\n";
 		cout << "> "; //The > signifies it's time to type in a command. If there is no >, it's a cutscene or dialogue or something like that and you just have to ENTER until you get to the >.
-		cin.getline(command, 255);
-		AllCaps(command); //capitalizes the command for easier parsing
+		cin.getline(command, 10000);
 
 		promptline = true; //make sure the next > will probably be in a new line
 
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
+
+		AllCaps(commandWord); //capitalizes the command for easier parsing
+		if (strcmp(commandExtension, "IMPORT")) { //do not capitalize the imported string because that messes up everything
+			AllCaps(command);
+			AllCaps(commandExtension);
+		}
 
 		if (!strcmp(commandWord, "SAVES")) { //for printing out all the save files
 			printSaves();
