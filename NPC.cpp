@@ -876,11 +876,10 @@ int NPC::damage(double power, double pierce) {
 		CinPause();
 		if (guard <= 0) { //prints if the guard is now down
 			cout << name << "'s guard was broken!";
-			CinPause();
 		}
 	} else { //subtract the damage and print how much was done
 		health -= totalDamage;
-		printDamage(totalDamage);
+		printDamage(damage);
 	}
 
 	//track that this npc was just now incapacitated

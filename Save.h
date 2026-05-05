@@ -81,7 +81,9 @@ struct Save {
 	}
 
 	void printMainString() { //this is very placeholder MARK: fix this
-		const char* p = strchr(data, 'N')+1;
+		const char* p = strchr(data, 'N');
+		if (!p) { printf("Error: 'N' not found\n"); return; }
+		p++;
 		
 		bool escaping = false;
 		char* name = new char[255];
@@ -98,16 +100,39 @@ struct Save {
 			}
 		}
 
-		p = strchr(p, 'M')+1;
+		const char* moniesSection = strchr(p, 'M');
+		
 		int monies;
-		if (p) monies = 0;
-		else monies = ParseNum(p);
-		p = strchr(p, 'R')+1;
-		p = strchr(p, 'a')+1;
-		int level = ParseNum(p);
-		p = strchr(p, 'Q')+1;
+		int level;
+		long long seconds;
 
-		long long seconds = ParseNum(p);
+		if (!moniesSection) {
+			monies = 0;
+		} else monies = ParseNum(++moniesSection);
+		const char* recruitSection = moniesSection ? strchr(moniesSection, 'R') : strchr(p, 'R');
+		if (!recruitSection) { 
+			delete[] name; return; 
+		} else {
+			p = strchr(recruitSection, 'a');
+			if (!p) { 
+				level = 0;
+			} else level = ParseNum(++p);;
+		}
+		
+		if (p) {
+			const char* playtimeSection = strchr(p, 'Q');
+			if (!playtimeSection) {
+				seconds = 0;
+			} else {
+				p = playtimeSection + 1;
+				ParseNum(p);
+			}
+		}
+
+		cout << name << ", Lvl " << level << ", " << monies << " mon" << (monies == 1 ? "y" : "ies"); //MARK: time doesn't work for some reason
+		delete[] name;
+		return;
+
 		long long minutes = seconds/60; //use minutes if possible, precise reports of game time
 		seconds %= 60; //get rid of the extra seconds
 		long long hours = minutes/60; //go further to hours if possible
@@ -341,9 +366,10 @@ struct Save {
 				monies = ParseNum(++data);
 			} else if (*data == 'W') { //w for world change and everything that can cause it, most important section
 				while(*data != '|') {
-					if (*(++data) == 'b') { //duplicate item because it was bought
+					char change = tolower((unsigned char)*(++data));
+					if (change == 'b') { //duplicate item because it was bought
 						itemsH[ParseNum(++data)]->loadBuy(); //dupe the item and its position will be handled later, logs in W automatically, don't adjust because we only buy (dupe) items that are in limbo and can't be interacted with
-					} else if (*data == 'u') { //use item in world
+					} else if (change == 'u') { //use item in world
 						int id = ParseNum(++data); //get the id unadjusted so we can update discontinuities more conveniently later if we delete the item
 						Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
 						Room* room = roomsH[ParseNum(++data)]; //get the room this item was used in, which is sometimes important
@@ -420,19 +446,19 @@ struct Save {
 							discontinuity.insert(id); //log the discontinuity because we're about to delete the item
 							delete item;
 						}
-					} else if (*data == 'x') { //delete item because it was used in battle (we do not log x for non-consumable items used in battle), they don't have any effects outside of battle so we just delete them
+					} else if (change == 'x') { //delete item because it was used in battle (we do not log x for non-consumable items used in battle, they don't have any effects outside of battle so we just delete them)
 						int id = ParseNum(++data); //get the id not adjusted yet so we can add the discontinuity
 						Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
 						item->unRoom(); //unroom it if it's a roomed item
 						discontinuity.insert(id); //log the discontinuity because we're about to delete the item
 						delete item; //cannot be in the inventory at this point in the loading process so we just delete it
-					} else if (*data == 'd') { //defeat defeated enemies
+					} else if (change == 'd') { //defeat defeated enemies
 						NPC* npc = npcsH[ParseNum(++data)];
 						npc->defeat(); //defeat() logs the defeating in section W automatically
 						npc->takeGift(); //take any battle gifts they may have had, room/inventory set in section I
-					} else if (*data == 'r') { //handle respawn changes
+					} else if (change == 'r') { //handle respawn changes
 						npcsH[ParseNum(++data)]->undefeat(); //undefeat() also logs it in Wautomatically
-					} else if (*data == 'a') { //pop dialogue because it's already been heard, plus any world changes the conversation has (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
+					} else if (change == 'a') { //pop dialogue because it's already been heard, plus any world changes the conversation has (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
 						//MARK: THIS DOES NOT HANDLE BRANCHING DIALOGUE AT ALL
 						NPC* npc = npcsH[ParseNum(++data)];
 						if (*data != '.') { //normal conversation
@@ -453,15 +479,15 @@ struct Save {
 						} else if (*data == 'g') { //gym dialogue
 							npc->popGymDialogue();
 						} //logging is done by npc automatically, and so are any conversation changes by printConversation
-					} else if (*data == 'e') { //room enter changes
+					} else if (change == 'e') { //room enter changes
 						roomsH[ParseNum(++data)]->doEnterChanges(); //this function also logs the thing automatically
-					} else if (*data == 'w') { //do room welcomes
+					} else if (change == 'w') { //do room welcomes
 						roomsH[ParseNum(++data)]->printWelcome(false); //printWelcome logs it automatically
-					} else if (*data == 'o') {
+					} else if (change == 'o') {
 						//o - ignore for now drop escape orb MARK: WE NEED TO HANDLE ESCAPE ORBS
-					} else if (*data == 'p') { //player got caught by pursuer
+					} else if (change == 'p') { //player got caught by pursuer
 						npcsH[ParseNum(++data)]->doCatchChanges();
-					} else if (*data == 't') { //open temples
+					} else if (change == 't') { //open temples
 						roomsH[ParseNum(++data)]->openTemple(false); //openTemple logs that the temple was opened automatically
 					}
 				}
@@ -469,7 +495,9 @@ struct Save {
 				player->getPursuer()->setRoom(roomsH[ParseNum(++data)]); //just set their room
 			} else if (*data == 'R') { //r for recruitable, tracks recruitable npcs' stats (and Buford's)
 				for (; *data != '|' && *data != '=';) {
-					NPC* npc = charNPC[*(++data)];
+					char npcCode = tolower((unsigned char)*(++data));
+					NPC* npc = charNPC[npcCode];
+					if (!npc) return;
 					npc->setLevel(ParseNum(++data));
 					npc->addXp(ParseNum(++data));
 					npc->setRoom(roomsH[ParseNum(++data)]);
@@ -488,7 +516,9 @@ struct Save {
 				}
 			} else if (*data == 'P') { //p for party
 				while (*(++data) != '|') { //add the teammates until we reach the end
-					player->setParty({charNPC[*data]});
+					NPC* teammate = charNPC[tolower((unsigned char)*data)];
+					player->setParty({teammate});
+					teammate->Recruit();
 				}
 			} else if (*data == 'E') { //e for encountered enemies
 				while (*data != '|' && *data != '=') {

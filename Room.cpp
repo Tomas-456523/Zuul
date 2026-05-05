@@ -118,14 +118,6 @@ void Room::printItems() {
 	if (len < 1) { //if there are 0 items here, don't print anything
 		return;
 	}
-	cout << "\n[DBG items in room: " << len << "]";
-for (int i = 0; i < len; i++) {
-    cout << "\n[DBG item " << i
-         << " ptr=" << items[i]
-         << " id=" << (items[i] ? items[i]->getID() : -1)
-         << " nameptr=" << (items[i] ? (void*)items[i]->getName() : NULL)
-         << " name=" << (items[i] && items[i]->getName() ? items[i]->getName() : "NULL/BAD");
-}
 	cout << "\nThere is " << items[0]->getName(); //prints the first item
 
 	if (len > 2) { //if there are more than two items, we need to use commas

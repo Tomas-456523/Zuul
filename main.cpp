@@ -646,7 +646,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", false, -5, -5, 20, 1, 1, 1, true);
 	floria->setBasicAttack(heal);
-	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 2, 10, 15, 1, 1, 1, false);
+	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 6, 10, 15, 1, 1, 1, false);
 	rosethorn->addDescription("Call a rose friend to poke the target with its thorns. (10 ATTACK, 15 PIERCE)");
 	floria->addSpecialAttack(rosethorn);
 	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -20, 20, 1, 1, 1, true, 6);
@@ -3532,9 +3532,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
 	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", true, -5, 5, 0, 1, 1, 1);
 	hogheadbutt->recoil = 5;
-	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", false, 6, 3, 5, 2, 4, 3);
+	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles", false, 6, 3, 5, 3, 3, 3);
+	homing_prickle->focushits = false;
 	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
+
+	//MARK: give prickly hogs recoil attack?
 
 	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 9));
 	greaterhog->setBasicAttack(hogheadbutt);
@@ -3614,8 +3617,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	shrimpleshimmy->addEffect(flinch);*/
 
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
-	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -6, 10, 0, 1, 1, 1);
-	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 5, 18, 7, 1, 1, 1);
+	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -5, 10, 0, 1, 1, 1);
+	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 6, 16, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0);
 	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", false, 15, 10, 5, 1, 1, 1, true, 10);
 	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", false, 10, 10, 5, 1, 1, 1, true, 10, 0, 0.5);
@@ -7059,7 +7062,7 @@ bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat, b
 				return true;
 			} //the YES path continues down to that return false down there
 		} else return true; //return true for normal path
-	}
+	} else {cout << "\r          "; } //MARK: fix this bandaid fix
 	return false; //quit the game in addition to saving
 }
 
