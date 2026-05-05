@@ -47,7 +47,7 @@ public:
 	void printItems();
 	void printStock();
 	void printNPCs();
-	void printWelcome();
+	void printWelcome(bool actuallyprint = true); //print the welcome with the option to not print it (if we just want to pop it basically)
 	void printBlocks();
 	void printBlock(const char* direction);
 
@@ -68,7 +68,7 @@ public:
 	void setStock(Item* item, int stock, int price, const Conversation& buydesc); //adds an item for sale
 	void removeStock(Item* item, bool printmessage = true); //removes an item from sale
 	void setBackup(Item* item, bool onlyone = true); //sets a backup item for the room and optionally if it should run out or not
-	void openTemple(); //set the temple entrance if this is a temple entrance
+	void openTemple(bool printtext = true); //set the temple entrance if this is a temple entrance
 	void setEnterChanges(const WorldChange& changes, size_t condition = Helper::NEVER); //set changes that occur when walking into this room when this condition is true, unlesss it's never then it always happens
 
 	void switchConveyor(); //switches the direction of the conveyor
@@ -104,9 +104,8 @@ private:
 	const char* conveyorExit = NULL; //the conveyor belt exit (FORWARD)
 	Room* altRoom = NULL; //used by conveyor belts, their direction switches to altRoom when a switch item is used
 
-	bool station; //if it's a train station
-	bool gym; //if it's the gym
-	bool faraway; //if you can't dismiss teammates here
+	bool station = false; //if it's a train station
+	bool gym = false; //if it's the gym
 
 	bool templeentrance = false; //if it's a temple entrance and you can ASK NICELY to set the entrance
 	pair<const char*, Room*> templesettings = {NULL, NULL};
@@ -116,7 +115,7 @@ private:
 	size_t enterchangecondition = Helper::NEVER; //what must be true in order for the changes to happen, except never means always here
 	bool hasenterchanges = false;
 
-	Item* backup; //item that is placed here only if the player doesn't have one already
+	Item* backup = NULL; //item that is placed here only if the player doesn't have one already
 	bool onebackup = true; //if there is only one backup as opposed to infinite
 };
 #endif

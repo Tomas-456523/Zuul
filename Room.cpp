@@ -118,6 +118,14 @@ void Room::printItems() {
 	if (len < 1) { //if there are 0 items here, don't print anything
 		return;
 	}
+	cout << "\n[DBG items in room: " << len << "]";
+for (int i = 0; i < len; i++) {
+    cout << "\n[DBG item " << i
+         << " ptr=" << items[i]
+         << " id=" << (items[i] ? items[i]->getID() : -1)
+         << " nameptr=" << (items[i] ? (void*)items[i]->getName() : NULL)
+         << " name=" << (items[i] && items[i]->getName() ? items[i]->getName() : "NULL/BAD");
+}
 	cout << "\nThere is " << items[0]->getName(); //prints the first item
 
 	if (len > 2) { //if there are more than two items, we need to use commas
@@ -190,11 +198,11 @@ void Room::printBlocks() {
 void Room::printBlock(const char* direction) {
 	cout << "\nThe " << direction << " exit is " << blockReason[direction];
 }
-void Room::printWelcome() {
+void Room::printWelcome(bool actuallyprint) { //option to not print if we just want to pop it
 	if (!welcome) return;
 	welcome = false; //we only do the welcome once
 	if (welcomeText.getOutdated()) return; //don't do outdated welcomes
-	printConversation(&welcomeText, true);
+	if (actuallyprint) printConversation(&welcomeText, true);
 	logW("w", id); //log this welcome we just did
 }
 void Room::setItem(Item* item) {
@@ -234,8 +242,8 @@ void Room::removeExit(const char* direction) {
 }
 void Room::setRedirect(Room* room) {
 	redirect = room;
-	for (Item* item : getItems()) { //moves all this room's items to the redirect room, in case the player dropped some items here
-		item->setRoom(redirect); //item's setRoom calls setItem and removeItem as well
+	while (!getItems().empty()) { //moves all this room's items to the redirect room, in case the player dropped some items here
+		getItems().front()->setRoom(redirect); //item's setRoom calls setItem and removeItem as well
 	}
 }
 void Room::setStation(bool stat) {
@@ -273,9 +281,9 @@ void Room::setBackup(Item* item, bool onlyone) {
 	onebackup = onlyone;
 }
 //make the temple enterable if this is a temple entrance
-void Room::openTemple() {
+void Room::openTemple(bool printtext) {
 	this->setExit(templesettings.first, templesettings.second);
-	printConversation(&templeopenconvo, false);
+	if (printtext) printConversation(&templeopenconvo, false);
 	templeentrance = false; //so we can't do all this again
 	logW("t", id); //log that the player opened the temple here
 }

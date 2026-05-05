@@ -37,6 +37,7 @@ public:
 	bool getDropToUse(); //get if we can't use it while in the inventory
 
 	void buy(int& mony, vector<Item*>* inventory); //buys a copy of the item and adds it to the inventory
+	Item* loadBuy(); //expedited buying method for the loading system
 	void setDenial(const char* denial); //sets a description of why you can't take the item
 	void setRoom(Room* _room); //sets the item's current room
 	void unRoom(); //removes the item from the room
@@ -275,6 +276,7 @@ public:
 	ManholeItem(const char* _name, const char* _description, Room* _room, Attack* _attack, Room* _destination = NULL, const char* _dir = NULL);
 
 	Room* getRoom(); //gets the room that it's leads to
+	void nullifyRoom();
 	const char* getDirection(); //gets the direction it makes an exit in
 	Attack* getAttack(); //gets the throwing attack
 private:

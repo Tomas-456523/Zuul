@@ -53,7 +53,7 @@ NPC::NPC(const NPC& other) { //copy constructor, we do not need to set the stats
 	*this = other;
 	npcsH.push_back(this); //store a pointer to this npc in the npcs vector
 	id = npcID++; //get this npc's id and increment it for the next one
-	parent = &other; //we just copied this from the parent so we store a pointer to the parent
+	parent = const_cast<NPC*>(&other); //we just copied this from the parent so we store a pointer to the parent
 }
 //a bunch of functions for getting npc varaibles
 const char* NPC::getTitle() {
@@ -70,43 +70,57 @@ int NPC::getID() {
 	return id;
 }
 //get the npc template, the one this was derived from
-const NPC* NPC::getParent() const {
+NPC* NPC::getParent() {
 	return parent;
 }
-void NPC::printRejectionDialogue() {
-	printDialogue(true, &rejectionDialogue.front());
+void NPC::printRejectionDialogue(bool actuallyprint) {
+	printDialogue(true, &rejectionDialogue.front(), actuallyprint);
 	if (rejectionDialogue.size() != 1) {
 		rejectionDialogue.pop();
 		trackConv(this, ".j"); //track that we said this since we used up a conversation
 	}
 }
-void NPC::printRecruitmentDialogue() {
+void NPC::printRecruitmentDialogue(bool actuallyprint) {
 	if (speakOnRecruit && !conversations.empty()) { //if we have to print normal dialogue before regular dialogue
 		printDialogue(true);
 		speakOnRecruit = false; //only do this once
 	}
 	if (recruitmentDialogue.empty()) return;
-	printDialogue(true, &recruitmentDialogue.front());
+	printDialogue(true, &recruitmentDialogue.front(), actuallyprint);
 	recruitmentDialogue.pop();
 	trackConv(this, ".r"); //track that we said this since we used up a conversation
 }
-void NPC::printDismissalDialogue() {
+void NPC::printDismissalDialogue(bool actuallyprint) {
 	if (dismissalDialogue.empty()) return;
-	printDialogue(true, &dismissalDialogue.front());
+	printDialogue(true, &dismissalDialogue.front(), actuallyprint);
 	dismissalDialogue.pop();
 	trackConv(this, ".d"); //track that we said this since we used up a conversation
 }
-void NPC::printDismissalRejection() {
+void NPC::printDismissalRejection(bool actuallyprint) {
 	if (dismissalRejection.empty()) return;
-	printDialogue(true, &dismissalRejection.front());
+	printDialogue(true, &dismissalRejection.front(), actuallyprint);
 	if (dismissalRejection.size() != 1) dismissalRejection.pop();
 	trackConv(this, ".i"); //track that we said this since we used up a conversation
 }
-void NPC::printOpeningDialogue() {
+void NPC::printOpeningDialogue(bool actuallyprint) {
 	if (openingDialogue.empty()) return;
-	printDialogue(true, &openingDialogue.front());
+	printDialogue(true, &openingDialogue.front(), actuallyprint);
 	openingDialogue.pop();
 	trackConv(this, ".o"); //track that we said this since we used up a conversation
+}
+void NPC::popGymDialogue() {
+	printDialogue(true, &gymDialogue.front(), false);
+	if (gymDialogue.size() > 1) {
+		gymDialogue.pop();
+		trackConv(this, ".g"); //track that we said this since we used up a conversation
+	}
+}
+void NPC::popRecDialogue() {
+	printDialogue(true, &recruitedDialogue.front(), false);
+	if (recruitedDialogue.size() > 1) {
+		recruitedDialogue.pop();
+		trackConv(this, ".e"); //track that we said this since we used up a conversation
+	}
 }
 void NPC::printBlockDialogue(bool finalpause) {
 	printConversation(&blockreason, finalpause);
@@ -504,7 +518,8 @@ void NPC::setRecruitCondition(size_t cond) {
 }
 void NPC::paveTunnel(Room* room, int specificexit) { //sets the direction back to the lobster's current position from the tunnel
 	if (specificexit >= 0) { //if we passed a specified exit, we use that
-		map<Room*, const char*>::iterator specific = (tunnelLinks.begin() + specificexit);
+		map<Room*, const char*>::iterator specific = tunnelLinks.begin();
+		advance(specific, specificexit);
 		home->setExit(specific->second, room); //make the exit go to this one specifically
 		return; //return becuse we're not doing the normal thing
 	}
@@ -758,7 +773,7 @@ void NPC::setBanker() {
 //set the banking data manually from the save system
 void NPC::manualSetBankData(int balance, time_t time) {
 	depositedmonies = balance;
-	deposittime = deposit;
+	deposittime = time;
 }
 void NPC::setShark() {
 	isShark = true;
@@ -1388,7 +1403,7 @@ void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc'
 	strcat(name, suffix);
 }
 //prints the npc's dialogue, prioritizing thisone if it's passed MARK: print dialogue
-void NPC::printDialogue(bool lastpause, Conversation* thisone) {
+void NPC::printDialogue(bool lastpause, Conversation* thisone, bool actuallyprint) {
 	Conversation conversation; //uninitialized, please initialize
 	if (thisone) { //if we passed thisone, print that one
 		conversation = *thisone;
@@ -1414,7 +1429,7 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone) {
 	} else { //regular dialogue
 		conversation = dialogue;
 	}
-	printConversation(&conversation, lastpause); //courtesy of Helper
+	printConversation(&conversation, lastpause, actuallyprint); //courtesy of Helper
 	if (talktochange && !changes.empty() && (miscdoeschange || !thisone)) { //don't do changes if misc don't do changes and thisone wasn't NULL and was instead passed, so no special dialogue
 		applyWorldChange(changes.front()); //apply all the world changes associated with this npc
 		if (!loopLastChange || changes.size() > 1) changes.pop(); //pop the changes if we don't need them anymore (not the last one OR it's the last one and we don't loop it)

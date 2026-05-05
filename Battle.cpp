@@ -41,7 +41,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	NPC* worldleader = (pteam ? player : enemy); //gets the team leader (in the world)
 	for (NPC* npc : team) { //delete the old team if there was one
 		for (Effect* effect : npc->getEffects()) {
-			detatchEffect(npc->getEffect(effect)); //remove the npc's associated npceffects because they would all be dangling now
+			detatchEffect(npc->getEffect(effect, true)); //remove the npc's associated npceffects because they would all be dangling now
 		}
 		everyone.erase(remove(everyone.begin(), everyone.end(), npc), everyone.end());
 		delete npc;
@@ -111,9 +111,9 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 
 	//give the enemies xp corresponding with the enemy's level, in order to scale them to that level
 	//sets the enemy level to the enemy leader, which should be the first one in the party since they put themselves in their own party when set to a leader
-	int enemyLevel = team[0]->getLevel();
-	for (NPC* npc : enemyTeam) { //sets every enemy to the found level and sets them to be an enemy
-		npc->setLevel(enemyLevel);
+	int teamlevel = team[0]->getLevel();
+	for (NPC* npc : team) { //sets every enemy to the found level and sets them to be an enemy
+		npc->setLevel(teamlevel);
 		
 		xpReward += npc->getXpReward(); //adds their xp and mony rewards to the total
 		monyReward += npc->getMonyReward();
@@ -205,7 +205,6 @@ void Battle::handleKnockout(NPC* npc) {
 		npc->directDamage(-npc->getHealthMax());
 		return;
 	} else { //make sure the player understands this npc is incapacitated
-		CinPause();
 		cout << "\n" << npc->getName() << " is incapacitated!";
 		CinPause();
 	}
@@ -275,7 +274,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			if (trackNPC(attacker)) {
 				if (attack->power > 0) damagedealt[attacker->getParent()] += damage;
 				else healthhealed[attacker->getParent()] += damage;
-				if (damage < 0 && -damage = reciever->getHealth()) specialstat[attacker->getParent()]++; //the revives special stat is Floria's, and we defo just revived someone if the amount we healed by is their total health
+				if (damage < 0 && -damage == reciever->getHealth()) specialstat[attacker->getParent()]++; //the revives special stat is Floria's, and we defo just revived someone if the amount we healed by is their total health
 			}
 			CinPause();
 		}
@@ -449,7 +448,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	for (int i = 0; i < attack->summonamount; i++) { //add adds for how many this attack summons
 		bool forenemy = attack->enemysummon; //enemy and team summons are reversed when hypnotized
 		addNPC(attack->summon, attacker, (attacker->getHypnotized() ? !forenemy : forenemy));
-		if (trackNPC(attacker)) specialstats[attacker->getParent()]++; //summons are Richie's (and the player and Graham can technically summon as well but they don't have a conflicting special stat) special stat so we increment it here
+		if (trackNPC(attacker)) specialstat[attacker->getParent()]++; //summons are Richie's (and the player and Graham can technically summon as well but they don't have a conflicting special stat) special stat so we increment it here
 	}
 	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
 	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
@@ -540,12 +539,12 @@ bool Battle::useItem(const char* itemname) {
 
 	//hp items heal the target
 	if (!strcmp(item->getType(), "hp")) {
-		HpItem* hp = (HpItem*)item; //converts to the corresponding subclass
+		HpItem* hptem = (HpItem*)item; //converts to the corresponding subclass
 		if (!npc->getHealth()) { //you're not allowed to heal unconscious teammates, that's what revives are for
 			cout << npc->getName() << " is too damaged for the " << itemname << " to work!";
 			return false;
 		} //directly applies the health to the target
-		int hp = npc->directDamage(-hp->getHp());
+		int hp = npc->directDamage(-hptem->getHp());
 		helpslaunched[player]++; //this was helpful so increase the player help counter
 		healthhealed[player] += hp;
 	//sp items restore sp for the target
@@ -572,7 +571,7 @@ bool Battle::useItem(const char* itemname) {
 			return false;
 		} //sets the effect on the target
 		attachEffect(npc->setEffect(affecter->getEffect()));
-		if (effect->getBeneficial()) helpslaunched[player]++; //this was helpful so increase the player help counter
+		if (affecter->getEffect()->getBeneficial()) helpslaunched[player]++; //this was helpful so increase the player help counter
 		else attackslaunched[player]++; //this was detrimental so increase the player attack counter
 		//the SUPERSMOOTHIE has this specific battle-handled effect
 		for (int i = 0; i < affecter->getEffect()->multipositioning; i++) {
@@ -728,7 +727,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 		if (i < checkMax) { //if it's the first one, we've already parsed it the same, no need to parse again
 			ParseCommand(commandP, commandWordP, commandExtensionP, i);
 		}
-		vector<NPC*>& tarteam = everyone; //based on the attack given we choose either the player team for beneficial attacks or the enemy team otherwise. It defaults to everyone so we can print better errors if no attack is found
+		vector<NPC*> tarteam = everyone; //based on the attack given we choose either the player team for beneficial attacks or the enemy team otherwise. It defaults to everyone so we can print better errors if no attack is found
 
 		Attack* attack; //the attack we're doing
 		
@@ -780,8 +779,8 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 	} //from here the attack launching was unsuccessful
 
 	//prints error message and then returns false because no attack was launched successfully, so the player must type something else
-	if (strlen(acandidate && !strlen(acother))) { //didn't clarify who to attack but they needed to
-		cout << adandidate << " who?";
+	if (strlen(acandidate) && !strlen(acother)) { //didn't clarify who to attack but they needed to
+		cout << acandidate << " who?";
 		actionwhat++;
 	} else if (strlen(tcother) && strlen(acother)) cout << "\nInvalid target \"" << acother << "\" or invalid command or attack \"" << tcother << "\". (Type HELP for help)"; //one or the other is wrong just print ambiguous error
 	else if (strlen(tcother)) { //invalid attack or command error
@@ -957,7 +956,7 @@ Attack* Battle::chooseAttack(NPC* npc) {
 //npcs decide what to do on their turn here MARK: npc turn
 void Battle::npcTurn(NPC* npc, bool opener) {
 	if (!opener) { //don't print that it's their turn if it's just an opening attack
-		cout << "\n\n" << npc->getName() << "'s turn!"; //prints whose turn it is
+		cout << "\n" << npc->getName() << "'s turn!"; //prints whose turn it is
 		CinPause();
 	}
 
@@ -1034,19 +1033,19 @@ int Battle::FIGHT() {
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk
 		} else if (current->getFrozen()) { //prints how the npc wanted to move but couldn't due to freezing
-			cout << "\n\n" << current->getName() << " is frozen in place!";
+			cout << "\n" << current->getName() << " is frozen in place!";
 			CinPause();
 		} else if (current->getRecovering()) {
-			cout << "\n\n" << current->getName() << " is recovering!";
+			cout << "\n" << current->getName() << " is recovering!";
 			CinPause();
 		} else if (current->getAway()) {
-			cout << "\n\n" << current->getName() << " is currently away!";
+			cout << "\n" << current->getName() << " is currently away!";
 			CinPause();
 		} else if (!current->getBasicAttack() && current->getSpecialAttacks().empty()) { //say idle text when there are no attacks
 			cout << current->getName() << " is " << idleText[rand()%5];
 			CinPause();
 		} else if (current->getPlayerness() && !current->getHypnotized()) { //starts the player turn!
-			cout << "\n\n" << player->getName() << "'s turn!\nWhat will you do?";
+			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn(current);
 		} else { //does the npc's turn
 			npcTurn(current);

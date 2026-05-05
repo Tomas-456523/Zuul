@@ -27,7 +27,7 @@ struct Conversation {
 
 	std::shared_ptr<Conversation> next; //this conversation gets printed immediately after this one, we use this so we can have seperate chunks having their own skip conditions
 
-	std::shared_ptr<WorldChange> convochanges; //world change that happens when this conversation is heard
+	std::shared_ptr<WorldChange> convochanges; //world change that happens when this conversation is heard, only used by npc conversations, everything else which is technically a conversation not so much
 
 	bool goToAlt() const {
 		bool gotoalt = false;

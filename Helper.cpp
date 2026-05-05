@@ -128,11 +128,11 @@ namespace Helper {
 		cout << "\n  HEALTH - ";
 		if (battle) cout << npc->getHealth() << "/";
 		cout << npc->getHealthMax();
-		cout << "\t  DEFENSE - " << npc->getDefense() * npc->getDefMultiplier();
-		cout << "\n  ATTACK - " << npc->getAttack() * npc->getAttMultiplier();
-		cout << "\t  TOUGHNESS - " << npc->getToughness() * npc->getToughMultiplier();
-		cout << "\n  PIERCE - " << npc->getPierce() * npc->getPierceMultiplier();
-		cout << "\t  SPEED - " << npc->getSpeed() * npc->getSpeedMultiplier();
+		cout << "\t  DEFENSE - " << Round(npc->getDefense() * npc->getDefMultiplier());
+		cout << "\n  ATTACK - " << Round(npc->getAttack() * npc->getAttMultiplier());
+		cout << "\t  TOUGHNESS - " << Round(npc->getToughness() * npc->getToughMultiplier());
+		cout << "\n  PIERCE - " << Round(npc->getPierce() * npc->getPierceMultiplier());
+		cout << "\t  SPEED - " << Round(npc->getSpeed() * npc->getSpeedMultiplier());
 		cout << "\n  SP - ";
 		if (battle) cout << npc->getSP() << "/";
 		cout << npc->getSPMax();
@@ -258,14 +258,15 @@ namespace Helper {
 		}
 	}
 	//prints a conversation, must be here because having this as Conversation's function was causing a plethora of compiler errors
-	void printConversation(const Conversation* _convo, bool finalpause) { //pass a pointer so it's easier to do all the alt stuff
-		cout << "\n";
+	void printConversation(const Conversation* _convo, bool finalpause, bool actuallyprint) { //pass a pointer so it's easier to do all the alt stuff
+		if (actuallyprint) cout << "\n";
 		const Conversation* current = _convo;
 		while (current->goToAlt()) { //keep going until we didn't find a new alt conversation
 			current = current->alt.get(); //go to the alt
 		}
 		const vector<pair<NPC*, const char*>>& convo = current->lines;
 		for (int i = 0; i < convo.size(); i++) { //prints all the dialogue in the conversation
+			if (!actuallyprint) break; //don't print anything if actually we're not printing anything
 			if (convo[i].first != NULL) {
 				cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
 			} else {
@@ -277,12 +278,12 @@ namespace Helper {
 		}
 		if (current->branch1.first) { //if one of the four components isn't NULL I'm assuming I made all of them equal something otherwise why would I put a branch
 			if (AOrB(NULL, current->branch1.first, current->branch2.first)) {
-				printConversation(current->branch1.second.get(), finalpause);
+				printConversation(current->branch1.second.get(), finalpause, actuallyprint);
 			} else {
-				printConversation(current->branch2.second.get(), finalpause);
+				printConversation(current->branch2.second.get(), finalpause, actuallyprint);
 			}
 		} else if (Conversation* next = current->next.get()) {
-			printConversation(next, finalpause);
+			printConversation(next, finalpause, actuallyprint);
 		}
 		if (shared_ptr<Conversation> relay = current->relay.second.lock()) { //relay the relaying conversation to the npc
 			current->relay.first->addConversation(*relay);
@@ -570,7 +571,8 @@ namespace Helper {
 				healthrecovered[npcchar->first] = 0;
 				damagerecieved[npcchar->first] = 0;
 				knockouts[npcchar->first] = 0;
-				revives[npcchar->first] = 0;
+				specialstat[npcchar->first] = 0;
+				spusedup[npcchar->first] = 0;
 			}
 		}
 	}
@@ -578,7 +580,7 @@ namespace Helper {
 	void emptyExterns() {
 		ReverseDirection.clear();
 		npcChar.clear();
-		chaNPC.clear();
+		charNPC.clear();
 		memset(commandcount, 0, sizeof(commandcount));
 		attackslaunched.clear();
 		basicslaunched.clear();
@@ -590,8 +592,9 @@ namespace Helper {
 		knockouts.clear();
 		incapacitations.clear();
 		specialstat.clear();
+		spusedup.clear();
 		encountered.clear();
-		recruited.clear();
+		Rnpcs.clear();
 		roomsH.clear();
 		npcsH.clear();
 		itemsH.clear();
@@ -612,13 +615,14 @@ namespace Helper {
 		itemID = 0;
 		roomID = 0;
 		//all world states are reset to false
-		for (size_t i = 0; i <= NEVER) WorldState[i] = 0;
+		for (size_t i = 0; i <= NEVER; i++) WorldState[i] = 0;
 		delete[] sectionW; //delete the world change tracker
 		sectionW = NULL; //make it null again
-		memset(sectionT, NULL, sizeof(sectionT)); //use sizeof since pointer size may vary by system
+		wsize = 0; //reset size to 0
+		memset(sectionT, 0, sizeof(sectionT)); //use sizeof since pointer size may vary by system
 	}
 	//go to the parents until we reach the template
-	const NPC* getBase(const NPC* npc) {
+	NPC* getBase(NPC* npc) {
 		for (; npc->getParent(); npc = npc->getParent()); //go to the parent until there is no parent
 		return npc; //this one has no parent so this is the base npc so we return this
 	}
@@ -644,7 +648,7 @@ namespace Helper {
 		}
 	}
 	//print save data with exporting instructions, it's a helper function since we can do that from saveWorld as well as exportSave if the file saving fails
-	void exportSave(const char* data) {
+	void printSave(const char* data) {
 		cout << "\nHere is your save data!\n\n" //print all the save data so the player can copy it, pretty straightforward
 			 << data
 			 << "\n\nMake sure to copy everything between the \"BQ2\" and \"=\" (including the BQ2 and =)."
@@ -654,8 +658,8 @@ namespace Helper {
 				"\nStore it in a safe location!";
 	}
 	//adds a chunk to the given place and extends the data length if needed
-	void addChunk(char* dest, const char* chunk) {
-		while (strlen(dest) + strlen(chunk) >= savesize) {
+	void addChunk(char*& dest, const char* chunk, size_t& savesize) {
+		while (strlen(dest) + strlen(chunk) + 1 >= savesize) {
 			savesize *= 2;
 			char* newdata = new char[savesize]();
 			strcpy(newdata, dest);
@@ -665,31 +669,32 @@ namespace Helper {
 		strcat(dest, chunk);
 	}
 	//log something in section W, called from many places so it has this helper
-	void logW(const char* letter, int id1, int id2 = -2) {
+	void logW(const char* letter, int id1, int id2) {
 		if (!sectionW) { //make the w tracker have stuff if it's null
 			sectionW = new char[100]();
+			wsize = 100;
 			sectionW[0] = '\0';
 		//if w already has stuff, just add a dividing comma
-		} else addChunk(sectionW, ",");
+		} else addChunk(sectionW, ",", wsize);
 		char tracker[30]; //build the log for the stuff given
 		if (id2 >= -1) snprintf(tracker, 30, "%s%d.%d", letter, id1, id2); //-1 is our usual sentinel, so if it's at least that, that means we want to include the second id as well in the logging
 		else snprintf(tracker, 30, "%s%d", letter, id1); //id was -2 so only include the first id
 		//finally, add what we wanted to add
-		addChunk(sectionW, tracker);
+		addChunk(sectionW, tracker, wsize);
 	}
 	//track item usage in section W and other tracker variables, we might call from multiple places so we have this helper
-	void trackItemUse(Item* item, Room* room, bool wasuse, const char* extension = NULL) {
+	void trackItemUse(Item* item, Room* room, bool wasuse, const char* extension) {
 		if (wasuse) commandcount[3]++; //increment successful item usings because we successfully used the item
 		logW("u", item->getID(), room->getID()); //log the item usage
-		if (extension) addChunk(sectionW, extension); //also log any extensions we were given
+		if (extension) addChunk(sectionW, extension, wsize); //also log any extensions we were given
 	}
 	//track item conversation, with this helper it's easier to put the extension
-	void trackConv(NPC* npc, const char* extension = NULL) {
+	void trackConv(NPC* npc, const char* extension) {
 		logW("a", npc->getID()); //log the npc that was talked to with the a letter identifier, a for ask
-		if (extension) addChunk(sectionW, extension); //add the extra extension
+		if (extension) addChunk(sectionW, extension, wsize); //add the extra extension
 	}
 	//get if this is an npc whose stats we track
-	bool trackNPC(const NPC* npc) {
+	bool trackNPC(NPC* npc) {
 		npc = npc->getParent(); //go to the parent because this is called from Battle where they're all copies from the original in world
 		return npcChar.count(npc) && npcChar[npc] != 't' && npcChar[npc] != 'n'; //if this one has a tracking character and it isn't the lobster or the banker, then it's an npc who we track
 	}
@@ -751,6 +756,7 @@ namespace Helper {
 	map<char, NPC*> charNPC; //map to get the npc from the char
 
 	char* sectionW = NULL; //build section W as we play
+	size_t wsize = 0; //size of w
 	Room* sectionT[5] = {NULL}; //build section T as we play
 
 	int commandcount[18] = {0}; //count how many times we used each command

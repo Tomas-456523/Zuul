@@ -118,13 +118,18 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 			CinPause();
 			printConversation(&pityDescription, false);
 			pity = false; //only give one freebie
-			inventory->push_back(Duplicate()); //copies the item and adds it to the inventory
+			Item* dupe = Duplicate();
+			dupe->unRoom();
+			inventory->push_back(dupe); //copies the item and adds it to the inventory
+			logW("b", id); //track the item buying
 		}
 		return;
 	}
 	mony -= price; //subtracts the cost
 	stock--; //decrements the amount left in stock of this item
-	inventory->push_back(Duplicate()); //copies the item and adds it to the inventory
+	Item* dupe = Duplicate();
+	dupe->unRoom();
+	inventory->push_back(dupe); //copies the item and adds it to the inventory
 	cout << "\nYou bought the " << name << "! You now have " << mony << " mon"; //success text + how many monies you now have
 	if (mony == 1) { //proper grammar yay
 		cout << "y.";
@@ -134,6 +139,14 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 	if (!buyDescription.empty()) {
 		printConversation(&buyDescription, false); //prints the buying description
 	}
+	pity = false; //don't give freebie in the future if we could clearly afford it like 6 or 7 days ago max in world time
+	logW("b", id); //log the buying in section W since we duplicated an item which is pretty notable
+}
+//buy expedited for loading the world, return the duplicated item
+Item* Item::loadBuy() {
+	pity = false;
+	logW("b", id); //log the buying in section W automatically
+	return Duplicate(); //return the duplicated item
 }
 //makes the item for sale
 void Item::setStock(int _stock, int _price, const Conversation& buydesc) {
@@ -421,9 +434,10 @@ ManholeItem::ManholeItem(const char* _name, const char* _description, Room* _roo
 }
 //gets the room that the item will reveal an exit to after taking it
 Room* ManholeItem::getRoom() {
-	Room* dest = destination; //makes a new reference so we can nullify it AND return it
-	destination = NULL; //nullifies the destination so we don't place it everywhere we drop the item
-	return dest;
+	return destination;
+}
+void ManholeItem::nullifyRoom() {
+	destination = NULL;
 }
 //gets the direction the item reveals an exit in (only DOWN is ever used, but I still need to reference it in the item object for the exit setting to work properly)
 const char* ManholeItem::getDirection() {
@@ -596,11 +610,11 @@ void ChoiceOrb::CHOICE() {
 	printConversation(&useText, false); //print the choice
 	WorldChange changes; //we copy the changes so they can be done multiple times
 	if (AOrB(NULL, "A", "B")) { //choice a
-		trackItemUse(item, currentRoom, true, ".a"); //track that we used the item and made choice a
+		trackItemUse(this, room, true, ".a"); //track that we used the item and made choice a
 		printConversation(&atext, false);
 		changes = achanges;
 	} else { //choice b
-		trackItemUse(item, currentRoom, true, ".b"); //track that we used the item and made choice b
+		trackItemUse(this, room, true, ".b"); //track that we used the item and made choice b
 		printConversation(&btext, false);
 		changes = bchanges;
 	}

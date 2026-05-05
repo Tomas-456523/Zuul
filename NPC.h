@@ -47,7 +47,7 @@ public: //you need to set stats on creation
 	const char* getName(); //gets the name of the character
 	const char* getDescription(); //gets the description of the character
 	int getID(); //get the npc id of the npc
-	const NPC* getParent() const; //get the npc template, the one this was derived from
+	NPC* getParent(); //get the npc template, the one this was derived from
 	bool getRecruitable(); //gets the recruitable status of the character
 	bool getDismissable();
 	bool getRecruited(); //gets the recruited status of the npc (if they're already in the party)
@@ -270,12 +270,14 @@ public: //you need to set stats on creation
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
 	void setMask(const char* _title, const char* _name, const char* _desc); //make fake identity for the npc outside battle
 	
-	void printDialogue(bool lastpause, Conversation* thisone = NULL); //optionally pass a conversation to print, used by these 3 functions below
-	void printRejectionDialogue(); //prints the rejection dialogue for the npc
-	void printRecruitmentDialogue(); //prints the recruitment dialogue for the npc
-	void printDismissalDialogue(); //prints the dismissal dialogue for the npc
-	void printDismissalRejection();
-	void printOpeningDialogue(); //print battle start dialogue for the npc
+	void printDialogue(bool lastpause, Conversation* thisone = NULL, bool actuallyprint = true); //optionally pass a conversation to print, used by these 3 functions below
+	void printRejectionDialogue(bool actuallyprint = true); //prints the rejection dialogue for the npc
+	void printRecruitmentDialogue(bool actuallyprint = true); //prints the recruitment dialogue for the npc
+	void printDismissalDialogue(bool actuallyprint = true); //prints the dismissal dialogue for the npc
+	void printDismissalRejection(bool actuallyprint = true);
+	void printOpeningDialogue(bool actuallyprint = true); //print battle start dialogue for the npc
+	void popGymDialogue(); //force pop the gym dialogue
+	void popRecDialogue(); //force pop the recruited dialogue
 	void printBlockDialogue(bool finalpause = false); //print the reason this npc doesn't want to go in a certain direction
 	void printCatchDialogue(bool special = false);
 
@@ -312,7 +314,7 @@ protected:
 	Room* currentRoom;
 
 	int id; //npc's index in npcsH
-	const NPC* parent = NULL; //the parent, for duplicated npcs
+	NPC* parent = NULL; //the parent, for duplicated npcs
 
 	vector<vector<NPC*>> party; //the npc's party if it is a leader (and supports multiple waves)
 

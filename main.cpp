@@ -646,8 +646,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", false, -5, -5, 20, 1, 1, 1, true);
 	floria->setBasicAttack(heal);
-	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 2, 20, 30, 1, 1, 1, false);
-	rosethorn->addDescription("Call a rose friend to poke the target with its thorns. (20 ATTACK, 30 PIERCE)");
+	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 2, 10, 15, 1, 1, 1, false);
+	rosethorn->addDescription("Call a rose friend to poke the target with its thorns. (10 ATTACK, 15 PIERCE)");
 	floria->addSpecialAttack(rosethorn);
 	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -20, 20, 1, 1, 1, true, 6);
 	turboheal->addDescription("Use flower power to greatly heal a teammate. (20 POWER)");
@@ -2537,7 +2537,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	desertshopfixed->setStock(reviveroot, 2147483647, 300, {{merchant, "Thank you for your monies."}});
 	
 	Item* rotrevroot = new ReviveItem("ROTTEN REVIVE ROOT", "A spoiled revive root, still capable of healing, though not to the extent of its fresh version.\nIt looks juicy and squishy and nasty. (Recapacitates teammates with 10 HP)", limbo, 10);
-	Item* freerot = new ReviveItem(*rotrevroot);
+	Item* freerot = new ReviveItem(*(ReviveItem*)(rotrevroot));
 	freerot->setRoom(burgstore);
 
 	Item* crowbar = new MaterialItem("MYSTERY EGG", "This egg is containing a special item and will hatch in a future update.", limbo);
@@ -2558,7 +2558,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	hotdogguy->addRejectionDialogue("Sorry no, this hot dog stand is my life's calling.");
 
 	Item* hotdog = new HpItem("HOT DOG", "A classic urban hot dog with mustard. (heals 2 HP)", limbo, 2);
-	coolstreet3->setStock(hotdog, 2147483647, 2, { {hotdogguy, "Ayy thanks for the purchase enjoy your hot dog!"} });
+	coolstreet3->setStock(hotdog, 2147483647, 2, {{hotdogguy, "Ayy thanks for the purchase enjoy your hot dog!"}});
 
 	//it's TECH DEMO MAN!
 	NPC* techdemoman = new NPC("", "TECH DEMO MAN", "Mechanical superhero for testing the game in the past!\n\"Since the game is unbalanced, I'll just make an even more unbalanced NPC!\"\n-Tomas", tenthome, 0, Stats(200000, 200000, 20, 20000, 10, 15, 20));
@@ -3531,7 +3531,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//set up enemies enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
 	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", true, -5, 5, 0, 1, 1, 1);
-	headbutt->recoil = 5;
+	hogheadbutt->recoil = 5;
 	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles at", false, 6, 3, 5, 2, 4, 3);
 	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
@@ -3541,7 +3541,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	greaterhog->addSpecialAttack(homing_prickle);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 9));
-	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", true, -5, 15, 0, 1, 1, 1);
+	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", true, -5, 10, 0, 1, 1, 1);
 	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", false, 10, 50, 50, 1, 1, 1, false, 2);
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
@@ -3553,7 +3553,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	buffgrassman->addSpecialAttack(benchpress);
 
 	NPC* enemydeer = new NPC("", "ENEMY DEER", "A bipedal deer in a fighting stance.", limbo, 0, Stats(10, 6, 10, 1, 5, 5, 9));
-	Attack* deercombo = new Attack("DEER COMBO", "beat up", true, 0, 5, 0, 4, 4, 1);
+	Attack* deercombo = new Attack("DEER COMBO", "beat up", true, 0, 2, 0, 4, 4, 1);
 	enemydeer->setBasicAttack(deercombo);
 
 	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 8, 0, 5, 20, 9));
@@ -3615,7 +3615,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
 	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -6, 10, 0, 1, 1, 1);
-	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 2, 18, 7, 1, 1, 1);
+	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 5, 18, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0);
 	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", false, 15, 10, 5, 1, 1, 1, true, 10);
 	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", false, 10, 10, 5, 1, 1, 1, true, 10, 0, 0.5);
@@ -5560,7 +5560,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* burgercultists = new NPC(*burgercultist); //MARK: FINISH THESE GUYS
 	burgercultists->setMask("", "BURGER CULTISTS", "A group of hooded figures in yellow robes cursing the BURGERs on the assembly line.");
-	burgercultists->setLeader(true, 25, burgplate);
+	burgercultists->setLeader(true, 25, limbo); //burgplate MARK: put them back
 	burgercultists->setParty({burgercultist, burgercultist, burgercultist, burgercultist});
 	burgercultists->setDialogue("...");
 	burgercultists->addRejectionDialogue("...");
@@ -6179,6 +6179,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		}
 		if (npc->getTalkOnDefeat()) npc->printDialogue(true); //print defeat dialogue
 		if (Item* item = npc->takeGift()) { //if the guy has a gift to give upon defeat we get the gift and add it to the inventory
+			item->unRoom();
 			inventory->push_back(item);
 			cout << name << " gave you the " << item->getName() << "!"; //says that you got the thing
 			CinPause();
@@ -6313,6 +6314,7 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		if (cover->getRoom() != NULL) { //if there is a room to reveal, we set an exit downwards (there's no horizontal manholes in this game)
 			currentRoom->setExit(cover->getDirection(), cover->getRoom());
 			cover->getRoom()->unblockExit(ReverseDirection[cover->getDirection()]); //also unblock the exit from below
+			cover->nullifyRoom();
 			cout << "\nAn exit DOWNwards was revealed!";
 			logW("u", item->getID(), currentRoom->getID()); //track that we just created an exit
 		}
@@ -6481,13 +6483,13 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 		XpItem* xp = (XpItem*)item; //converts to the corresponding subclass
 		cout << npc->getName() << " gained " << xp->getXp() << " XP!";
 		npc->addXp(xp->getXp()); //adds the xp
-	//beats the game until I rework this
+	//beats the game with the bad ending with various variations based on the game state
 	} else if (!strcmp(item->getType(), "BURGER")) {
 		BURGERItem* boiga = (BURGERItem*)item; //get BURGER as BURGERItem
-		printConversation(&boiga->getConfirmText(), false);
+		printConversation(&boiga->getConfirmText(), false); //confirm that you want to do this
 		if (!AOrB(NULL, "YES", "NO")) return;
-		printConversation(&boiga->getUseText(), true);
-		printConversation(&boiga->getHintText(), true);
+		printConversation(&boiga->getUseText(), true); //print the ending text
+		printConversation(&boiga->getHintText(), true); //also print the hint text, seperate so I don't have to make identical 4 use texts just for a slightly different hint 
 		WorldState[GAMEEND] = true; //mark that the game ended because this item ends the game
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
@@ -6750,11 +6752,12 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	} else { //other types of items must be used in battles
 		cout << "\nThe " << itemname << " can only be used in battle!";
 		return;
-	} //if the item is one-use only we delete the item
+	}
+	trackItemUse(item, currentRoom);
+	//if the item is one-use only we delete the item
 	if (item->getConsumable()) {
 		deleteItem(currentRoom, inventory, item);
 	}
-	trackItemUse(item, currentRoom);
 }
 
 //recruit an npc into the player party MARK: recruit
@@ -6904,6 +6907,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 	//some npcs give gifts after talking so we check for that here
 	Item* item = npc->takeGift();
 	if (item != NULL) { //adds the gift to the inventory
+		item->unRoom();
 		inventory->push_back(item);
 		CinPause();
 		cout << npcname << " gave you the " << item->getName() << "!"; //says that you got the thing
@@ -7007,8 +7011,6 @@ void buy(Room* currentRoom, vector<Item*>* inventory, const char* name, int& mon
 		currentRoom->removeStock(item);
 	}
 	commandcount[13]++; //increment successful buying
-	//track the buying in save section W
-	logW("b", item->getID(), currentRoom->getID());
 }
 
 //prints all the available commands MARK: print help
@@ -7024,13 +7026,14 @@ void printHelp(const char** validCommands, const char** flavorText, size_t comma
 }
 
 //save the game so we can store it as a file, and return if we want to keep going after saving MARK: save world
-bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat) {
+bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat, bool& laws) { //laws = last action was save
 	cout << "\nSaving..."; //print loading because it looks nice in case there's some lag
 
-	if (track) commandcount[15]++; //increment successful saving before actually saving it so it goes in the data
+	commandcount[15]++; //increment successful saving before actually saving it so it goes in the data
+	laws = true; //this is the saving function so the last function we did was indeed save
 
 	if (!save) save = new Save("", saves.size()); //make a new Save for the save if it's NULL so it's never been saved before
-	SaveGame(save, monies, savetime); //save the game!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	Save::SaveGame(save, monies, savetime); //save the game!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	char filename[255]; //get the name of the new file
 	snprintf(filename, 255, "save%zu.bq2", save->savenum);
@@ -7038,7 +7041,7 @@ bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat) {
 
 	if (!savefile) { //couldn't save the file for some reason
 		cout << "\nFailed to create new save file. Would you like to EXPORT your save data instead,\nso you can IMPORT it in the main menu when you want to continue? (YES or NO)";
-		if (AOrB(NULL, "YES", "NO")) exportSave(save->data); //print the data to export it, this way the player isn't forced to lose their data
+		if (AOrB(NULL, "YES", "NO")) printSave(save->data); //print the data to export it, this way the player isn't forced to lose their data
 		else cout << "\nAlrighty then."; //alrighty then message
 		return true; //just don't quit if we got an error
 	}
@@ -7055,13 +7058,15 @@ bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat) {
 				cout << "\nAlrighty then."; //carry on message
 				return true;
 			} //the YES path continues down to that return false down there
-		}
+		} else return true; //return true for normal path
 	}
 	return false; //quit the game in addition to saving
 }
 
 //make sure the player is really sure about quitting without saving, and return if we are continuing MARK: confirm quit
-bool confirmQuit(Save* save, time_t savetime) {
+bool confirmQuit(Save* save, time_t savetime, bool laws) { //laws = last action was save, because "ahhhhh you will lose 3s of progress!!!!!!!!!!!!!!!! don't quit without saving nooooooooooo!!!!!!!!!!!!!!"
+	if (laws) return false; //if our last action was save, just quit, no problem for the reasoning descibed directly above ^^^
+
 	long long seconds = difftime(time(NULL), savetime);
 	long long minutes = seconds/60; //use minutes if possible, precise reports of game time
 	seconds %= 60; //get rid of the extra seconds
@@ -7104,16 +7109,19 @@ bool confirmQuit(Save* save, time_t savetime) {
 
 //the main game function for exploring the world MARK: play
 void play(Save*& save) {
+	emptyExterns(); //reset all the stuff in helper so the game session doens't have garbage data
+
 	vector<Item*> inventory; //the inventory of items
 		
 	//sets up the game world and places the player at the current room
 	NPC* self = SetupWorld(&inventory);
+	Rnpcs.insert(self); //self is a recruitable npc MARK: put this somewhere better
 	
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
 	int mony = 0; //monies are the currency in the BURGER QUEST universe.
 
-	LoadGame(save, self, &inventory, mony);
+	if (save) Save::LoadGame(save, self, &inventory, mony);
 
 	//flavor text printed by printHelp
 	const char* flavorText[16] = {
@@ -7203,6 +7211,7 @@ void play(Save*& save) {
 	time_t savetime = time(NULL); //the last time this session was saved, to get total save file time and how much progress will be lost when quitting without saving
 
 	bool promptline = true; //if the prompting > should be in a newline, only false after typing nothing
+	bool savedlast = true; //if our last action was save, true to start so we can quit immediately if we don't do anything
 	bool continuing = true; //we continue until this is set to false (when the player quits or gets an ending)
 	while (continuing) { //the main loop!
 		char command[255] = ""; //the charray that the player inputs into
@@ -7257,15 +7266,17 @@ void play(Save*& save) {
 		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands
 			printHelp(validCommands, flavorText, 17, 16, true);
 		} else if (!strcmp(commandWord, "SAVE")) { //for saving and also possibly quitting
-			continuing = saveWorld(save, mony, savetime, &commandExtension[0]);
+			continuing = saveWorld(save, mony, savetime, &commandExtension[0], savedlast);
 		} else if (!strcmp(commandWord, "QUIT")) { //for quitting the game without saving
-			continuing = confirmQuit(save, savetime);
+			continuing = confirmQuit(save, savetime, savedlast);
 		} else if (!strlen(command)) { //don't print error if the player just entered nothing
 			promptline = false;
 		} else { //prints an error message if the player typed something that isn't an actual command
 			cout << "\nInvalid command \"" << commandWord << "\" (type HELP for help).";
 			invalidcommand++; //this was an invalid command so yeah increment it
 		}
+
+		if (strcmp(commandWord, "SAVE")) savedlast = false; //the last action we did was not save
 
 		CinIgnoreAll(); //clears extra or faulty input
 
@@ -7290,7 +7301,6 @@ void play(Save*& save) {
 	for (Effect* effect : effectsH) {
 		delete effect;
 	}
-	emptyExterns(); //reset all the stuff in helper so the next game session doens't have garbage data
 
 	//say a prompt or something for reentering the title screen
 	if (WorldState[GAMEEND]) { //give a unique title screen that says continue instead of begin after getting an ending
@@ -7319,15 +7329,13 @@ void printSaves() {
 		return;
 	}
 
-	//MARK: MAKE IT ACTYUALLT PRINT THE STUFF
-
 	for (size_t i = 0; i < saves.size(); i++) {
 		Save* save = saves[i];
-		cout << "\nSAVE " << i << " - ";
+		cout << "\nSAVE " << i+1 << " - ";
 		if (!save->getValid()) cout << "Save data is faulty.";
 		else if (save->getVersion() != '0') cout << "You need a newer version to play this save.";
 		else {
-			//name, lvl, monies, play time
+			save->printMainString();
 		}
 	}
 }
@@ -7339,7 +7347,7 @@ void newGame() {
 	Save*& savey = saves.back(); //get a reference to the NULL thingy
 	cout << "\nLoading..."; //print loading text in case SetupWorld takes a noticeable amount of time
 	play(savey); //play the game with the reference to the NULL save
-	if (savey->empty()) saves.pop_back(); //if we didn't save before quitting, we get rid of the NULL thingy
+	if (!savey) saves.pop_back(); //if we didn't save before quitting, we get rid of the NULL thingy
 	//we make a file in saveWorld(), so it will be caught by subsequent loadSaves()s
 }
 
@@ -7409,7 +7417,7 @@ void deleteSave(const char* savename) {
 		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
 		return;
 	} //MARK: make it get the time!!!!
-	cout << "\nYou have " << "[][][][][][][]" << " of playtime on SAVE " << num << ".\nAre you sure you want to delete it? (YES or NO)";
+	cout << "\n" << num << "You will lose all your data on this save forever.\nAre you sure you want to delete it? (YES or NO)";  //You have " << "[][][][][][][]" << " of playtime on SAVE 
 	if (!AOrB(NULL, "YES", "NO")) { //make sure the player is really sure about this because it's a very destructive action
 		cout << "\nAlrighty then; did not delete SAVE " << num << ".";
 		return;
@@ -7443,12 +7451,13 @@ void importSave(const char* savedata) {
 	}
 	//get rid of leading whitespace (I thought it would be fair just for this command, since you might accidentally copy some whitespace along with the text). Trailing whitespace is handled by the save constructor
 	while (isspace((unsigned char)*savedata)) savedata++;
-	if (false) { //MARK: make it actually detect it
+	Save savey = Save(savedata, 0);
+	if (!savey.getValid()) {
 		cout << "\nThis save data is faulty and cannot be imported. Make sure your pasted text starts with \"BQ2\" and ends with \"=\".";
 		return;
 	}
 
-	loadSaves(saves); //load the saves from the files to stay up to date
+	loadSaves(); //load the saves from the files to stay up to date
 	char filename[255]; //get the name of the new file
 	snprintf(filename, 255, "save%zu.bq2", saves.size()+1);
 	ofstream newfile(filename); //make the new file and write into it the new data
@@ -7459,11 +7468,12 @@ void importSave(const char* savedata) {
 	newfile << savedata;
 	cout << "\nSuccessfully imported your save data into SAVE " << saves.size()+1 << "!"; //success text!
 	//the new save will be added to the vector at the start of each function via their reload
+	if (savey.getVersion() !='0') cout << " (Save data is from a future version; you must update to play on it.)";
 }
 
 //export save data in a copy-pastable way MARK: export save
 void exportSave(const char* savename) {
-	loadSaves(saves); //load the saves from the files to stay up to date
+	loadSaves(); //load the saves from the files to stay up to date
 	if (saves.empty()) { //error because there's nothing to export
 		cout << "\nYou don't have any saves to export.";
 		return;
@@ -7482,7 +7492,7 @@ void exportSave(const char* savename) {
 		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
 		return;
 	}
-	exportSave(saves[num-1]->data); //print the data to export it
+	printSave(saves[num-1]->data); //print the data to export it
 }
 
 //the title screen! MARK: main (title screen)
