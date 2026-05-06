@@ -68,107 +68,181 @@ struct Save {
 	size_t savesize = 1000; //we double the save size when we need to, starts with a reasonable length of 1000
 	char* data; //the save data
 
-	size_t savenum;
+	size_t savenum; //identifying number for convenience
 
-	//make sure it's a valid save before calling this
-	char getVersion() {
-		return data[5]; //MARK: FIX!
+	//reset the save data to starting stuff MARK: reset
+	void reset() {
+		delete[] data;
+		savesize = 1000;
+		data = new char[savesize](); //make sure we have something to write into
+		data[0] = '\0';
 	}
 
-	const char* getSection(char section) { //MARK: make this please
-		const char* p = data;
-		return NULL;
+	//verify that the given number is valid, usable for signed <=64 bit integers or unsigned <64 bit integers
+	//also mutates the passed pointer because it's convenient for me
+	static bool verifyNum(const char*& data, int bits = 32, bool _sign = true) { //can choose limits of the bits, since the save data has ints and long longs
+		unsigned long long total = 0; //track the total using an unsigned long
+		unsigned long long intlimit = 1ULL << (bits-_sign); //get the maximum by shifting 1 to the left by the amount of bits, which works since binary's digits track powers of 2
+		int sign = 1;
+		if (*data == '-') { //checks if we are signing the thingy
+			if (!_sign) return false;
+			sign = -1;
+			data++;
+		}
+		int digits = 0; //also track digits so we don't overflow the total tracker
+		int maxdigits = (bits-_sign)*log10(2)+1
+		for (; isdigit((unsigned char)*data); data++) {
+			total = total * 10 + (*data - '0');
+			digits++;
+			if (digits > maxdigits) return false;
+		}
+		if (!digits) return false; //there wasn't any number...
+		if (sign > 0) return total < intlimit;
+		else return total <= intlimit; //negative int limit includes the limit
 	}
 
-	void printMainString() { //this is very placeholder MARK: fix this
-		const char* p = strchr(data, 'N');
-		if (!p) { printf("Error: 'N' not found\n"); return; }
-		p++;
-		
+	//verify that a name is all goot and dandy and stuff, like properly escaped characters
+	static bool verifyName(const char*& data) { //leaves off the pointer at the position after the name
 		bool escaping = false;
-		char* name = new char[255];
 
-		for (size_t i = 0;; p++) {
-			if (!escaping && *p == '\\') {
+		for (; *data != '\0'; data++) {	
+			if (i >= 254) { //if the name was too long
+				return false;
+			} else if (!escaping && *data == '\\') {
 				escaping = true;
-			} else if (!escaping && (*p == ',' || *p == '=' || *p == '|')) {
-				name[i] = '\0';
-				break; //we have reached the end of the name and we're in some other section now
+			} else if (!escaping && (*data == ',' || *data == '=' || *data == '|')) {
+				return true; //we reached the end of the name
+			} else if (escaping && *data != ',' && *data != '=' && *data != '|') {
+				return false; //escaping non-escapable character is bad
 			} else {
-				name[i++] = *p;
+				dest[i++] = *data;
 				escaping = false;
 			}
 		}
+		return false; //the name goes off the edge of the save data so it's bad
+	}
 
-		const char* moniesSection = strchr(p, 'M');
-		
-		int monies;
-		int level;
-		long long seconds;
+	//makes sure the save's data is valid and perfectly parsable with no issues, so I can be sure the string is good when using it MARK: get valid
+	//make sure to check save validity before doing basically anything with the save data, because I assume valid data for most of the functions. Setting functions like reset and SaveGame don't need this check
+	//this checks parsability, save data could still be incorrect and segfault or something, but if that happens it should be the player's fault for editing their data manually
+	bool getValid() {
+		//to start, we at least know the save data is properly null-terminated
+		if (strncmp(data, "BQ2|", 3)) return false; //must start and end like this
+		if (data[strlen(data)-1] != '=') return false;
 
-		if (!moniesSection) {
-			monies = 0;
-		} else monies = ParseNum(++moniesSection);
-		const char* recruitSection = moniesSection ? strchr(moniesSection, 'R') : strchr(p, 'R');
-		if (!recruitSection) { 
-			delete[] name; return; 
-		} else {
-			p = strchr(recruitSection, 'a');
-			if (!p) { 
-				level = 0;
-			} else level = ParseNum(++p);;
-		}
+		std::set<char> sections; //sections that we have found already
 		
-		if (p) {
-			const char* playtimeSection = strchr(p, 'Q');
-			if (!playtimeSection) {
-				seconds = 0;
-			} else {
-				p = playtimeSection + 1;
-				ParseNum(p);
+		for (const char* p = data+4; *p != '=';) { //start right after the BQ2| until reaching the =
+			if (*p != '|' && section.count(*p)) {
+				return false; //no duplicate sections
+			}
+			if (*p == '|') {
+				p++;
+			} else if (*p == 'V') {
+				p++; //skip the version number
+				if (*p != '|') return false; //must be V[char]|
+			} else if (*p == 'N') {
+				if (!verifyName(++data)) return false; //the name was invalid for whatever reason
+				if (*p != '|') return false; //name section must end after name
+			} else if (*p == 'M') { //check if the monies amount is valid
+				if (!verifyNum(++data, 32)) return false;
+				if (*p != '|') return false; //mony section must end after monies
+			} else if (*p == 'W') {
+
+			} else if (*p == 'U') {
+				if (sections.count('W')) return false; //pursuer must be moved after all the world changes to avoid the location being changed to something else
+				//UNIMPLEMENTED
+			} else if (*p == 'R') {
+				if (sections.count('W')) return false; //teammates must be moved after world changes because the changes can move them around
+				//UNIMPLEMENTED
+			} else if (*p == 'P') { //player party
+
+			} else if (*p == 'E') { //enemy types
+
+			} else if (*p == 'I') { //items
+				if (sections.count('W')) return false; //changes can move items so this goes after W to ensure all their rooms are correct
+				//UNIMPLEMENTED
+			} else if (*p == 'L') { //lobster name then room
+				
+			} else if (*p == 'T') { //tunnel directions
+
+			} else if (*p == 'B') { //bank balance then time
+
+			} else if (*p == 'S') { //states
+				if (sections.count('W')) return false; //changes might edit world states in a way we don't want so we manually set states after all the changes
+				//UNIMPLEMENTED
+			} else if (*p == 'Q') { //play time, how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
+
+			} else if (*p == 'C') { //18 command counts
+				for (size_t i = 1;) {
+					if (p[i])
+				}
+			} else { //we landed on some weird non-section or divider character so that's bad and we return false
+				return false;
 			}
 		}
 
-		cout << name << ", Lvl " << level << ", " << monies << " mon" << (monies == 1 ? "y" : "ies"); //MARK: time doesn't work for some reason
-		delete[] name;
-		return;
+		return true; //yay everything worked so it's valid!
+	}
+
+	//goes through the thingy to find the position of the given section MARK: get section
+	const char* getSection(char section) {
+		bool namesection = false; //we can't return anything if we're in the naming section because the player could type weird names
+		bool escaping = false; //don't end the naming section if we're escaping
+
+		const char* d = data+3; //get a pointer to the start of data (ignoring the BQ2 at the start) so we can move it forward until the section
+
+		for (; *d != section || namesection ; d++) {
+			if (d - data > strlen(data)) return NULL; //the section wasn't in the data, so we return NULL
+
+			//these characters mean we are in a name section, so we have to watch out for fake ending characters now
+			if (*d == 'N' || *d == 'L') namesection = true; //these can also show up in the middle of a naming section, but namesection is true there anyway so that's fine
+
+			if (escaping) escaping = false; //we are escaping so don't finish the naming section when reaching a , or |
+			else if (*d == '\\') escaping = true; //\ means we're escaping, this isn't a \\ because the preceding check would've caught it
+			else if (!escaping && (*d == '|' || *d == ',')) namesection = false; //once we reach the | or , and we're not escaping, we've reached the end of the name section
+		}
+
+		return d; //return the position of the section character we landed on
+	}
+
+	//get the version of this save system, for future proofing! MARK: get version
+	char getVersion() {
+		return getSection('V')[1]; //go to section V and the version is the character after that. (96 possible versions should be enough)
+	}
+
+	//print specific save data points that are helpful for knowing which save is which MARK: print save
+	void printMainString() {
+		char name[255];
+		ParseName(name, getSection('N')+1); //get the name of the player character
+
+		int monies = 0; //monies are 0 by default if we don't find the section
+		const char* sectionM = getSection('M');
+		if (ParseNum(sectionM+1)) //get the player's monies
+
+		int level = 0; //level defaults to 0
+		const char* sectionR = getSection('R');
+		if (sectionR) { //if we got to section R, the player is definitely in there, so go to the a subsection
+			const char* a = strchr(sectionR, 'a');
+			level = ParseNum(++a); //the level is the first data there so we read that
+		}
+
+		long long seconds = 0; //play time defaults to 0
+		const char* sectionQ = getSection('Q');
+		if (sectionQ) { //the play time is the first data in section Q, quite conveniently, so we parse that
+			seconds = ParseNum(++sectionQ);
+		}
 
 		long long minutes = seconds/60; //use minutes if possible, precise reports of game time
 		seconds %= 60; //get rid of the extra seconds
 		long long hours = minutes/60; //go further to hours if possible
 		minutes %= 60; //get rid of the extra minutes
 
+		//print the data!
 		cout << name << ", Lvl " << level << ", " << monies << " mon" << (monies == 1 ? "y" : "ies") << ", ";
-		if (hours) cout << hours << "h ";
+		if (hours) cout << hours << "h "; //playtime stuff
 		if (minutes || hours) cout << minutes << "m ";
 		cout << seconds << "s";
-
-		delete[] name;
-	}
-
-	//makes sure the save's data is valid and perfectly parsable with no issues, so I can be sure the string is good when I start loading
-	bool getValid() {
-		return true;
-		if (strncmp(data, "BQ2|V", 4)) return false;
-		if (data[strlen(data)-1] != '=') return false;
-		
-		//unimplemented right now because Im only using my own saves currently made in the game so they should work fine
-
-		//MARK: also make sure each section is only there once
-		
-		//I changed my mind I should enforce section order
-		//at least make sure R is after W, I after W, etc. and make sure all similar cases are accounted for
-		//u after w
-
-		return true; //yay everything worked so it's valid!
-	}
-
-	//
-	void reset() {
-		delete[] data;
-		savesize = 1000;
-		data = new char[savesize]();
-		data[0] = '\0';
 	}
 
 	//format the given name to have a \ before |, =, \, and , (the returned name must be deleted afterwards)
@@ -303,41 +377,60 @@ struct Save {
 		addChunk(save->data, "=", save->savesize);
 	}
 
-	//parse name and advance save data pointer past it in the process, assumes it's given a valid save
+	//parse name and advance save data pointer past it in the process, assumes it's given a valid save MARK: parse name (NPC)
 	static void ParseName(NPC* named, const char*& data) {
 		bool escaping = false;
 		char* name = new char[255];
 
-		for (size_t i = 0;; data++) {
+		for (size_t i = 0; name[i] != '\0';) {
 			if (!escaping && *data == '\\') {
 				escaping = true;
 			} else if (!escaping && (*data == ',' || *data == '=' || *data == '|')) {
-				name[i] = '\0';
-				break; //we have reached the end of the name and we're in some other section now
+				name[i] = '\0'; //cap off the name and that will make the loop stop as well
 			} else {
 				name[i++] = *data;
 				escaping = false;
 			}
+			data++; //increment the data (including the last iteration)
 		}
 		named->setName(name);
 		delete[] name;
 	}
 
-	//parse the number in the data currently and advance the pointer past it
+	//different overload for the name parsing that writes into the given char* MARK: parse name (char)
+	static void ParseName(char[255] dest, const char* data) {
+		bool escaping = false;
+
+		for (size_t i = 0; dest[i] != '\0'; data++) {
+			/*if (i >= 254) { //if the name was too long
+				dest[0] = '\0'; //null terminate the beginning since we didn't find anything valid
+			} else */if (!escaping && *data == '\\') {
+				escaping = true;
+			} else if (!escaping && (*data == ',' || *data == '=' || *data == '|')) {
+				dest[i] = '\0';
+			} else {
+				dest[i++] = *data;
+				escaping = false;
+			}
+		}
+	}
+
+	//parse the number in the data currently and advance the pointer past it MARK: parse num
 	static long long ParseNum(const char*& data) {
 		int sign = 1;
-		if (*data == '-') {
+		if (*data == '-') { //we have to sign the integer because there's a -
 			sign = -1;
-			data++;
+			data++; //go past the -
 		}
 		long long total = 0;
-		for (; isdigit((unsigned char)*data); data++) {
+		while (isdigit((unsigned char)*data)) {
 			total = total * 10 + (*data - '0');
+			data++; //increment the data, including on the last iteration
 		}
 		return total * sign;
 	}
 
-	//adjust item id to get their index in itemsH, accounting for deleted items
+	//adjust item id to get their index in itemsH, accounting for deleted items MARK: adjust item id
 	static int adjustItemID(int id, set<int>& discontinuities) {
 		int discount = distance(discontinuities.begin(), discontinuities.lower_bound(id));
 		return id - discount;
@@ -345,17 +438,9 @@ struct Save {
 
 	//gets stuff which it can edit, and modifies the world to match the given save data MARK: load game
 	static void LoadGame(const Save* save, NPC* player, std::vector<Item*>* inventory, int& monies) {
-		//check for invalid saves (won't catch everything but you shouldn't be modifying save data anyway, this is mostly for accidentally copy/pasting wrong)
-		//check version and that it starts with BQ2 and ends with =
+		set<int> discontinuity; //the item id discontinuities, because we delete items sometimes so we need this to get actual itemsH index
 
-		const char* data = save->data;
-
-		//after validating the save, assume it's all perfectly parsable (not necessarily correct, just parsable)
-		data += 4; //skip the BQ2|
-
-		set<int> discontinuity; //the item id discontinuities, because we delete items sometimes so
-
-		while (*data != '=') { //keep loading stuff until we reach the end
+		for (const char* data = save->data+4; *data != '=';) { //keep loading stuff until we reach the end
 			if (*data == '|') { //just go past the dividers
 				data++;
 			} else if (*data == 'V') { //ignore version section, if it's a future version just check outside the function
@@ -411,6 +496,10 @@ struct Save {
 						} else if (!strcmp(item->getType(), "treasure")) { //for treasure items, ignore their monies and items because they're set by sections M and I respectively, just handle the mimics
 							if (NPC* mimic = ((TreasureItem*)item)->getMimic()) { //set the mimic to the room the chest was opened in
 								mimic->setRoom(room); //technically since fight() is called in useItem(), the player could log subsection d for the mimic before u for the trasure, but as far as I can tell this doesn't cause any conflicts so I think it's fine
+							}
+						} else if (!strcmp(item->getType(), "switch")) { //switch conveyor directions
+							for (Room* conveyor : ((ConveyorSwitch*)item)->getConveyors()) {
+								conveyor->switchConveyor();
 							}
 						} else if (!strcmp(item->getType(), "worldchange")) { //both take to use and normal world change items, basically behave the same apart from how you use them
 							applyWorldChange(((WorldChangeItem*)item)->getChanges()); //do the changes
@@ -497,7 +586,6 @@ struct Save {
 				for (; *data != '|' && *data != '=';) {
 					char npcCode = tolower((unsigned char)*(++data));
 					NPC* npc = charNPC[npcCode];
-					if (!npc) return;
 					npc->setLevel(ParseNum(++data));
 					npc->addXp(ParseNum(++data));
 					npc->setRoom(roomsH[ParseNum(++data)]);
@@ -579,19 +667,19 @@ struct Save {
 				}
 			}
 		}
-
-		//while checking used items, track "discontinuity" which is incremented each time an item is consumed. every time we check an index in itemsH that is greater than itemsH.size()-1, subtract that index by the discontinuity, and that should give the actual item
 	}
 
-	Save(const char* _data, size_t num) { //make a new save with the given save data and identifying number
-		while (strlen(_data)+1 > savesize) {
+	//make a new save with the given save data and identifying number
+	Save(const char* _data, size_t num) {
+		while (strlen(_data)+1 > savesize) { //find a good length to fit the amount of data
 			savesize *= 2;
 		}
-		data = new char[savesize]();
-		data[0] = '\0';
+		data = new char[savesize](); //make room for the data
+		data[0] = '\0'; //null terminate it, and strcat moves the terminator forward
 		strcat(data, _data);
-		savenum = num;
-		//MARK: truncate whitespace?
+		savenum = num; //saves have identifying numbers for convenience
+		char* ending = getSection('=');
+		if (ending) ending[1] = '\0'; //null terminate the character after = to truncate whitespace, to avoid copy pasting annoyances
 	}
 
 	~Save() { //delete the data on destruction

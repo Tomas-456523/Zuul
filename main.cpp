@@ -503,6 +503,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {burgermenace, "I DIDN'T APPRECIATE WHAT YOU DID TO MY BURGER MAN,"},
 					   {burgermenace, "SO I BROUGHT YOU DOWN HERE TO HAVE A CHAT FACE TO FACE."},
 					   {self, "So everything that happened is your fault? >:|"},
+					   //something
+					   //NOTHING YOU DID WILL HAVE EVER MATTERED.
+					   //YOU WILL NEVER HAVE MATTERED.
+					   //We'll see about that >:|
+					   //{NULL, "You and your team are filled with the power of PLOT!"},
+					   //{NULL, "Your stats rose by 100000%!"},
+
+					   //this old dialogue kinda sucks
 					   {burgermenace, "IF YOU SAY SO."},
 					   {burgermenace, "BUT YOUR DEATH,"},
 					   {burgermenace, "YOU HAVE BROUGHT UPON YOURSELF."},
@@ -2213,7 +2221,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							 {NULL, "MR DEER - *warning deer noises*"},
 							 {NULL, "MR DEER - *concerned deer noise*"},
 							 {NULL, "MR DEER - *thinking deer noises*"},
-							 {NULL, "..."},
+							 {mrdeer, "..."},
 							 {self, "(I hope he gives me the key...)"},
 							 {NULL, "MR DEER - *reluctantly affirmative deer noise*"},
 							 {self, "AYYY thank you so much Mr. Deer!"}});
@@ -5839,7 +5847,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	
 	Item* veorb = new MaterialItem("ENTRY ORB", "", limbo);
 
-	//vtboss
+	NPC* vtboss = new NPC(*firewithfire);
+	vtboss->addConversation({{NULL, "FIRE WITH FIRE is tapping his foot on the floor."},
+							 {firewithfire, "Well it took you long enough to get here..."},
+							 {firewithfire, "I haven't got all day..."}});
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
 	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
