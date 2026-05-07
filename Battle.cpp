@@ -412,7 +412,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		}
 	}
 	//says if we hit multiple targets
-	if (!attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
+	if (attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
 		cout << "\n" << target->getName() << "'s surrounding teammates were also affected!";
 	}
 	CinPause();

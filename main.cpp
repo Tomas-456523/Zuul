@@ -3538,18 +3538,19 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//set up enemies enemies MARK: enemies (internal)
 	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
-	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", true, -5, 5, 0, 1, 1, 1);
+	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", true, -5, 10, 0, 1, 1, 1);
 	hogheadbutt->recoil = 5;
 	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles", false, 6, 3, 5, 3, 3, 3);
 	homing_prickle->focushits = false;
+	Attack* prickles = new Attack("PRICKLES", "poked", false, 0, 5, 1, 1, 1, 1);
 	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
-
-	//MARK: give prickly hogs recoil attack?
+	pricklyhog->setRecoilAttack(prickles);
 
 	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 9));
 	greaterhog->setBasicAttack(hogheadbutt);
 	greaterhog->addSpecialAttack(homing_prickle);
+	greaterhog->setRecoilAttack(prickles);
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 9));
 	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", true, -5, 10, 0, 1, 1, 1);
@@ -3621,8 +3622,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* jimmyshimmy = new NPC("", "JIMMY SHIMMY", "A juvenile shrimp who likes to help out his fellow shrimps.", limbo, 0, Stats(20, 0, 10, 0, 20, 15, 9));
 	Attack* shrimpleshimmy = new Attack("SHRIMPLE SHIMMY", "shimmied all over", true, 0, 5, 0, 3, 4, 1);
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
-	/*Effect* flinch = new Effect("FLINCH", 1);
-	shrimpleshimmy->addEffect(flinch);*/
 
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
 	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -5, 10, 0, 1, 1, 1);
@@ -3653,6 +3652,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
+	savagehog->setRecoilAttack(prickles);
 	savagehog->setBoss(true);
 
 	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 30, 9));
@@ -7139,20 +7139,20 @@ void play(Save*& save) {
 
 	//flavor text printed by printHelp
 	const char* flavorText[16] = {
-		"What even is a BURGER?",
+		"What even is a BURGER?", //You practice your breakdancing skills now that you're done with your BURGER QUEST.
 		"You consider the state of the economy.",
 		"You are blue dabadeedabadai.",
 		"You are beginning to believe.",
 		"You forgor.",
-		"You accidentally find spoilers for the ending of BURGER QUEST 2. It is very concerning...",
+		"You accidentally find spoilers for the ending of BURGER QUEST 2. It is very concerning...", //You accidentally find spoilers for the ending of BURGER QUEST 2. Good thing you already beat it.
 		"You realize you don't have an oven.",
-		"You spot a billboard advertising the BURGER RESTAURANT in BURGERSBURG.",
+		"You spot a billboard advertising the BURGER RESTAURANT in BURGERSBURG.", //You spot a billboard advertising literally nothing.
 		"You ask a passerby what the valid commands are. The guy looks at you really confused.",
 		"You stop it and get some help.",
 		"We have been trying to reach you about your car's extended warranty.",
 		"You spot a quick brown fox jumping over a lazy dog.",
 		"You say hello to the world.",
-		"I could really go for a burger right now. Too bad they only sell BURGERs here.",
+		"I could really go for a burger right now. Too bad they only sell BURGERs here.", //You realize how you've never seen a normal burger.
 		"You have a cake and eat it too.",
 		"You take a potato chip... and eat it."
 	};

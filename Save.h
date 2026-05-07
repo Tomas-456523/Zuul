@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iterator>
 #include <ctime>
+#include <cmath>
 #include "Helper.h"
 #include "Room.h"
 #include "NPC.h"
@@ -78,7 +79,7 @@ struct Save {
 		data[0] = '\0';
 	}
 
-	//verify that the given number is valid, usable for signed <=64 bit integers or unsigned <64 bit integers
+	//verify that the given number is valid, usable for signed <=64 bit integers or unsigned <64 bit integers MARK: verify number
 	//also mutates the passed pointer because it's convenient for me
 	static bool verifyNum(const char*& data, int bits = 32, bool _sign = true) { //can choose limits of the bits, since the save data has ints and long longs
 		unsigned long long total = 0; //track the total using an unsigned long
@@ -90,33 +91,34 @@ struct Save {
 			data++;
 		}
 		int digits = 0; //also track digits so we don't overflow the total tracker
-		int maxdigits = (bits-_sign)*log10(2)+1
+		int maxdigits = (bits-_sign)*log10(2)+1;
 		for (; isdigit((unsigned char)*data); data++) {
-			total = total * 10 + (*data - '0');
-			digits++;
-			if (digits > maxdigits) return false;
+			int digit = *data - '0'; //the digit we are adding
+			if (total > (intlimit-(sign+1)/2-digit)/10) return false; //do some math to make sure adding this new digit won't over or underflow, and of course if it will, retun false cause it's bad
+			total = total * 10 + digit; //move the total's places forward and add the digit to the ones place
+			digits++; //increment digits because we added a digit
 		}
 		if (!digits) return false; //there wasn't any number...
-		if (sign > 0) return total < intlimit;
-		else return total <= intlimit; //negative int limit includes the limit
+		return true; //we have checked that it's within the limit and everything already so we know it's true!
 	}
 
-	//verify that a name is all goot and dandy and stuff, like properly escaped characters
+	//verify that a name is all goot and dandy and stuff, like properly escaped characters MARK: verify name
 	static bool verifyName(const char*& data) { //leaves off the pointer at the position after the name
 		bool escaping = false;
+		size_t namesize = 0; //get the size of the name so we can make sure it's not too long
 
-		for (; *data != '\0'; data++) {	
-			if (i >= 254) { //if the name was too long
+		for (; *data != '\0'; data++) {
+			if (namesize >= 254) { //if the name was too long
 				return false;
 			} else if (!escaping && *data == '\\') {
 				escaping = true;
 			} else if (!escaping && (*data == ',' || *data == '=' || *data == '|')) {
 				return true; //we reached the end of the name
-			} else if (escaping && *data != ',' && *data != '=' && *data != '|') {
+			} else if (escaping && *data != ',' && *data != '=' && *data != '|' && *data != '\\') {
 				return false; //escaping non-escapable character is bad
-			} else {
-				dest[i++] = *data;
+			} else { //we're adding a normal character and everything seems good so we reset escaping and go to the next char
 				escaping = false;
+				namesize++; //add one to the name length cause this is a normal character
 			}
 		}
 		return false; //the name goes off the edge of the save data so it's bad
@@ -127,59 +129,126 @@ struct Save {
 	//this checks parsability, save data could still be incorrect and segfault or something, but if that happens it should be the player's fault for editing their data manually
 	bool getValid() {
 		//to start, we at least know the save data is properly null-terminated
-		if (strncmp(data, "BQ2|", 3)) return false; //must start and end like this
+		if (*data == '\0') return false; //if it doesn't have anything then it's invalid
+		if (strncmp(data, "BQ2|", 4)) return false; //must start and end like this
 		if (data[strlen(data)-1] != '=') return false;
 
 		std::set<char> sections; //sections that we have found already
 		
 		for (const char* p = data+4; *p != '=';) { //start right after the BQ2| until reaching the =
-			if (*p != '|' && section.count(*p)) {
-				return false; //no duplicate sections
-			}
-			if (*p == '|') {
+			if (*p != '|') { //checks stuff if it's not a divider
+				if (sections.count(*p)) return false; //no duplicate sections
+				sections.insert(*p); //track that we have checked this section so we can verify there aren't any duplicates using the check immediately before this
+			} else { //skip the dividers, they are already checked during the sections and at the end
 				p++;
-			} else if (*p == 'V') {
-				p++; //skip the version number
-				if (*p != '|') return false; //must be V[char]|
+			}
+			if (*p == 'V') {
+				p += 2; //skip the version number
 			} else if (*p == 'N') {
-				if (!verifyName(++data)) return false; //the name was invalid for whatever reason
-				if (*p != '|') return false; //name section must end after name
+				if (!verifyName(++p)) return false; //the name was invalid for whatever reason
 			} else if (*p == 'M') { //check if the monies amount is valid
-				if (!verifyNum(++data, 32)) return false;
-				if (*p != '|') return false; //mony section must end after monies
+				if (!verifyNum(++p, 32)) return false;
 			} else if (*p == 'W') {
-
-			} else if (*p == 'U') {
-				if (sections.count('W')) return false; //pursuer must be moved after all the world changes to avoid the location being changed to something else
-				//UNIMPLEMENTED
-			} else if (*p == 'R') {
-				if (sections.count('W')) return false; //teammates must be moved after world changes because the changes can move them around
-				//UNIMPLEMENTED
-			} else if (*p == 'P') { //player party
-
-			} else if (*p == 'E') { //enemy types
-
-			} else if (*p == 'I') { //items
-				if (sections.count('W')) return false; //changes can move items so this goes after W to ensure all their rooms are correct
-				//UNIMPLEMENTED
-			} else if (*p == 'L') { //lobster name then room
-				
-			} else if (*p == 'T') { //tunnel directions
-
-			} else if (*p == 'B') { //bank balance then time
-
-			} else if (*p == 'S') { //states
-				if (sections.count('W')) return false; //changes might edit world states in a way we don't want so we manually set states after all the changes
-				//UNIMPLEMENTED
-			} else if (*p == 'Q') { //play time, how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
-
-			} else if (*p == 'C') { //18 command counts
-				for (size_t i = 1;) {
-					if (p[i])
+				if (sections.count('U') || sections.count('R') || sections.count('I') || sections.count('S')) return false; //section W must precede these sections because otherwise it could overwrite stuff they set, or they could be missing data
+				for (p++;; p++) {
+					if (strchr("bxdrewopt", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
+						if (!verifyNum(++p)) return false; //check item/npc/room id
+					} else if (*p == 'u') {
+						if (!verifyNum(++p)) return false; //check item id
+						if (*p != '.') return false; //check connecting period
+						if (!verifyNum(++p)) return false; //check room id
+						//MARK: CHOICE ORBS choices
+					} else if (*p == 'a') {
+						if (!verifyNum(++p)) return false; //check npc id
+						if (*p == '.') { //the optional conversation type, check that it's a valid type
+							if (!strchr("rejdiog", *(++p))) return false;
+							//MARK: BRANCHING PATHS
+							p++; //make sure we're at the position after this subsection
+						}
+					}
+					if (*p == '|' || *p == '=') break; //break because it's the end of the world changes section
+					if (*p != ',') return false; //check dividing comma
 				}
-			} else { //we landed on some weird non-section or divider character so that's bad and we return false
+			} else if (*p == 'U') {
+				if (!verifyNum(++p, 32)) return false; //check for pursuer room id
+			} else if (*p == 'R') { //check teammate stats
+				//level, xp, room, attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage, and finally, time left in gym (0 if not in gym)
+				const char* validChars = "afeklmvcjxpgrbhu";
+				for (p++;; p++) {
+					if (!strchr(validChars, *p)) return false; //can only track these specified characters
+					for (size_t i = 0; i < 5; i++) { //check level, xp, room id, attacks, and helps
+						if (!verifyNum(++p, 32)) return false;
+					}
+					for (size_t i = 0; i < 4; i++) { //check damage dealt, damage healed, damage recieved, and health recovered
+						if (!verifyNum(++p, 64)) return false;
+					}
+					for (size_t i = 0; i < 3; i++) { //check kos, times ko'd, and special stat
+						if (!verifyNum(++p, 32)) return false;
+					}
+					for (size_t i = 0; i < 2; i++) { //check sp usage and gym time
+						if (!verifyNum(++p, 64)) return false;
+					}
+					if (*p == '|' || *p == '=') break; //break because it's the end of the team stats section
+					if (*p != ',') return false; //check dividing comma
+				}
+			} else if (*p == 'P') { //player party
+				const char* validChars = "feklmvcjxpgrbh"; //no buford because he's not recruited technically
+				for (p++; *p != '|' && *p != '='; p++) { //start at the first char and go until we reach the end of the party section
+					if (!strchr(validChars, *p)) return false; //check that all the party members are recruitable teammates
+				}
+			} else if (*p == 'E') { //enemy types
+				for (;;) {
+					if (!verifyNum(++p, 32)) return false; //check npc id
+					if (*p == '|' || *p == '=') break; //we've reached the end of section E
+					if (*p != ',') return false; //check dividing comma
+				}
+			} else if (*p == 'I') { //items
+				for (;;) {
+					if (!verifyNum(++p, 32)) return false; //check item id
+					if (*p != '.') return false; //check connecting period
+					if (!verifyNum(++p, 32)) return false; //check item room id
+					if (*p == '|' ||*p == '=') break; //we've reached the end of section I
+					if (*p != ',') return false; //check dividing comma
+				}
+			} else if (*p == 'L') { //lobster name then room
+				if (!verifyName(++p)) return false; //check lobster name
+				if (*p != ',') return false; //check the dividing comma
+				if (!verifyNum(++p, 32)) return false; //check lobster room
+			} else if (*p == 'T') { //tunnel directions
+				for (size_t i = 0; i < 5; i++) {
+					if (!verifyNum(++p, 32)) return false; //check room id
+					if (i < 4 && *p != ',') return false; //check the dividing comma
+				}
+			} else if (*p == 'B') { //bank balance then time
+				if (!verifyNum(++p, 32)) return false; //check balance
+				if (*p != ',') return false; //check the dividing comma
+				if (!verifyNum(++p, 64)) return false; //check the deposit time
+			} else if (*p == 'S') { //states
+				for (size_t i = 0; i < NEVER; i++) {
+					if (*(++p) != '0' && *p != '1') return false; //must be a bitstring of NEVER characters long
+				}
+				p++; //go past the bitstring
+			} else if (*p == 'Q') { //play time, how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
+				if (!verifyNum(++p, 64)) return false; //check playtime, I know it's a double but a 64 bit int should be plenty, it's literally more seconds than the universe is old so yeah
+				for (size_t i = 0; i < 5; i++) { //check sessions then all the invalid trackers
+					if (*p != ',') return false; //check the dividing comma
+					if (!verifyNum(++p, 32)) return false;
+				}
+				if (*p != ',') return false; //check the dividing comma
+				if (!verifyNum(++p, 64)) return false; //check times entered nothing
+				for (size_t i = 0; i < 2; i++) { //check biggest sp bomb and parry count
+					if (*p != ',') return false; //check the dividing comma
+					if (!verifyNum(++p, 32)) return false;
+				}
+			} else if (*p == 'C') { //18 command counts
+				for (size_t i = 0; i < 18; i++) {
+					if (!verifyNum(++p, 32)) return false; //check the command count
+					if (i < 17 && *p != ',') return false; //check the dividing comma
+				}
+			} else { //we landed on some weird non-section and non-divider character so that's bad and we return false
 				return false;
 			}
+			if (*p != '|' && *p != '=') return false; //check the divider
 		}
 
 		return true; //yay everything worked so it's valid!
@@ -218,7 +287,7 @@ struct Save {
 
 		int monies = 0; //monies are 0 by default if we don't find the section
 		const char* sectionM = getSection('M');
-		if (ParseNum(sectionM+1)) //get the player's monies
+		if (sectionM) monies = ParseNum(++sectionM); //get the player's monies
 
 		int level = 0; //level defaults to 0
 		const char* sectionR = getSection('R');
@@ -380,34 +449,32 @@ struct Save {
 	//parse name and advance save data pointer past it in the process, assumes it's given a valid save MARK: parse name (NPC)
 	static void ParseName(NPC* named, const char*& data) {
 		bool escaping = false;
-		char* name = new char[255];
+		char name[255];
 
-		for (size_t i = 0; name[i] != '\0';) {
+		for (size_t i = 0;; data++) {
 			if (!escaping && *data == '\\') {
 				escaping = true;
 			} else if (!escaping && (*data == ',' || *data == '=' || *data == '|')) {
-				name[i] = '\0'; //cap off the name and that will make the loop stop as well
+				name[i] = '\0'; //cap off the name cause we're done here
+				break;
 			} else {
 				name[i++] = *data;
 				escaping = false;
 			}
-			data++; //increment the data (including the last iteration)
 		}
 		named->setName(name);
-		delete[] name;
 	}
 
 	//different overload for the name parsing that writes into the given char* MARK: parse name (char)
-	static void ParseName(char[255] dest, const char* data) {
+	static void ParseName(char dest[255], const char* data) {
 		bool escaping = false;
 
-		for (size_t i = 0; dest[i] != '\0'; data++) {
-			/*if (i >= 254) { //if the name was too long
-				dest[0] = '\0'; //null terminate the beginning since we didn't find anything valid
-			} else */if (!escaping && *data == '\\') {
+		for (size_t i = 0;; data++) {
+			if (!escaping && *data == '\\') {
 				escaping = true;
 			} else if (!escaping && (*data == ',' || *data == '=' || *data == '|')) {
-				dest[i] = '\0';
+				dest[i] = '\0'; //cap off the name cause we're done here
+				break;
 			} else {
 				dest[i++] = *data;
 				escaping = false;
@@ -425,7 +492,7 @@ struct Save {
 		long long total = 0;
 		while (isdigit((unsigned char)*data)) {
 			total = total * 10 + (*data - '0');
-			data++; //increment the data, including on the last iteration
+			data++; //increment the data
 		}
 		return total * sign;
 	}
@@ -435,6 +502,139 @@ struct Save {
 		int discount = distance(discontinuities.begin(), discontinuities.lower_bound(id));
 		return id - discount;
 	}
+	
+	//section W is pretty big and has its own subsections so I split the loading into this function MARK: load W
+	static void loadW(const char*& data, NPC* player, set<int>& discontinuity) {
+		while(*data != '|') {
+			if (*(++data) == 'b') { //duplicate item because it was bought
+				itemsH[ParseNum(++data)]->loadBuy(); //dupe the item and its position will be handled later, logs in W automatically, don't adjust because we only buy (dupe) items that are in limbo and can't be interacted with
+			} else if (*data == 'u') { //use item in world
+				int id = ParseNum(++data); //get the id unadjusted so we can update discontinuities more conveniently later if we delete the item
+				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
+				Room* room = roomsH[ParseNum(++data)]; //get the room this item was used in, which is sometimes important
+				bool log = true; //if we should releog this change, don't log if it didn't actually do anything
+				//MARK: keep in mind at this point we don't know where any of the items are or if they're in the inventory
+				if (!strcmp(item->getType(), "BURGER")) {
+					log = false;
+				} else if (!strcmp(item->getType(), "education")) {
+					for (Attack* attack : ((EducationItem*)item)->getAttacks()) { //much simpler than in the main useItem function since we can ignore all the text
+						player->addSpecialAttack(attack);
+					}
+				} else if (!strcmp(item->getType(), "caller")) { //if it's the caller, just don't log it unless it was part of the prison escape sequence which causes world changes
+					if (WorldState[IMPRISONED]) { //do the prison stuff if needed
+						WorldState[IMPRISONED] = false;
+						charNPC['t']->doLobsterChanges();
+					} else log = false;
+				} else if (!strcmp(item->getType(), "key") || !strcmp(item->getType(), "hose")) {
+					KeyItem* key = (KeyItem*)item;
+					bool used = false;
+					for (Room* r : key->getTargets()) {
+						r->unblockAll(key->getUnlockType());
+						used = true;
+					}
+					if (!used) {
+						vector<const char*> exitsUnlocked = room->unblockAll(key->getUnlockType());
+						for (const char* exit : exitsUnlocked) { //unblocks the other sides of the exits, because there's some double sided blocks
+							Room* thatroom = room->getExit(exit); //gets the room on the other side of the exit
+							//unblocks the reverse direction exit if it's blocked
+							if (thatroom->getBlocked(ReverseDirection[exit])) {
+								thatroom->unblockExit(ReverseDirection[exit]);
+							}
+						}
+					}
+					
+				} else if (!strcmp(item->getType(), "paver")) {
+					PaverItem* paver = (PaverItem*)item; //converts to the corresponding subclass
+					room->setExit(paver->getDirection(), paver->getDestination()); //sets the exit to the room in the given direction
+					paver->getDestination()->setExit(const_cast<char*>(ReverseDirection[paver->getDirection()]), room); //sets the exit back to the current room in the reverse of the given direction
+				} else if (!strcmp(item->getType(), "treasure")) { //for treasure items, ignore their monies and items because they're set by sections M and I respectively, just handle the mimics
+					if (NPC* mimic = ((TreasureItem*)item)->getMimic()) { //set the mimic to the room the chest was opened in
+						mimic->setRoom(room); //technically since fight() is called in useItem(), the player could log subsection d for the mimic before u for the trasure, but as far as I can tell this doesn't cause any conflicts so I think it's fine
+					}
+				} else if (!strcmp(item->getType(), "switch")) { //switch conveyor directions
+					for (Room* conveyor : ((ConveyorSwitch*)item)->getConveyors()) {
+						conveyor->switchConveyor();
+					}
+				} else if (!strcmp(item->getType(), "worldchange")) { //both take to use and normal world change items, basically behave the same apart from how you use them
+					applyWorldChange(((WorldChangeItem*)item)->getChanges()); //do the changes
+				} else if (!strcmp(item->getType(), "blender")) {
+					BlenderItem* blender = (BlenderItem*)item;
+					vector<Item*> ingredients;
+					for (const char* itemname : blender->getIngredients()) { //find all the ingredients
+						ingredients.push_back(getItemInVector(itemsH, itemname));
+					}
+					for (Item* ingredient : ingredients) { //delete the ingredients
+						ingredient->unRoom();
+						discontinuity.insert(ingredient->getID()); //log the discontinuity because we're about to delete the item
+						delete ingredient;
+					} //and then the product is handled by section I
+					applyWorldChange(blender->getChanges()); //does the blender's world changes
+				} else if (!strcmp(item->getType(), "choiceorb")) {
+					//skip for now MARK: do this
+				} else if (!strcmp(item->getType(), "manhole")) { //uncover manhole item exits
+					ManholeItem* cover = (ManholeItem*)item;
+					room->setExit(cover->getDirection(), cover->getRoom());
+					cover->getRoom()->unblockExit(ReverseDirection[cover->getDirection()]); //also unblock the exit from below
+					cover->nullifyRoom();
+				}
+				//ignore xp items because we aready track xp in section R, but they do get used up
+
+				//BURGER items don't actually do anything to the world so we just ignore those, otherwise save it to the log so subsequent loadings can do this again
+				if (log) {
+					trackItemUse(item, room, false); //don't track the use variable because we manually set that later anyway
+				}
+
+				if (item->getConsumable()) { //delete the item if it was a consumable
+					item->unRoom();
+					discontinuity.insert(id); //log the discontinuity because we're about to delete the item
+					delete item;
+				}
+			} else if (*data == 'x') { //delete item because it was used in battle (we do not log x for non-consumable items used in battle, they don't have any effects outside of battle so we just delete them)
+				int id = ParseNum(++data); //get the id not adjusted yet so we can add the discontinuity
+				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
+				item->unRoom(); //unroom it if it's a roomed item
+				discontinuity.insert(id); //log the discontinuity because we're about to delete the item
+				delete item; //cannot be in the inventory at this point in the loading process so we just delete it
+			} else if (*data == 'd') { //defeat defeated enemies
+				NPC* npc = npcsH[ParseNum(++data)];
+				npc->defeat(); //defeat() logs the defeating in section W automatically
+				npc->takeGift(); //take any battle gifts they may have had, room/inventory set in section I
+			} else if (*data == 'r') { //handle respawn changes
+				npcsH[ParseNum(++data)]->undefeat(); //undefeat() also logs it in Wautomatically
+			} else if (*data == 'a') { //pop dialogue because it's already been heard, plus any world changes the conversation has (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
+				//MARK: THIS DOES NOT HANDLE BRANCHING DIALOGUE AT ALL
+				NPC* npc = npcsH[ParseNum(++data)];
+				if (*data != '.') { //normal conversation
+					npc->printDialogue(false, NULL, false);
+					npc->takeGift(); //take their gift cause we talked to them, I don't think any exhausted dialogues give gifts
+				} else if (*(++data) == 'r') { //recruitment dialogue
+					npc->printRecruitmentDialogue(false);
+				} else if (*data == 'e') { //recruited dialogue
+					npc->popRecDialogue();
+				} else if (*data == 'j') { //rejection dialogue
+					npc->printRejectionDialogue(false);
+				} else if (*data == 'd') { //dismissal dialogue
+					npc->printDismissalDialogue(false);
+				} else if (*data == 'i') { //dismissal rejection
+					npc->printDismissalRejection(false);	
+				} else if (*data == 'o') { //opening dialogue
+					npc->printOpeningDialogue(false);
+				} else if (*data == 'g') { //gym dialogue
+					npc->popGymDialogue();
+				} //logging is done by npc automatically, and so are any conversation changes by printConversation
+			} else if (*data == 'e') { //room enter changes
+				roomsH[ParseNum(++data)]->doEnterChanges(); //this function also logs the thing automatically
+			} else if (*data == 'w') { //do room welcomes
+				roomsH[ParseNum(++data)]->printWelcome(false); //printWelcome logs it automatically
+			} else if (*data == 'o') {
+				//o - ignore for now drop escape orb MARK: WE NEED TO HANDLE ESCAPE ORBS
+			} else if (*data == 'p') { //player got caught by pursuer
+				npcsH[ParseNum(++data)]->doCatchChanges();
+			} else if (*data == 't') { //open temples
+				roomsH[ParseNum(++data)]->openTemple(false); //openTemple logs that the temple was opened automatically
+			}
+		}
+	}
 
 	//gets stuff which it can edit, and modifies the world to match the given save data MARK: load game
 	static void LoadGame(const Save* save, NPC* player, std::vector<Item*>* inventory, int& monies) {
@@ -443,149 +643,19 @@ struct Save {
 		for (const char* data = save->data+4; *data != '=';) { //keep loading stuff until we reach the end
 			if (*data == '|') { //just go past the dividers
 				data++;
-			} else if (*data == 'V') { //ignore version section, if it's a future version just check outside the function
+			} else if (*data == 'V') { //ignore version section, if it's a future version we should just check outside the function
 				data += 2;
 			} else if (*data == 'N') { //n for name
 				if (*(++data) != '|') ParseName(player, data);
 			} else if (*data == 'M') { //m for monies
 				monies = ParseNum(++data);
 			} else if (*data == 'W') { //w for world change and everything that can cause it, most important section
-				while(*data != '|') {
-					char change = tolower((unsigned char)*(++data));
-					if (change == 'b') { //duplicate item because it was bought
-						itemsH[ParseNum(++data)]->loadBuy(); //dupe the item and its position will be handled later, logs in W automatically, don't adjust because we only buy (dupe) items that are in limbo and can't be interacted with
-					} else if (change == 'u') { //use item in world
-						int id = ParseNum(++data); //get the id unadjusted so we can update discontinuities more conveniently later if we delete the item
-						Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
-						Room* room = roomsH[ParseNum(++data)]; //get the room this item was used in, which is sometimes important
-						bool log = true; //if we should releog this change, don't log if it didn't actually do anything
-						//MARK: keep in mind at this point we don't know where any of the items are or if they're in the inventory
-						if (!strcmp(item->getType(), "BURGER")) {
-							log = false;
-						} else if (!strcmp(item->getType(), "education")) {
-							for (Attack* attack : ((EducationItem*)item)->getAttacks()) { //much simpler than in the main useItem function since we can ignore all the text
-								player->addSpecialAttack(attack);
-							}
-						} else if (!strcmp(item->getType(), "caller")) { //if it's the caller, just don't log it unless it was part of the prison escape sequence which causes world changes
-							if (WorldState[IMPRISONED]) { //do the prison stuff if needed
-								WorldState[IMPRISONED] = false;
-								charNPC['t']->doLobsterChanges();
-							} else log = false;
-						} else if (!strcmp(item->getType(), "key") || !strcmp(item->getType(), "hose")) {
-							KeyItem* key = (KeyItem*)item;
-							bool used = false;
-							for (Room* r : key->getTargets()) {
-								r->unblockAll(key->getUnlockType());
-								used = true;
-							}
-							if (!used) {
-								vector<const char*> exitsUnlocked = room->unblockAll(key->getUnlockType());
-								for (const char* exit : exitsUnlocked) { //unblocks the other sides of the exits, because there's some double sided blocks
-									Room* thatroom = room->getExit(exit); //gets the room on the other side of the exit
-									//unblocks the reverse direction exit if it's blocked
-									if (thatroom->getBlocked(ReverseDirection[exit])) {
-										thatroom->unblockExit(ReverseDirection[exit]);
-									}
-								}
-							}
-							
-						} else if (!strcmp(item->getType(), "paver")) {
-							PaverItem* paver = (PaverItem*)item; //converts to the corresponding subclass
-							room->setExit(paver->getDirection(), paver->getDestination()); //sets the exit to the room in the given direction
-							paver->getDestination()->setExit(const_cast<char*>(ReverseDirection[paver->getDirection()]), room); //sets the exit back to the current room in the reverse of the given direction
-						} else if (!strcmp(item->getType(), "treasure")) { //for treasure items, ignore their monies and items because they're set by sections M and I respectively, just handle the mimics
-							if (NPC* mimic = ((TreasureItem*)item)->getMimic()) { //set the mimic to the room the chest was opened in
-								mimic->setRoom(room); //technically since fight() is called in useItem(), the player could log subsection d for the mimic before u for the trasure, but as far as I can tell this doesn't cause any conflicts so I think it's fine
-							}
-						} else if (!strcmp(item->getType(), "switch")) { //switch conveyor directions
-							for (Room* conveyor : ((ConveyorSwitch*)item)->getConveyors()) {
-								conveyor->switchConveyor();
-							}
-						} else if (!strcmp(item->getType(), "worldchange")) { //both take to use and normal world change items, basically behave the same apart from how you use them
-							applyWorldChange(((WorldChangeItem*)item)->getChanges()); //do the changes
-						} else if (!strcmp(item->getType(), "blender")) {
-							BlenderItem* blender = (BlenderItem*)item;
-							vector<Item*> ingredients;
-							for (const char* itemname : blender->getIngredients()) { //find all the ingredients
-								ingredients.push_back(getItemInVector(itemsH, itemname));
-							}
-							for (Item* ingredient : ingredients) { //delete the ingredients
-								ingredient->unRoom();
-								discontinuity.insert(ingredient->getID()); //log the discontinuity because we're about to delete the item
-								delete ingredient;
-							} //and then the product is handled by section I
-							applyWorldChange(blender->getChanges()); //does the blender's world changes
-						} else if (!strcmp(item->getType(), "choiceorb")) {
-							//skip for now MARK: do this
-						} else if (!strcmp(item->getType(), "manhole")) { //uncover manhole item exits
-							ManholeItem* cover = (ManholeItem*)item;
-							room->setExit(cover->getDirection(), cover->getRoom());
-							cover->getRoom()->unblockExit(ReverseDirection[cover->getDirection()]); //also unblock the exit from below
-							cover->nullifyRoom();
-						}
-						//ignore xp items because we aready track xp in section R, but they do get used up
-
-						//BURGER items don't actually do anything to the world so we just ignore those, otherwise save it to the log so subsequent loadings can do this again
-						if (log) {
-							trackItemUse(item, room, false); //don't track the use variable because we manually set that later anyway
-						}
-
-						if (item->getConsumable()) { //delete the item if it was a consumable
-							item->unRoom();
-							discontinuity.insert(id); //log the discontinuity because we're about to delete the item
-							delete item;
-						}
-					} else if (change == 'x') { //delete item because it was used in battle (we do not log x for non-consumable items used in battle, they don't have any effects outside of battle so we just delete them)
-						int id = ParseNum(++data); //get the id not adjusted yet so we can add the discontinuity
-						Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
-						item->unRoom(); //unroom it if it's a roomed item
-						discontinuity.insert(id); //log the discontinuity because we're about to delete the item
-						delete item; //cannot be in the inventory at this point in the loading process so we just delete it
-					} else if (change == 'd') { //defeat defeated enemies
-						NPC* npc = npcsH[ParseNum(++data)];
-						npc->defeat(); //defeat() logs the defeating in section W automatically
-						npc->takeGift(); //take any battle gifts they may have had, room/inventory set in section I
-					} else if (change == 'r') { //handle respawn changes
-						npcsH[ParseNum(++data)]->undefeat(); //undefeat() also logs it in Wautomatically
-					} else if (change == 'a') { //pop dialogue because it's already been heard, plus any world changes the conversation has (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
-						//MARK: THIS DOES NOT HANDLE BRANCHING DIALOGUE AT ALL
-						NPC* npc = npcsH[ParseNum(++data)];
-						if (*data != '.') { //normal conversation
-							npc->printDialogue(false, NULL, false);
-							npc->takeGift(); //take their gift cause we talked to them, I don't think any exhausted dialogues give gifts
-						} else if (*(++data) == 'r') { //recruitment dialogue
-							npc->printRecruitmentDialogue(false);
-						} else if (*data == 'e') { //recruited dialogue
-							npc->popRecDialogue();
-						} else if (*data == 'j') { //rejection dialogue
-							npc->printRejectionDialogue(false);
-						} else if (*data == 'd') { //dismissal dialogue
-							npc->printDismissalDialogue(false);
-						} else if (*data == 'i') { //dismissal rejection
-							npc->printDismissalRejection(false);	
-						} else if (*data == 'o') { //opening dialogue
-							npc->printOpeningDialogue(false);
-						} else if (*data == 'g') { //gym dialogue
-							npc->popGymDialogue();
-						} //logging is done by npc automatically, and so are any conversation changes by printConversation
-					} else if (change == 'e') { //room enter changes
-						roomsH[ParseNum(++data)]->doEnterChanges(); //this function also logs the thing automatically
-					} else if (change == 'w') { //do room welcomes
-						roomsH[ParseNum(++data)]->printWelcome(false); //printWelcome logs it automatically
-					} else if (change == 'o') {
-						//o - ignore for now drop escape orb MARK: WE NEED TO HANDLE ESCAPE ORBS
-					} else if (change == 'p') { //player got caught by pursuer
-						npcsH[ParseNum(++data)]->doCatchChanges();
-					} else if (change == 't') { //open temples
-						roomsH[ParseNum(++data)]->openTemple(false); //openTemple logs that the temple was opened automatically
-					}
-				}
+				loadW(data, player, discontinuity); //it was a pretty big section so I gave it its own function
 			} else if (*data == 'U') { //u for second letter of pursuer
 				player->getPursuer()->setRoom(roomsH[ParseNum(++data)]); //just set their room
 			} else if (*data == 'R') { //r for recruitable, tracks recruitable npcs' stats (and Buford's)
 				for (; *data != '|' && *data != '=';) {
-					char npcCode = tolower((unsigned char)*(++data));
-					NPC* npc = charNPC[npcCode];
+					NPC* npc = charNPC[*(++data)];
 					npc->setLevel(ParseNum(++data));
 					npc->addXp(ParseNum(++data));
 					npc->setRoom(roomsH[ParseNum(++data)]);
@@ -604,7 +674,7 @@ struct Save {
 				}
 			} else if (*data == 'P') { //p for party
 				while (*(++data) != '|') { //add the teammates until we reach the end
-					NPC* teammate = charNPC[tolower((unsigned char)*data)];
+					NPC* teammate = charNPC[*data];
 					player->setParty({teammate});
 					teammate->Recruit();
 				}
@@ -669,7 +739,7 @@ struct Save {
 		}
 	}
 
-	//make a new save with the given save data and identifying number
+	//make a new save with the given save data and identifying number MARK: constructor
 	Save(const char* _data, size_t num) {
 		while (strlen(_data)+1 > savesize) { //find a good length to fit the amount of data
 			savesize *= 2;
@@ -678,11 +748,11 @@ struct Save {
 		data[0] = '\0'; //null terminate it, and strcat moves the terminator forward
 		strcat(data, _data);
 		savenum = num; //saves have identifying numbers for convenience
-		char* ending = getSection('=');
+		char* ending = const_cast<char*>(getSection('='));
 		if (ending) ending[1] = '\0'; //null terminate the character after = to truncate whitespace, to avoid copy pasting annoyances
 	}
 
-	~Save() { //delete the data on destruction
+	~Save() { //delete the data on destruction MARK: destructor
 		delete[] data;
 	}
 };
