@@ -295,7 +295,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	}
 	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
 	if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
-		attachEffect(reciever->setEffect(attack->appliedeffect));
+		attachEffect(reciever->setEffect(attack->appliedeffect, attacker));
 	}
 	if (attack->cancel != NULL) { //removes the effect this attack cancels out
 		if (NPCEffect* canceled = reciever->getEffect(attack->cancel, true)) {
@@ -753,7 +753,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 			if (target->getHealth() <= 0 && !attack->targetFainted) { //if trying to hit incapacitated npc
 				cout << "\n" << commandExtensionP << " is incapacitated";
 				if (attack->getBeneficial()) cout << "! " << attack->name << " won't have any effect!"; //different text based on if trying to help or attack the incapacitated target
-				else cout << "already!";
+				else cout << " already!";
 				return false; //could not launch attack
 			}
 			if (target->getAway()) { //if the target is not here and targetable at the moment
@@ -977,6 +977,7 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 
 	if (targets.empty()) { //no targets were found for either the special or basic attack, so they just do nothing
 		cout << "\n" << npc->getName() << " isn't sure what to do...";
+		CinPause();
 		return;
 	}
 	

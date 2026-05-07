@@ -295,7 +295,7 @@ namespace Helper {
 	//print the level up data tracked by this npc
 	void printLvlUpData(NPC* npc) {
 		if (npc->getLevelUp()) {
-			cout << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
+			cout << "\n" << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
 			npc->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
 			CinPause();
 			Stats statChanges = npc->getStatChanges();

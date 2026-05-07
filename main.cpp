@@ -561,14 +561,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	kick->afterdesc = " with a kick";
 	kick->addDescription("Launch a flying side kick at the target. (15 ATTACK)");
 	self->addSpecialAttack(kick);
-	Attack* headbutt = new Attack("HEADBUTT", "flew at", true,  5, 25, 0, 1, 1, 1, false, 5);
+	Attack* headbutt = new Attack("HEADBUTT", "flew at", true, 8, 25, 0, 1, 1, 1, false, 5);
 	headbutt->afterdesc = " like a missile";
-	headbutt->recoil = 5;
+	headbutt->recoil = 10;
 	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
 	self->addSpecialAttack(headbutt);
 	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
-	Attack* punchflurry = new Attack("PUNCH FLURRY", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
+	Attack* punchflurry = new Attack("PUNCH FLURRY", "rushed", true, 7, 5, 0, 6, 7, 1, false, 15);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
 	self->addSpecialAttack(punchflurry);
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
@@ -657,13 +657,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 6, 10, 15, 1, 1, 1, false);
 	rosethorn->addDescription("Call a rose friend to poke the target with its thorns. (10 ATTACK, 15 PIERCE)");
 	floria->addSpecialAttack(rosethorn);
-	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -20, 20, 1, 1, 1, true, 6);
+	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -13, 20, 1, 1, 1, true, 6);
 	turboheal->addDescription("Use flower power to greatly heal a teammate. (20 POWER)");
 	floria->addSpecialAttack(turboheal);
 	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", false, 5, 0, 0, 0, 0, 0, true, 8);
 	enroot->addDescription("Draw power from the soil, building SP.");
 	Effect* rooted = new Effect("ROOTED", 5, 0, -5);
-	enroot->addEffect(rooted);
+	enroot->selfeffect = rooted;
+	enroot->focushits = false;
 	floria->addSpecialAttack(enroot);
 	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", false, 20, -20, 20, 1, 1, 1, true, 10);
 	recapacitate->targetFainted = true;
@@ -2386,7 +2387,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "like I have character designs and everything,"},
 	 {developer, "but nobody will ever see them cause it's a text-based game :|"},
 	 {developer, "Maybe I'll make this a graphics-based game someday and then you can see all that..."},
-	 {devdloper, "but that's a very considerably sized maybe."}});
+	 {developer, "but that's a very considerably sized maybe."}});
 	//scope creep
 	//future projects
 	developer->addConversation({{developer, "Hey check it out I can say dancing!"},
@@ -3098,6 +3099,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	desert->setExit(EAST, desertplain);
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
+	deserttempleentrance->setExit(SOUTHEAST, desert);
 	deserttemplestairs->setExit(OUTSIDE, deserttempleentrance);
 	deserttemple->setExit(EAST, deserttemplestairs);
 	desertdune->setExit(WEST, deserttempleentrance);
@@ -3537,17 +3539,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	tunnels->setExit(TO_THE_DESERT, desertstation);
 
 	//set up enemies enemies MARK: enemies (internal)
-	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 10, 15, 9));
+	NPC* pricklyhog = new NPC("", "PRICKLY HOG", "A small but ferocious hog with sharp prickles.", limbo, 0, Stats(10, 10, 5, 0, 3, 15, 9));
 	Attack* hogheadbutt = new Attack("HEADBUTT", "headbutted", true, -5, 10, 0, 1, 1, 1);
 	hogheadbutt->recoil = 5;
-	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles", false, 6, 3, 5, 3, 3, 3);
+	Attack* homing_prickle = new Attack("HOMING PRICKLE", "launched homing prickles", false, 6, 3, 5, 3, 3, 1);
 	homing_prickle->focushits = false;
 	Attack* prickles = new Attack("PRICKLES", "poked", false, 0, 5, 1, 1, 1, 1);
 	pricklyhog->setBasicAttack(hogheadbutt);
 	pricklyhog->addSpecialAttack(homing_prickle);
 	pricklyhog->setRecoilAttack(prickles);
 
-	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 10, 2, 20, 20, 9));
+	NPC* greaterhog = new NPC("", "GREATER HOG", "A larger and more territorial hog with sharp prickles and tusks.", limbo, 0, Stats(20, 10, 8, 2, 5, 20, 9));
 	greaterhog->setBasicAttack(hogheadbutt);
 	greaterhog->addSpecialAttack(homing_prickle);
 	greaterhog->setRecoilAttack(prickles);
@@ -3643,10 +3645,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", false, 10, 20, 0, 1, 1, 1);
 	egadbot->addSpecialAttack(timber);
 
-	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 20, 10, 10, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
-	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 10, 20, 1, 1, 1);
+	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 10, 10, 6, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
+	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 5, 6, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 7);
-	Effect* intimidated = new Effect("INTIMIDATED", 4, 0, 0, 0.5);
+	Effect* intimidated = new Effect("INTIMIDATED", 2, 0, 0, 0.5);
+	savageroar->redundanteffect = false; //he was spamming this way too much
 	savageroar->addEffect(intimidated);
 	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 7);
 	savagehog->setBasicAttack(charge);
@@ -3665,13 +3668,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mimic->setBoss(true); //of the mini variety
 
 	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
-	Effect* sanded = new Effect("SAND IN THE EYES", 3, 0, 0, .5, .5);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, -3, 5, 0, 1, 1, 1);
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, -5, 10, 0, 1, 1, 1);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, 12, 5, 0, 1, 1, 1);
+	Effect* sanded = new Effect("SAND IN THE EYES", 1, 0, 0, .5, .5);
 	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
-	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, 1, 12, 0, 1, 1, 1);
-	sandman->setBasicAttack(sandthrow);
-	sandman->addSpecialAttack(sandpunch);
+	sandman->setBasicAttack(sandpunch);
+	sandman->addSpecialAttack(sandthrow);
 
 	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", limbo, 0, Stats(5, 0, 30, 0, 30, 15, 9));
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
@@ -3685,11 +3688,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", true, 10, 8, 0, 3, 4, 3);
 	skeleviking->addSpecialAttack(vtornado);
 
-	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(10, 2, 20, 1, 15, 30, 9));
-	Attack* tumble = new Attack("TUMBLE", "rolled into", true, -5, 10, 10, 1, 1, 1);
-	Effect* brambled = new Effect("BRAMBLED", 3, 5);
+	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(10, 2, 15, 1, 15, 30, 9));
+	Attack* tumble = new Attack("TUMBLE", "rolled into", true, -5, 1, 10, 1, 1, 1);
+	Effect* brambled = new Effect("BRAMBLED", 3, 3);
 	tumble->addEffect(brambled);
-	Attack* rumble = new Attack("RUMBLE", "shook the ground under", false, 2, 5, 0, 3, 3, 7);
+	Attack* rumble = new Attack("RUMBLE", "shook the ground under", false, 2, 5, 0, 1, 1, 7);
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
@@ -4723,7 +4726,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	jimshady1->addRejectionDialogue("No go away.");
 
 	NPC* roguerobot = new NPC(*egadbot);
-	roguerobot->setLeader(true, 3, forestgarden);
+	roguerobot->setLeader(true, 3, forestgarden, false);
 	roguerobot->addRecruitLink(egadwick);
 	roguerobot->addLinkedConvo(egadwick, {{egadwick, "I'm no longer detecting signals from my robot. Did you by chance stop it?"},
 									   {self, "Yep I did."},

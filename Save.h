@@ -157,7 +157,10 @@ struct Save {
 						if (!verifyNum(++p)) return false; //check item id
 						if (*p != '.') return false; //check connecting period
 						if (!verifyNum(++p)) return false; //check room id
-						//MARK: CHOICE ORBS choices
+						if (*p == '.') { //check the optional point for choice orbs
+							if (*(++p) != 'a' && *p != 'b') return false;
+							p++; //MARK: check if this is a choice orb item?
+						}
 					} else if (*p == 'a') {
 						if (!verifyNum(++p)) return false; //check npc id
 						if (*p == '.') { //the optional conversation type, check that it's a valid type

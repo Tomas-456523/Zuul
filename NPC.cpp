@@ -854,7 +854,6 @@ void NPC::printEffects() { //prints the effects this npc has
 			cout << ", ";
 		}
 	}
-	cout << "\n";
 }
 //damages the npc and get how much damage it did
 int NPC::damage(double power, double pierce) {
@@ -873,8 +872,8 @@ int NPC::damage(double power, double pierce) {
 	
 	if (oldguard > 0 && guard < oldguard) { //block attacks if we have guard
 		cout <<  "\nThe attack was blocked by " << name << "'s guard!";
-		CinPause();
 		if (guard <= 0) { //prints if the guard is now down
+			CinPause();
 			cout << name << "'s guard was broken!";
 		}
 	} else { //subtract the damage and print how much was done
@@ -1108,7 +1107,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 		Conversation& convo = immuneText[effect];
 		if (!convo.empty()) printConversation(&convo, true); //print the dialogue for this immunity
 		convo = {}; //only say the conversation once
-		cout << name << " was not affected!";
+		cout << "\n" << name << " was not affected!";
 		CinPause();
 		return NULL;
 	}
@@ -1123,10 +1122,13 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 			//add the npc as one of the affectors if they weren't in the affectors vector already (heh affector vector)
 			NPCEffect& npceffect = npceffects[effect];
 			if (npceffect.duration >= effect->duration && !effect->stacks) { //it does nothing if it's already here and with an equal or greater duration
-				cout << name << " already has " << effect->name << "!";
+				cout << "\n" << name << " already has " << effect->name << "!";
 				return &npceffects[effect];
 			} //extends the duration otherwise
-			if (effect->duration < 1000) cout << name << "'s " << effect->name << " was extended!"; //only print this if it isn't something infinite
+			if (effect->duration < 1000) { //only print this if it isn't something infinite
+				cout << "\n" << name << "'s " << effect->name << " was extended!";
+				CinPause();
+			}
 			npceffect.duration = effect->duration;
 			if (npceffect.affectors.find(affector) == npceffect.affectors.end()) {
 				npceffect.affectors.insert(affector);
@@ -1190,11 +1192,11 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (effect->spusage != 1) calculateWeights(); //recalculate weights to account for new sp costs
 
 	if (affector) { //print stat changes if in battle
-		if (effect->defensebuff != 1) cout << "\n" << name << "'s DEFENSE went " << (effect->defensebuff > 1 ? "up" : "down") << " by a factor of " << effect->defensebuff << "!";
-		if (effect->attackbuff != 1) cout << "\n" << name << "'s ATTACK went " << (effect->attackbuff > 1 ? "up" : "down") << " by a factor of " << effect->attackbuff << "!";
-		if (effect->toughbuff != 1) cout << "\n" << name << "'s TOUGHNESS went " << (effect->toughbuff > 1 ? "up" : "down") << " by a factor of " << effect->toughbuff << "!";
-		if (effect->piercebuff != 1) cout << "\n" << name << "'s PIERCE went " << (effect->piercebuff > 1 ? "up" : "down") << " by a factor of " << effect->piercebuff << "!";
-		if (effect->speedbuff != 1) cout << "\n" << name << "'s SPEED went " << (effect->speedbuff > 1 ? "up" : "down") << " by a factor of " << effect->speedbuff << "!";
+		if (effect->defensebuff != 1) cout << "\n" << name << "'s DEFENSE went " << (effect->defensebuff > 1 ? "up" : "down") << " by a factor of " << (effect->defensebuff > 1 ? effect->defensebuff : 1/effect->defensebuff) << "!";
+		if (effect->attackbuff != 1) cout << "\n" << name << "'s ATTACK went " << (effect->attackbuff > 1 ? "up" : "down") << " by a factor of " << (effect->attackbuff > 1 ? effect->attackbuff : 1 / effect->attackbuff) << "!";
+		if (effect->toughbuff != 1) cout << "\n" << name << "'s TOUGHNESS went " << (effect->toughbuff > 1 ? "up" : "down") << " by a factor of " << (effect->toughbuff > 1 ? effect->toughbuff : 1 / effect->toughbuff) << "!";
+		if (effect->piercebuff != 1) cout << "\n" << name << "'s PIERCE went " << (effect->piercebuff > 1 ? "up" : "down") << " by a factor of " << (effect->piercebuff > 1 ? effect->piercebuff : 1 / effect->piercebuff) << "!";
+		if (effect->speedbuff != 1) cout << "\n" << name << "'s SPEED went " << (effect->speedbuff > 1 ? "up" : "down") << " by a factor of " << (effect->speedbuff > 1 ? effect->speedbuff : 1 / effect->speedbuff) << "!";
 		if (effect->damagebuff != 1) cout << "\n" << name << " now takes " << damageMultiplier << " times as much damage!";
 		if (effect->spusage != 1) cout << "\n" << name << "'s moves now use " << spUseMultiplier << " times SP!";
 	}
@@ -1352,15 +1354,17 @@ int NPC::alterSp(int amount, const char* status) {
 	if (amount > 0) { //if there is positive change
 		int alterAmount = Clamp(amount, 0, stats.spmax - sp);
 		sp += alterAmount; //alter the amount
-		if (status != NULL) { //say why it happened
+		if (status != NULL && alterAmount) { //say why it happened
 			cout << "\n" << name << " gained " << alterAmount << " SP due to " << status << "!";
+			CinPause();
 		}
 		return alterAmount;
 	} //if we're removing sp
 	int alterAmount = Clamp(-amount, 0, sp);
 	sp -= alterAmount;
-	if (status != NULL) { //say the reason if there is one
+	if (status != NULL && alterAmount) { //say the reason if there is one
 		cout << "\n" << name << " leaked " << alterAmount << " SP due to " << status << "!";
+		CinPause();
 	}
 	return -alterAmount;
 }
