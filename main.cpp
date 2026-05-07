@@ -2306,7 +2306,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	developer->addRejectionDialogue("No I don't think that would make sense.");
 	developer->setGift(parryguide);
 
-	/*{{self, "Yo developer man."},
+	burgerman->addLinkedConvo(developer, {{self, "Yo developer man."},
 	 {developer, "Hey what's up?"},
 	 {self, "wdym ???"},
 	 {self, "So I was wondering,"},
@@ -2332,14 +2332,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "the BURGER MAN tempted Henry Jerry into finding the BURGER,"},
 	 {developer, "and time traveled back to the future once all was said and done."},
 	 {developer, "So he ordered the BURGER from himself."},
-	 {self, "Dang that's crazy."}};
+	 {self, "Dang that's crazy."}});
 	
 	//talk about the game after beating final boss
 	//and dlc plans, crowbars
 	//jim shady commentary?
 	//favorite character
 	//least favorite character
-	{{self, "So what actually are monies?"},
+	developer->addConversation({{self, "So what actually are monies?"},
 	 {developer, "???"},
 	 {self, "wdym ???"},
 	 {developer, "Bro you're carrying monies around you tell me."},
@@ -2352,25 +2352,25 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "like it starts at a certain value and gets divided by x,"},
 	 {developer, "where x is how many of that currency exists."},
 	 {developer, "I don't really know if that's exactly how it works but that's what the graph was so yeah."},
-	 {developer, "And anyway the bookmark was called \"economonies\" so that's where I assume monies came from."}};
+	 {developer, "And anyway the bookmark was called \"economonies\" so that's where I assume monies came from."}});
 	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
-	{{developer, "Have you ever played BURGER QUEST? (the first one)"},
+	developer->addConversation({{developer, "Have you ever played BURGER QUEST? (the first one)"},
 	 {developer, "The sequel is way better but if you're curious you can try it on this link: https://codehs.com/sandbox/id/zuul-kb8vTu/run"},
-	 {developer, "You're probably on a terminal so you should do shift+insert to copy paste."}}
-	{{developer, "I was walking to my C++ class today,"},
+	 {developer, "You're probably on a terminal so you should do shift+insert to copy paste."}});
+	developer->addConversation({{developer, "I was walking to my C++ class today,"},
 	 {developer, "and I saw a bicycle-powered blender."},
 	 {developer, "So you pedal and that generates electricity and the blender blends the stuff."},
-	 {developer, "I think it's a very good idea."}}
-	{{developer, "Have you tried the gym yet?"},
+	 {developer, "I think it's a very good idea."}});
+	developer->addConversation({{developer, "Have you tried the gym yet?"},
 	 {developer, "It's very useful for having benched teammates catch up to your level."},
-	 {developer, "And also it leaves them all in one place as a bonus side-effect."}}
-	{{developer, "Have you found the bank yet?"},
+	 {developer, "And also it leaves them all in one place as a bonus side-effect."}});
+	developer->addConversation({{developer, "Have you found the bank yet?"},
 	 {developer, "Idk if you'll need it but there wasn't any reason not to make it."},
 	 {developer, "Except time but I made it already so yeah. (didn't take too long tho)"},
-	 {developer, "Well that bank is very reliable."}}
+	 {developer, "Well that bank is very reliable."}});
 	//have you fought greer yet
 	//can you give me feedback (and say link to form)
-	{{developer, "Idk if you've encountered teammates with defend attack,"},
+	developer->addConversation({{developer, "Idk if you've encountered teammates with defend attack,"},
 	 {developer, "like they tank hits for someone else after using a defend move,"},
 	 {developer, "but something funny about that is when I was making that type of move,"},
 	 {developer, "I realized they wouldn't check if it was a beneficial attack,"},
@@ -2379,17 +2379,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "the defender would like get in the way of the attack and be like,"},
 	 {NULL, "DEFENDER - \"NOOOOOOO! I WILL DEFEND YOU, SOMEONE!\""},
 	 {developer, "And then they would take the heal for the person they're defending."},
-	 {self, "How silly behavior."}}
+	 {self, "How silly behavior."}});
 	//save system stuff
 	//commentary about the world
-	{{developer, "It's weird how I have a very specific vision for how the world looks,"},
+	developer->addConversation({{developer, "It's interesting how I have a very specific vision for how the world looks,"},
 	 {developer, "like I have character designs and everything,"},
 	 {developer, "but nobody will ever see them cause it's a text-based game :|"},
 	 {developer, "Maybe I'll make this a graphics-based game someday and then you can see all that..."},
-	 {devdloper, "but that's a very considerably sized maybe."}}
+	 {devdloper, "but that's a very considerably sized maybe."}});
 	//scope creep
 	//future projects
-	{{developer, "Hey check it out I can say dancing!"},
+	developer->addConversation({{developer, "Hey check it out I can say dancing!"},
 	 {NULL, " _/\n  \\O\n  / \\"},
 	 {NULL, "\n_|_O\n    \\"},
 	 {NULL, "\n   O\n /' '\\"},
@@ -2411,20 +2411,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {NULL, " _/\n  \\O\n  / \\"},
 /*	 _/										    \_		  \ /		 _/										    \_		  \ /		 _/										    \_		  \ /		 _/	
 	  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O		_|_O	   O		   O_|_	   O/		   O		  \O
-	  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \ * /
-	{developer, "He's breakdancing!"}}
-	{{developer, "I've noticed,"},
-	 {developer, "this game has a noticable lack of dinosaurs."}}
+	  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \ */
+	{developer, "He's breakdancing!"}});
+	developer->addConversation({{developer, "I've noticed,"},
+	 {developer, "this game has a noticable lack of dinosaurs."}});
 	//favorite game
 	//talk about the mountain {developer, ""}
-	{{developer, "You know there was going to be a \"BIG CAT\" as the first enemy on the mountain,"},
+	developer->addConversation({{developer, "There was going to be a \"BIG CAT\" as the first enemy on the mountain,"},
 	 {developer, "it was like a golden lion and it had a silver mane and it was really big,"},
 	 {developer, "but it was also really boring so I replaced it with that snowman that dies instantly."},
-	 {developer, "Sorry I mean \"gets incapacitated\" instantly."}};
+	 {developer, "Sorry I mean \"gets incapacitated\" instantly."}});
 	//limbo
 	//burger quest 2 ideation
 	//talk about bosses
-	{{developer, "I found one of the first ideas for this game; it was pretty interesting."},
+	developer->addConversation({{developer, "I found one of the first ideas for this game; it was pretty interesting."},
 	 {developer, "This was from a Zuul assignment in my C++ class after last year's Python class,"},
 	 {developer, "which also had a Zuul assignment (BURGER QUEST 1!)."},
 	 {developer, "So I knew I wanted to make the sequel,"},
@@ -2433,26 +2433,26 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "and so it was that you left a bad review on the BURGER RESTAURANT"},
 	 {developer, "and they put you in BURGER prison for doing that,"},
 	 {developer, "so the game would be about escaping the prison."},
-	 {developer, "I'm glad I wrote that down because I completely forgot that."}}
-	{{developer, "This document that I used to plan this game says that this game is supposed to take place in..."},
+	 {developer, "I'm glad I wrote that down because I completely forgot that."}});
+	developer->addConversation({{developer, "This document that I used to plan this game says that this game is supposed to take place in..."},
 	 {NULL, "\"GENERIC FANTASY LAND\""},
 	 {developer, "cause I'm pretty sure it was supposed to be generic but with BURGERs,"},
 	 {developer, "but that was boring so I changed it to a cool amazing innovative fantasty land instead."},
 	 {NULL, "(well at least I hope it's cool amazing and innovative)"},
 	 {developer, "Idk what this place is called now, it's just the earth but fictional"},
-	 {developer, "so yea just the earth."}}
+	 {developer, "so yea just the earth."}});
 	//burger all caps lore
 	//kept thinking michelin is named jim
 	//viola after fire fight
 	//so nice seeing game systems evolve
 	//ascii art time
-	{{developer, "Have you noticed how nobody actually says your name?"},
+	developer->addConversation({{developer, "Have you noticed how nobody actually says your name?"},
 	 {developer, "They all say \"kiddo\", \"kid\", \"mister\", etc."},
-	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}};
-	{{developer, "A duration of 2 for enemy freezing effects (like the enemy is the one doing the affecting) is really the sweet spot."},
+	 {developer, "It's a very clever way of not having to modify any dialogue to match the name!"}});
+	developer->addConversation({{developer, "A duration of 2 for enemy freezing effects (like the enemy is the one doing the affecting) is really the sweet spot."},
 	 {developer, "1 would be too short and meaningless but 3 might get annoying,"},
 	 {developer, "So 2 is good for general purposes."},
-	 {developer, "I mean probably, I haven't actually tested my game as of writing this :P"}}*/
+	 {developer, "I mean probably, I haven't actually tested my game as of writing this :P"}});
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
