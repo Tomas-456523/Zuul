@@ -604,8 +604,8 @@ void NPC::setRecruitable(bool _recruitable) {
 void NPC::setDismissable(bool _dismissable) {
 	dismissable = _dismissable;
 }
-void NPC::Recruit() { //recruits the npc
-	if (!newDialogue.empty()) {
+void NPC::Recruit(bool announce) { //recruits the npc
+	if (announce && !newDialogue.empty()) {
 		dialogue = newDialogue;
 	}
 	if (recruitcondition != NEVER) {

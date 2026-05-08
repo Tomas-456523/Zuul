@@ -622,3 +622,36 @@ void ChoiceOrb::CHOICE() {
 	}
 	applyWorldChange(changes);
 }
+//make the choice automatically, for the save system
+void ChoiceOrb::makeChoice(char choice) {
+	WorldChange changes; //we copy the changes so they can be done multiple times
+	if (choice == 'a') {
+		trackItemUse(this, room, true, ".a"); //track that we used the item and made choice a
+		changes = achanges;
+	} else {
+		trackItemUse(this, room, true, ".b"); //track that we used the item and made choice b
+		changes = bchanges;
+	}
+	applyWorldChange(changes);
+}
+
+//light orbs, for progressing in the desert temple
+LightOrb(const char* name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo) {
+	type = "lightorb";
+	dropoff = _dropoff;
+	limbo = _limbo;
+}
+void setTeammate(NPC* npc, vector<NPC*>* party) {
+	if (npc) {
+		npc->setRoom(limbo); //remove the teammate from the party and put them in limbo
+		party->erase(remove(party.begin(), party.end(), npc), party.end());
+		npc->Dismiss(false);
+	} else if (teammate) { //if we're tracking a teammate
+		party->push_back(npc); //no need to set room; they will get put back automaticlly by travel() from dropItems after dropping the escape orb
+		npc->Recruit(false);
+	}
+	teammate = npc; //track the npc so we can put them back later
+}
+bool getDropoff(Room* room) {
+	return room == dropoff;
+}

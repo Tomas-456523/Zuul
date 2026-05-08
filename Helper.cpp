@@ -542,6 +542,16 @@ namespace Helper {
 			changes.linkedStations.front()->setStation();
 			changes.linkedStations.pop();
 		}
+		while (!changes.linkedLightOrbs.empty()) {
+			pair<vector<NPC*>*, Item*>& data = changes.linkedLightOrbs.front();
+			((LightOrb*)data.second)->setTeammate(data.first[1], data.first); //no need to check because of the very specific circumstances this is called in
+			changes.linkedLightOrbs.pop();
+		}
+		while (!changes.unLightOrb.empty()) {
+			pair<vector<NPC*>*, Item*>& data = changes.unLightOrb.front();
+			((LightOrb*)data.second)->setTeammate(NULL, data.first); //put the teammate back
+			changes.unLightOrb.pop();
+		}
 		if (Item* orb = changes.linkedOrb) { //petrify the linked escape/entry orb
 			((EscapeOrb*)orb)->petrify();
 		}

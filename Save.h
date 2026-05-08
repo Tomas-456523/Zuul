@@ -283,6 +283,16 @@ struct Save {
 		return getSection('V')[1]; //go to section V and the version is the character after that. (96 possible versions should be enough)
 	}
 
+	//get the playtime in the save in seconds
+	long long getPlaytime() {
+		long long seconds = 0; //play time defaults to 0
+		const char* sectionQ = getSection('Q');
+		if (sectionQ) { //the play time is the first data in section Q, quite conveniently, so we parse that
+			seconds = ParseNum(++sectionQ);
+		}
+		return seconds;
+	}
+
 	//print specific save data points that are helpful for knowing which save is which MARK: print save
 	void printMainString() {
 		char name[255];
@@ -516,7 +526,6 @@ struct Save {
 				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
 				Room* room = roomsH[ParseNum(++data)]; //get the room this item was used in, which is sometimes important
 				bool log = true; //if we should releog this change, don't log if it didn't actually do anything
-				//MARK: keep in mind at this point we don't know where any of the items are or if they're in the inventory
 				if (!strcmp(item->getType(), "BURGER")) {
 					log = false;
 				} else if (!strcmp(item->getType(), "education")) {
@@ -573,7 +582,9 @@ struct Save {
 					} //and then the product is handled by section I
 					applyWorldChange(blender->getChanges()); //does the blender's world changes
 				} else if (!strcmp(item->getType(), "choiceorb")) {
-					//skip for now MARK: do this
+					((ChoiceOrb*)item)->makeChoice(*(++data)); //make the choice based on the character
+					log = false; //because it logs itself
+					data++;
 				} else if (!strcmp(item->getType(), "manhole")) { //uncover manhole item exits
 					ManholeItem* cover = (ManholeItem*)item;
 					room->setExit(cover->getDirection(), cover->getRoom());
@@ -581,6 +592,10 @@ struct Save {
 					cover->nullifyRoom();
 				}
 				//ignore xp items because we aready track xp in section R, but they do get used up
+
+				if (*data == '.') { //it bothered me for some reason that the user could but a .[choice] on a non-choiceorb item so we ignore the choice here
+					data += 2; //skip the . and the choice
+				}
 
 				//BURGER items don't actually do anything to the world so we just ignore those, otherwise save it to the log so subsequent loadings can do this again
 				if (log) {

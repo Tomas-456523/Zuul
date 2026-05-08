@@ -175,7 +175,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 						{NULL, "The world beyond your forest, where the life has been sucked out of the dirt."},
 						{NULL, "The sun beats down with no clouds in sight."},
 						{NULL, "Surely there must be someone friendly around here?"}});
-	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.");
+	Room* deserttempleentrance = new Room("on a large dune where the point of an ancient desert temple pokes out of the sand.\nIt's an octagonal pyramid built with pale sandstone bricks.");
 	Room* deserttemplestairs = new Room("on the steps going into the ancient desert temple.");
 	deserttempleentrance->setTempleEntrance(IN_TEMPLE, deserttemplestairs,
 		{{self, "Hi desert temple can you please open?"},
@@ -466,9 +466,36 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* foresttemple5 = new Room("at the end of the hallway. Lots of purple smog flows from the room to the NORTH.");
 	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");
 	Room* dirtplain = new Room("in the dirt plain where the forest temple entrance used to be.\nSoon, the grass will grow here again.");
+	
+	Room* desertbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
+	Room* desertbuffer2 = new Room("fully in the desert temple. You must DROP the ESCAPE ORB if you wish to leave.");
+	desertbuffer2->shareItems(desertbuffer1); //share items because it's the same room
+	Room* deserthallway = new Room("in the desert temple. The bricks are a darker shade down here.");
+	Room* deserthallway2 = new Room("in a long dark hallway.");
+	Room* deserthallway3 = new Room("in the hallway. The light keeps getting fainter and fainter.");
+	Room* deserthallway4 = new Room("still in the hallway. You can hardly see in front of you.");
+	Room* deserthallway5 = new Room("in the hallway. It's pitch black.");
+	Room* deserthallway6 = new Room("walking in the darkness...");
+	Room* deserthallway7 = new Room("nearing the end of the hallway; you can see the ground again!");
+	Room* desertbacktrack = new Room("back in the long hallway.");
+	Room* desertbacktrack2 = new Room("in the hallway. Looking back, you don't seem any farther into it.");
+	desertbacktrack->shareItems(deserthallway7); //they're all the end of the hallway
+	desertbacktrack2->shareItems(deserthallway7);
+	Room* deserttemple = new Room("in the desert temple. I wonder what your teammates think about it.");
+	Room* deserttemplec = new Room("in the center of the desert temple. There are three slots to drop LIGHT ORBs into."); //There's a platform heading down deeper into the temple.
+	Room* deserttemplew = new Room("at the far end of the desert temple. There are some maskies carved into the wall.");
+	Room* deserttemplenw = new Room("at a still lake with a black sand beach.");//light orb 3
+	Room* deserttemplen = new Room("in the desert temple. You keep seeing movement around you, but it's just shadows.");
+	Room* deserttemplene = new Room("in a garden of leafless trees. The atmosphere is very still here.");//light orb 2
+	Room* deserttemplesw = new Room("in the desert temple. The ceiling arches are really well-designed.");
+	Room* deserttemples = new Room("at a particularly well-lit area of the desert temple.");//light orb 1
+	Room* deserttemplese = new Room("in the desert temple. This corner has some scratches on the wall.");
+	Room* deserttemple2 = new Room("at the deepest level of the desert temple. The room to the NORTH is very very dark.");
+	Room* deserttempleboss = new Room("in an enormous arena filled with darkness.\nThere is no end in sight.");
 
-	Room* deserttemple = new Room("in the desert temple.");
-
+	//buffer1
+	//buffer2
+	//shareItems
 	Room* volcanotemple = new Room("in the volcano temple.");
 
 	//Create the finale and post-game rooms MARK: TA
@@ -2471,6 +2498,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {NULL, "\nSELF took 6 damage!\nSELF now has 14/20 HP."},
 	 {NULL, "\n\nGRASSMAN's turn!"},
 	 {NULL, "\nGRASSMAN used GRASS STRIKE!\nGRASSMAN grassily striked SELF!"},
+	 {NULL, "\nSELF took 6 damage!\nSELF now has 8/20 HP."},
+	 {NULL, "\n\nGRASSMAN's turn!"},
+	 {NULL, "\nGRASSMAN used GRASS STRIKE!\nGRASSMAN grassily striked SELF!"},
 	 {NULL, "\nSELF took 6 damage!\nSELF now has 2/20 HP."},
 	 {NULL, "\n\nGRASSMAN's turn!"},
 	 {NULL, "\nGRASSMAN used GRASS STRIKE!\nGRASSMAN grassily striked SELF!"},
@@ -2481,7 +2511,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {NULL, "\nYou lost 0 monies."},
 	 {NULL, "\nYou are at the entrance of the woodlands.\nExits: NORTH, WEST\nNPCs: GRASSMAN\nThe NORTH exit is guarded by the GRASSMAN.\n> fight grassman\n"},
 	 {NULL, "\nYou can't fight GRASSMAN!\n>"},
-	 {NULL, ">"},
+	 {NULL, "> ask grassman"},
 	 {NULL, "\nGRASSMAN - *angry bush noises*\n> recruit grassman"},
 	 {NULL, "\nYou can't fight GRASSMAN!\n> go west"}, //this was due to the popNoFight function which I made for fakeout fights always setting isLeader to false even if the enemy wasn't set to nofight, since resetnofight was set to true by default
 	 {NULL, "\nYou are in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.\nExits: EAST, IN TENT 1, IN TENT 2, IN TENT 3, SOUTH, WEST\nNPCs: VILLAGE ELDER ARCHIE\nThere is 0C���] here.\n> take 0C���]"}, //this one was because the backup item variable in Room I made for lobster callers was uninitialized
@@ -2745,13 +2775,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	franklin->setGift(desertdelicacy);
 	franklin->addConversation({{franklin, "I don't like sand."},
 							   {franklin, "It's coarse and rough and irritating and it gets everywhere."},
+							   {franklin, "Figures that I live in a desert."},
 							   {franklin, "You look like you're from the forest, is that right?"},
 							   {self, "Yep that's right."},
 							   {franklin, "Well believe it or not, this here desert used to be just like your forest."},
 							   {self, "Really?"},
 							   {franklin, "Yep."},
 							   {franklin, "As I grew up, though, all the soil dried up and all the plants died."},
-							   {franklin, "Now all we have left are the plants at the oasis..."}});
+							   {franklin, "Now all we have left are the plants at the oasis..."},
+							   {franklin, "and sand..."}});
 	franklin->addConversation({{self, "So like does this town have a name?"},
 							   {franklin, "..."},
 							   {franklin, "Not really."},
@@ -3143,8 +3175,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
 	deserttempleentrance->setExit(SOUTHEAST, desert);
-	deserttemplestairs->setExit(OUT/*SIDE*/, deserttempleentrance);
-	deserttemple->setExit(EAST, deserttemplestairs);
 	desertdune->setExit(WEST, deserttempleentrance);
 	desertdune->setExit(NORTHEAST, desertgrave);
 	desertdune->setExit(SOUTHWEST, desert);
@@ -3561,7 +3591,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	foresttemplestairs->setExit(SOUTH, forestbuffer1);
 	forestbuffer1->setExit(NORTH, foresttemplestairs);
 	forestbuffer2->setExit(SOUTH, foresttemple);
-	foresttemple->setExit(SOUTH, forestbuffer2);
+	foresttemple->setExit(NORTH, forestbuffer2);
 	forestbranchw->setExit(NORTHEAST, foresttemple);
 	forestbranchw->setExit(SOUTHEAST, foresttemple2);
 	forestbranche->setExit(NORTH, foresttemple);
@@ -3578,6 +3608,56 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	foresttemple5->setExit(WEST, foresttemple4);
 	foresttemple5->setExit(NORTH, foresttempleboss);
 	foresttempleboss->setExit(SOUTH, foresttemple5);
+	deserttemplestairs->setExit(OUT/*SIDE*/, deserttempleentrance);
+	deserttemplestairs->setExit(WEST, desertbuffer1);
+	desertbuffer1->setExit(EAST, deserttemplestairs);
+	desertbuffer2->setExit(WEST, deserthallway);
+	deserthallway->setExit(EAST, desertbuffer2);
+	deserthallway->setExit(WEST, deserthallway2);
+	deserthallway2->setExit(EAST, deserthallway);
+	deserthallway2->setExit(WEST, deserthallway3);
+	deserthallway3->setExit(EAST, deserthallway2);
+	deserthallway3->setExit(WEST, deserthallway4);
+	deserthallway4->setExit(EAST, deserthallway3);
+	deserthallway4->setExit(WEST, deserthallway5);
+	deserthallway5->setExit(EAST, deserthallway4);
+	deserthallway5->setExit(WEST, deserthallway6);
+	deserthallway6->setExit(EAST, deserthallway5);
+	deserthallway6->setExit(WEST, deserthallway7);
+	deserthallway7->setExit(EAST, deserthallway6);
+	deserthallway7->setExit(WEST, deserttemple);
+	desertbacktrack->setExit(EAST, desertbacktrack2);
+	desertbacktrack->setExit(WEST, deserttemple);
+	desertbacktrack2->setExit(EAST, desertbacktrack2);
+	desertbacktrack2->setExit(WEST, deserttemple);
+	deserttemple->setExit(EAST, desertbacktrack);
+	deserttemple->setExit(NORTH, deserttemple);
+	deserttemple->setExit(SOUTH, deserttemple);
+	deserttemple->setExit(WEST, deserttemple);
+	deserttemplenw->setExit(EAST, deserttemplen);
+	deserttemplenw->setExit(SOUTH, deserttemplew);
+	deserttemplen->setExit(SOUTH, deserttemplec);
+	deserttemplen->setExit(WEST, deserttemplenw);
+	deserttemplen->setExit(EAST, deserttemplene);
+	deserttemplene->setExit(SOUTH, deserttemple);
+	deserttemplene->setExit(WEST, deserttemplen);
+	deserttemplew->setExit(NORTH, deserttemplenw);
+	deserttemplew->setExit(EAST, deserttemplec);
+	deserttemplew->setExit(SOUTH, deserttemplesw);
+	deserttemplec->setExit(NORTH, deserttemplen);
+	deserttemplec->setExit(EAST, deserttemple);
+	deserttemplec->setExit(WEST, deserttemplew);
+	deserttemplec->setExit(SOUTH, deserttemples);
+	deserttemplesw->setExit(NORTH, deserttemplew);
+	deserttemplesw->setExit(EAST, deserttemples);
+	deserttemples->setExit(NORTH, deserttemplec);
+	deserttemples->setExit(WEST, deserttemplesw);
+	deserttemples->setExit(SOUTH, deserttemplese);
+	deserttemplese->setExit(NORTH, deserttemple);
+	deserttemplese->setExit(WEST, deserttemples);
+	deserttemple2->setExit(UP, deserttemplec);
+	deserttemple2->setExit(NORTH, deserttempleboss);
+	deserttempleboss->setExit(SOUTH, deserttemple2);
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
 
@@ -5724,8 +5804,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{senseofself, "Wwhhaatt?"},
 							{senseofself, "Ii'mm bbetterr tthaan yyoooouuuuuuu......"},
 							{NULL, "The smog fades from the room..."},
-							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground."},
-							{NULL, "Your ESCAPE ORB hardened into a STONE ORB!"}});
+							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground!"},
+							{NULL, "Your ESCAPE ORB hardened into a STONE ORB."}});
 	ftboss->setTalkOnDefeat();
 	ftboss->setForceBattle();
 	ftboss->addLinkedItem(outputantenna, foresttempleboss);
@@ -5734,6 +5814,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftboss->addPaveLink(forestbuffer2, foresttemplestairs, NORTH, SOUTH); //make it so you can just walk out of the temple now
 	ftboss->addRedirect(forestbuffer1, forestbuffer2); //cause they're the same room
 	ftboss->addLinkedRoom(foresttempleboss, "in the forest temple arena, cleared of any traces of smog.");
+	ftboss->addLinkedRoom(forestbuffer2, "at the bottom of the temple stairs.");
 	ftboss->setEscapable(false);
 	ftboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
 
@@ -5861,9 +5942,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//MARK: desert temple stuff
 	//shadow shadow
 
-	//shadow shadow masky
+	//shadow  masky
 
-	//shadow masky masky
+	//masky masky
 
 	//pyramon shadow masky
 
@@ -5873,7 +5954,51 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//pyramon pyramon pyramon masky masky masky
 
-	//dtboss
+	//the boss!
+	NPC* dtboss = new NPC(*thedark);
+	dtboss->setMask("", "THE DARK", "There is nobody here, only darkness.");
+	dtboss->setLeader(true, 0, deserttempleboss, false);
+	dtboss->setScaleFight();
+	dtboss->addConversation({{NULL, "You approach THE DARK..."},
+							 {NULL, "..."}});
+	dtboss->addLinkedConvo(dtboss, {{NULL, "THE DARK - *UNHOLY SCREECH*"},
+									{NULL, "THE DARK's screech reverberates against the walls, shaking the earth around you..."},
+									{NULL, "Rocks from the ceiling come loose..."},
+									{self, "O_O"},
+									{NULL, "THE DARK fades from the arena..."},
+									{NULL, "You can see the other side now."},
+									{NULL, "It was very very big."},
+									{NULL, "You see the BIG RED BUTTON OF HOPE left behind on the ground!"},
+									{NULL, "Your ESCAPE ORB hardened into a STONE ORB."}});
+
+	//WorldChange dtsinkchanges;
+
+	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo);
+	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo);
+	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo);
+
+	WorldChange dtodropchanges;
+	dtodropchanges.unLightOrb.push({self->getParty(), lightorb1});
+	dtodropchanges.unLightOrb.push({self->getParty(), lightorb2});
+	dtodropchanges.unLightOrb.push({self->getParty(), lightorb3});
+	dtodropchanges.linkedItems.push({lightorb1, deserttemples});
+	dtodropchanges.linkedItems.push({lightorb1, deserttemplenw});
+	dtodropchanges.linkedItems.push({lightorb1, deserttemplene});
+
+	Item* deorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
+								"A shiny black orb which you must TAKE in order to enter the desert temple.",
+								"A fragile black orb which you must DROP in order to exit the desert temple.",
+								"A hard stone orb, the petrified version of the desert temple's entry/escape orb.",
+								desertbuffer1, desertbuffer2, dtboss, {}, dtodropchanges); //MARK: SET LINKED ENEMIES
+
+
+
+
+	Item* coldorb1 = new MaterialItem("COLD ORB", "", limbo); 
+	Item* coldorb2 = new MaterialItem("COLD ORB", "", limbo);
+	Item* coldorb3 = new MaterialItem("COLD ORB", "", limbo);
+	
+	Item* veorb = new MaterialItem("ENTRY ORB", "", limbo);
 
 	//MARK: volcano temple stuff
 
@@ -5884,18 +6009,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//
 
 	//
-
-	Item* lightorb1 = new MaterialItem("LIGHT ORB", "", limbo); 
-	Item* lightorb2 = new MaterialItem("LIGHT ORB", "", limbo);
-	Item* lightorb3 = new MaterialItem("LIGHT ORB", "", limbo);
-
-	Item* deorb = new MaterialItem("ENTRY ORB", "", limbo);
-
-	Item* coldorb1 = new MaterialItem("COLD ORB", "", limbo); 
-	Item* coldorb2 = new MaterialItem("COLD ORB", "", limbo);
-	Item* coldorb3 = new MaterialItem("COLD ORB", "", limbo);
-	
-	Item* veorb = new MaterialItem("ENTRY ORB", "", limbo);
 
 	NPC* vtboss = new NPC(*firewithfire);
 	vtboss->addConversation({{NULL, "FIRE WITH FIRE is tapping his foot on the floor."},
@@ -6357,7 +6470,11 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 		CinPause();
 		cout << "You need a full team of 4 people to take it out of its slot!";
 		return;
-	} //you're not allowed to take items not marked as takable
+	} else if (!strcmp(item->getType(), "lightorb") && ((LightOrb*)item)->getDropoff(currentRoom)) { //can't take the light orbs from the dropoff because they're locked in place
+		cout << "\nThe LIGHT ORB is locked in place and didn't budge!";
+		return;
+	} 
+	//you're not allowed to take items not marked as takable
 	if (!item->getTakable()) {
 		cout << "\n";
 		if (strcmp(item->getDenial(), "")) { //if there is a custom denial we use it
@@ -6451,6 +6568,12 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 			WorldState[CANDISMISS] = true; //can dismiss teammates outside of temple
 			travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getEntrance()); //go back to the temple entrance
 			logW("o", item->getID()); //track the orb droppening
+		}
+	} else if (!strcmp(item->getType(), "lightorb")) {
+		LightOrb* orb = (LightOrb*)item;
+		if (orb->getDropoff(currentRoom)) { //if this is the light orb dropoff
+			//give back teammate
+			//check if open boss entrance
 		}
 	} else if (!strcmp(item->getType(), "hose")) { //apply any blocks the hose does in this room
 		((HoseItem*)item)->drop(currentRoom);
@@ -7481,8 +7604,16 @@ void deleteSave(const char* savename) {
 	} if (num > saves.size()) { //let the player know they are going over the amount they can choose from
 		cout << "\nYou don't have that many saves; there's only " << saves.size() << ".";
 		return;
-	} //MARK: make it get the time!!!!
-	cout << "\n" << num << "You will lose all your data on this save forever.\nAre you sure you want to delete it? (YES or NO)";  //You have " << "[][][][][][][]" << " of playtime on SAVE 
+	}
+	long long seconds = saves[num-1]->getPlaytime();
+	long long minutes = seconds/60; //use minutes if possible, precise reports of game time
+	seconds %= 60; //get rid of the extra seconds
+	long long hours = minutes/60; //go further to hours if possible
+	minutes %= 60; //get rid of the extra minutes
+	cout << "\nYou have ";
+	if (hours) cout << hours << "h ";
+	if (minutes || hours) cout << minutes << "m ";
+	cout << seconds << "s of playtime on SAVE " << num << "\nAre you sure you want to delete it? (YES or NO)";
 	if (!AOrB(NULL, "YES", "NO")) { //make sure the player is really sure about this because it's a very destructive action
 		cout << "\nAlrighty then; did not delete SAVE " << num << ".";
 		return;

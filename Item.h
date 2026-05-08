@@ -392,6 +392,7 @@ public:
 	ChoiceOrb(const char* _name, const char* desc, Room* _room, const WorldChange& a, const WorldChange& b, const Conversation& _useText, const Conversation& _atext, const Conversation& _btext);
 
 	void CHOICE(); //make the choice orb choice
+	void makeChoice(char choice); //make the choice from the loading system
 private:
 	WorldChange achanges; //the changes to do for choice a
 	WorldChange bchanges; //the changes to do for choice b
@@ -400,11 +401,17 @@ private:
 	Conversation btext; //text that is printed when choosing choice b
 };
 
+//light orbs, for progressing in the desert temple
 class LightOrb : public Item {
 public:
+	LightOrb(const char* name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo);
 
+	void setTeammate(NPC* npc, vector<NPC*>* party); //set or unset the teammate this light orb is managing
+
+	bool getDropoff(Room* room); //get if this is the correct room
 private:
-	NPC* teammate;
-	
+	NPC* teammate; //light orbs manage a teammate while they're gone
+	Room* dropoff; //must drop the light orb in this room
+	Room* limbo; //store teammates in limbo
 };
 #endif
