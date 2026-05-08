@@ -113,6 +113,14 @@ namespace Helper {
 		}
 		return NULL; //no valid attack was found so return null
 	}
+	//levels up the npc in the gym depending on the time they've been there
+	void scaleNPC(NPC* npc, int cap) {
+		time_t now = time(NULL); //gets what time it is right now
+		time_t start = npc->getGymStart();
+		if (!start) return; //if they have no gym start time, there's nothing to do here
+		int level = (now - start)*(cap-npc->getLevel()+1)/600 + npc->getLevel(); //calculate new level based on time difference, 1 level per minute by default, plus a "catching up" factor (level difference / 10)
+		npc->setLevel(min(level, cap), true); //set the new level and track it, capped at the given cap (player level - 1)
+	}
 	//prints the data of the given npc
 	void printNPCData(NPC* npc, bool battle) {
 		cout << "\n" << npc->getTitle(); //prints the title of the npc if they have one
@@ -124,18 +132,21 @@ namespace Helper {
 			cout << " (" << npc->xpForNextLevel() << " xp to LEVEL UP)";
 		} //prints any effects the npc may have (eg. "POISON")
 		npc->printEffects();
+		//in case this is in the gym, we also include the stats they're about to get when recruited in the analysis
+		Stats extra = Stats();
+		if (!battle) extra = npc->getStatChanges();
 		//prints all the stats of the npc
 		cout << "\n  HEALTH - ";
 		if (battle) cout << npc->getHealth() << "/";
-		cout << npc->getHealthMax();
-		cout << "\t  DEFENSE - " << Round(npc->getDefense() * npc->getDefMultiplier());
-		cout << "\n  ATTACK - " << Round(npc->getAttack() * npc->getAttMultiplier());
-		cout << "\t  TOUGHNESS - " << Round(npc->getToughness() * npc->getToughMultiplier());
-		cout << "\n  PIERCE - " << Round(npc->getPierce() * npc->getPierceMultiplier());
-		cout << "\t  SPEED - " << Round(npc->getSpeed() * npc->getSpeedMultiplier());
+		cout << npc->getHealthMax() + extra[0];
+		cout << "\t  DEFENSE - " << Round(npc->getDefense() * npc->getDefMultiplier()) + extra[1];
+		cout << "\n  ATTACK - " << Round(npc->getAttack() * npc->getAttMultiplier()) + extra[2];
+		cout << "\t  TOUGHNESS - " << Round(npc->getToughness() * npc->getToughMultiplier()) + extra[3];
+		cout << "\n  PIERCE - " << Round(npc->getPierce() * npc->getPierceMultiplier()) + extra[4];
+		cout << "\t  SPEED - " << Round(npc->getSpeed() * npc->getSpeedMultiplier()) + extra[3];
 		cout << "\n  SP - ";
 		if (battle) cout << npc->getSP() << "/";
-		cout << npc->getSPMax();
+		cout << npc->getSPMax() + extra[6];
 	}
 	//prints the data of the given item, usually just the name and description
 	void printItemData(Item* item) {
@@ -298,7 +309,7 @@ namespace Helper {
 			cout << "\n" << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
 			npc->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
 			CinPause();
-			Stats statChanges = npc->getStatChanges();
+			Stats statChanges = npc->popStatChanges();
 			cout << "  HEALTH - " << npc->getHealthMax(); //prints all the new stats of the npc
 			if (statChanges[0]) cout << " (+" << statChanges[0] << ")";
 			cout << "\t  DEFENSE - " << npc->getDefense();
@@ -314,7 +325,7 @@ namespace Helper {
 			cout << "\n  MAX SP - " << npc->getSPMax();
 			if (statChanges[6]) cout << " (+" << statChanges[6] << ")";
 			CinPause();
-			for (Attack* att : npc->getNewAttacks()) { //print any new attacks learned and what they do
+			for (Attack* att : npc->popNewAttacks()) { //print any new attacks learned and what they do
 				cout << "\n" << npc->getName() << " learned " << att->name << "!\n" << att->name << " - " << att->trueDesc;
 				CinPause();
 			}
@@ -543,7 +554,7 @@ namespace Helper {
 		WeaponItem* weapon = (WeaponItem*)item;
 		Attack* attack = weapon->getAttack();
 		player->addSpecialAttack(attack);
-		cout << player->getName() << " can now use " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
+		cout << player->getName() << " can now use " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
 	}
 	//get if the direction given is a cardinal direction
 	bool getCardinal(const char* direction) {

@@ -38,7 +38,7 @@ public:
 	bool getGym(); //gets if this room is a gym
 	bool getTempleEntrance(); //gets if this room is a temple entrance
 	bool getBlocked(const char* direction); //gets if the given exit is blocked
-	const char* getBlockReason(const char* direction); //gets why the exit is blocked
+	const char* getBlockType(const char* direction); //gets the type of the exit's block
 	Item* popBackup(); //take the backup from the room to check if we should put it there
 
 	void doEnterChanges();
@@ -76,8 +76,6 @@ public:
 	void blockExit(const char* direction, const char* blocktype, const char* reason); //blocks an exit
 	void unblockExit(const char* direction); //unblocks the exit
 	vector<const char*> unblockAll(const char* type); //unblocks all the blocked exits of the given block type
-
-	void scaleNPCs(int level); //update all npc levels at the gym capped at the given cap
 
 	void undefeatEnemies(); //makes the enemies in the room not defeated anymore
 private:

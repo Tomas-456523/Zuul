@@ -42,7 +42,7 @@ public:
 	void setRoom(Room* _room); //sets the item's current room
 	void unRoom(); //removes the item from the room
 
-	void setStock(int _stock, int _price, const Conversation& buydesc); //makes the item for sale
+	void setStock(int _stock, int _price = 0, const Conversation& buydesc = {}); //makes the item for sale
 	void setFreebie(const Conversation& pitydesc); //make one free if you can't afford it
 	void setTakable(bool _takable = true); //manually sets the item to takable, for item types that default to something we don't want
 	void setDropToUse(bool dropreq); //set if we can't use it while in the inventory

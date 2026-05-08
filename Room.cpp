@@ -72,9 +72,9 @@ bool Room::getBlocked(const char* direction) { //get if the exit is blocked
 	}
 	return false;
 }
-const char* Room::getBlockReason(const char* direction) { //get why it's blocked
+const char* Room::getBlockType(const char* direction) { //get why it's blocked
 	if (getBlocked(direction)) {
-		return blockReason[direction];
+		return blockType[direction];
 	}
 	return NULL; //null because it's not actually blocked
 }
@@ -305,15 +305,6 @@ vector<const char*> Room::unblockAll(const char* type) { //unblock all the block
 		}
 	}
 	return matches; //returns exits that were unblocked
-}
-void Room::scaleNPCs(int cap) { //levels up every npc in the gym depending on the time they've been there
-	time_t now = time(NULL); //gets what time it is right now
-	for (NPC* npc : npcs) {
-		time_t start = npc->getGymStart();
-		if (!start) continue; //if they have no gym start time, there's nothing to do here
-		int level = (now - start)*(cap-npc->getLevel()+1)/600 + npc->getLevel(); //calculate new level based on time difference, 1 level per minute by default, plus a "catching up" factor (level difference / 10)
-		npc->setLevel(min(level, cap)); //set the new level, capped at the given cap (player level - 1)
-	}
 }
 void Room::undefeatEnemies() {
 	for (NPC* npc : npcs) {

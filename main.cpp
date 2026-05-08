@@ -163,7 +163,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* forestspork = new Room("at a spork in the road, but no sporks are to be seen anywhere.");
 	Room* forestnice = new Room("at a really nice looking area of the forest. The lighting is very cool.");
 	Room* treasuregrove = new Room("in the treasure grove, where the grass is golden and treasure chests sometimes appear.");
-	Room* treasurecliff = new Room("in the treasure cliff at the edge of the desert, where there is actually treasure.");
+	Room* treasurecliff = new Room("in the treasure cliff at the edge of the desert, where treasure chests sometimes appear."); //where there is actually treasure
 	Room* bossgrove = new Room("in the BOSS GROVE, where the boss of WANING WOODLANDS is known to appear.");
 	Room* fdintermission1 = new Room("on the path between the woodlands and the wastelands.");
 	Room* fdintermission2 = new Room("on the path between the woodlands and the wastelands. The foliage is sparse here. BURGERSBURG can be seen faintly in the distance.");
@@ -500,29 +500,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {NULL, "A faint light appears from the darkness..."},
 					   {NULL, "Suddenly, from the depths flew up..."},
 					   {NULL, "<<< THE BURGER MENACE >>>"},
+					   {NULL, "You look up at the BURGER MENACE."},
+					   {self, ">:|"},
 					   {burgermenace, "I DIDN'T APPRECIATE WHAT YOU DID TO MY BURGER MAN,"},
 					   {burgermenace, "SO I BROUGHT YOU DOWN HERE TO HAVE A CHAT FACE TO FACE."},
 					   {self, "So everything that happened is your fault? >:|"},
-					   //something
-					   //NOTHING YOU DID WILL HAVE EVER MATTERED.
-					   //YOU WILL NEVER HAVE MATTERED.
-					   //We'll see about that >:|
-					   //{NULL, "You and your team are filled with the power of PLOT!"},
-					   //{NULL, "Your stats rose by 100000%!"},
-
-					   //this old dialogue kinda sucks
-					   {burgermenace, "IF YOU SAY SO."},
-					   {burgermenace, "BUT YOUR DEATH,"},
-					   {burgermenace, "YOU HAVE BROUGHT UPON YOURSELF."},
-					   {NULL, "THE BURGER MENACE throws a BURGER TENDRIL at you like a speeding train."},
-					   {NULL, "You put your hands on your hips."},
-					   {self, ">:|"},
-					   {NULL, "Suddenly..."},
+					   {burgermenace, "YES, AND WHAT DO YOU THINK YOU WILL DO ABOUT IT?"},
+					   {burgermenace, "YOU ARE WEAK."},
+					   {burgermenace, "YOU ARE WORTHLESS."},
+					   {burgermenace, "YOU ARE NOTHING."},
+					   {burgermenace, "NOTHING YOU DID WILL HAVE EVER MATTERED."},
+					   {burgermenace, "YOU WILL NEVER HAVE MATTERED."},
+					   {self, "We'll see about that >:|"},
 					   {NULL, "You and your team are filled with the power of PLOT!"},
-					   {NULL, "Your stats rose by 100000%!"},
-					   {NULL, "You dodge the BURGER TENDRIL!"},
-					   {burgermenace, "PROCRASTINATE DYING IF YOU WANT."},
-					   {burgermenace, "YOU ARE NOTHING TO ME."}});
+					   {NULL, "Your stats rose by 100000%!"}});
 					   //BATTLE BEGIN!
 
 	////////////////////////
@@ -670,7 +661,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	recapacitate->targetFainted = true;
 	recapacitate->addDescription("Use flower power to recapacitate a teammate. (20 POWER)");
 	floria->addSpecialAttack(recapacitate);
-	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 0, 0, 7, true, 8);
+	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 1, 1, 15, true, 8);
 	aprilshower->addDescription("Call upon the clouds to rain SP upon the team.");
 	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
 	aprilshower->addEffect(spshower);
@@ -687,7 +678,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	superpower->instakill = true;
 	superpower->addDescription("Unleash the power of the earth's core.");
 	floria->addSpecialAttack(superpower);
-	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", false, 25, 0, 0, 0, 0, 7, true, 20);
+	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", false, 25, 0, 0, 1, 1, 15, true, 20);
+	mayflower->focushits = false;
 	mayflower->addDescription("Bring about an HP bloom to heal the entire team.");
 	Effect* hpbloom = new Effect("HP BLOOM", 6, -10);
 	mayflower->addEffect(hpbloom);
@@ -732,18 +724,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* scienceblaster = new Attack("SCIENCE BLASTER", "blasted", false, -5, 10, 15, 1, 1, 1);
 	scienceblaster->afterdesc = " with his science blaster";
 	egadwick->setBasicAttack(scienceblaster);
-	Attack* vitamins = new Attack("VITAMIN SUPPLEMENT", "prescribed", false, 4, 0, 0, 0, 0, 0, true, 3);
+	Attack* vitamins = new Attack("VITAMIN SUPPLEMENT", "prescribed", false, 4, 0, 0, 1, 1, 1, true, 3);
 	vitamins->afterdesc = " a vitamin supplement";
 	vitamins->addDescription("Prescribe a teammate vitamins, boosting their HP and SP.");
 	Effect* supplemented = new Effect("SUPPLEMENTED", 3, -10, -10);
 	vitamins->addEffect(supplemented);
 	egadwick->addSpecialAttack(vitamins);
-	Attack* overclock = new Attack("OVERCLOCK", "overclocked", false, 8, 0, 0, 0, 0, 0, true, 5);
+	Attack* overclock = new Attack("OVERCLOCK", "overclocked", false, 8, 0, 0, 1, 1, 1, true, 5);
 	overclock->addDescription("Overclock a teammate, boosting their attack and speed.");
 	Effect* overclocked = new Effect("OVERCLOCKED", 3, 0, 0, 1.5, 1, 1, 1, 1.5);
 	overclock->addEffect(overclocked);
 	egadwick->addSpecialAttack(overclock);
-	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", false, 4, 0, 0, 0, 0, 0, false, 8);
+	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", false, 4, 0, 0, 1, 1, 1, false, 8);
 	shieldacid->addDescription("Throw a beaker of shield-melting acid at the target.");
 	Effect* acidified = new Effect("ACIDIFIED", 3, 10, 0, 1, 0.5, 0.5);
 	shieldacid->addEffect(acidified);
@@ -751,7 +743,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 20, 20, 1, 1, 3, false, 10, 20);
 	emp->addDescription("Throw an EMP, frying some of the target's and surrounding enemies' SP.");
 	egadwick->addSpecialAttack(emp);
-	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 0, 0, 0, true, 12);
+	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 1, 1, 1, true, 12);
 	hyperclock->addDescription("Over-overclock a teammate, greatly boosting their attack and speed.");
 	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0, 1, 1, 1, 2.0);
 	hyperclock->addEffect(hyperclocked);
@@ -760,17 +752,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	rocketscience->addDescription("Launch a volley of rockets at the enemy team.");
 	rocketscience->focushits = false;
 	egadwick->addSpecialAttack(rocketscience);
-	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", false, 25, 0, 0, 0, 0, 7, true, 17);
+	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", false, 25, 0, 0, 1, 1, 15, true, 17);
+	weatherforecast->focushits = false;
 	weatherforecast->addDescription("Predict a shower of SP that will rain upon the team.");
 	weatherforecast->addEffect(spshower);
 	egadwick->addSpecialAttack(weatherforecast);
-	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", false, 16, 0, 0, 0, 0, 0, true, 20);
+	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", false, 16, 0, 0, 1, 1, 1, true, 20);
 	uberclock->addDescription("Over-over-overclock a teammate, very greatly boosting their attack and speed.");
 	Effect* uberclocked = new Effect("UBERCLOCKED", 3, 0, 0, 4.0, 1, 1, 1, 4.0);
 	uberclock->addEffect(uberclocked);
 	egadwick->addSpecialAttack(uberclock);
 	Attack* orbitalstrike = new Attack("ORBITAL STRIKE", "called down an orbital beam towards", false, 30, 70, 100, 1, 1, 7, false, 25);
-	orbitalstrike->addDescription("Call down an orbital laser from Edgadwick's brand new satellite.");
+	orbitalstrike->addDescription("Call down an orbital laser from Egadwick's brand new satellite.");
 	egadwick->addSpecialAttack(orbitalstrike);
 	
 	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
@@ -825,13 +818,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 25, 30, 1, 1, 3, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
-	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 7, true, 15);
+	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 15, true, 15);
+	warcry->focushits = false;
 	Effect* galvanized = new Effect("GALVANIZED", 5, 0, 0, 2.0, 2.0);
 	warcry->addEffect(galvanized);
 	forestknight->addSpecialAttack(warcry);
 	Attack* enrootf = new Attack("ENROOT", "rooted into the soil", false, 10, 0, 0, 0, 0, 0, true, 18);
 	Effect* rootedf = new Effect("ROOTED", 5, -10, 0, 0, 3.0, 3.0);
-	enrootf->addEffect(rootedf);
+	enrootf->selfeffect = rootedf;
+	enrootf->focushits = false;
 	forestknight->addSpecialAttack(enrootf);
 	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 18, 50, 5, 1, 1, 1, false, 20);
 	sequoiasmash->afterdesc = " with the weight of a sequoia";
@@ -1054,7 +1049,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
 	michelin->addSpecialAttack(hotsauce);
-	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 15, -30, 0, 1, 1, 7, true, 13);
+	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 15, -30, 0, 1, 1, 15, true, 13);
 	feast->focushits = false;
 	feast->addDescription("Prepare a feast for the whole team, for much healing. (30 POWER)");
 	michelin->addSpecialAttack(feast);
@@ -1127,7 +1122,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	cryptojack->addEffect(cryptojacked);
 	carlos->addSpecialAttack(cryptojack);
 	cryptojack->addDescription("Set up a bitcoin mine in the target, stealing their HP and SP for 5 turns.");
-	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 20, 20, 40, 1, 1, 7, false, 20);
+	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 20, 20, 40, 1, 1, 21, false, 20);
 	cascadingfailure->focushits = false;
 	cascadingfailure->synergies.push_back(infected);
 	cascadingfailure->synergies.push_back(overflow);
@@ -1150,36 +1145,36 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* racket = new Attack("RACKET", "whacked", true, -5, 10, 0, 1, 1, 1);
 	racket->afterdesc = " with her tennis racket";
 	plum->setBasicAttack(racket);
-	Attack* bigmushroom = new Attack("BIG MUSHROOM", "gave a red embiggening mushroom to", false, 8, 0, 0, 0, 0, 0, true);
+	Attack* bigmushroom = new Attack("BIG MUSHROOM", "gave a red embiggening mushroom to", false, 8, 0, 0, 1, 1, 1, true);
 	Effect* supermushroom = new Effect("SUPER", 3, 0, 0, 2.0, 2.0);
 	bigmushroom->addEffect(supermushroom);
 	plum->addSpecialAttack(bigmushroom);
 	Attack* turtleshell = new Attack("TURTLE SHELL", "kicked a green turtle shell towards", false, 6, 30, 0, 1, 1, 1);
 	plum->addSpecialAttack(turtleshell);
-	Attack* burnyblossom = new Attack("BURNY BLOSSOM", "gave a burny blossom to", false, 12, 0, 0, 0, 0, 0, true, 5);
+	Attack* burnyblossom = new Attack("BURNY BLOSSOM", "gave a burny blossom to", false, 12, 0, 0, 1, 1, 1, true, 5);
 	Effect* fireing = new Effect("FIRE", 4);
 	fireing->attackeffect = onfire;
 	burnyblossom->addEffect(fireing);
 	plum->addSpecialAttack(burnyblossom);
 	Attack* bobbybomb = new Attack("BOBBY BOMB", "threw a Bobby Bomb at", false, 10, 40, 20, 1, 1, 3, false, 7);
 	plum->addSpecialAttack(bobbybomb);
-	Attack* metalhat = new Attack("METAL HAT", "gave a metal hat to", false, 14, 0, 0, 0, 0, 0, true, 10);
+	Attack* metalhat = new Attack("METAL HAT", "gave a metal hat to", false, 14, 0, 0, 1, 1, 1, true, 10);
 	Effect* metallic = new Effect("METAL", 3, 0, 0, 5.0, 2.5);
 	metalhat->addEffect(metallic);
 	plum->addSpecialAttack(metalhat);
-	Attack* lightning = new Attack("LIGHTNING", "used a lightning bolt to shock the enemy team", false, 22, 30, 30, 1, 1, 7, 14);
+	Attack* lightning = new Attack("LIGHTNING", "used a lightning bolt to shock the enemy team", false, 22, 30, 30, 1, 1, 21, 14);
 	lightning->focushits = false;
 	Effect* mini = new Effect("MINI", 3, 0, 0, 0.5, 0.5);
 	lightning->addEffect(mini);
 	plum->addSpecialAttack(lightning);
 	Attack* blueshell = new Attack("BLUE TURTLE SHELL", "threw a winged blue turtle shell, which went flying at", false, 20, 80, 40, 1, 1, 3, false, 16);
 	plum->addSpecialAttack(blueshell);
-	Attack* superstar = new Attack("SUPER STAR", "gave a super star to", false, 25, 0, 0, 0, 0, 0, true, 18);
+	Attack* superstar = new Attack("SUPER STAR", "gave a super star to", false, 25, 0, 0, 1, 1, 1, true, 18);
 	Effect* invincible = new Effect("INVINCIBLE", 3, 0, 0, 1, 2.0);
 	invincible->invincible = true;
 	superstar->addEffect(invincible);
 	plum->addSpecialAttack(superstar);
-	Attack* lifemushroom = new Attack("LIFE MUSHROOM", "gave a green life mushroom to", false, 30, 0, 0, 0, 0, 0, true, 20);
+	Attack* lifemushroom = new Attack("LIFE MUSHROOM", "gave a green life mushroom to", false, 30, 0, 0, 1, 1, 1, true, 20);
 	lifemushroom->extralives = 1;
 	plum->addSpecialAttack(lifemushroom);
 
@@ -1244,7 +1239,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -999, 0, 1, 1, 1); //2 - enemy gets fully healed
 	nat2->afterdesc = " was fully healed";
 	graham->addSpecialAttack(nat2);
-	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 7, true); //3 - freeze team
+	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 15, true); //3 - freeze team
 	nat3->focushits = false;
 	Effect* blinded = new Effect("BLINDED", 1);
 	blinded->freeze = true;
@@ -1294,7 +1289,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	frozen->freeze = true;
 	nat14->addEffect(frozen);
 	graham->addSpecialAttack(nat14);
-	Attack* nat15 = new Attack("DICE ROLL", "rolled a 15! Icosahedral energy barriers form around the team!", false, 0, 0, 0, 1, 1, 7, true); //15 - summon guard for team
+	Attack* nat15 = new Attack("DICE ROLL", "rolled a 15! Icosahedral energy barriers form around the team!", false, 0, 0, 0, 1, 1, 15, true); //15 - summon guard for team
 	nat15->focushits = false;
 	nat15->targuard = 1;
 	graham->addSpecialAttack(nat15);
@@ -1307,7 +1302,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	graham->addSpecialAttack(nat17);
 	Attack* nat18 = new Attack("DICE ROLL", "rolled an 18! A big burst of energy appeared at", false, 0, 30, 50, 1, 1, 3); //18 - big bomb
 	graham->addSpecialAttack(nat18);
-	Attack* nat19 = new Attack("DICE ROLL", "rolled a 19!", false, 0, 0, 0, 0, 0, 0, true); //19 - make teammate invincible
+	Attack* nat19 = new Attack("DICE ROLL", "rolled a 19!", false, 0, 0, 0, 1, 1, 1, true); //19 - make teammate invincible
 	nat19->afterdesc = " is invincible";
 	nat19->addEffect(invincible); //from plum's move, also buffs attack cause there's no teammate buff roll anyway
 	graham->addSpecialAttack(nat19);
@@ -1403,7 +1398,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	drone->addSpecialAttack(ram);
 
 	NPC* healsprinkler = new NPC("", "HEAL SPRINKLER", "Portable station that sprinkles health onto the team, bought by Richie to aid in battle.", limbo, 0, Stats(30, 0, 10, 0, 0, 0, 9));
-	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -7, 0, 1, 1, 7, true);
+	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -7, 0, 1, 1, 15, true);
 	sprinkle->focushits = false;
 	healsprinkler->setBasicAttack(sprinkle);
 
@@ -2370,7 +2365,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "Except time but I made it already so yeah. (didn't take too long tho)"},
 	 {developer, "Well that bank is very reliable."}});
 	//have you fought greer yet
-	//can you give me feedback (and say link to form)
+	developer->addConversation({{developer, "Hi can you give me feedback pls"},
+	 {developer, "Here is a link if yes: https://forms.gle/gL2tFzFhNiDk8gzy6 (you should prolly copy it using Ctrl + Shift + C)"},
+	 {developer, "(or Ctrl + Insert)"},
+	 {developer, "(because you're probably on a terminal and Ctrl + C would end the game process)"}});
 	developer->addConversation({{developer, "Idk if you've encountered teammates with defend attack,"},
 	 {developer, "like they tank hits for someone else after using a defend move,"},
 	 {developer, "but something funny about that is when I was making that type of move,"},
@@ -2454,6 +2452,49 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "1 would be too short and meaningless but 3 might get annoying,"},
 	 {developer, "So 2 is good for general purposes."},
 	 {developer, "I mean probably, I haven't actually tested my game as of writing this :P"}});
+	developer->addConversation({{developer, "Ok so now I've actually been testing my game."},
+	 {developer, "It's actually so nice to see everything I've been writing for the past couple months work."},
+	 {developer, "Especially the save system because that was segfaulting a lot."},
+	 {developer, "It's very nice to walk around and not crash randomly."},
+	 {developer, "It took me a few hours before trusting my game to not do that."},
+	 {developer, "Now if it happens it's a surprise!"}});
+	developer->addConversation({{developer, "I have a really funny log I want to share:"},
+	 {NULL, "\nYou are in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.\nExits: EAST, IN TENT 1, IN TENT 2, IN TENT 3, SOUTH, WEST\nNPCs: VILLAGE ELDER ARCHIE\n> go east"},
+	 {NULL, "\nYou are at the entrance of the woodlands.\nExits: NORTH, WEST\nNPCs: GRASSMAN\nThe NORTH exit is guarded by the GRASSMAN.\n> fight grassman"},
+	 {NULL, "\nBATTLE BEGIN!\nSELF 20/20 HP - LEVEL 0\n<<< VERSUS >>>\nGRASSMAN 17/17 HP - LEVEL 1"},
+	 {NULL, "\n\nSELF's turn!\nWhat will you do?\n> attacks"},
+	 {NULL, "\nBasic attack:\nPUNCH - Throw a simple punch at the target. (10 ATTACK) - Generates 5 SP\n> punch grassman"},
+	 {NULL, "\nSELF used PUNCH!\nSELF punched GRASSMAN!"},
+	 {NULL, "\nGRASSMAN took 6 damage!\nGRASSMAN now has 11/17 HP."},
+	 {NULL, "\n\nGRASSMAN's turn!"},
+	 {NULL, "\nGRASSMAN used GRASS STRIKE!\nGRASSMAN grassily striked SELF!"}, //it was because I was setting a reference of everyone to enemies, so the fix was getting everyone by value instead (it was just by reference originally for efficiency I think)
+	 {NULL, "\nSELF took 6 damage!\nSELF now has 14/20 HP."},
+	 {NULL, "\n\nGRASSMAN's turn!"},
+	 {NULL, "\nGRASSMAN used GRASS STRIKE!\nGRASSMAN grassily striked SELF!"},
+	 {NULL, "\nSELF took 6 damage!\nSELF now has 2/20 HP."},
+	 {NULL, "\n\nGRASSMAN's turn!"},
+	 {NULL, "\nGRASSMAN used GRASS STRIKE!\nGRASSMAN grassily striked SELF!"},
+	 {NULL, "\nSELF took 2 damage!\nSELF now has 0/20 HP."},
+	 {NULL, ""}, //there was an unnecessary CinPause before incapacitation message
+	 {NULL, "\nSELF is incapacitated!"},
+	 {NULL, "\nDEFEAT."},
+	 {NULL, "\nYou lost 0 monies."},
+	 {NULL, "\nYou are at the entrance of the woodlands.\nExits: NORTH, WEST\nNPCs: GRASSMAN\nThe NORTH exit is guarded by the GRASSMAN.\n> fight grassman\n"},
+	 {NULL, "\nYou can't fight GRASSMAN!\n>"},
+	 {NULL, ">"},
+	 {NULL, "\nGRASSMAN - *angry bush noises*\n> recruit grassman"},
+	 {NULL, "\nYou can't fight GRASSMAN!\n> go west"}, //this was due to the popNoFight function which I made for fakeout fights always setting isLeader to false even if the enemy wasn't set to nofight, since resetnofight was set to true by default
+	 {NULL, "\nYou are in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.\nExits: EAST, IN TENT 1, IN TENT 2, IN TENT 3, SOUTH, WEST\nNPCs: VILLAGE ELDER ARCHIE\nThere is 0C���] here.\n> take 0C���]"}, //this one was because the backup item variable in Room I made for lobster callers was uninitialized
+	 {NULL, "\nThere is no \"0C���]\" here.\n> room"},
+	 {NULL, "\nYou are in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.\nExits: EAST, IN TENT 1, IN TENT 2, IN TENT 3, SOUTH, WEST\nNPCs: VILLAGE ELDER ARCHIE\nThere is 0C���] here.\n> go west"},
+	 {NULL, "\nYou are at the westernmost end of the village, where the second-tallest tent stands.\nIt's only two stories, but it's comparatively a tent mansion.\nExits: EAST, IN TENT\nThere is  here.\n> go east"},
+	 {NULL, "Segmentation fault (core dumped)"}, //I assume this had something to with the garbage item but it might've been something else
+	 {developer, "So yeah that's pretty much it."},
+	 {developer, "When I saw that I wasn't even annoyed at the bugs cause it was so funny"},
+	 {developer, "like it just had such perfect comedic timing"},
+	 {developer, "I mean I was a little annoyed"},
+	 {developer, "well probably pretty annoyed"},
+	 {developer, "But it was also really funny."}});
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
@@ -2735,7 +2776,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* cooled = new Effect("COOLED", 6, 0, 0, 1, 1, 1, 1, 0.75);
 	cooldown->addEffect(cooled);
 	Attack* polevault = new Attack("POLE VAULT", "pole vaulted into the air", false, 0, 0, 0, 0, 0, 0); //dodge move!
-	Effect* polevaulting = new Effect("POLE VAULTING", 0);
+	polevault->focushits = false;
+	Effect* polevaulting = new Effect("POLE VAULTING", 1); //functionally a 0 duration effect but since it checks the attacks after the player's turn it gets ticked immediately after using the attack so it has to be 1 tick long to have the same effect
 	polevaulting->remove = true;
 	polevault->selfeffect = polevaulting;
 	Attack* mineram = new Attack("MINECART RAM", "rammed", true, 0, 20, 0, 1, 1, 1); //decent attack but doesn't gain any sp
@@ -2768,7 +2810,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dbchanges.exitPavings.push(make_tuple(elevator, elevatorbottom, TO_THE_BOTTOM, TO_GROUND_LEVEL));
 	dbchanges.exitPavings.push(make_tuple(elevatortop, elevatorbottom, TO_THE_BOTTOM, TO_THE_TOP));
 	
-	Attack* forkliftup = new Attack("FORKLIFT UP", "forklifted", true, 15, 0, 0, 1, 1, 1); //uppercut preview basically
+	Attack* forkliftup = new Attack("FORKLIFT UP", "forklifted", true, 18, 0, 0, 1, 1, 1); //uppercut preview basically
 	forkliftup->afterdesc = " into the air";
 	Effect* forklifted = new Effect("FORKLIFTED", 1);
 	forklifted->remove = true;
@@ -2782,6 +2824,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* scissorlifted = new Effect("SCISSOR LIFTED", 1);
 	scissorlifted->remove = true;
 	scissorup->selfeffect = scissorlifted;
+	scissorup->focushits = false;
 
 	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofsw, HIGH, false);
 	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofnw, HIGH, false);
@@ -3030,15 +3073,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	village->setExit(IN_TENT_3, tentchurch);
 	villageleft->setExit(EAST, village);
 	villageleft->setExit(IN_TENT, tentmansion);
-	tentmansion->setExit(OUTSIDE, villageleft);
+	tentmansion->setExit(OUT/*SIDE*/, villageleft);
 	tentmansion->setExit(UPSTAIRS, tentlab);
 	tentlab->setExit(DOWNSTAIRS, tentmansion);
-	tentstore->setExit(OUTSIDE, village);
-	tentstation->setExit(OUTSIDE, village);
-	tentchurch->setExit(OUTSIDE, village);
+	tentstore->setExit(OUT/*SIDE*/, village);
+	tentstation->setExit(OUT/*SIDE*/, village);
+	tentchurch->setExit(OUT/*SIDE*/, village);
 	docks->setExit(NORTH, village);
 	docks->setExit(IN_TENT, tenthouse);
-	tenthouse->setExit(OUTSIDE, docks);
+	tenthouse->setExit(OUT/*SIDE*/, docks);
 	forestentrance->setExit(WEST, village);
 	forestentrance->setExit(NORTH, forest);
 	forest->setExit(SOUTH, forestentrance); //forest exits
@@ -3056,9 +3099,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ninjavillage->setExit(IN_HOUSE_1, ninjapantry);
 	ninjavillage->setExit(IN_HOUSE_2, ninjaforge);
 	ninjavillage->setExit(IN_HOUSE_3, ninjacapitol);
-	ninjapantry->setExit(OUTSIDE, ninjavillage);
-	ninjaforge->setExit(OUTSIDE, ninjavillage);
-	ninjacapitol->setExit(OUTSIDE, ninjavillage);
+	ninjapantry->setExit(OUT/*SIDE*/, ninjavillage);
+	ninjaforge->setExit(OUT/*SIDE*/, ninjavillage);
+	ninjacapitol->setExit(OUT/*SIDE*/, ninjavillage);
 	ninjavillage->setExit(DOWN, ninjaland);
 	foresttempleentrance->setExit(SOUTHWEST, forestleft);
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
@@ -3100,7 +3143,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	deserttempleentrance->setExit(EAST, desertdune);
 	deserttempleentrance->setExit(NORTHEAST, deserthill);
 	deserttempleentrance->setExit(SOUTHEAST, desert);
-	deserttemplestairs->setExit(OUTSIDE, deserttempleentrance);
+	deserttemplestairs->setExit(OUT/*SIDE*/, deserttempleentrance);
 	deserttemple->setExit(EAST, deserttemplestairs);
 	desertdune->setExit(WEST, deserttempleentrance);
 	desertdune->setExit(NORTHEAST, desertgrave);
@@ -3120,11 +3163,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	deserttown->setExit(IN_HOUSE_1, desertshop);
 	deserttown->setExit(IN_HOUSE_2, desertgym);
 	deserttown->setExit(IN_HOUSE_3, deserthouse);
-	desertshop->setExit(OUTSIDE,deserttown);
-	desertgym->setExit(OUTSIDE,deserttown);
-	deserthouse->setExit(OUTSIDE,deserttown);
-	desertshopfixed->setExit(OUTSIDE,deserttown);
-	desertgymfixed->setExit(OUTSIDE,deserttown);
+	desertshop->setExit(OUT/*SIDE*/,deserttown);
+	desertgym->setExit(OUT/*SIDE*/,deserttown);
+	deserthouse->setExit(OUT/*SIDE*/,deserttown);
+	desertshopfixed->setExit(OUT/*SIDE*/,deserttown);
+	desertgymfixed->setExit(OUT/*SIDE*/,deserttown);
 	oasis->setExit(WEST, deserttown);
 	canyon->setExit(UP, thatcliff);
 	canyon->setExit(EAST, deserttown);
@@ -3191,18 +3234,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	volcano7->setExit(SOUTHEAST, volcano6);
 	castleentrance->setExit(NORTHEAST, volcano7);
 	castleentrance->setExit(IN_CASTLE, castlehall);
-	castlehall->setExit(OUTSIDE, castleentrance);
+	castlehall->setExit(OUT/*SIDE*/, castleentrance);
 	castlehall->setExit(SOUTH, castlethrone);
 	castlethrone->setExit(NORTH, castlehall);
-	factory1->setExit(OUTSIDE, volcano1);
+	factory1->setExit(OUT/*SIDE*/, volcano1);
 	factory1->setExit(EAST, factorykitchen);
 	factory1->setExit(UP, factoryplat);
 	factorykitchen->setExit(WEST, factory1);
 	factoryplat->setExit(EAST, controlroom1);
 	factoryplat->setExit(DOWN, factory1);
 	controlroom1->setExit(WEST, factoryplat);
-	volcanostation->setExit(OUTSIDE, volcano3);
-	factory2->setExit(OUTSIDE, volcano3);
+	volcanostation->setExit(OUT/*SIDE*/, volcano3);
+	factory2->setExit(OUT/*SIDE*/, volcano3);
 	factory2->setExit(NORTHWEST, switchroom);
 	factory2->setExit(NORTHEAST, conveyor1);
 	switchroom->setExit(SOUTHEAST, factory2);
@@ -3231,7 +3274,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	factorybalcony2->setExit(EAST, factorygarden);
 	factorygarden->setExit(WEST, factorybalcony2);
 	factorygarden->setExit(DOWN, factorycenter);
-	factory3->setExit(OUTSIDE, volcano6);
+	factory3->setExit(OUT/*SIDE*/, volcano6);
 	factory3->setExit(NORTH, factorynw);
 	factory3->setExit(EAST, factoryse);
 	factory3->setExit(UP, factoryroofsw);
@@ -3284,7 +3327,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	sewercenter3->setExit(EAST, sewertreasure);
 	sewertreasure->setExit(WEST, sewercenter3);
 	volcanotempleentrance->setExit(UP, sewercenter3);
-	volcanotemplestairs->setExit(OUTSIDE, volcanotempleentrance);
+	volcanotemplestairs->setExit(OUT/*SIDE*/, volcanotempleentrance);
 	volcanotemple->setExit(EAST, volcanotemplestairs);
 	sewercenter4->setExit(NORTHEAST, sewercenter2);
 	sewercenter4->setExit(SOUTHEAST, sewercenter1);
@@ -3307,7 +3350,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mountain3->setExit(DOWN, mountain2);
 	mountainpeak->setExit(IN_TENT, tenthome);
 	mountainpeak->setExit(DOWN, mountain3);
-	tenthome->setExit(OUTSIDE, mountainpeak);
+	tenthome->setExit(OUT/*SIDE*/, mountainpeak);
 	bridge1->setExit(NORTH, bridge2);
 	bridge1->setExit(SOUTH, volcano7);
 	bridge2->setExit(NORTH, bridge3);
@@ -3324,7 +3367,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	leftstreet2->setExit(SOUTH, leftstreet1);
 	leftstreet2->setExit(EAST, newstreet2);
 	leftstreet2->setExit(INSIDE, burgfish);
-	burgfish->setExit(OUTSIDE, leftstreet2);
+	burgfish->setExit(OUT/*SIDE*/, leftstreet2);
 	burgfish->setExit(DOWNSTAIRS, burgchurch);
 	burgchurch->setExit(UPSTAIRS, burgfish);
 	leftstreet3->setExit(NORTH, leftstreet4);
@@ -3334,7 +3377,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	leftstreet4->setExit(SOUTH, leftstreet3);
 	leftstreet4->setExit(EAST, newstreet4);
 	leftstreet4->setExit(INSIDE, casino);
-	casino->setExit(OUTSIDE, leftstreet4);
+	casino->setExit(OUT/*SIDE*/, leftstreet4);
 	casino->setExit(IN_BACK_ROOM, casinoback);
 	casinoback->setExit(OUT, casino);
 	casinoback->setExit(DOWN, casinobase);
@@ -3351,7 +3394,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	newstreet2->setExit(EAST, mainstreet2);
 	newstreet2->setExit(WEST, leftstreet2);
 	newstreet2->setExit(INSIDE, burgstore);
-	burgstore->setExit(OUTSIDE, newstreet2);
+	burgstore->setExit(OUT/*SIDE*/, newstreet2);
 	newstreet3->setExit(NORTH, newstreet4);
 	newstreet3->setExit(SOUTH, newstreet2);
 	newstreet3->setExit(EAST, mainstreet3);
@@ -3397,7 +3440,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	coolstreet2->setExit(EAST, rightstreet2);
 	coolstreet2->setExit(WEST, mainstreet2);
 	coolstreet2->setExit(INSIDE, shrimpartment1);
-	shrimpartment1->setExit(OUTSIDE, coolstreet2);
+	shrimpartment1->setExit(OUT/*SIDE*/, coolstreet2);
 	shrimpartment1->setExit(UP, shrimpartment2);
 	shrimpartment2->setExit(DOWN, shrimpartment1);
 	shrimpartment2->setExit(UP, shrimpartment3);
@@ -3431,7 +3474,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	rightstreet5->setExit(SOUTH, rightstreet4);
 	rightstreet5->setExit(WEST, coolstreet5);
 	rightstreet5->setExit(INSIDE, firedepartment);
-	firedepartment->setExit(OUTSIDE, rightstreet5);
+	firedepartment->setExit(OUT/*SIDE*/, rightstreet5);
 	richneighborhood1->setExit(EAST, richneighborhood2);
 	richneighborhood1->setExit(NORTHEAST, richneighborhood4);
 	richneighborhood1->setExit(SOUTH, leftstreet5);
@@ -3445,7 +3488,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richneighborhood4->setExit(SOUTHEAST, richneighborhood3);
 	richneighborhood4->setExit(SOUTHWEST, richneighborhood1);
 	richneighborhood4->setExit(INSIDE, ceolobby);
-	ceolobby->setExit(OUTSIDE, richneighborhood4);
+	ceolobby->setExit(OUT/*SIDE*/, richneighborhood4);
 	ceolobby->setExit(IN_ELEVATOR, ceoelevator1);
 	ceolobby->setExit(UP, ceolobby2);
 	ceolobby2->setExit(IN_ROOM, ballroom);
@@ -3464,7 +3507,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ceoroom->setExit(IN_ELEVATOR, ceoelevator3);
 	ceoroom->setExit(IN_SAFE, burgsafe);
 	burgsafe->setExit(OUT, ceoroom);
-	elevatorentrance->setExit(OUTSIDE, mainstreet5);
+	elevatorentrance->setExit(OUT/*SIDE*/, mainstreet5);
 	elevator->setExit(TO_THE_TOP, elevatortop);
 	elevator->setExit(OUT, elevatorentrance);
 	elevatortop->setExit(OUT, BURGERRESTAURANT);
@@ -3589,7 +3632,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	spatulad->falldamage = 20;
 	spatula->addEffect(spatulad);
 	ninjachef->addSpecialAttack(spatula);
-	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -30, 0, 1, 1, 7, true);
+	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -30, 0, 1, 1, 15, true);
 	ninjachef->addSpecialAttack(ninjafeast);
 	Attack* ninjasmoothie = new Attack("NINJA SMOOTHIE", "prepared a ninja smoothie for", false, 3, 20, 5, 1, 1, 1, true, 11);
 	Effect* smoothied = new Effect("SMOOTHIED", 3, 0, 0, 1.5, 1, 1, 1.5);
@@ -3647,11 +3690,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 10, 10, 6, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
 	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 5, 6, 1, 1, 1);
-	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 7);
+	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 15);
 	Effect* intimidated = new Effect("INTIMIDATED", 2, 0, 0, 0.5);
 	savageroar->redundanteffect = false; //he was spamming this way too much
 	savageroar->addEffect(intimidated);
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 7);
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 15);
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
@@ -3692,7 +3735,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* tumble = new Attack("TUMBLE", "rolled into", true, -5, 1, 10, 1, 1, 1);
 	Effect* brambled = new Effect("BRAMBLED", 3, 3);
 	tumble->addEffect(brambled);
-	Attack* rumble = new Attack("RUMBLE", "shook the ground under", false, 2, 5, 0, 1, 1, 7);
+	Attack* rumble = new Attack("RUMBLE", "shook the ground under", false, 2, 5, 0, 1, 1, 15);
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
@@ -3714,7 +3757,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	rascal->addSpecialAttack(genericcc);*/
 
 	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 13, 9));
-	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe at", false, -5, 10, 15, 1, 1, 7);
+	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe at", false, -5, 10, 15, 1, 1, 15);
 	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 3, 20, 20, 1, 1, 1);
 	Attack* pickstrike = new Attack("MINE", "struck", true, 6, 25, 40, 1, 1, 1);
 	pickstrike->afterdesc = " with his pickaxe";
@@ -3757,6 +3800,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	smackdown->synergies.push_back(suspended); //because Viola is already holding the npc in the air so it's easier to do more damage
 	tkviola->addSpecialAttack(smackdown);
 	Attack* tkguard = new Attack("INVOLUNTARY GUARD", "set up a guard using a townsperson", false, 7, 0, 0, 0, 0, 0);
+	tkguard->focushits = false;
 	tkguard->guardset = 1;
 	tkviola->addSpecialAttack(tkguard);
 	Attack* fling = new Attack("FLING", "flung", false, 5, 0, 0, 1, 1, 1);
@@ -3779,17 +3823,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", false, 10, 20, 30, 1, 1, 3, false, 12);
 	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (20 DAMAGE, 30 PIERCE)");
 	tkviola->addSpecialAttack(spatialpop);
-	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 0, 0, 7, true, 15);
+	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 1, 1, 15, true, 15);
 	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
 	Effect* forcefielded = new Effect("FORCE FIELD", 3, 0, 0, 1, 2);
 	forcefield->addEffect(forcefielded);
 	tkviola->addSpecialAttack(forcefield);
-	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", false, 15, 0, 0, 0, 0, 7, false, 17);
+	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", false, 15, 0, 0, 1, 1, 21, false, 17);
 	intensegravity->addDescription("Intensify gravity around the enemy team, halving their defense.");
 	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5);
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
-	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 35, 100, 1, 1, 7, false, 20);
+	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 35, 100, 1, 1, 21, false, 20);
 	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (35 DAMAGE, 100 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
@@ -3802,7 +3846,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	runningback->remove = true;
 	pressurevalve->addEffect(runningback);
 	greer->addSpecialAttack(pressurevalve);
-	Attack* gasleak = new Attack("GAS LEAK", "shot a gas main near", false, 5, 0, 0, 0, 0, 3);
+	Attack* gasleak = new Attack("GAS LEAK", "shot a gas main near", false, 5, 0, 0, 1, 1, 3);
 	Effect* gassed = new Effect("GASSED", 3, 10, 0);
 	gassed->spusage = 2;
 	gasleak->addEffect(gassed);
@@ -3814,9 +3858,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	greer->addSpecialAttack(scaldingsteam);
 
 	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 10, 0, 1, 0.65);
-	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 0, 1); //contact attacks for the lavamen
+	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 1, 1, 1); //contact attacks for the lavamen
 	burn->addEffect(onfire);
-	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 0, 1);
+	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 1, 1, 1);
 	reallyburn->addEffect(extrafire);
 
 	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats(20, 0, 25, 0, 25, 10, 9)); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
@@ -3873,7 +3917,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	slagjab->addEffect(extrafire);
 	Attack* metalmeteor = new Attack("METAL METEOR", "shot a solid metal sphere at", false, 10, 40, 0, 1, 1, 1);
 	metalmeteor->afterdesc = " from inside itself"; //same commentary comment as lavamen
-	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 20, 10, 1, 1, 7);
+	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 20, 10, 1, 1, 15);
 	slagvomit->focushits = false;
 	slagvomit->addEffect(extrafire);
 	slagman->setBasicAttack(slagjab);
@@ -3885,7 +3929,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 10, 10, 4, 4, 1);
 	slagjchu->addEffect(extrafire);
 	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 40, 0, 1, 1, 3);
-	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 30, 10, 1, 1, 7);
+	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 30, 10, 1, 1, 15);
 	slagblast->addEffect(extrafire);
 	superslagman->setBasicAttack(slagjchu);
 	superslagman->addSpecialAttack(metalbeam);
@@ -3898,7 +3942,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* furnaceblast = new Attack("FURNACE BLAST", "blasted flames at", false, 6, 40, 20, 1, 1, 3);
 	furnaceblast->afterdesc = " from its furnace core";
 	furnaceblast->addEffect(onfire);
-	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 30, 30, 1, 1, 7);
+	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 30, 30, 1, 1, 15);
 	exhaust->focushits = false;
 	Effect* smogged = new Effect("SMOGGED", 5, 8, 0, 0.75, 0.75);
 	exhaust->addEffect(smogged);
@@ -3948,7 +3992,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	lavaguardian->addSpecialAttack(uplash);
 	Attack* eruption = new Attack("ERUPTION", "explosively crashed its sword down on", true, 8, 30, 20, 1, 1, 3);
 	lavaguardian->addSpecialAttack(eruption);
-	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 10, 20, 1, 1, 7);
+	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 10, 20, 1, 1, 15);
 	solarflare->focushits = false;
 	solarflare->addEffect(blinded); //defined in graham's nat 3
 	lavaguardian->addSpecialAttack(solarflare);
@@ -4134,6 +4178,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	sharkbite->affectselfbeforeattack = true;
 	Attack* submerge = new Attack("SUBMERGE", "submerged into the pavement", false, 3, 0, 0, 0, 0, 0);
 	submerge->selfeffect = submerged;
+	submerge->focushits = false;
 	Attack* breach = new Attack("BREACH", "jumped biting out of the pavement at", true, 5, 30, 50, 1, 1, 1);
 	breach->synergies.push_back(submerged);
 	breach->selfcancel = submerged;
@@ -4155,8 +4200,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	updrafted->remove = true;
 	updrafted->falldamage = 40;
 	updraft->addEffect(updrafted);
-	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 4, 30, 0, 1, 1, 7);
-	Attack* supercell = new Attack("SUPERCELL", "called down another twister from a supercell", false, 12, 0, 0, 0, 0, 0);
+	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 4, 30, 0, 1, 1, 15);
+	Attack* supercell = new Attack("SUPERCELL", "called down another", false, 12, 0, 0, 0, 0, 0);
+	supercell->afterdesc = " from a supercell";
 	supercell->copyamount = 1; //duplicates itself to match the health so you don't have to fight another natural disaster all over again
 	supercell->targetself = true;
 	naturaldisaster->setOpener(tailwind);
@@ -4752,6 +4798,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, {}, mimic1);
 	fakechest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 	Item* rr2 = new ReviveItem(*(ReviveItem*)(reviveroot));
+	rr2->setStock(0); //because it was copied from an item for sale, we have to do this so it doesn't say the price when analyzing it
 	Item* realchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasurecliff, 300, {rr2, memorycrowbar1});
 	realchest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 	
@@ -5061,6 +5108,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* fakechest1 = new TreasureItem("TREASURE CHEST 1", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic2);
 	Item* fakechest2 = new TreasureItem("TREASURE CHEST 2", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic3);
 	Item* rr3 = new ReviveItem(*(ReviveItem*)(reviveroot));
+	rr3->setStock(0); //because it was copied from an item for sale, we have to do this so it doesn't say the price when analyzing it
 	Item* realchest2 = new TreasureItem("TREASURE CHEST 3", "A big treasure chest, possibly full of treasure.", sewertreasure, 500, {rr3, memorycrowbar2});
 	fakechest1->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 	fakechest2->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
@@ -5649,7 +5697,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard2->addLinkedDialogue(ftrguard2, {{NULL, "Your teammates' TEMPLE DEBUFF faded..."}});
 	ftrguard2->setTalkOnDefeat();
 
-
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
 	ftrguard3->setLeader(true, 0, forestbranche3, false);
 	ftrguard3->setParty({smogfish, smogfish, smogfish});
@@ -5858,7 +5905,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
 	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
 
-	//finalboss
+	NPC* finalboss = new NPC(*burgermenace);
+	finalboss->setLeader(true, 10000, limbo, false);
+	//finalboss->setExtraXP(0); //so the boss doesn't give you an absurd amount of rewards
+	//finalboss->setExtraMonies(0);
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -6066,10 +6116,7 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 	}
 	//we recapacitate all the defeated enemies in the room, so the rooms don't become all desolate after defeating them all
 	roomCanidate->undefeatEnemies();
-	//we level up all the NPCs if it's the gym to match the player's level-1. This is so teammates don't fall behind on level after getting benched
-	if (roomCanidate->getGym()) {
-		roomCanidate->scaleNPCs((*party)[0]->getLevel()-1);
-	}
+
 	//we move our party to the room, including the player
 	for (NPC* npc : (*party)) {
 		npc->setRoom(roomCanidate);
@@ -6463,11 +6510,13 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 			npc = getNPCInVector(*party, npcName);
 			if (!item->getTargetNeeded()) { //no need to clarify the target if one isn't required (we check for this because I thought the commands would look weird otherwise, like "USE SWITCH ON BOB", like what does Bob have to do with this? It's a switch!)
 				cout << "\nThe " << itemName << " doesn't need a target!";
+				return;
 			} else if (npc == NULL) { //print if no npc matching the name was found, also since we're not in battle you can only use targeted items on your party
 				cout << "\nThere is nobody named \"" << npcName << "\" in your party!";
 				invalidnpc++;
+				return;
 			}
-			return;
+			itemname = itemName;
 		//if the item IS null and the name of the item isn't nothing (player didn't "USE " or "USE" <-- like that's the command we're checking for)
 		} else if (strcmp(itemName, "")) {
 			itemname = itemName; //makes the null item print not say "You have no [item] ON [npc]"
@@ -6487,7 +6536,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	} else if (item->getDropToUse() && !item->getRoom()) { //if item room is NULL that means it's in the inventory
 		cout << "\nThe " << itemname << " must be on the ground to use it.";
 		return;
-	} else if (item->getTargetNeeded() && npc == NULL && strcmp(item->getType(), "key") && strcmp(item->getType(), "movement")) { //if the item needed a target but no " ON " was given we give error text
+	} else if (item->getTargetNeeded() && npc == NULL && strcmp(item->getType(), "key") && strcmp(item->getType(), "movement") && strcmp(item->getType(), "sp") && strcmp(item->getType(), "hp") && strcmp(item->getType(), "effect") && strcmp(item->getType(), "revive") && strcmp(item->getType(), "manhole") && strcmp(item->getType(), "weapon")) { //if the item needed a target but no " ON " was given we give error text
 		if (party->size() > 1) { //if the party isn't only the player
 			cout << "\nThis item needs a target!";
 			return;
@@ -6632,7 +6681,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
 		for (const char* exit : currentRoom->getBlocks()) { //tries to find a blocked exit that matches the movement item's block type
-			if (currentRoom->getBlockReason(exit) == mover->getUnlockType()) {
+			if (currentRoom->getBlockType(exit) == mover->getUnlockType()) {
 				printConversation(&mover->getUseText(), true); //prints what exactly the movement item did
 				travel(currentRoom, exit, party, inventory, true); //force travels to the found room
 				commandcount[3]++; //increment successful item usings, but we don't have to track it because it only does moving changes which are tracked elsewhere
@@ -6683,7 +6732,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 					items[i]->unRoom(); //removes the item from the room
 					inventory->push_back(items[i]); //adds it to the inventory
 					cout << items[i]->getName();
-					if (i < amount) cout << " and a ";
+					if (i < amount-1) cout << " and a ";
 				}
 				cout << "!";
 				//also make sure that weapon items give their attack
@@ -6827,8 +6876,11 @@ void recruitNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party, int
 	cout << "\n" << npcname << " was added to your party!"; //prints success text
 	if (!npc->getFifth()) cout << " (Party size: " << newpartysize << "/" << maxParty << ")";
 	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
+		scaleNPC(npc, (*party)[0]->getLevel()-1); //update the npc level capped at the given cap
 		printLvlUpData(npc);
 		npc->setGymStart(0); //no longer training so we reset training time
+	} else {
+		npc->popStatChanges();
 	}
 	commandcount[4]++; //increment successful recruitings
 	Rnpcs.insert(npc); //track this npc in section R because we just recruited them
@@ -6936,7 +6988,7 @@ void printNPCDialogue(Room* currentRoom, const char* npcname, vector<Item*>* inv
 	}
 	//some npcs fight you immediately after talking so if that's the case we initiate battle here
 	if (npc->getForceBattle()) {
-		cout << "\n";
+		CinPause();
 		fight(currentRoom, party, inventory, npcname, mony);
 	}
 	commandcount[6]++; //increment successful askings
@@ -7248,10 +7300,6 @@ void play(Save*& save) {
 
 		Room* currentRoom = self->getRoom(); //sets the current room to the player's position
 
-		if (currentRoom->getGym()) { //if we're in a gym, update all the traning teammates' levels before doing the action
-			currentRoom->scaleNPCs(self->getLevel()-1);
-		}
-
 		if (!strcmp(commandWord, "GO")) { //for going in a direction
 			travel(currentRoom, &commandExtension[0], party, &inventory);
 		} else if (!strcmp(commandWord, "TAKE")) { //for taking an item
@@ -7345,7 +7393,7 @@ void printSaves() {
 		cout << "\nYou don't have any saves; try starting a NEW GAME!";
 		return;
 	}
-
+	cout << "\nSaves:";
 	for (size_t i = 0; i < saves.size(); i++) {
 		Save* save = saves[i];
 		cout << "\nSAVE " << i+1 << " - ";
@@ -7553,7 +7601,7 @@ int main() {
 		ParseCommand(command, commandWord, commandExtension); //seperates the command into the command and the extension
 
 		AllCaps(commandWord); //capitalizes the command for easier parsing
-		if (strcmp(commandExtension, "IMPORT")) { //do not capitalize the imported string because that messes up everything
+		if (strcmp(commandWord, "IMPORT")) { //do not capitalize the imported string because that messes up everything
 			AllCaps(command);
 			AllCaps(commandExtension);
 		}

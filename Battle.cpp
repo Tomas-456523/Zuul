@@ -114,9 +114,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	int teamlevel = team[0]->getLevel();
 	for (NPC* npc : team) { //sets every enemy to the found level and sets them to be an enemy
 		npc->setLevel(teamlevel);
-		
-		xpReward += npc->getXpReward(); //adds their xp and mony rewards to the total
-		monyReward += npc->getMonyReward();
+		buildReward(npc, false); //add their reward to the battle reward
 	}
 }
 //creates a new npc and adds it to the battle MARK: add npc
@@ -146,6 +144,7 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 		newguy->addSuffix(suffix); //apply the suffix
 	}
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
+	buildReward(newguy, true); //add to the fight reward based on the new guy
 	newguy->setSummoner(summoner);
 	team->push_back(newguy);
 	everyone.push_back(newguy);
@@ -154,6 +153,29 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	}
 	encountered.insert(getBase(npc)); //we have encountered the npc so we track it as one that was encountered
 	return newguy; //return the guy we just newly created
+}
+//build up the reward for beating the fight depending on the npc passed MARK: build reward
+void Battle::buildReward(NPC* enemy, bool summon) {
+	//calculates and adds their xp and mony rewards to the total
+	double xp = enemy->getXpReward();
+	double mony = enemy->getMonyReward();
+
+	if (enemy->getBoss()) { //bosses give double rewards that do not diminish
+		xp *= 2;
+		mony *= 2;
+	} else { //give diminishing returns for the rewards so the player doesn't level up too fast
+		double diminish = pow(1.5, enemycount++);
+		xp /= diminish;
+		mony /= diminish;
+	}
+
+	if (summon) { //summons get lower rewards so it doesn't go too high, but they still matter barely
+		xp /= 5.0;
+		mony /= 5.0;
+	}
+
+	xpReward += Round(xp); //add the amounts we calculated!
+	monyReward += Round(mony);
 }
 //checks all the effects that the given npc has for if they've run out, for duration 0 moves MARK: check effects
 void Battle::checkEffects(NPC* npc) {
@@ -320,7 +342,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 //hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
 void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos) {
 	for (int i = 0; i < tarparty.size(); i++) { //hits all the targets, we must iterate in order to account for multi-target attacks
-		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2 && tarparty[i]->getHealth()) { //if they're within range and still have health
+		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2) { //if they're within range
 			NPC* reciever = tarparty[i]; //who will recieve the damage, could be the target or the npc guarding the target
 			if (reciever->getAway() || (!attack->targetFainted && !reciever->getHealth())) { //ignore incapacitated affected npcs if we don't target incapacitated and also can't target away npcs
 				continue;
@@ -413,6 +435,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	}
 	//says if we hit multiple targets
 	if (attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
+		CinPause();
 		cout << "\n" << target->getName() << "'s surrounding teammates were also affected!";
 	}
 	CinPause();
@@ -422,6 +445,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		hitTargets(attacker, attack, tarparty, tarPos);
 	} else { //unfocused moves which hit a random target for every hit
 		for (size_t i = 0; i < rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits; i++) {
+			cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
+			CinPause();
 			int tarPos = rand() % tarparty.size();
 			hitTargets(attacker, attack, tarparty, tarPos);
 		}

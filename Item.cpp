@@ -151,8 +151,10 @@ Item* Item::loadBuy() {
 //makes the item for sale
 void Item::setStock(int _stock, int _price, const Conversation& buydesc) {
 	stock = _stock; //set how much of the item are for sale
-	price = _price; //set the price of the item
-	buyDescription = buydesc; //set the buy description
+	if (stock) { //only set the stock variables if we're not just removing the stockness of the item
+		price = _price; //set the price of the item
+		buyDescription = buydesc; //set the buy description
+	}
 }
 //make one free if you can't afford it
 void Item::setFreebie(const Conversation& pitydesc) {

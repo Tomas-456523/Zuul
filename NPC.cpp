@@ -40,12 +40,7 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	health = stats.hpmax; //xp starts at max
 	sp = stats.spmax / 3; //start battle at a third of max sp and has to be built up
 
-	if (_level != 0 && _level <= 100) { //sets its given level if it isn't too high, otherwise it freezes the program at the start
-		setLevel(_level);
-	}
-	if (_level > 100) { //instead we just manually set it
-		level = _level;
-	}
+	setLevel(_level);
 
 	changes.push(WorldChange()); //make sure we have a changes object available to edit
 }
@@ -272,12 +267,15 @@ int NPC::getWeight(Attack* attack) {
 bool NPC::getLevelUp() {
 	return leveledUp;
 }
-Stats NPC::getStatChanges() {
+Stats NPC::popStatChanges() {
 	Stats changes = statChangesSum;
 	statChangesSum = Stats(); //reset stat changes because we don't need to track them anymore
 	return changes; //return the stats we recovered
 }
-vector<Attack*> NPC::getNewAttacks() {
+const Stats& NPC::getStatChanges() {
+	return statChangesSum;
+}
+vector<Attack*> NPC::popNewAttacks() {
 	vector<Attack*> attacks = newAttacks;
 	newAttacks.clear(); //reset new attacks because we don't need to track them anymore
 	return attacks; //return the attacks we recovered
@@ -676,7 +674,7 @@ void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantl
 		statsup = Stats::makeLvlStats(level, id) + scale; //deterministically determine the stats we just got from the level up, plus the baseline stat scale
 		level++; //increments the level
 	}
-	statChangesSum += statsup; //track unprinted stat changes so we can print them later
+	if (trackLevelUp) statChangesSum += statsup; //track unprinted stat changes so we can print them later
 	stats += statsup; //apply the stat changes
 	health = stats.hpmax; //we must start battle at max health so we update current health to match the max
 	sp = stats.spmax / 3; //start battle at a third of max sp
@@ -912,13 +910,13 @@ int NPC::directDamage(int damage, const char* status) {
 	}
 	return totalDamage;
 }
-void NPC::setLevel(int _level) { //manually sets the level of the npc (will not level down)
+void NPC::setLevel(int _level, bool track) { //manually sets the level of the npc (will not level down)
 	int lvlguard = 100; //guards the level up past a certain amount to avoid the program freezing on large level settings
 	if (_level - level > lvlguard) { //if we're leveling up too much, we just instantly go to that level
-		levelUp(false, _level);
+		levelUp(track, _level);
 	} else { //if the level is a reasonable amount, just call the level up process normally for maximum pseudorandomness
 		for (int i = level; i < _level; i++) {
-			levelUp(false); //levels up that many times in order to get the stat increases
+			levelUp(track); //levels up that many times in order to get the stat increases
 		}
 	}
 }

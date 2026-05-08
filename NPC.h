@@ -81,8 +81,9 @@ public: //you need to set stats on creation
 	vector<Attack*> getSpecialAttacks();
 	int getWeight(Attack* attack);
 	bool getLevelUp(); //if we leveled up recently
-	Stats getStatChanges(); //the stat changes from the last level up
-	vector<Attack*> getNewAttacks();
+	Stats popStatChanges(); //the stat changes from the last level up
+	const Stats& getStatChanges(); //get the stat changes without popping them, so that Helper's printNPCData can show accurate data in the gym without popping them which would then get lost after svaing and quitting
+	vector<Attack*> popNewAttacks();
 	bool getDefeated(); //if npc has been defeated since entering the room
 	Item* takeGift(); //return and nullify the gift item
 	vector<Effect*> getEffects();
@@ -183,7 +184,7 @@ public: //you need to set stats on creation
 	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
 	int damage(double power, double pierce); //affect the npc's health and return how much the health was affected by
 	int directDamage(int damage, const char* status = NULL);
-	void setLevel(int _level); //only used for enemy parties
+	void setLevel(int _level, bool track = false); //we usually don't track the changes if it was from manually leveling up, but for stuff like in the gym we do
 	void setBasicAttack(Attack* attack);
 	void setRecoilAttack(Attack* attack, bool contact = true); //set a recoil attack (retaliation) with the option deciding if it should only be for contact attacks
 	void setGuardAttack(Attack* attack);

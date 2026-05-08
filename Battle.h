@@ -54,6 +54,7 @@ public:
 	
 	NPC* addNPC(NPC* npc, NPC* summoner = NULL, bool altteam = false); //creates a new npc mid-battle
 
+	void buildReward(NPC* enemy, bool summon = false); //build up the reward for beating the fight depending on the npc passed
 	int getXpReward(); //gets how much xp was earned as a result of a victory
 	int getMonyReward(); //gets how many monies were earned as a result of a victory
 
@@ -78,6 +79,8 @@ private:
 
 	size_t pwave = 0;
 	size_t ewave = 0;
+
+	int enemycount = 0; //tracks how many non-boss enemies have been in the battle, just for rewards calculation
 
 	bool escapable; //if you can run from this battle
 	bool scaleEnemies; //if we should scale the enemies to match their world level (for world fights)
