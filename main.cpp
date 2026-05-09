@@ -2569,9 +2569,28 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	switchhelper2->setConveyor(conveyor4);
 	switchhelper2->setConveyor(conveyor5);
 
-	//{{NULL, "The BURGER MENACE has been subdued."},
+	//after getting the final boss down to 0 hp:
+
+	//{adversary, "I WILL NOT BE DEFEATED BY << YOU >> OF ALL PEOPLE."},
+	//{NULL, "THE ADVERSARY lunges at you!"},
+
+	//{NULL, "THE PLOT DEVICE's PLOTOMETER locked onto THE ADVERSARY!"},
+	//> USE THE PLOT DEVICE
+	
+	//You press down on THE PLOT DEVICE's BIG RED BUTTON!
+	//A bolt of lightning flies at THE ADVERSARY from THE PLOT DEVICE's OUTPUT ANTENNA!
+
+	//THE ADVERSARY explodes into sparks of lightning!
+	//The blast rumbles through THE ABYSS!
+
+	//VICTORY!
+
+	//You did it!
+	//Although you began on a quest to get a BURGER,
+	//you have just defeated the father of BURGERs.
+
 	//{NULL, "All around the world, all the BURGERs fade to ashes."},
-	//{NULL, "The BURGER RESTAUANT has been left to rot in the depths."},
+	//{NULL, "The BURGER RESTAURANT has been left to rot in the depths."},
 	//{NULL, "The BURGER corporation has been deprived of its leadership..."},
 	//{NULL, "and its source of revenue."},
 	//{NULL, "BURGER's grasp on the world has been completely dissolved."},
@@ -2610,7 +2629,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	desertshopfixed->setStock(vitaminb, 2147483647, 20, {{merchant, "Thank you for your monies."}});
 	Item* iron = new SpItem("IRON", "A small bottle of iron supplement. (Restores 30 SP)", limbo, 30);
 	desertshopfixed->setStock(iron, 2147483647, 40, {{merchant, "Thank you for your monies."}});
-	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 2147483647);
+	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 99999);
 	desertshopfixed->setStock(magnesium, 2147483647, 100, {{merchant, "Thank you for your monies."}});
 
 	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 999);
@@ -3823,7 +3842,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 20, 0, 1, 1, 1);
 	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5, 1.5, 1.5, 1, 50.0);
 	rocknroll->selfeffect = jamming;
-	Attack* saltcure = new Attack("SALT CURE", "coughed up crystals of curing salt onto", false, 15, 5, 0, 1, 1, 1);
+	Attack* saltcure = new Attack("SALT CURE", "vomited crystals of curing salt onto", false, 15, 5, 0, 1, 1, 1);
 	Effect* saltcured = new Effect("SALT CURED", 2147483647);
 	saltcured->spusage = 2.0; //salt cured means you take double damage and use double sp
 	saltcured->damagebuff = 2.0;
@@ -4174,7 +4193,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* axeman = new NPC("", "AXEMAN", "A really deranged human whose head was exchanged for the head of an axe.", limbo, 0, Stats(40, 15, 35, 18, 50, 30, 9));
 	Attack* chop = new Attack("CHOP", "swung his head at", true, -5, 15, 20, 1, 1, 1);
-	Effect* chopped = new Effect("CHOPPED", 2147483647, 0, 0, 1, 1, 0.5, 1, 0.5);
+	Effect* chopped = new Effect("CHOPPED", 3, 0, 0, 1, 1, 0.5, 1, 0.5);
 	Attack* karatechop = new Attack("KARATE CHOP", "karate chopped", true, 2, 5, 0, 1, 1, 1);
 	karatechop->afterdesc = "'s neck";
 	karatechop->addEffect(chopped);
@@ -4677,10 +4696,32 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//and when stats are low enough it can tempt teammates into despair
 	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
 	//after that you get the button
+	Effect* despair = new Effect("DESPAIR", 2147483647);
+	despair->freeze = true;
 
-	//jumpscare
+	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1); //encouraging only costs a turn, not sp
+	encourage->cancel = despair;
+	
+	//choke - decay stats
+
+	Attack* ballofpain = new Attack("BALL OF PAIN", "sent a dark ball of pain at", false, 4, 10, 40, 1, 1, 1);
+	Effect* pain = new Effect("PAIN", 3, 10, 0, 0.5, 0.5, 0.5, 0.5, 0.5);
+	ballofpain->addEffect(pain);
+
+	Attack* terror = new Attack("TERROR", "showed its face to", false, 6, 0, 0, 1, 1, 1);
+	terror->setEffect(despair);
+	terror->donotplayer = true; //because that would be a bit annoying at most and have literally only one possible response so it's better for the fight to only let teammates have despair
+	terror->redundanteffect = false; //cause it lasts forever so reapplying it would be a waste of a turn
+
+	Attack* snatch = new Attack("SNATCH", "dragged", true, 15, 0, 0, 1, 1, 1);
+	snatch->afterdesc = " into the darkness";
+	Effect* snatched = new Effect("SNATCHED", 3, 15, 0);
+	snatched->remove = true;
+	snatch->addEffect(snatched);
+	
 
 	NPC* bolide = new NPC("", "BOLIDE", "", limbo, 0);
+	//meteor shower
 	//impact
 
 	NPC* firefly = new NPC("", "FIREFLY", "", limbo, 0);
@@ -4689,8 +4730,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* monkeystatue = new NPC("", "MONKEY STATUE", "", limbo, 0);
 	NPC* infernobo = new NPC("", "INFERNOBO", "", limbo, 0);
-	//infernobo
-	//
+	//gorilla warfare
 	//
 	//nova cannon
 
@@ -4708,18 +4748,18 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//teammates calm down naturally after a few turns (and increase wrath meter less), but you can CALM DOWN them so they calm down faster (5 by default probably)
 	//then you get the plotometer
 
-	//burny burn (recoil)
+	//burny burn (recoil, because youre punching fire)
 
-	//firefight "fought"" with fire"
+	//firefight "fought"" with fire" (multi hit 1 target not too bad)
 	//ragebait
 
 	//firefight
 	//spark "flicked an explosive spark at"
 	//ragebait
 
-	//spark
+	//spark (3 target)
 	//ragebait
-	//flame
+	//flame (bit 1 hit)
 
 	//MARK: floria would just heal more? prolly don't allow beneficial moves
 	Attack* ragebait;
@@ -4734,7 +4774,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//carlos - {{firewithfire, ""}} insults failure to hack mircosoft
 	//plum - {{firewithfire, "Oh you must be the famous fungus princess."}} etc.
 	//graham - {{firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA"}, {graham, "Hey.... you shut up! >:("}}
-	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "Even if you did for you it's the same as donating penny shavings..."}, {richie, "STOP! >:("}}
+	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "Even if you did, for you it's the same as donating penny shavings..."}, {richie, "STOP! >:("}}
 	//ratman - {{firewithfire, "Ratman!"}, {firewithfire, "..."}, {firewithfire, "Yeah you're just a weirdo in a rat costume."}, {ratman, "I will not tolerate this slander."}, {ratman, "Because I'm Ratman."}}
 	Effect* wrath;
 	
@@ -4746,6 +4786,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//burger boom
 
 	NPC* adversary = new NPC("", "THE ADVERSARY", "", limbo, 0, Stats(), Stats());
+	//pitchfork
 	//
 
 
@@ -6340,7 +6381,7 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 		//prints how much xp everyone got
 		cout << "\nYou";
 		if (party->size() > 1) { //it's kind of strange to say "your party" if it's just you, so we do a check for that
-			cout << "r party members";
+			cout << " and your team";
 		}
 		cout << " gained " << battle.getXpReward() << " XP!";
 		CinPause();
@@ -6830,6 +6871,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
 		cout << "\n" << info->getText(); //prints the info
+		return; //return so we don't log it because it would be pretty pointless
 	//treasure chest items either give monies or are trapped and start a battle
 	} else if (!strcmp(item->getType(), "treasure")) {
 		TreasureItem* treasure = (TreasureItem*)item; //converts to the corresponding subclass
