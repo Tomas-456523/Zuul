@@ -489,7 +489,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* deserttemplene = new Room("in a garden of leafless trees. The atmosphere is very still here.");//light orb 2
 	Room* deserttemplesw = new Room("in the desert temple. The ceiling arches are really well-designed.");
 	Room* deserttemples = new Room("at a particularly well-lit area of the desert temple.");//light orb 1
-	Room* deserttemplese = new Room("in the desert temple. This corner has some scratches on the wall.");
+	Room* deserttemplese = new Room("in the desert temple. There is some dark dusty sand on the floor.");
 	Room* deserttemple2 = new Room("at the deepest level of the desert temple. The room to the NORTH is very very dark.");
 	Room* deserttempleboss = new Room("in an enormous arena filled with darkness.\nThere is no end in sight.");
 
@@ -512,7 +512,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {NULL, "Welcome to..."},
 					   {NULL, "<<< THE ABYSS >>>"}});
 	Room* abyss2 = new Room("on the most walkable path forward. The rock around you looks like the moon.");
-	Room* abyss3 = new Room("still on the path. The air around you is still."); //I wanted to say the air is still around you but that sounds like a confirmation that you're still in a place with air
+	Room* abyss3 = new Room("still on the path. The air around you is still."); //I wanted to say the air is still around you but that sounds like a confirmation that you're still in a place with air, not that you aren't but the player would be like "well duh"
 	Room* abyss4 = new Room("at the edge of a steep ledge.");
 	Room* abyss5 = new Room("in a crater of the abyss. The path forward continues.");
 	Room* abyss6 = new Room("in the middle of the crater. You see a rock that looks like a BURGER.");
@@ -2349,14 +2349,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "Anyway tying into the other BURGER MAN,"},
 	 {developer, "I guess universe -1 was some sort of prison for the final boss guy."},
 	 {developer, "And then he invented BURGERs,"},
-	 {developer, "and you know how Henry Jerry's company invented time travel?"},
+	 {developer, "and you know how there's time travel and everything?"},
 	 {self, "Uh huh."},
 	 {developer, "Yeah so using a bootstrap paradox,"},
 	 {developer, "the BURGER MAN tempted Henry Jerry into finding the BURGER,"},
 	 {developer, "and time traveled back to the future once all was said and done."},
 	 {developer, "So he ordered the BURGER from himself."},
 	 {self, "Dang that's crazy."}});
-	
 	//talk about the game after beating final boss
 	//and dlc plans, crowbars
 	//jim shady commentary?
@@ -3643,7 +3642,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	deserthallway5->setExit(WEST, deserthallway6);
 	deserthallway6->setExit(EAST, deserthallway5);
 	deserthallway6->setExit(WEST, deserthallway7);
-	deserthallway7->setExit(EAST, deserthallway6);
+	deserthallway7->setExit(EAST, desertbacktrack2);
 	deserthallway7->setExit(WEST, deserttemple);
 	desertbacktrack->setExit(EAST, desertbacktrack2);
 	desertbacktrack->setExit(WEST, deserttemple);
@@ -4674,17 +4673,54 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//{{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, you're the least of your team anyway..."}}
 
 	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(30, 0, 10, 0, 20, 30, 9));
-	Effect* decayed;
-	//shadow slap
+	Attack* shadowslap = new Attack("SHADOW SLAP", "slapped away", true, -5, 6, 12, 1, 1, 1);
+	shadowslap->afterdesc = "'s strength";
+	shadowslap->statchip = 0.03; //up to 5% stat chip per turn
+	Attack* shadowscurry = new Attack("SCURRY", "scurried frantically at the team", true, 15, 4, 8, 3, 3, 1);
+	shadowscurry->focushits = false;
+	shadowscurry->statchip = 0.02; //up to 2% stat chip per hit
+	shadowcreature->setBasicAttack(shadowslap);
+	shadowcreature->addSpecialAttack(shadowscurry);
 
 	NPC* masky = new NPC("", "MASKY", "Plain white mask floating in the air who warps the world depending on its fluctuating mood.\nIts resting expression is ¦|", limbo, 0, Stats(20, 25, 7, 45, 4, 11, 9));
 	//:D - heal teammate, buff teammate (unchip stats), or make teammate radiant
 	//D: - damage enemy, big chip enemy stats, or turn them into stone
+	Attack* happyheal = new Attack(":D", "", false, 0);
+	Attack* happyunchip = new Attack(":D", "", false, 0);
+	Attack* happyradiate = new Attack(":D", "", false, 0);
+	Attack* saddamage = new Attack("D:", "", false, 0);
+	Attack* sadchip = new Attack("D:", "", false, 0);
+	Attack* sadstone = new Attack("D:", "", false, 0);
 
-	NPC* pyramid = new NPC("", "PYRAMON", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.", limbo, 0, Stats(250, 30, 10, 30, 4, 25, 9));
-	//pyradon
-	//laser
-	//hypnotize or something
+	NPC* pyramid = new NPC("", "PYRAMON", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.", limbo, 0, Stats(220, 17, 15, 16, 17, 5, 9));
+	Effect* spiedout = new Effect("SPIED OUT", 2, 0, 0, 1, .5);
+	pyramid->setTargetEffect(spiedout);
+	Attack* lasereye = new Attack("LASER EYE", "sniped", false, -5, 10, 20, 1, 1, 1);
+	lasereye->afterdesc = " with its laser eye";
+	Attack* eyespy = new Attack("EYE SPY", "spied out", false, 5, 0, 0, 1, 1, 1);
+	eyespy->afterdesc = "'s weaknesses";
+	eyespy->addEffect(spiedout);
+	Attack* segmentation = new Attack("SEGMENTATION", "flew at the team in layers", true, 12, 15, 5, 3, 3, 1);
+	segmentation->focushits = false;
+	Attack* spiraleye = new Attack("SPIRAL EYE", "hypnotized", false, 15, 0, 0, 1, 1, 1);
+	spiraleye->afterdesc = " with a spiral projection from its eye";
+	Effect* spiraling = new Effect("SPIRALING", 3);
+	spiraling->hypnotize = true;
+	spiraleye->addEffect(spiraling);
+	pyramid->setBasicAttack(lasereye);
+	pyramid->addSpecialAttack(eyespy);
+	pyramid->addSpecialAttack(segmentation);
+	pyramid->addSpecialAttack(spiraleye);
+
+	//MARK: TO DO LIST
+	//make stat chipping
+		//cap stat chipping at a certain amount (5 or something, just for extremes, wont prolly be reached in normal gameplay)
+		//make some way to track stat chipping
+	//make sure boss does not target immune character a second time
+	//make conditional attacks
+
+	//hypnosis without losing control of player
+	//sense of self
 
 	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(8000, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
 	thedark->setBoss(true);
@@ -4702,7 +4738,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1); //encouraging only costs a turn, not sp
 	encourage->cancel = despair;
 	
-	//choke - decay stats
+	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 5, 5, 1, 1, 1);
+	choke->statchip = 0.03; //chip up to 3% of stats per hit
 
 	Attack* ballofpain = new Attack("BALL OF PAIN", "sent a dark ball of pain at", false, 4, 10, 40, 1, 1, 1);
 	Effect* pain = new Effect("PAIN", 3, 10, 0, 0.5, 0.5, 0.5, 0.5, 0.5);
@@ -5771,6 +5808,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard1->setDialogue({{NULL, "CARNIVOROUS PLANT - *snapping biting noises*"}});
 	ftlguard1->addRejectionDialogue({{NULL, "CARNIVOROUS PLANT - *snapping hissing noises*"}});
 	ftlguard1->addLinkedDialogue(ftlguard1, {{NULL, "Your TEMPLE BUFF faded..."}});
+	ftlguard1->setLoopChanges(); //loop the dialogue
 	ftlguard1->setTalkOnDefeat();
 
 	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
@@ -5778,10 +5816,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard2->setParty({carnplant, carnplant});
 	ftlguard2->blockExit(SOUTH, ENEMY, "guarded by the JUNGLENAUT.");
 	ftlguard2->setScaleFight();
-	ftlguard1->setFightEffects(NULL, debuff); //debuff self but not teammates
+	ftlguard2->setFightEffects(NULL, debuff); //debuff self but not teammates
 	ftlguard2->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
 	ftlguard2->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
 	ftlguard2->addLinkedDialogue(ftlguard2, {{NULL, "Your TEMPLE DEBUFF faded..."}});
+	ftlguard2->setLoopChanges(); //loop the dialogue
 	ftlguard2->setTalkOnDefeat();
 
 	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
@@ -5793,6 +5832,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard3->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
 	ftlguard3->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
 	ftlguard3->addLinkedDialogue(ftlguard3, {{NULL, "Your team's SWAGGY faded..."}});
+	ftlguard3->setLoopChanges(); //loop the dialogue
 	ftlguard3->setTalkOnDefeat();
 	
 	//right path guards
@@ -5805,6 +5845,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard1->setDialogue({{NULL, "CARNIVOROUS PLANT - *snapping biting noises*"}});
 	ftrguard1->addRejectionDialogue({{NULL, "CARNIVOROUS PLANT - *snapping hissing noises*"}});
 	ftrguard1->addLinkedDialogue(ftrguard1, {{NULL, "Your teammates' TEMPLE BUFF faded..."}});
+	ftrguard1->setLoopChanges(); //loop the dialogue
 	ftrguard1->setTalkOnDefeat();
 
 	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
@@ -5816,6 +5857,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard2->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
 	ftrguard2->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
 	ftrguard2->addLinkedDialogue(ftrguard2, {{NULL, "Your teammates' TEMPLE DEBUFF faded..."}});
+	ftrguard2->setLoopChanges(); //loop the dialogue
 	ftrguard2->setTalkOnDefeat();
 
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
@@ -5827,6 +5869,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard3->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
 	ftrguard3->addRejectionDialogue({{NULL, "JUNGLENAUT - *twisting vine rejection*"}});
 	ftrguard3->addLinkedDialogue(ftrguard3, {{NULL, "Your SUPER SWAGGY faded..."}});
+	ftrguard3->setLoopChanges(); //loop the dialogue
 	ftrguard3->setTalkOnDefeat();
 	
 	//the boss!
@@ -5856,6 +5899,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftboss->addRedirect(forestbuffer1, forestbuffer2); //cause they're the same room
 	ftboss->addLinkedRoom(foresttempleboss, "in the forest temple arena, cleared of any traces of smog.");
 	ftboss->addLinkedRoom(forestbuffer2, "at the bottom of the temple stairs.");
+	ftboss->addLinkedRoom(foresttempleentrance, "in a wide sunny glade where the forest temple entrance used to be.");
 	ftboss->setEscapable(false);
 	ftboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
 
@@ -5981,19 +6025,61 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 								forestbuffer1, forestbuffer2, ftboss, {ftlguard1, ftlguard2, ftlguard3, ftrguard1, ftrguard2, ftrguard3}, ftodropchanges);
 
 	//MARK: desert temple stuff
-	//shadow shadow
+	NPC* dtguard11 = new NPC(*shadowcreature);
+	dtguard11->setLeader(true, 0, deserttemplese, false);
+	dtguard11->setParty({shadowcreature}); //shadow shadow
+	dtguard11->blockExit(WEST, ENEMY, "guarded by the SHADOW CREATURE.", true);
+	dtguard11->setScaleFight();
+	dtguard11->setDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
+	dtguard11->addRejectionDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
 
-	//shadow  masky
+	NPC* dtguard12 = new NPC(*shadowcreature);
+	dtguard12->setLeader(true, 0, deserttemplec, false);
+	dtguard12->setParty({masky}); //shadow masky
+	dtguard12->blockExit(SOUTH, ENEMY, "guarded by the SHADOW CREATURE.", true);
+	dtguard12->setScaleFight();
+	dtguard12->setDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
+	dtguard12->addRejectionDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
+	
+	NPC* dtguard13 = new NPC(*masky);
+	dtguard13->setLeader(true, 0, deserttemplesw, false);
+	dtguard13->setParty({masky}); //masky masky
+	dtguard13->blockExit(EAST, ENEMY, "guarded by the MASKY.", true);
+	dtguard13->setScaleFight();
+	dtguard13->setDialogue("¦|");
+	dtguard13->addRejectionDialogue(">¦|");
 
-	//masky masky
+	NPC* dtguard21 = new NPC(*pyramid);
+	dtguard21->setLeader(true, 0, deserttemplen, false);
+	dtguard21->setParty({masky}); //pyramon masky
+	dtguard21->blockExit(EAST, ENEMY, "guarded by the PYRAMON.", true);
+	dtguard21->setScaleFight();
+	dtguard21->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
+	dtguard21->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
 
-	//pyramon shadow masky
+	NPC* dtguard22 = new NPC(*pyramid);
+	dtguard22->setLeader(true, 0, deserttemple, false);
+	dtguard22->setParty({shadowcreature}); //pyramon shadow
+	dtguard22->blockExit(NORTH, ENEMY, "guarded by the PYRAMON.", true);
+	dtguard22->setScaleFight();
+	dtguard22->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
+	dtguard22->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
 
-	//pyramon shadow shadow
+	NPC* dtguard31 = new NPC(*pyramid);
+	dtguard31->setLeader(true, 0, deserttemplen, false);
+	dtguard31->setParty({masky, masky, shadowcreature, shadowcreature}); //pyramon masky masky shadow shadow
+	dtguard31->blockExit(WEST, ENEMY, "guarded by the PYRAMON.", true);
+	dtguard31->setScaleFight();
+	dtguard31->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
+	dtguard31->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
 
-	//pyramon pyramon masky masky shadow shadow
-
-	//pyramon pyramon pyramon masky masky masky
+	NPC* dtguard32 = new NPC(*pyramid);
+	dtguard32->setLeader(true, 0, deserttemplew, false);
+	dtguard32->setParty({masky, masky, masky}); //pyramon masky masky masky
+	dtguard32->blockExit(NORTH, ENEMY, "guarded by the PYRAMON.", true);
+	dtguard32->setScaleFight();
+	dtguard32->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
+	dtguard32->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
 
 	//the boss!
 	NPC* dtboss = new NPC(*thedark);
@@ -6011,12 +6097,91 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 									{NULL, "It was very very big."},
 									{NULL, "You see the BIG RED BUTTON OF HOPE left behind on the ground!"},
 									{NULL, "Your ESCAPE ORB hardened into a STONE ORB."}});
+	dtboss->setTalkOnDefeat();
+	dtboss->setForceBattle();
+	dtboss->addLinkedItem(bigredbutton, foresttempleboss);
+	Item* deorb; //we implement this last after the rest of the forest temple stuff
+	dtboss->setLinkedOrb(deorb);
+	dtboss->addPaveLink(desertbuffer2, deserttemplestairs, NORTH, SOUTH); //make it so you can just walk out of the temple now
+	dtboss->addRedirect(desertbuffer1, desertbuffer2); //cause they're the same room
+	dtboss->addPaveLink(deserttemple, deserthallway7, EAST, WEST); //remove the infinite loop
+	dtboss->addPaveLink(deserthallway7, deserthallway6, EAST, WEST); //remove the infinite loop
+	dtboss->addLinkedRoom(deserttempleboss, "in the desert temple arena, cleared of its darkness. It would take you quite a while to jog to the other side.");
+	dtboss->addLinkedRoom(desertbuffer2, "at the bottom of the temple stairs.");
+	dtboss->addLinkedRoom(deserthallway7, "back in the long dark hallway, now only dark to a reasonable extent.");
+	dtboss->addLinkedRoom(deserthallway6, "in the hallway. You see scratch marks all over the walls.");
+	dtboss->addLinkedRoom(deserthallway5, "like almost about halfway through the hallway.");
+	dtboss->addLinkedRoom(deserthallway4, "walking down the hallway...");
+	dtboss->addLinkedRoom(deserthallway3, "in the hallway. You see the light at the end of the hallway!");
+	dtboss->addLinkedRoom(deserthallway2, "almost at the end of the hallway.");
+	dtboss->addLinkedRoom(deserthallway, "in the desert temple. The bricks are a darker shade down here.");
+	dtboss->addLinkedRoom(deserttempleentrance, "on a large dune where the desert temple entrance used to be.");
+	dtboss->setEscapable(false);
+	dtboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
 
-	//WorldChange dtsinkchanges;
+	shared_ptr<WorldChange> dtsink = make_shared<WorldChange>(); //when the forest temple sinks into the ground
+	dtsink->exitDepavings.push({deserttempleentrance, IN_TEMPLE}); //can't go in the temple anymore
+	dtsink->redirectRooms.push({deserttemplestairs, deserttempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the big red button (for some reason)
+	dtsink->redirectRooms.push({desertbuffer1, deserttempleentrance});
+	dtsink->redirectRooms.push({desertbuffer2, deserttempleentrance});
+	dtsink->redirectRooms.push({deserthallway, deserttempleentrance});
+	dtsink->redirectRooms.push({deserthallway2, deserttempleentrance});
+	dtsink->redirectRooms.push({deserthallway3, deserttempleentrance});
+	dtsink->redirectRooms.push({deserthallway4, deserttempleentrance});
+	dtsink->redirectRooms.push({deserthallway5, deserttempleentrance});
+	dtsink->redirectRooms.push({deserthallway6, deserttempleentrance});
+	dtsink->redirectRooms.push({deserthallway7, deserttempleentrance});
+	dtsink->redirectRooms.push({desertbacktrack, deserttempleentrance});
+	dtsink->redirectRooms.push({desertbacktrack2, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemple, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemplec, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemplew, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemplenw, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemplen, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemplene, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemplesw, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemples, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemplese, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttemple2, deserttempleentrance});
+	dtsink->redirectRooms.push({deserttempleboss, deserttempleentrance});
+	dtboss->addEnterChanges(deserttempleentrance, dtsink);
+	dtboss->addLinkedWelcome(deserttempleentrance, {{NULL, "The ground rumbles..."},
+		{NULL, "The desert temple starts sinking into the sand!"},
+		{NULL, "The sands beneath your feet are shaking..."},
+		{NULL, "The sand has completely enveloped the temple!"}});
 
-	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo);
-	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo);
-	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo);
+	/*Room*  = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
+	Room*  = new Room("fully in the desert temple. You must DROP the ESCAPE ORB if you wish to leave.");
+	Room*  = new Room("in the desert temple. The bricks are a darker shade down here.");
+	Room* deserthallway2 = new Room("in a long dark hallway.");
+	Room* deserthallway3 = new Room("");
+	Room* deserthallway4 = new Room("");
+	Room* deserthallway5 = new Room("");
+	Room* deserthallway6 = new Room("");
+	Room* deserthallway7 = new Room("");
+	Room* desertbacktrack = new Room("back in the long hallway.");
+	Room* desertbacktrack2 = new Room("in the hallway. Looking back, you don't seem any farther into it.");
+	Room* deserttemple = new Room("in the desert temple. I wonder what your teammates think about it.");
+	Room* deserttemplec = new Room("in the center of the desert temple. There are three slots to drop LIGHT ORBs into."); //There's a platform heading down deeper into the temple.
+	Room* deserttemplew = new Room("at the far end of the desert temple. There are some maskies carved into the wall.");
+	Room* deserttemplenw = new Room("at a still lake with a black sand beach.");//light orb 3
+	Room* deserttemplen = new Room("in the desert temple. You keep seeing movement around you, but it's just shadows.");
+	Room* deserttemplene = new Room("in a garden of leafless trees. The atmosphere is very still here.");//light orb 2
+	Room* deserttemplesw = new Room("in the desert temple. The ceiling arches are really well-designed.");
+	Room* deserttemples = new Room("at a particularly well-lit area of the desert temple.");//light orb 1
+	Room* deserttemplese = new Room("in the desert temple. This corner has some scratches on the wall.");
+	Room* deserttemple2 = new Room("at the deepest level of the desert temple. The room to the NORTH is very very dark.");
+	Room* deserttempleboss = new Room("in an enormous arena filled with darkness.\nThere is no end in sight.");*/
+
+	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
+
+	shared_ptr<WorldChange> dtdisappear = make_shared<WorldChange>(); //change to make the teammates disappear after reaching the end of the dark hallway
+	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb1});
+	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb2});
+	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb3});
+	deserthallway7->setEnterChanges(*dtdisappear); //make the teammates disappear at the end of the hallway
 
 	WorldChange dtodropchanges;
 	dtodropchanges.unLightOrb.push({self->getParty(), lightorb1});
@@ -6025,12 +6190,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtodropchanges.linkedItems.push({lightorb1, deserttemples});
 	dtodropchanges.linkedItems.push({lightorb1, deserttemplenw});
 	dtodropchanges.linkedItems.push({lightorb1, deserttemplene});
+	dtodropchanges.linkedEnterChanges.push({deserthallway7, dtdisappear}); //make the next entering of the temple make this happen again (if the player doesn't get there the first time, the original just gets overwritten so no problemo)
+	dtodropchanges.exitDepavings.push({deserttemplec, DOWN}); //get rid of the light orb exit
 
-	Item* deorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
-								"A shiny black orb which you must TAKE in order to enter the desert temple.",
-								"A fragile black orb which you must DROP in order to exit the desert temple.",
-								"A hard stone orb, the petrified version of the desert temple's entry/escape orb.",
-								desertbuffer1, desertbuffer2, dtboss, {}, dtodropchanges); //MARK: SET LINKED ENEMIES
+	deorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
+						  "A shiny black orb which you must TAKE in order to enter the desert temple.",
+						  "A fragile black orb which you must DROP in order to exit the desert temple.",
+						  "A hard stone orb, the petrified version of the desert temple's entry/escape orb.",
+						  desertbuffer1, desertbuffer2, dtboss, {dtguard11, dtguard12, dtguard13, dtguard21, dtguard22, dtguard31, dtguard32}, dtodropchanges);
 
 
 
@@ -6058,6 +6225,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
 	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
+	powerofplot->speedbuff = 1000;
 
 	NPC* finalboss = new NPC(*burgermenace);
 	finalboss->setLeader(true, 10000, limbo, false);
@@ -6137,6 +6305,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
 
 	buildNPCData(); //build all the npc stuff in helper now that all the teammates and npcs have been set up
+	WorldState[CANDISMISS] = true; //we can dismiss teammates by default
 
 	return self; //returns the player character
 }
@@ -6608,13 +6777,33 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 			CinPause(); //pause after the shatter message
 			WorldState[CANDISMISS] = true; //can dismiss teammates outside of temple
 			travel(currentRoom, NULL, player->getParty(), inventory, true, orb->getEntrance()); //go back to the temple entrance
-			logW("o", item->getID()); //track the orb droppening
+			logW("u", item->getID(), currentRoom->getID()); //track the orb droppening
 		}
 	} else if (!strcmp(item->getType(), "lightorb")) {
 		LightOrb* orb = (LightOrb*)item;
 		if (orb->getDropoff(currentRoom)) { //if this is the light orb dropoff
-			//give back teammate
-			//check if open boss entrance
+			CinPause();
+			cout << "The LIGHT ORB rolled into its slot!";
+			CinPause();
+			orb->setTeammate(NULL, player->getParty()); //get the teammate back, this also prints the "teammate is back" text
+			vector<Item*> lightorbs; //get all the light orbs so we can check if we can open the ground yet
+			while (Item* lorb = getItemTypeInVector(currentRoom->getItems(), "lightorb")) {
+				lorb->unRoom();
+				lightorbs.push_back(lorb);
+			}
+			if (lightorbs.size() >= 3) { //open the exit to the boss area!
+				orb->paveDown();
+				CinPause();
+				cout << "\nAll three LIGHT ORBs are in their slots!";
+				CinPause();
+				cout << "The ground starts opening up...";
+				CinPause();
+				cout << "An exit DOWNwards was opened!";
+			}
+			for (Item* lorb : lightorbs) { //put the lorbs back
+				lorb->setRoom(currentRoom);
+			}
+			logW("u", item->getID(), currentRoom->getID()); //track the changes
 		}
 	} else if (!strcmp(item->getType(), "hose")) { //apply any blocks the hose does in this room
 		((HoseItem*)item)->drop(currentRoom);
@@ -7082,7 +7271,7 @@ void dismissNPC(Room* currentRoom, const char* npcname, vector<NPC*>* party) {
 		cout << "\n" << npcname << " was not dismissed.";
 		return;
 	} //you can't dismiss the npc because it's in a temple where you need your team or the final boss prelude where you wouldn't be able to get them back
-	if (false /*!WorldState[CANDISMISS]*/) { //MARK: fix this
+	if (!WorldState[CANDISMISS]) { //MARK: fix this
 		cout << "\nYour team has no way to go back home right now!";
 		return;
 	} //removes the npc from your party

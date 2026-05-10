@@ -64,8 +64,8 @@ struct WorldChange {
 	std::queue<std::pair<Room*, Item*>> removeStock; //remove this stock from these rooms
 	std::queue<Room*> linkedStations; //these rooms are set to stations
 
-	std::queue<std::pair<std::vector<NPC*>, Item*>> linkedLightOrbs; //give these light orbs the teammates from the party
-	std::queue<std::pair<std::vector<NPC*>, Item*>> unLightOrb; //make these light orbs give the teammate back
+	std::queue<std::pair<std::vector<NPC*>*, Item*>> linkedLightOrbs; //give these light orbs the teammates from the party
+	std::queue<std::pair<std::vector<NPC*>*, Item*>> unLightOrb; //make these light orbs give the teammate back to the party
 
 	Item* linkedOrb = NULL; //petrify this orb, a very specific functionality
 

@@ -77,6 +77,8 @@ struct Attack {
 	bool transformtotar = false; //if this attack makes the attacker transform into the target (if this is true, NPC* transformation will be overridden on use)
 	NPC* transformation = NULL; //the attacker transforms into this npc
 
+	double statchip = 0; //how much % of the target's stats this attack chips away (random between 0 and this)
+
 	//constructs the attack
 	//default stats are for testing purposes
 	Attack(const char* _name, const char* _description, bool _contact, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {

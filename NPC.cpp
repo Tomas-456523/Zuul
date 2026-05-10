@@ -474,6 +474,9 @@ void NPC::startNewChanges(bool looplast) { //make a new world changes object to 
 	changes.push(WorldChange());
 	loopLastChange = looplast;
 }
+void NPC::setLoopChanges() {
+	loopLastChange = true;
+}
 void NPC::setMask(const char* _title, const char* _name, const char* _desc) {
 	masked = true;
 	hiddentitle = title; //store the true title and name and description
@@ -1078,6 +1081,18 @@ void NPC::transform(NPC* npc) {
 	targeteffect = npc->getTargetEffect();
 	//don't change boss status because non-bosses become fake bosses, and bosses stay bosses
 }
+void NPC::chipStats(double maxpercent) {
+	double percent = ;
+	stats.hpmax = Round(stats.hpmax - rand()/(RAND_MAX/maxpercent));
+	stats.defense = Round(stats.defense, - rand()/(RAND_MAX/maxpercent));
+	stats.attack = Round(stats.attack, - rand()/(RAND_MAX/maxpercent));
+	stats.toughness = Round(stats.toughness, - rand()/(RAND_MAX/maxpercent));
+	stats.pierce = Round(stats.pierce, - rand()/(RAND_MAX/maxpercent));
+	stats.speed = Round(stats.speed, - rand()/(RAND_MAX/maxpercent));
+	//don't reduce sp because that's a more delicate mechanic/stat
+	//MARK: cap at 5
+	//MARK: print changes
+}
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
 }
@@ -1190,13 +1205,44 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (effect->spusage != 1) calculateWeights(); //recalculate weights to account for new sp costs
 
 	if (affector) { //print stat changes if in battle
-		if (effect->defensebuff != 1) cout << "\n" << name << "'s DEFENSE went " << (effect->defensebuff > 1 ? "up" : "down") << " by a factor of " << (effect->defensebuff > 1 ? effect->defensebuff : 1/effect->defensebuff) << "!";
-		if (effect->attackbuff != 1) cout << "\n" << name << "'s ATTACK went " << (effect->attackbuff > 1 ? "up" : "down") << " by a factor of " << (effect->attackbuff > 1 ? effect->attackbuff : 1 / effect->attackbuff) << "!";
-		if (effect->toughbuff != 1) cout << "\n" << name << "'s TOUGHNESS went " << (effect->toughbuff > 1 ? "up" : "down") << " by a factor of " << (effect->toughbuff > 1 ? effect->toughbuff : 1 / effect->toughbuff) << "!";
-		if (effect->piercebuff != 1) cout << "\n" << name << "'s PIERCE went " << (effect->piercebuff > 1 ? "up" : "down") << " by a factor of " << (effect->piercebuff > 1 ? effect->piercebuff : 1 / effect->piercebuff) << "!";
-		if (effect->speedbuff != 1) cout << "\n" << name << "'s SPEED went " << (effect->speedbuff > 1 ? "up" : "down") << " by a factor of " << (effect->speedbuff > 1 ? effect->speedbuff : 1 / effect->speedbuff) << "!";
-		if (effect->damagebuff != 1) cout << "\n" << name << " now takes " << damageMultiplier << " times as much damage!";
-		if (effect->spusage != 1) cout << "\n" << name << "'s moves now use " << spUseMultiplier << " times SP!";
+		bool pause = false;
+		if (effect->defensebuff != 1) {
+			cout << "\n" << name << "'s DEFENSE went ";
+			if (defenseMultiplier == 1) cout << (effect->defensebuff > 1 ? "up" : "down") << " to " << defenseMultiplier << "x!";
+			else cout << "back to normal!";
+			pause = true;
+		} if (effect->attackbuff != 1) {
+			cout << "\n" << name << "'s ATTACK went ";
+			if (attackMultiplier == 1) cout << (effect->attackbuff > 1 ? "up" : "down") << " to " << attackMultiplier << "x!";
+			else cout << "back to normal!";
+			pause = true;
+		} if (effect->toughbuff != 1) {
+			cout << "\n" << name << "'s TOUGHNESS went ";
+			if (toughMultiplier == 1) cout << (effect->toughbuff > 1 ? "up" : "down") << " to " << toughMultiplier << "x!";
+			else cout << "back to normal!";
+			pause = true;
+		} if (effect->piercebuff != 1) {
+			cout << "\n" << name << "'s PIERCE went ";
+			if (pierceMultiplier == 1) cout << (effect->piercebuff > 1 ? "up" : "down") << " to " << pierceMultiplier << "x!";
+			else cout << "back to normal!";
+			pause = true;
+		} if (effect->speedbuff != 1) {
+			cout << "\n" << name << "'s SPEED went ";
+			if (speedMultiplier == 1) cout << (effect->speedbuff > 1 ? "up" : "down") << " to " << speedMultiplier << "x!";
+			else cout << "back to normal!";
+			pause = true;
+		} if (effect->damagebuff != 1) {
+			cout << "\n" << name << " now takes ";
+			if (damagebuff == 1) cout << damageMultiplier << "x damage!";
+			else cout << "normal damage!";
+			pause = true;
+		} if (effect->spusage != 1) {
+			cout << "\n" << name << "'s moves now use ";
+			if (defenseMultiplier == 1) cout << spUseMultiplier << "x SP!";
+			else cout << "a normal amount of SP!";
+			pause = true;
+		}
+		if (pause) CinPause();
 	}
 	
 	return &npceffects[effect]; //return a reference to the npc's manager of this effect
@@ -1261,13 +1307,44 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 			if (effect->spusage != 1) calculateWeights(); //recalculate weights to account for new sp costs
 
 			if (affector) { //print stat changes if in battle
-				if (effect->defensebuff != 1) cout << "\n" << name << "'s DEFENSE went " << (effect->defensebuff < 1 ? "up" : "down") << " by a factor of " << pow(effect->defensebuff, stacks) << "!";
-				if (effect->attackbuff != 1) cout << "\n" << name << "'s ATTACK went " << (effect->attackbuff < 1 ? "up" : "down") << " by a factor of " << pow(effect->attackbuff, stacks) << "!";
-				if (effect->toughbuff != 1) cout << "\n" << name << "'s TOUGHNESS went " << (effect->toughbuff < 1 ? "up" : "down") << " by a factor of " << pow(effect->toughbuff, stacks) << "!";
-				if (effect->piercebuff != 1) cout << "\n" << name << "'s PIERCE went " << (effect->piercebuff < 1 ? "up" : "down") << " by a factor of " << pow(effect->piercebuff, stacks) << "!";
-				if (effect->speedbuff != 1) cout << "\n" << name << "'s SPEED went " << (effect->speedbuff < 1 ? "up" : "down") << " by a factor of " << pow(effect->speedbuff, stacks) << "!";
-				if (effect->damagebuff != 1) cout << "\n" << name << " now takes " << damageMultiplier << " times as much damage!";
-				if (effect->spusage != 1) cout << "\n" << name << "'s moves now use " << spUseMultiplier << " times SP!";
+				bool pause = false;
+				if (effect->defensebuff != 1) {
+					cout << "\n" << name << "'s DEFENSE went ";
+					if (defenseMultiplier == 1) cout << (effect->defensebuff < 1 ? "up" : "down") << " to " << defenseMultiplier << "x!";
+					else cout << "back to normal!";
+					pause = true;
+				} if (effect->attackbuff != 1) {
+					cout << "\n" << name << "'s ATTACK went ";
+					if (attackMultiplier == 1) cout << (effect->attackbuff < 1 ? "up" : "down") << " to " << attackMultiplier << "x!";
+					else cout << "back to normal!";
+					pause = true;
+				} if (effect->toughbuff != 1) {
+					cout << "\n" << name << "'s TOUGHNESS went ";
+					if (toughMultiplier == 1) cout << (effect->toughbuff < 1 ? "up" : "down") << " to " << toughMultiplier << "x!";
+					else cout << "back to normal!";
+					pause = true;
+				} if (effect->piercebuff != 1) {
+					cout << "\n" << name << "'s PIERCE went ";
+					if (pierceMultiplier == 1) cout << (effect->piercebuff < 1 ? "up" : "down") << " to " << pierceMultiplier << "x!";
+					else cout << "back to normal!";
+					pause = true;
+				} if (effect->speedbuff != 1) {
+					cout << "\n" << name << "'s SPEED went ";
+					if (speedMultiplier == 1) cout << (effect->speedbuff < 1 ? "up" : "down") << " to " << speedMultiplier << "x!";
+					else cout << "back to normal!";
+					pause = true;
+				} if (effect->damagebuff != 1) {
+					cout << "\n" << name << " now takes ";
+					if (damagebuff == 1) cout << damageMultiplier << "x damage!";
+					else cout << "normal damage!";
+					pause = true;
+				} if (effect->spusage != 1) {
+					cout << "\n" << name << "'s moves now use ";
+					if (defenseMultiplier == 1) cout << spUseMultiplier << "x SP!";
+					else cout << "a normal amount of SP!";
+					pause = true;
+				}
+				if (pause) CinPause();
 			}
 
 			//apply fall damage (effect removal damage) if the npc isn't invincible (or the fall damage heals for some reason)

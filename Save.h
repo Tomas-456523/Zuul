@@ -36,7 +36,6 @@ struct Save {
 	*  - NPCs that were talked to, denoted by a[npc], with an optional modifier for different types of dialogue (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
 	*  - Enter changes, denoted by e[room]
 	*  - Room welcomes that were triggered, denoted by w[room]
-	*  - Dropped escape orbs, denoted by o[item]
 	*  - If the player was caught by a pursuer, denoted by p[npc]
 	*  - Opening a temple in a temple entrance room, denoted by t[room]
 	*  Section U: Only exists while pursuer is pursuing, tracks their room
@@ -151,7 +150,7 @@ struct Save {
 			} else if (*p == 'W') {
 				if (sections.count('U') || sections.count('R') || sections.count('I') || sections.count('S')) return false; //section W must precede these sections because otherwise it could overwrite stuff they set, or they could be missing data
 				for (p++;; p++) {
-					if (strchr("bxdrewopt", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
+					if (strchr("bxdrewpt", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
 						if (!verifyNum(++p)) return false; //check item/npc/room id
 					} else if (*p == 'u') {
 						if (!verifyNum(++p)) return false; //check item id
@@ -584,7 +583,23 @@ struct Save {
 				} else if (!strcmp(item->getType(), "choiceorb")) {
 					((ChoiceOrb*)item)->makeChoice(*(++data)); //make the choice based on the character
 					log = false; //because it logs itself
-					data++;
+					data++; //go past the choice letter
+				} else if (!strcmp(item->getType(), "lightorb")) {
+					((LightOrb*)item)->setTeammate(NULL, player->getParty(), false); //give the teammate back
+					item->setRoom(room); //put the item in the dropoff room so we can do this check down here
+					vector<Item*> lightorbs; //get all the light orbs so we can check if we can open the ground yet
+					while (Item* lorb = getItemTypeInVector(room->getItems(), "lightorb")) {
+						lorb->unRoom();
+						lightorbs.push_back(lorb);
+					}
+					if (lightorbs.size() >= 3) { //open the exit to the boss area!
+						orb->paveDown();
+					}
+					for (Item* lorb : lightorbs) { //put the lorbs back
+						lorb->setRoom(currentRoom);
+					}
+				} else if (!strcmp(item->getType(), "escapeorb")) { //do escape orb drop changes
+					((EscapeOrb*)item)->drop();
 				} else if (!strcmp(item->getType(), "manhole")) { //uncover manhole item exits
 					ManholeItem* cover = (ManholeItem*)item;
 					room->setExit(cover->getDirection(), cover->getRoom());
@@ -618,7 +633,7 @@ struct Save {
 				npc->defeat(); //defeat() logs the defeating in section W automatically
 				npc->takeGift(); //take any battle gifts they may have had, room/inventory set in section I
 			} else if (*data == 'r') { //handle respawn changes
-				npcsH[ParseNum(++data)]->undefeat(); //undefeat() also logs it in Wautomatically
+				npcsH[ParseNum(++data)]->undefeat(); //undefeat() also logs it in W automatically
 			} else if (*data == 'a') { //pop dialogue because it's already been heard, plus any world changes the conversation has (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
 				//MARK: THIS DOES NOT HANDLE BRANCHING DIALOGUE AT ALL
 				NPC* npc = npcsH[ParseNum(++data)];
@@ -644,8 +659,6 @@ struct Save {
 				roomsH[ParseNum(++data)]->doEnterChanges(); //this function also logs the thing automatically
 			} else if (*data == 'w') { //do room welcomes
 				roomsH[ParseNum(++data)]->printWelcome(false); //printWelcome logs it automatically
-			} else if (*data == 'o') {
-				//o - ignore for now drop escape orb MARK: WE NEED TO HANDLE ESCAPE ORBS
 			} else if (*data == 'p') { //player got caught by pursuer
 				npcsH[ParseNum(++data)]->doCatchChanges();
 			} else if (*data == 't') { //open temples
@@ -709,6 +722,8 @@ struct Save {
 						inventory->push_back(item);
 						//make sure the player has their weapon items' attacks
 						if (!strcmp(item->getType(), "weapon")) player->addSpecialAttack(((WeaponItem*)item)->getAttack());
+						//make the escape orbs' name and description match to escape version if it's in the inventory and not stone yet
+						else if (!strcmp(item->getType(), "escapeorb") && !((EscapeOrb*)item)->getInert()) ((EscapeOrb*)item)->take();
 					} else { //otherwise set the item to the room
 						item->setRoom(roomsH[roomid]);
 						//block exits that may be blocked by a hose being in the room

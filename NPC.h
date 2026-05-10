@@ -245,6 +245,7 @@ public: //you need to set stats on creation
 	void setImmunity(Effect* effect, const Conversation& immunetext);
 	void setFightEffects(Effect* team, Effect* lead);
 	void transform(NPC* npc); //transform into the given npc
+	void chipStats(double maxpercent);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER, size_t unless = Helper::NEVER);
@@ -269,6 +270,7 @@ public: //you need to set stats on creation
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
+	void setLoopChanges(); //manually set to loop the last changes in the changes queue
 	void setMask(const char* _title, const char* _name, const char* _desc); //make fake identity for the npc outside battle
 	
 	void printDialogue(bool lastpause, Conversation* thisone = NULL, bool actuallyprint = true); //optionally pass a conversation to print, used by these 3 functions below

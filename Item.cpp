@@ -636,22 +636,31 @@ void ChoiceOrb::makeChoice(char choice) {
 }
 
 //light orbs, for progressing in the desert temple
-LightOrb(const char* name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo) {
+LightOrb(const char* name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo, const char* down, Room* dest) : Item(_name, desc, _room, true, false, false) {
 	type = "lightorb";
 	dropoff = _dropoff;
 	limbo = _limbo;
+	downwards = {down, dest};
 }
-void setTeammate(NPC* npc, vector<NPC*>* party) {
+//set or unset the teammate this light orb is managing
+void setTeammate(NPC* npc, vector<NPC*>* party, bool announce) {
 	if (npc) {
 		npc->setRoom(limbo); //remove the teammate from the party and put them in limbo
 		party->erase(remove(party.begin(), party.end(), npc), party.end());
 		npc->Dismiss(false);
 	} else if (teammate) { //if we're tracking a teammate
-		party->push_back(npc); //no need to set room; they will get put back automaticlly by travel() from dropItems after dropping the escape orb
-		npc->Recruit(false);
+		teammate->setRoom(room); //put the teammate back in the room (room should be set correctly now)
+		party->push_back(teammate);
+		teammate->Recruit(false);
+		if (announce) cout << "\n" << teammate->getName() << " appeared in a flash of light!\n" << teammate->getName() << " is back!"; //tell the player their teammate is back
 	}
 	teammate = npc; //track the npc so we can put them back later
 }
+//set the exit downwards to the boss area
+void paveDown() {
+	dropoff->setExit(downwards.first, downwards.second);
+}
+//get if this is the correct room
 bool getDropoff(Room* room) {
 	return room == dropoff;
 }
