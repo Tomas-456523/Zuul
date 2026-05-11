@@ -796,15 +796,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 0));
 	npcChar[forestknight] = 'k'; //Absolom's character representation is k for knight
-	forestknight->setRoaming(forestknight); //Absolom roams after going to his room, meaning you beat Jim Shady
+	forestknight->setRoaming(true, false); //Absolom roams after going to his room, meaning you beat Jim Shady
 	forestknight->setRoamRooms({forest, forestleft, forestright, foresttempleentrance, forestfork, forestgate, forestwall, forestgrave, forestspork, bossgrove, forestnice, treasuregrove, flowerfield});
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
 										{forestknight, "I shan't assist you; this is an object of sin."},
 										{forestknight, "I implore you to find a new, more noble goal for your quest."}});
-	forestknight->addConversation({{forestknight, "For years, that shrimple fiend has kept me trapped with the graves of my fallen compatriots."},
+	forestknight->addConversation({{forestknight, "For years, that shrimple fiend kept me trapped with the graves of my fallen compatriots."},
 								   {forestknight, "No matter what I tried, he countered my every technique."},
-								   {forestknight, "Nevertheless, I must thank you, child, for freeing me from that shrimp's grasp."},
+								   {forestknight, "I must thank you, child, for freeing me from that shrimp's grasp."},
 								   {self, "Yeah no problem."}});
 	Conversation absrecruit1 = {{self, "Hey knight man wanna help me save this kid?"},
 							    {forestknight, "Why of course!"},
@@ -3877,7 +3877,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* lpincer = new Attack("PINCER", "pinced", true, -5, 10, 10, 1, 1, 1);
 	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", true, 6, 25, 0, 1, 1, 3);
 	tailsmack->afterdesc = " with its tail";
-	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking loose chunks of the ceiling", false, 8, 20, 0, 5, 5, 1);
+	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking chunks of the ceiling loose", false, 8, 20, 0, 5, 5, 1);
 	lobroar->focushits = false;
 	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", true, 13, 40, 0, 1, 1, 1);
 	trainrush->afterdesc = "like a train";
@@ -4611,7 +4611,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* turbopunchflurry = new Attack("TURBO PUNCH FLURRY", "unleashed a huge barrage of cool punches", true, 7, 5, 0, 10, 10, 1, false, 10);
 	turbopunchflurry->focushits = false;
 
-	Attack* hindsight2020 = new Attack("HINDSIGHT 20/20");
+	//Attack* hindsight2020 = new Attack("HINDSIGHT 20/20");
 	//senseofself, "Well they're all incapacitated."
 	//senseofself, "All the credit goes to meee! >B)"
 	//self, "what?"
@@ -4707,8 +4707,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	pyramid->addSpecialAttack(spiraleye);
 
 	//MARK: TO DO LIST
-	//make sure boss does not target immune character a second time
-	//make conditional attacks
+	//boss phases
 
 	//hypnosis without losing control of player
 	//sense of self
@@ -4722,10 +4721,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* pain = new Effect("PAIN", 3, 10, 0, 0.5, 0.5, 0.5, 0.5, 0.5);
 	ballofpain->addEffect(pain);
 	thedark->addSpecialAttack(ballofpain);
-	Attack* terror = new Attack("TERROR", "showed its face to", false, 8, 0, 0, 1, 1, 1);
+	Attack* terror = new Attack("TERROR", "showed its face to", false, 7, 0, 0, 1, 1, 1);
 	Effect* despair = new Effect("DESPAIR", 2147483647);
 	despair->freeze = true;
-	terror->setEffect(despair);
+	terror->addEffect(despair);
 	terror->donotplayer = true; //because that would be a bit annoying at most and have literally only one possible response so it's better for the fight to only let teammates have despair
 	terror->redundanteffect = false; //cause it lasts forever so reapplying it would be a waste of a turn
 	thedark->addSpecialAttack(terror);
@@ -4741,7 +4740,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	encourage->cancel = despair;
 	encourage->addDescription("Take a turn to encourage a teammate with DESPAIR to have hope and keep fighting!");
 	despair->response = encourage; //player can use encourage once a teammate gets despair
-	
+	forestknight->setImmunity(despair, {{forestknight, "You are a terrible beast..."}, {forestknight, "but this is no reason to give up hope!"}, {forestknight, "Friends, perservere!"});
 
 	NPC* bolide = new NPC("", "BOLIDE", "", limbo, 0);
 	//meteor shower
@@ -4947,7 +4946,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	realchest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 	
 	NPC* forestboss = new NPC(*savagehog);
-	forestboss->setLeader(true, 5, bossgrove, true, true);
+	forestboss->setLeader(true, 5, bossgrove, true);
 	forestboss->setParty({pricklyhog, greaterhog});
 	forestboss->blockExit(NORTH, ENEMY, "blocked off by the MAMMOTH HOG!");
 	forestboss->setEscapable(false);
@@ -6500,17 +6499,18 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	if (npc->popNoFight()) { //fakeout fight, also removes leader status if marked as doing that
 		return;
 	}
+	//print any dialogue that is specifically printed right before battle
+	npc->printOpeningDialogue();
 	NPC* roamio = NULL; //add roaming npc to the party if one is here
 	for (NPC* _roamio : currentRoom->getNpcs()) {
-		if (_roamio->getRoaming() && !_roamio->getRecruited() && npc != _roamio) {
+		if (_roamio->getRoaming() && _roamio->getRoamHelp() && !_roamio->getRecruited() && npc != _roamio) {
 			roamio = _roamio;
 			party->push_back(roamio);
-			cout << roamio->getName() << " is fighting alongside you!";
+			cout << "\n" << roamio->getName() << " is fighting alongside you!";
+			CinPause();
 			break;
 		}
 	}
-	//print any dialogue that is specifically printed right before battle
-	npc->printOpeningDialogue();
 	if (npc->getScaleFight()) npc->setLevel((*party)[0]->getLevel()); //scale the fight to the player's level if marked as necessary
 	//creates the Battle!
 	Battle battle = Battle(party, npc->getParty(), inventory, mony, npc->getEscapable());

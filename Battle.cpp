@@ -199,7 +199,7 @@ void Battle::attachEffect(NPCEffect* effect) {
 	if (Attack* response = effect->effect->response) { //if the player gets some response to this effect, give them that so they can use it
 		bool pfound = false; //we only want to print it once but technically there might be more than one player so we have this check
 		for (NPC* npc : playerTeam) { //the player might've gotten duplicated due to kosmic katana so we check for playerness in a for loop
-			if (npc->getPlayerness() && !getAttackInVector(npc->getSpecialAttacks(), response)) { //don't readd the move because that'd be silly and bad and stuff
+			if (npc->getPlayerness() && !getAttackInVector(npc->getSpecialAttacks(), response->name)) { //don't readd the move because that'd be silly and bad and stuff
 				npc->addSpecialAttack(response);
 				if (!pfound) { //print the attack data so the player knows what to do
 					cout << "\n" << npc->getName() << " can now use " << response->name << "!\n" << response->name << " - " << response->trueDesc;
@@ -330,7 +330,11 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	}
 	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
 	if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
-		attachEffect(reciever->setEffect(attack->appliedeffect, attacker));
+		NPCEffect* neffect = reciever->setEffect(attack->appliedeffect, attacker);
+		if (!neffect) { //don't target this npc type with this attack again because they were immune to the effect
+			donttarget[attack].insert(reciever->getParent());
+		}
+		attachEffect(neffect);
 	}
 	if (attack->cancel != NULL) { //removes the effect this attack cancels out
 		if (NPCEffect* canceled = reciever->getEffect(attack->cancel, true)) {
@@ -916,6 +920,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->targetshark && !target->getShark()) continue; //shark-targeting attacks must have a shark to target
 		if (!attack->redundanteffect && target->getEffect(attack->appliedeffect, true)) continue; //if the attack shouldn't target npcs who already have the applied effect but the guy does have it
 		if (attack->donotplayer && target->getPlayerness()) continue; //don't hit the player if the attack says so
+		if (donttarget[attack].count(target->getParent())) continue; //don't target this target with this attack if we've marked it to do so
 		if (attack->protect) { //protect attacks have various conditions
 			if (target == npc) continue; //don't protect yourself because that would be wasting SP to do literally nothing (you're already taking your hits for yourself)
 			if (npc->getGuarding() && npc->getGuarding()->getHealth() > 0) continue; //no guarding moves if we're already guarding someone still capacitated (don't switch person being guarded, that would be like "oh lol nope yeah I'm actually not defending you anymore have fun")
@@ -1002,7 +1007,9 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 	}
 
 	//get the attack to do! defaults to opener if this is an opening turn
-	Attack* attack = (opener ? npc->getOpener() : chooseAttack(npc));
+	Attack* attack = (opener ? npc->getOpener() : NULL);
+	if (Attack* staged = npc->getStaged()) attack = staged; //if the npc has any attacks staged, use that one
+	else attack = chooseAttack(npc); //just choose an attack normally if we don't have any of those special conditions
 	
 	vector<NPC*> targets = getTargets(npc, attack); //try to find the targets for the attack
 

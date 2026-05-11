@@ -390,6 +390,9 @@ bool NPC::getQuantumn() {
 bool NPC::getRoaming() {
 	return roaming;
 }
+bool NPC::getRoamHelp() {
+	return roamhelp;
+}
 Effect* NPC::getTargetEffect() { //get the effect this npc like to prioritize when targeting
 	return targeteffect;
 }
@@ -1116,6 +1119,20 @@ void NPC::chipStats(double maxpercent) {
 	if (printed) CinPause(); //do the pause because we printed stuff
 	//don't reduce sp because that's a more delicate mechanic/stat
 }
+void NPC::stageAttack(double hppercent, Attack* attack) {
+	stagedattacks.push({hppercent, attack});
+}
+Attack* NPC::getStaged() {
+	pair<double, Attack*> staged = {1, NULL};
+	while (!stagedattacks.empty()) { //keep going until we can't use the next one
+		//choose the next available attack if its before the next one and it's below the hp threshold
+		if (staged.first < stagedattacks.front().first && health <= stagedattacks.front().first * stats.hpmax) {
+			staged = stagedattacks.front();
+			stagedattacks.pop(); //pop the attack because we already checked/used it
+		} else break; //we're at the latest possible staged attack so just use this one	
+	}
+	return staged.second; //return whatever we found, which could be null if we found nothing
+}
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
 }
@@ -1256,7 +1273,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 			pause = true;
 		} if (effect->damagebuff != 1) {
 			cout << "\n" << name << " now takes ";
-			if (damagebuff == 1) cout << damageMultiplier << "x damage!";
+			if (damageMultiplier == 1) cout << damageMultiplier << "x damage!";
 			else cout << "normal damage!";
 			pause = true;
 		} if (effect->spusage != 1) {
@@ -1308,7 +1325,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 			}
 			if (effect->tiring) { //removes recovering from the npc
 				recovering -= stacks;
-				if (!recovering && affector) cout << "\n" << name << " is fully recovered!";//print it if the npc was recovering
+				if (!recovering && affector) cout << "\n" << name << " has finished recovering!";//print it if the npc was recovering
 			}
 			if (effect->remove) {
 				if (affector) cout << "\n" << name << " is back!";
@@ -1358,7 +1375,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 					pause = true;
 				} if (effect->damagebuff != 1) {
 					cout << "\n" << name << " now takes ";
-					if (damagebuff == 1) cout << damageMultiplier << "x damage!";
+					if (damageMultiplier == 1) cout << damageMultiplier << "x damage!";
 					else cout << "normal damage!";
 					pause = true;
 				} if (effect->spusage != 1) {

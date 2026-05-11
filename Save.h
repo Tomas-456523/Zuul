@@ -585,7 +585,8 @@ struct Save {
 					log = false; //because it logs itself
 					data++; //go past the choice letter
 				} else if (!strcmp(item->getType(), "lightorb")) {
-					((LightOrb*)item)->setTeammate(NULL, player->getParty(), false); //give the teammate back
+					LightOrb* orb = ((LightOrb*)item);
+					orb->setTeammate(NULL, player->getParty(), false); //give the teammate back
 					item->setRoom(room); //put the item in the dropoff room so we can do this check down here
 					vector<Item*> lightorbs; //get all the light orbs so we can check if we can open the ground yet
 					while (Item* lorb = getItemTypeInVector(room->getItems(), "lightorb")) {
@@ -593,10 +594,10 @@ struct Save {
 						lightorbs.push_back(lorb);
 					}
 					if (lightorbs.size() >= 3) { //open the exit to the boss area!
-						orb->paveDown();
+						orb->paveDown(); //just use the first one, it doesn't matter which one
 					}
 					for (Item* lorb : lightorbs) { //put the lorbs back
-						lorb->setRoom(currentRoom);
+						lorb->setRoom(room);
 					}
 				} else if (!strcmp(item->getType(), "escapeorb")) { //do escape orb drop changes
 					((EscapeOrb*)item)->drop();

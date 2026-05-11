@@ -118,6 +118,7 @@ public: //you need to set stats on creation
 	const char* getHiddenDescription();
 	bool getQuantumn();
 	bool getRoaming();
+	bool getRoamHelp();
 	Effect* getTargetEffect();
 	bool getBanker();
 	int getBalance();
@@ -142,6 +143,7 @@ public: //you need to set stats on creation
 	bool getScaleFight();
 	Effect* getFightTeamEffect();
 	Effect* getFightLeadEffect();
+	Attack* getStaged();
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -228,7 +230,7 @@ public: //you need to set stats on creation
 	void addBlock(Room* room, const char* direction);
 	void setBlockMessage(Conversation why);
 	void setBlockUnless(size_t condition);
-	void setRoaming(bool roam = true);
+	void setRoaming(bool roam = true, bool helpout = true); //does help out by default
 	void setTargetEffect(Effect* effect);
 	void setRoamRooms(initializer_list<Room*> rooms);
 	void roam();
@@ -246,6 +248,7 @@ public: //you need to set stats on creation
 	void setFightEffects(Effect* team, Effect* lead);
 	void transform(NPC* npc); //transform into the given npc
 	void chipStats(double maxpercent);
+	void stageAttack(double hppercent, Attack* attack);
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER, size_t unless = Helper::NEVER);
@@ -330,6 +333,7 @@ protected:
 	bool contactrecoil = true; //if the recoil attack only triggers against contact attacks
 
 	Attack* opener = NULL; //the attack that happens when this npc goes into battle
+	queue<pair<double, Attack*>> stagedattacks; //queue the second attacks to be done when at < maxhp*first health, used for force setting the next attack when reaching hp thresholds
 
 	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack
 
@@ -453,6 +457,7 @@ protected:
 	int recruitcondition = Helper::NEVER; //does NOT mean condition needed to recruit them, but rather condition that gets affected when this npc is recruited/dismissed
 
 	bool roaming = false; //if this npc roams
+	bool roamhelp = false; //if this roaming npc helps out in battle
 	vector<Room*> roamrooms; //which rooms this npc roams between
 	
 	NPC* pursuing = NULL; //which npc the roaming npc is pursuing
