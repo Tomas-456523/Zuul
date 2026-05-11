@@ -181,7 +181,7 @@ public: //you need to set stats on creation
 	void setBaseStats(Stats _stats); //reset base stats
 	void addXp(int _xp);
 	void levelUp(bool trackLevelUp = false, int instant = 0);
-	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true, bool boss = false);
+	void setLeader(bool _leader, int _level = 0, Room* room = NULL, bool respawn = true);
 	int damage(double power, double pierce); //affect the npc's health and return how much the health was affected by
 	int directDamage(int damage, const char* status = NULL);
 	void setLevel(int _level, bool track = false); //we usually don't track the changes if it was from manually leveling up, but for stuff like in the gym we do

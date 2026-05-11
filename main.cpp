@@ -540,7 +540,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 					   {burgermenace, "YOU WILL NEVER HAVE MATTERED."},
 					   {self, "We'll see about that >:|"},
 					   {NULL, "You and your team are filled with the power of PLOT!"},
-					   {NULL, "Your stats rose by 100000%!"}});
+					   {NULL, "Your stats rose to 100000%!"}});
 					   //BATTLE BEGIN!
 
 	////////////////////////
@@ -586,7 +586,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	self->addSpecialAttack(headbutt);
 	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
-	Attack* punchflurry = new Attack("PUNCH FLURRY", "rushed", true, 7, 5, 0, 6, 7, 1, false, 15);
+	Attack* punchflurry = new Attack("PUNCH FLURRY", "unleashed a flurry of punches upon", true, 7, 5, 0, 6, 7, 1, false, 15);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
 	self->addSpecialAttack(punchflurry);
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
@@ -4237,7 +4237,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	tossed->remove = true;
 	tossaside->addEffect(tossed);
 	tossaside->synergies.push_back(stretched);
-	tossaside->cancel = suspended;
+	tossaside->cancel = stretched;
 	crimmind->setBasicAttack(chuck);
 	crimmind->addSpecialAttack(stretch);
 	crimmind->addSpecialAttack(tossaside);
@@ -4546,32 +4546,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	junglenaut->addSpecialAttack(constrict);
 	junglenaut->addSpecialAttack(piledrive);
 
-	/*Attack* punch = new Attack("PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
-	punch->addDescription("Throw a simple punch at the target. (10 ATTACK)");
-	self->setBasicAttack(punch);
-
-	Attack* energyball = new Attack("ENERGY BALL", "threw an energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
-	energyball->addDescription("Throw a piercing ball of pure kinetic energy at the target. (12 ATTACK, 10 PIERCE)");
-	self->addSpecialAttack(energyball);
-
-	Attack* kick = new Attack("KICK", "jumped at", true, 6, 15, 0, 1, 1, 1, false, 3);
-	kick->afterdesc = " with a kick";
-	kick->addDescription("Launch a flying side kick at the target. (15 ATTACK)");
-	self->addSpecialAttack(kick);
-
-	Attack* headbutt = new Attack("HEADBUTT", "flew at", true,  5, 25, 0, 1, 1, 1, false, 5);
-	headbutt->afterdesc = " like a missile";
-	headbutt->recoil = 5;
-	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
-	self->addSpecialAttack(headbutt);
-
-	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
-	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
-
-	Attack* punchflurry = new Attack("FLURRY RUSH", "rushed", true, 7, 5, 0, 6, 7, 1, false, 10);
-	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
-	self->addSpecialAttack(punchflurry);*/
-
 	//energize
 	
 	//sp bomb
@@ -4623,19 +4597,21 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//NULL, "You could do so much better; he doesn't deserve you!"
 	//NULL, "Come join the better side!"
 
-	//cool punch
+	//MARK: these attacks have placeholder stats
+	Attack* coolpunch = new Attack("COOL PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
+	coolpunch->afterdesc = " very coolly";
 
-	//cool energy ball
+	Attack* coolenergyball = new Attack("COOL ENERGY BALL", "threw a very cool energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
 
-	//temptation
+	Attack* supersidekick = new Attack("SUPER SIDE KICK", "jumped at", true, 6, 15, 0, 1, 1, 1, false, 3);
+	kick->afterdesc = " with a super cool side kick";
 
-	//super side kick
+	Attack* superswaggyenergyball = new Attack("SUPER SWAGGY ENERGY BALL", "threw a super swaggy ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
+	
+	Attack* turbopunchflurry = new Attack("TURBO PUNCH FLURRY", "unleashed a huge barrage of cool punches", true, 7, 5, 0, 10, 10, 1, false, 10);
+	turbopunchflurry->focushits = false;
 
-	//turbo punch flurry
-
-	//super swaggy enegry ball
-
-	//hindsight 20/20
+	Attack* hindsight2020 = new Attack("HINDSIGHT 20/20");
 	//senseofself, "Well they're all incapacitated."
 	//senseofself, "All the credit goes to meee! >B)"
 	//self, "what?"
@@ -4684,13 +4660,31 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* masky = new NPC("", "MASKY", "Plain white mask floating in the air who warps the world depending on its fluctuating mood.\nIts resting expression is ¦|", limbo, 0, Stats(20, 25, 7, 45, 4, 11, 9));
 	//:D - heal teammate, buff teammate (unchip stats), or make teammate radiant
+	Attack* happyheal = new Attack(":D", "is thinking happy thoughts.", false, 0, -10, 0, 1, 1, 1, true);
+	happyheal->afterdesc = " recovered health";
+	Attack* happyunchip = new Attack(":D", "is thinking happy thoughts.", false, 0, 0, 0, 1, 1, 1, true);
+	happyunchip->afterdesc = "'s strength grew";
+	happyunchip->statchip = -0.05; //up to 5% stat increasing
+	Attack* happyradiate = new Attack(":D", "is thinking happy thoughts.", false, 0, 0, 0, 1, 1, 1, true);
+	happyradiate->afterdesc = " started glowing brightly";
+	Effect* radiant = new Effect("RADIANT", 3, 0, 0, 1.5, 1, 1, 1.5, 2);
+	happyradiate->addEffect(radiant);
+	masky->addSpecialAttack(happyheal);
+	masky->addSpecialAttack(happyunchip);
+	masky->addSpecialAttack(happyradiate);
 	//D: - damage enemy, big chip enemy stats, or turn them into stone
-	Attack* happyheal = new Attack(":D", "", false, 0);
-	Attack* happyunchip = new Attack(":D", "", false, 0);
-	Attack* happyradiate = new Attack(":D", "", false, 0);
-	Attack* saddamage = new Attack("D:", "", false, 0);
-	Attack* sadchip = new Attack("D:", "", false, 0);
-	Attack* sadstone = new Attack("D:", "", false, 0);
+	Attack* saddamage = new Attack("D:", "is thinking sad thoughts.", false, 0, 20, 50, 1, 1, 1);
+	saddamage->afterdesc = " took internal damage";
+	Attack* sadchip = new Attack("D:", "is thinking sad thoughts.", false, 0, 15, 5, 1, 1, 1);
+	sadchip->afterdesc = "'s strength fell";
+	sadchip->statchip = 0.05; //up to 5% stat chipping
+	Attack* sadstone = new Attack("D:", "is thinking sad thoughts.", false, 0, 0, 0, 1, 1, 1);
+	sadstone->afterdesc = " turned into stone";
+	Effect* stone = new Effect("STONE", 3, 0, 0, 1, 0.75, 1.5);
+	sadstone->addEffect(stone);
+	masky->addSpecialAttack(saddamage);
+	masky->addSpecialAttack(sadchip);
+	masky->addSpecialAttack(sadstone);
 
 	NPC* pyramid = new NPC("", "PYRAMON", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.", limbo, 0, Stats(220, 17, 15, 16, 17, 5, 9));
 	Effect* spiedout = new Effect("SPIED OUT", 2, 0, 0, 1, .5);
@@ -4713,9 +4707,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	pyramid->addSpecialAttack(spiraleye);
 
 	//MARK: TO DO LIST
-	//make stat chipping
-		//cap stat chipping at a certain amount (5 or something, just for extremes, wont prolly be reached in normal gameplay)
-		//make some way to track stat chipping
 	//make sure boss does not target immune character a second time
 	//make conditional attacks
 
@@ -4724,37 +4715,32 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(8000, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
 	thedark->setBoss(true);
-	//temple of hope in the desert, gives big red button of hope
-	//you get seperated from your teammates and you have to fight enemies that decay your stats
-	//you need to get three light orbs to open the way down by doing puzzles and fighting and stuff
-	//also each light orb you put in returns one teammate to you
-	//the dark decays your stats with its attacks
-	//and when stats are low enough it can tempt teammates into despair
-	//and you can ENCOURAGE teammates to unfreeze them (cause despair is just freeze)
-	//after that you get the button
-	Effect* despair = new Effect("DESPAIR", 2147483647);
-	despair->freeze = true;
-
-	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1); //encouraging only costs a turn, not sp
-	encourage->cancel = despair;
-	
 	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 5, 5, 1, 1, 1);
 	choke->statchip = 0.03; //chip up to 3% of stats per hit
-
+	thedark->setBasicAttack(choke);
 	Attack* ballofpain = new Attack("BALL OF PAIN", "sent a dark ball of pain at", false, 4, 10, 40, 1, 1, 1);
 	Effect* pain = new Effect("PAIN", 3, 10, 0, 0.5, 0.5, 0.5, 0.5, 0.5);
 	ballofpain->addEffect(pain);
-
-	Attack* terror = new Attack("TERROR", "showed its face to", false, 6, 0, 0, 1, 1, 1);
+	thedark->addSpecialAttack(ballofpain);
+	Attack* terror = new Attack("TERROR", "showed its face to", false, 8, 0, 0, 1, 1, 1);
+	Effect* despair = new Effect("DESPAIR", 2147483647);
+	despair->freeze = true;
 	terror->setEffect(despair);
 	terror->donotplayer = true; //because that would be a bit annoying at most and have literally only one possible response so it's better for the fight to only let teammates have despair
 	terror->redundanteffect = false; //cause it lasts forever so reapplying it would be a waste of a turn
-
+	thedark->addSpecialAttack(terror);
 	Attack* snatch = new Attack("SNATCH", "dragged", true, 15, 0, 0, 1, 1, 1);
 	snatch->afterdesc = " into the darkness";
 	Effect* snatched = new Effect("SNATCHED", 3, 15, 0);
 	snatched->remove = true;
 	snatch->addEffect(snatched);
+	thedark->addSpecialAttack(snatch);
+
+	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1); //encouraging only costs a turn, not sp
+	encourage->afterdesc = " to keep fighting";
+	encourage->cancel = despair;
+	encourage->addDescription("Take a turn to encourage a teammate with DESPAIR to have hope and keep fighting!");
+	despair->response = encourage; //player can use encourage once a teammate gets despair
 	
 
 	NPC* bolide = new NPC("", "BOLIDE", "", limbo, 0);
@@ -5810,6 +5796,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard1->addLinkedDialogue(ftlguard1, {{NULL, "Your TEMPLE BUFF faded..."}});
 	ftlguard1->setLoopChanges(); //loop the dialogue
 	ftlguard1->setTalkOnDefeat();
+	ftlguard1->addOpeningDialogue({{NULL, "You have a TEMPLE BUFF!"}, {NULL, "Your stats rose to 150%!"}});
 
 	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
 	ftlguard2->setLeader(true, 0, forestbranchw2, false);
@@ -5822,6 +5809,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard2->addLinkedDialogue(ftlguard2, {{NULL, "Your TEMPLE DEBUFF faded..."}});
 	ftlguard2->setLoopChanges(); //loop the dialogue
 	ftlguard2->setTalkOnDefeat();
+	ftlguard2->addOpeningDialogue({{NULL, "You have a TEMPLE DEBUFF!"}, {NULL, "Your stats fell to 75%!"}});
 
 	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
 	ftlguard3->setLeader(true, 0, forestbranchw3, false);
@@ -5834,6 +5822,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard3->addLinkedDialogue(ftlguard3, {{NULL, "Your team's SWAGGY faded..."}});
 	ftlguard3->setLoopChanges(); //loop the dialogue
 	ftlguard3->setTalkOnDefeat();
+	ftlguard3->addOpeningDialogue({{NULL, "You have SUPER SWAGGY!"}, {NULL, "Your stats rose to 300%!"}});
 	
 	//right path guards
 	NPC* ftrguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
@@ -5847,6 +5836,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard1->addLinkedDialogue(ftrguard1, {{NULL, "Your teammates' TEMPLE BUFF faded..."}});
 	ftrguard1->setLoopChanges(); //loop the dialogue
 	ftrguard1->setTalkOnDefeat();
+	ftrguard1->addOpeningDialogue({{NULL, "Your teammates have a TEMPLE BUFF!"}, {NULL, "Their stats rose to 150%!"}});
 
 	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
 	ftrguard2->setLeader(true, 0, forestbranche2, false);
@@ -5859,6 +5849,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard2->addLinkedDialogue(ftrguard2, {{NULL, "Your teammates' TEMPLE DEBUFF faded..."}});
 	ftrguard2->setLoopChanges(); //loop the dialogue
 	ftrguard2->setTalkOnDefeat();
+	ftrguard2->addOpeningDialogue({{NULL, "Your teammmates have a TEMPLE DEBUFF!"}, {NULL, "Their stats fell to 75%!"}});
 
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
 	ftrguard3->setLeader(true, 0, forestbranche3, false);
@@ -5871,6 +5862,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard3->addLinkedDialogue(ftrguard3, {{NULL, "Your SUPER SWAGGY faded..."}});
 	ftrguard3->setLoopChanges(); //loop the dialogue
 	ftrguard3->setTalkOnDefeat();
+	ftrguard3->addOpeningDialogue({{NULL, "Your team has SWAGGY!"}, {NULL, "Your stats rose to 175%!"}});
 	
 	//the boss!
 	NPC* ftboss = new NPC(*senseofself);

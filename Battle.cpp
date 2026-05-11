@@ -189,18 +189,31 @@ void Battle::checkEffects(NPC* npc) {
 }
 //add the effect to the alleffects vector while handling duplicates MARK: attach effect
 void Battle::attachEffect(NPCEffect* effect) {
-	if (!effect) return; //if the effect was not able to be applied we don't do anything
+	if (!effect) return; //if the effect was not able to be applied we don't do anything, can fail due to immunity or trying to remove or hypnotize boss
 	if (effect->effect->hypnotize) { //when changing hypnosis status, untake anyone they may be taking
 		effect->affected->setTaking(NULL);
 	}
 	if (effect->effect->speedbuff != 1) { //if the speed has changes
 		speedSort(effect->affected); //reconfigure the npc's speed and turn stuff to account for the new speed
 	}
+	if (Attack* response = effect->effect->response) { //if the player gets some response to this effect, give them that so they can use it
+		bool pfound = false; //we only want to print it once but technically there might be more than one player so we have this check
+		for (NPC* npc : playerTeam) { //the player might've gotten duplicated due to kosmic katana so we check for playerness in a for loop
+			if (npc->getPlayerness() && !getAttackInVector(npc->getSpecialAttacks(), response)) { //don't readd the move because that'd be silly and bad and stuff
+				npc->addSpecialAttack(response);
+				if (!pfound) { //print the attack data so the player knows what to do
+					cout << "\n" << npc->getName() << " can now use " << response->name << "!\n" << response->name << " - " << response->trueDesc;
+					CinPause();
+					pfound = true; //we have printed the thing
+				}
+			}
+		}
+	}
 	for (NPCEffect* neffect : alleffects) { //if there's a duplicate just return cause it's already there
 		if (neffect->effect == effect->effect && neffect->affected == effect->affected) {
 			return;
 		}
-	} //psuh the new effect
+	} //push the new effect
 	alleffects.push_back(effect);
 }
 //handle effect removal, including removing the effect from the alleffects vector MARK: detatch effect
@@ -334,6 +347,9 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	if (attack->extralives) { //add extra lives to the target
 		reciever->addExtraLives(attack->extralives);
 		cout << "\n" << reciever->getName() << " got " << attack->extralives << " extra li" << (attack->extralives == 1 ? "fe" : "ves") << "!";
+	}
+	if (attack->statchip) { //if this is a stat chipping attack we do that
+		reciever->chipStats(attack->statchip);
 	}
 	if (Attack* recoilatt = reciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
 		carryOutAttack(recoilatt, reciever, attacker, true);
@@ -852,7 +868,7 @@ bool Battle::playerTurn(NPC* plr) {
 		} else if (!strcmp(commandWord, "ENEMIES")) { //for printing a list of all opponents
 			printEnemies();
 		} else if (!strcmp(commandWord, "ATTACKS")) { //for printing a list of all available attacks
-			printAttacks(player);
+			printAttacks(playerTeam[0]);
 		} else if (!strcmp(commandWord, "ANALYZE")) { //for printing analysis of item or npc
 			analyze(commandExtension);
 		} else if (!strcmp(commandWord, "HELP")) { //for printing all available commands and flavor text

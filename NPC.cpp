@@ -691,11 +691,10 @@ void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantl
 	}
 }
 //makes this npc a leader npc
-void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn, bool boss) {
+void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn) {
 	isLeader = _leader;
 	isEnemy = true; //if we manually set it as leader, it's an enemy
 	respawns = respawn; //some enemies don't respawn
-	isBoss = boss;
 	if (isLeader) {
 		setLevel(_level); //set the level
 		party.push_back({this}); //adds itself to its own party
@@ -1082,16 +1081,40 @@ void NPC::transform(NPC* npc) {
 	//don't change boss status because non-bosses become fake bosses, and bosses stay bosses
 }
 void NPC::chipStats(double maxpercent) {
-	double percent = ;
-	stats.hpmax = Round(stats.hpmax - rand()/(RAND_MAX/maxpercent));
-	stats.defense = Round(stats.defense, - rand()/(RAND_MAX/maxpercent));
-	stats.attack = Round(stats.attack, - rand()/(RAND_MAX/maxpercent));
-	stats.toughness = Round(stats.toughness, - rand()/(RAND_MAX/maxpercent));
-	stats.pierce = Round(stats.pierce, - rand()/(RAND_MAX/maxpercent));
-	stats.speed = Round(stats.speed, - rand()/(RAND_MAX/maxpercent));
+	int chips[6]; //chip all the stats up to the maximum percentage
+	for (size_t i = 0; i < 6; i++) {
+		int change = Round(rand()/(RAND_MAX/maxpercent));
+		chips[i] = Clamp(change, 0, stats[i]-(i != 5 ? 5 : 0)); //stats can't fall below 5 because that would be silly, except speed, it doesn't not make sense for that to be that low
+	}
+	bool printed = false; //technically due to chance, we could potentially change print nothing, so we track it here so we know if we should pause
+	if (chips[0]) {
+		stats[0] -= chips[0];
+		cout << "\n" << name << "'s MAX HP " << (chips[0] > 0 ? "fell" : "rose") << " by " << chips[0];
+		health = min(health, stats.hpmax); //make sure current health is not more than max health, just in case cause that'd be weird
+		printed = true;
+	} if (chips[1]) {
+		stats[1] -= chips[1];
+		cout << "\n" << name << "'s DEFENSE " << (chips[1] > 0 ? "fell" : "rose") << " by " << chips[1];
+		printed = true;
+	} if (chips[2]) {
+		stats[2] -= chips[2];
+		cout << "\n" << name << "'s ATTACK " << (chips[2] > 0 ? "fell" : "rose") << " by " << chips[2];
+		printed = true;
+	} if (chips[3]) {
+		stats[3] -= chips[3];
+		cout << "\n" << name << "'s TOUGHNESS " << (chips[3] > 0 ? "fell" : "rose") << " by " << chips[3];
+		printed = true;
+	} if (chips[4]) {
+		stats[4] -= chips[4];
+		cout << "\n" << name << "'s PIERCE " << (chips[4] > 0 ? "fell" : "rose") << " by " << chips[4];
+		printed = true;
+	} if (chips[5]) {
+		stats[5] -= chips[5];
+		cout << "\n" << name << "'s SPEED " << (chips[5] > 0 ? "fell" : "rose") << " by " << chips[5];
+		printed = true;
+	}
+	if (printed) CinPause(); //do the pause because we printed stuff
 	//don't reduce sp because that's a more delicate mechanic/stat
-	//MARK: cap at 5
-	//MARK: print changes
 }
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
