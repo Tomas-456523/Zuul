@@ -55,7 +55,7 @@ namespace Helper {
 	void logW(const char* letter, int id1, int id2 = -2); //log something in section W
 	void trackItemUse(Item* item, Room* room, bool wasuse = true, const char* extension = NULL); //track item usage in section W and other tracker variables
 	void trackConv(NPC* npc, const char* extension = NULL); //track item conversation, with this helper it's easier to put the extension
-	bool trackNPC(NPC* npc); //get if this is an npc whose stats we track
+	bool trackNPC(NPC* npc, bool frombattle = true); //get if this is an npc whose stats we track
 	long long getID(const char* data, size_t range); //get the id that this chunk of data is representing, or -2 if it's nothing
 	char* getName(const char* data); //get the name from save data but return NULL if it's invalid for whatever reason. Also make sure to delete whatever this returns
 	

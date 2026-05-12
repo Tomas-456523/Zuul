@@ -636,7 +636,7 @@ void ChoiceOrb::makeChoice(char choice) {
 }
 
 //light orbs, for progressing in the desert temple
-LightOrb::LightOrb(const char* name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo, const char* down, Room* dest) : Item(_name, desc, _room, true, false, false) {
+LightOrb::LightOrb(const char* _name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo, const char* down, Room* dest) : Item(_name, desc, _room, true, false, false) {
 	type = "lightorb";
 	dropoff = _dropoff;
 	limbo = _limbo;

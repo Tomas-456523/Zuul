@@ -404,7 +404,7 @@ private:
 //light orbs, for progressing in the desert temple
 class LightOrb : public Item {
 public:
-	LightOrb(const char* name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo, const char* down, Room* dest);
+	LightOrb(const char* _name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo, const char* down, Room* dest);
 
 	void setTeammate(NPC* npc, vector<NPC*>* party, bool announce = true); //set or unset the teammate this light orb is managing
 	void paveDown(); //set the exit downwards to the boss area

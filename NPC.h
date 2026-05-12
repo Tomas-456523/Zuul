@@ -206,8 +206,8 @@ public: //you need to set stats on creation
 	NPCEffect* removeEffect(Effect* effect, NPC* affector);
 	void tickEffect(Effect* effect);
 	void setBoss(bool boss);
-	void setExtraXP(int xp);
-	void setExtraMonies(int monies);
+	void setXPReward(int xp);
+	void setMonyReward(int monies);
 	void setTalkOnRecruit(bool talk);
 	void setGuardian(NPC* npc);
 	void removeGuardian(NPC* npc);

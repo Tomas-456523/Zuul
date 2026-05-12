@@ -464,9 +464,12 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
 		hitTargets(attacker, attack, tarparty, tarPos);
 	} else { //unfocused moves which hit a random target for every hit
-		for (size_t i = 0; i < rand() % (attack->maxhits + 1 - attack->minhits) + attack->minhits; i++) {
-			cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
-			CinPause();
+		int hits = rand() % (attack->maxhits + 1 - attack->minhits);
+		for (size_t i = 0; i < hits + attack->minhits; i++) {
+			if (hits > 1) {
+				cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
+				CinPause();
+			}
 			int tarPos = rand() % tarparty.size();
 			hitTargets(attacker, attack, tarparty, tarPos);
 		}
@@ -988,6 +991,9 @@ Attack* Battle::chooseAttack(NPC* npc) {
 			continue;
 		}
 		if (_attack->minLevel > npc->getLevel()) { //if the npc isn't experienced enough to use the move, we don't count it
+			continue;
+		}
+		if (_attack->hpthreshold * npc->getHealthMax() > npc->getHealth()) { //if the npc isn't damaged enough to use the attack, we don't use it
 			continue;
 		}
 		//we add the weight of the attack to the limit

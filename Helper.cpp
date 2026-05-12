@@ -544,7 +544,7 @@ namespace Helper {
 		}
 		while (!changes.linkedLightOrbs.empty()) {
 			pair<vector<NPC*>*, Item*>& data = changes.linkedLightOrbs.front();
-			((LightOrb*)data.second)->setTeammate(data.first[1], data.first); //no need to check because of the very specific circumstances this is called in
+			((LightOrb*)data.second)->setTeammate((*data.first)[1], data.first); //no need to check because of the very specific circumstances this is called in
 			changes.linkedLightOrbs.pop();
 		}
 		while (!changes.unLightOrb.empty()) {
@@ -715,8 +715,8 @@ namespace Helper {
 		if (extension) addChunk(sectionW, extension, wsize); //add the extra extension
 	}
 	//get if this is an npc whose stats we track
-	bool trackNPC(NPC* npc) {
-		npc = npc->getParent(); //go to the parent because this is called from Battle where they're all copies from the original in world
+	bool trackNPC(NPC* npc, bool frombattle) {
+		if (frombattle) npc = npc->getParent(); //go to the parent because this was called from Battle where they're all copies from the original in world
 		return npcChar.count(npc) && npcChar[npc] != 't' && npcChar[npc] != 'n'; //if this one has a tracking character and it isn't the lobster or the banker, then it's an npc who we track
 	}
 	//get the id that this chunk of data is representing, or -2 if it's nothing

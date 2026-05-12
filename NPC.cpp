@@ -722,10 +722,10 @@ void NPC::doLobsterChanges() { //does the lobster changes
 void NPC::setBoss(bool boss) {
 	isBoss = boss;
 }
-void NPC::setExtraXP(int xp) {
+void NPC::setXPReward(int xp) {
 	xpReward = xp;
 }
-void NPC::setExtraMonies(int monies) {
+void NPC::setMonyReward(int monies) {
 	monyReward = monies;
 }
 void NPC::setTalkOnRecruit(bool talk) {
@@ -800,8 +800,9 @@ void NPC::setNoFight(bool clarify) {
 void NPC::setThief() {
 	thief = true;
 }
-void NPC::setRoaming(bool roam) {
+void NPC::setRoaming(bool roam, bool helpout) {
 	roaming = roam;
+	roamhelp = helpout;
 }
 void NPC::setRoamRooms(initializer_list<Room*> rooms) {
 	roamrooms = rooms;
@@ -1086,7 +1087,7 @@ void NPC::transform(NPC* npc) {
 void NPC::chipStats(double maxpercent) {
 	int chips[6]; //chip all the stats up to the maximum percentage
 	for (size_t i = 0; i < 6; i++) {
-		int change = Round(rand()/(RAND_MAX/maxpercent));
+		int change = Round(stats[i]*maxpercent*rand()/(RAND_MAX));
 		chips[i] = Clamp(change, 0, stats[i]-(i != 5 ? 5 : 0)); //stats can't fall below 5 because that would be silly, except speed, it doesn't not make sense for that to be that low
 	}
 	bool printed = false; //technically due to chance, we could potentially change print nothing, so we track it here so we know if we should pause
@@ -1126,7 +1127,7 @@ Attack* NPC::getStaged() {
 	pair<double, Attack*> staged = {1, NULL};
 	while (!stagedattacks.empty()) { //keep going until we can't use the next one
 		//choose the next available attack if its before the next one and it's below the hp threshold
-		if (staged.first < stagedattacks.front().first && health <= stagedattacks.front().first * stats.hpmax) {
+		if (stagedattacks.front().first < staged.first && health <= stagedattacks.front().first * stats.hpmax) {
 			staged = stagedattacks.front();
 			stagedattacks.pop(); //pop the attack because we already checked/used it
 		} else break; //we're at the latest possible staged attack so just use this one	

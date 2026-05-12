@@ -688,7 +688,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	recapacitate->targetFainted = true;
 	recapacitate->addDescription("Use flower power to recapacitate a teammate. (20 POWER)");
 	floria->addSpecialAttack(recapacitate);
-	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 1, 1, 15, true, 8);
+	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 1, 1, 999, true, 8);
 	aprilshower->addDescription("Call upon the clouds to rain SP upon the team.");
 	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
 	aprilshower->addEffect(spshower);
@@ -705,7 +705,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	superpower->instakill = true;
 	superpower->addDescription("Unleash the power of the earth's core.");
 	floria->addSpecialAttack(superpower);
-	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", false, 25, 0, 0, 1, 1, 15, true, 20);
+	Attack* mayflower = new Attack("MAY FLOWERS", "brought about an HP bloom", false, 25, 0, 0, 1, 1, 999, true, 20);
 	mayflower->focushits = false;
 	mayflower->addDescription("Bring about an HP bloom to heal the entire team.");
 	Effect* hpbloom = new Effect("HP BLOOM", 6, -10);
@@ -779,7 +779,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	rocketscience->addDescription("Launch a volley of rockets at the enemy team.");
 	rocketscience->focushits = false;
 	egadwick->addSpecialAttack(rocketscience);
-	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", false, 25, 0, 0, 1, 1, 15, true, 17);
+	Attack* weatherforecast = new Attack("WEATHER FORECAST", "predicted an SP shower", false, 25, 0, 0, 1, 1, 999, true, 17);
 	weatherforecast->focushits = false;
 	weatherforecast->addDescription("Predict a shower of SP that will rain upon the team.");
 	weatherforecast->addEffect(spshower);
@@ -796,7 +796,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 30, Stats(30, 20, 25, 30, 10, 0, 10), Stats(1, 2, 1, 1, 0, 0, 0));
 	npcChar[forestknight] = 'k'; //Absolom's character representation is k for knight
-	forestknight->setRoaming(true, false); //Absolom roams after going to his room, meaning you beat Jim Shady
+	forestknight->setRoaming(true, false); //Absolom roams after going to his room, meaning you beat Jim Shady, but also he doesn't help in battle when roaming cause he's more focused on non-natural threats
 	forestknight->setRoamRooms({forest, forestleft, forestright, foresttempleentrance, forestfork, forestgate, forestwall, forestgrave, forestspork, bossgrove, forestnice, treasuregrove, flowerfield});
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
@@ -845,7 +845,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 25, 30, 1, 1, 3, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
-	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 15, true, 15);
+	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 999, true, 15);
 	warcry->focushits = false;
 	Effect* galvanized = new Effect("GALVANIZED", 5, 0, 0, 2.0, 2.0);
 	warcry->addEffect(galvanized);
@@ -1076,7 +1076,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
 	michelin->addSpecialAttack(hotsauce);
-	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 15, -30, 0, 1, 1, 15, true, 13);
+	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 15, -30, 0, 1, 1, 999, true, 13);
 	feast->focushits = false;
 	feast->addDescription("Prepare a feast for the whole team, for much healing. (30 POWER)");
 	michelin->addSpecialAttack(feast);
@@ -1266,7 +1266,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -999, 0, 1, 1, 1); //2 - enemy gets fully healed
 	nat2->afterdesc = " was fully healed";
 	graham->addSpecialAttack(nat2);
-	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 15, true); //3 - freeze team
+	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 999, true); //3 - freeze team
 	nat3->focushits = false;
 	Effect* blinded = new Effect("BLINDED", 1);
 	blinded->freeze = true;
@@ -1296,12 +1296,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	falling->falldamage = 35;
 	nat8->addEffect(falling);
 	graham->addSpecialAttack(nat8);
-	Attack* nat9 = new Attack("DICE ROLL", "rolled a 9!", false, 0, 15, 0, 1, 1, 1, true); //9 - team takes small damage
+	Attack* nat9 = new Attack("DICE ROLL", "rolled a 9!", false, 0, 15, 20, 1, 1, 1, true); //9 - team takes small damage
 	nat9->afterdesc = " took damage";
 	graham->addSpecialAttack(nat9);
 	Attack* nat10 = new Attack("DICE ROLL", "rolled a 10! Nothing happened", false, 0, 0, 0, 0, 0, 0); //10 - do nothing
 	graham->addSpecialAttack(nat10);
-	Attack* nat11 = new Attack("DICE ROLL", "rolled an 11!", false, 0, 15, 0, 1, 1, 1); //11 - enemy takes small damage
+	Attack* nat11 = new Attack("DICE ROLL", "rolled an 11!", false, 0, 15, 20, 1, 1, 1); //11 - enemy takes small damage
 	nat11->afterdesc = " took damage";
 	graham->addSpecialAttack(nat11);
 	Attack* nat12 = new Attack("DICE ROLL", "rolled a 12!", false, 0, -17, 0, 1, 1, 1, true); //12 - team gets small heal
@@ -1316,7 +1316,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	frozen->freeze = true;
 	nat14->addEffect(frozen);
 	graham->addSpecialAttack(nat14);
-	Attack* nat15 = new Attack("DICE ROLL", "rolled a 15! Icosahedral energy barriers form around the team!", false, 0, 0, 0, 1, 1, 15, true); //15 - summon guard for team
+	Attack* nat15 = new Attack("DICE ROLL", "rolled a 15! Icosahedral energy barriers form around the team!", false, 0, 0, 0, 1, 1, 999, true); //15 - summon guard for team
 	nat15->focushits = false;
 	nat15->targuard = 1;
 	graham->addSpecialAttack(nat15);
@@ -1425,7 +1425,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	drone->addSpecialAttack(ram);
 
 	NPC* healsprinkler = new NPC("", "HEAL SPRINKLER", "Portable station that sprinkles health onto the team, bought by Richie to aid in battle.", limbo, 0, Stats(30, 0, 10, 0, 0, 0, 9));
-	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -7, 0, 1, 1, 15, true);
+	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -7, 0, 1, 1, 999, true);
 	sprinkle->focushits = false;
 	healsprinkler->setBasicAttack(sprinkle);
 
@@ -3103,12 +3103,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* hblender = new MaterialItem("BLENDER", "", limbo);
 	Item* sign = new MaterialItem("SIGN", "", limbo);
 
-	Item* placeholderitem = new MaterialItem("PLACEHOLDER ITEM", "", limbo); //placeholder items for adding more items in the future withouut affecting my item ids
+	Item* placeholderitem = new MaterialItem("PLACEHOLDER ITEM", "", limbo); //placeholder items for adding more items in the future without affecting my item ids
 	Item* placeholderitem2 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem3 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem4 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem5 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem6 = new MaterialItem("PLACEHOLDER ITEM", "", limbo); 
+	Item* placeholderitem6 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem7 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem8 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem9 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
@@ -3730,7 +3730,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	spatulad->falldamage = 20;
 	spatula->addEffect(spatulad);
 	ninjachef->addSpecialAttack(spatula);
-	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -30, 0, 1, 1, 15, true);
+	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -30, 0, 1, 1, 999, true);
 	ninjachef->addSpecialAttack(ninjafeast);
 	Attack* ninjasmoothie = new Attack("NINJA SMOOTHIE", "prepared a ninja smoothie for", false, 3, 20, 5, 1, 1, 1, true, 11);
 	Effect* smoothied = new Effect("SMOOTHIED", 3, 0, 0, 1.5, 1, 1, 1.5);
@@ -3788,11 +3788,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 10, 10, 6, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
 	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 5, 6, 1, 1, 1);
-	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 15);
+	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 999);
 	Effect* intimidated = new Effect("INTIMIDATED", 2, 0, 0, 0.5);
 	savageroar->redundanteffect = false; //he was spamming this way too much
 	savageroar->addEffect(intimidated);
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 15);
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 999);
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
@@ -3833,7 +3833,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* tumble = new Attack("TUMBLE", "rolled into", true, -5, 1, 10, 1, 1, 1);
 	Effect* brambled = new Effect("BRAMBLED", 3, 3);
 	tumble->addEffect(brambled);
-	Attack* rumble = new Attack("RUMBLE", "shook the ground under", false, 2, 5, 0, 1, 1, 15);
+	Attack* rumble = new Attack("RUMBLE", "shook the ground under", false, 2, 5, 0, 1, 1, 999);
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
@@ -3855,7 +3855,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	rascal->addSpecialAttack(genericcc);*/
 
 	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 13, 9));
-	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe at", false, -5, 10, 15, 1, 1, 15);
+	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe spinning at the team", false, -5, 10, 15, 1, 1, 999);
+	pickaxerang->focushits = false;
 	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 3, 20, 20, 1, 1, 1);
 	Attack* pickstrike = new Attack("MINE", "struck", true, 6, 25, 40, 1, 1, 1);
 	pickstrike->afterdesc = " with his pickaxe";
@@ -3921,7 +3922,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", false, 10, 20, 30, 1, 1, 3, false, 12);
 	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (20 DAMAGE, 30 PIERCE)");
 	tkviola->addSpecialAttack(spatialpop);
-	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 1, 1, 15, true, 15);
+	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 1, 1, 999, true, 15);
 	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
 	Effect* forcefielded = new Effect("FORCE FIELD", 3, 0, 0, 1, 2);
 	forcefield->addEffect(forcefielded);
@@ -4015,7 +4016,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	slagjab->addEffect(extrafire);
 	Attack* metalmeteor = new Attack("METAL METEOR", "shot a solid metal sphere at", false, 10, 40, 0, 1, 1, 1);
 	metalmeteor->afterdesc = " from inside itself"; //same commentary comment as lavamen
-	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 20, 10, 1, 1, 15);
+	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 20, 10, 1, 1, 999);
 	slagvomit->focushits = false;
 	slagvomit->addEffect(extrafire);
 	slagman->setBasicAttack(slagjab);
@@ -4027,7 +4028,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 10, 10, 4, 4, 1);
 	slagjchu->addEffect(extrafire);
 	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 40, 0, 1, 1, 3);
-	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 30, 10, 1, 1, 15);
+	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 30, 10, 1, 1, 999);
 	slagblast->addEffect(extrafire);
 	superslagman->setBasicAttack(slagjchu);
 	superslagman->addSpecialAttack(metalbeam);
@@ -4040,7 +4041,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* furnaceblast = new Attack("FURNACE BLAST", "blasted flames at", false, 6, 40, 20, 1, 1, 3);
 	furnaceblast->afterdesc = " from its furnace core";
 	furnaceblast->addEffect(onfire);
-	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 30, 30, 1, 1, 15);
+	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 30, 30, 1, 1, 999);
 	exhaust->focushits = false;
 	Effect* smogged = new Effect("SMOGGED", 5, 8, 0, 0.75, 0.75);
 	exhaust->addEffect(smogged);
@@ -4090,7 +4091,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	lavaguardian->addSpecialAttack(uplash);
 	Attack* eruption = new Attack("ERUPTION", "explosively crashed its sword down on", true, 8, 30, 20, 1, 1, 3);
 	lavaguardian->addSpecialAttack(eruption);
-	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 10, 20, 1, 1, 15);
+	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 10, 20, 1, 1, 999);
 	solarflare->focushits = false;
 	solarflare->addEffect(blinded); //defined in graham's nat 3
 	lavaguardian->addSpecialAttack(solarflare);
@@ -4298,7 +4299,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	updrafted->remove = true;
 	updrafted->falldamage = 40;
 	updraft->addEffect(updrafted);
-	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 4, 30, 0, 1, 1, 15);
+	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 4, 30, 0, 1, 1, 999);
 	Attack* supercell = new Attack("SUPERCELL", "called down another", false, 12, 0, 0, 0, 0, 0);
 	supercell->afterdesc = " from a supercell";
 	supercell->copyamount = 1; //duplicates itself to match the health so you don't have to fight another natural disaster all over again
@@ -4310,7 +4311,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* gamblemonster = new NPC("GAMBLE MONSTER", "GAMBLONGO", "He's Gamblongo the Gamble monster and he owns the casino. He looks like a floating blob of puree with eyes.", limbo, 0, Stats(100, 20, 30, 40, 50, 70, 90), Stats(2, 2, 2, 2, 2, 2, 1));
 	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -5, 0, 0, 0, 0, 0, 0);
-	Attack* get = new Attack("DEATH", "got you", false, 90, 12345678, 12345678, 1, 1, 15);
+	Attack* get = new Attack("DEATH", "got you", false, 90, 12345678, 12345678, 1, 1, 999);
 	get->focushits = false;
 	gamblemonster->setBasicAttack(gonna);
 	gamblemonster->addSpecialAttack(get);
@@ -4546,15 +4547,21 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	junglenaut->addSpecialAttack(constrict);
 	junglenaut->addSpecialAttack(piledrive);
 
-	//energize
-	
-	//sp bomb
+	//MARK: TO DO LIST
+	//make temptation attack
+	//make mid battle choice
+	//different choice dialogue depending on if getting there due to phase or due to player ko
+	//make sos be able to help player if they get ko'd early, and while "hypnotized"
+	//hypnosis while still having choice
+	//make the choice orbs add more temptation attacks
+	//attacks can have conversations
+	//make description different if hypnotized?
+	//set absolom immunity
+	//improve dialogue
+	//hindsight 20/20
 
-	//entering temples requires having max size party
-	//temples scale to your level
-	//you can't exit until you beat the boss (or you use the give up exit which resets everything?)
-	//Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0)
 	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
+	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
 	senseofself->setBoss(true);
 	//temple of humility in the forest, gives output antenna of humility
 	//forest temple is pretty standard, with some branching paths and combat and choices that allow you to buff yourself or buff your teammates
@@ -4601,14 +4608,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* coolpunch = new Attack("COOL PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
 	coolpunch->afterdesc = " very coolly";
 
-	Attack* coolenergyball = new Attack("COOL ENERGY BALL", "threw a very cool energy ball at", 3, 12, 10, 1, 1, 1, false, 1);
+	Attack* coolenergyball = new Attack("COOL ENERGY BALL", "threw a very cool energy ball at", 10, 12, 10, 1, 1, 1);
 
-	Attack* supersidekick = new Attack("SUPER SIDE KICK", "jumped at", true, 6, 15, 0, 1, 1, 1, false, 3);
+	Attack* supersidekick = new Attack("SUPER SIDE KICK", "jumped at", true, -5, 20, 0, 1, 1, 1);
 	kick->afterdesc = " with a super cool side kick";
 
-	Attack* superswaggyenergyball = new Attack("SUPER SWAGGY ENERGY BALL", "threw a super swaggy ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
+	Attack* superswaggyenergyball = new Attack("SUPER SWAGGY ENERGY BALL", "threw a super swaggy ball of energy at", false, 10, 20, 10, 1, 1, 1);
 	
-	Attack* turbopunchflurry = new Attack("TURBO PUNCH FLURRY", "unleashed a huge barrage of cool punches", true, 7, 5, 0, 10, 10, 1, false, 10);
+	Attack* turbopunchflurry = new Attack("TURBO PUNCH FLURRY", "unleashed a huge barrage of cool punches", true, 15, 5, 0, 10, 10, 1);
 	turbopunchflurry->focushits = false;
 
 	//Attack* hindsight2020 = new Attack("HINDSIGHT 20/20");
@@ -4644,7 +4651,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	NPC* placeholder2 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
 	NPC* placeholder3 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
 	NPC* placeholder4 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
-	NPC* placeholder5 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
 
 	//{{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, you're the least of your team anyway..."}}
 
@@ -4706,12 +4712,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	pyramid->addSpecialAttack(segmentation);
 	pyramid->addSpecialAttack(spiraleye);
 
-	//MARK: TO DO LIST
-	//boss phases
-
-	//hypnosis without losing control of player
-	//sense of self
-
 	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(8000, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
 	thedark->setBoss(true);
 	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 5, 5, 1, 1, 1);
@@ -4721,7 +4721,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Effect* pain = new Effect("PAIN", 3, 10, 0, 0.5, 0.5, 0.5, 0.5, 0.5);
 	ballofpain->addEffect(pain);
 	thedark->addSpecialAttack(ballofpain);
-	Attack* terror = new Attack("TERROR", "showed its face to", false, 7, 0, 0, 1, 1, 1);
+	Attack* terror = new Attack("TERROR", "showed its face to", false, 7, 0, 0, 1, 1, 1); //the main mechanic of the fight; the player has to deal with unfreezing their teammates
+	terror->hpthreshold = 0.8; //the dark must be below 80% health to start inflicting despair, to introduce the normal attacks before the main mechanic
 	Effect* despair = new Effect("DESPAIR", 2147483647);
 	despair->freeze = true;
 	terror->addEffect(despair);
@@ -4734,13 +4735,16 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	snatched->remove = true;
 	snatch->addEffect(snatched);
 	thedark->addSpecialAttack(snatch);
-
+	Attack* worstnightmare = new Attack("WORST NIGHTMARE", "sapped everyone's strength", false, 0, 0, 0, 1, 1, 999);
+	worstnightmare->statchip = 0.5; //chip up to 50% of stats with the attack
+	worstnightmare->focushits = false;
+	thedark->stageAttack(0.3, worstnightmare); //do this attack when reaching 30% health
 	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1); //encouraging only costs a turn, not sp
 	encourage->afterdesc = " to keep fighting";
 	encourage->cancel = despair;
 	encourage->addDescription("Take a turn to encourage a teammate with DESPAIR to have hope and keep fighting!");
 	despair->response = encourage; //player can use encourage once a teammate gets despair
-	forestknight->setImmunity(despair, {{forestknight, "You are a terrible beast..."}, {forestknight, "but this is no reason to give up hope!"}, {forestknight, "Friends, perservere!"});
+	forestknight->setImmunity(despair, {{forestknight, "You are a terrible beast..."}, {forestknight, "but this is no reason to give up hope!"}, {forestknight, "Friends, don't let this monster break your spirit!"}});
 
 	NPC* bolide = new NPC("", "BOLIDE", "", limbo, 0);
 	//meteor shower
@@ -4936,7 +4940,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mimic1->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
 	mimic1->setEscapable(false);
 	mimic1->setForceBattle();
-	mimic1->setExtraMonies(1000); //you get lots of monies for beating the mimic
+	mimic1->setMonyReward(1000); //you get lots of monies for beating the mimic
 
 	Item* fakechest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", treasuregrove, 0, {}, mimic1);
 	fakechest->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
@@ -5238,7 +5242,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mimic2->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
 	mimic2->setEscapable(false);
 	mimic2->setForceBattle();
-	mimic2->setExtraMonies(1500); //you get lots of monies for beating the mimic
+	mimic2->setMonyReward(1500); //you get lots of monies for beating the mimic
 
 	NPC* mimic3 = new NPC(*mimic);
 	mimic3->setLeader(true, 50, NULL, false);
@@ -5246,7 +5250,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	mimic3->addRejectionDialogue({{NULL, "MIMIC - *UNHINGED ROAR*"}});
 	mimic3->setEscapable(false);
 	mimic3->setForceBattle();
-	mimic3->setExtraMonies(1500); //you get lots of monies for beating the mimic
+	mimic3->setMonyReward(1500); //you get lots of monies for beating the mimic
 
 	Item* fakechest1 = new TreasureItem("TREASURE CHEST 1", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic2);
 	Item* fakechest2 = new TreasureItem("TREASURE CHEST 2", "A big treasure chest, possibly full of treasure.", sewertreasure, 0, {}, mimic3);
@@ -5796,6 +5800,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard1->setLoopChanges(); //loop the dialogue
 	ftlguard1->setTalkOnDefeat();
 	ftlguard1->addOpeningDialogue({{NULL, "You have a TEMPLE BUFF!"}, {NULL, "Your stats rose to 150%!"}});
+	ftlguard1->setXPReward(0); //temples do not give xp because they scale to the player's level so they would be op for grinding and I don't want to deal with that. You still get monies though!
 
 	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
 	ftlguard2->setLeader(true, 0, forestbranchw2, false);
@@ -5809,6 +5814,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard2->setLoopChanges(); //loop the dialogue
 	ftlguard2->setTalkOnDefeat();
 	ftlguard2->addOpeningDialogue({{NULL, "You have a TEMPLE DEBUFF!"}, {NULL, "Your stats fell to 75%!"}});
+	ftlguard2->setXPReward(0);
 
 	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
 	ftlguard3->setLeader(true, 0, forestbranchw3, false);
@@ -5822,6 +5828,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftlguard3->setLoopChanges(); //loop the dialogue
 	ftlguard3->setTalkOnDefeat();
 	ftlguard3->addOpeningDialogue({{NULL, "You have SUPER SWAGGY!"}, {NULL, "Your stats rose to 300%!"}});
+	ftlguard3->setXPReward(0);
 	
 	//right path guards
 	NPC* ftrguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
@@ -5836,6 +5843,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard1->setLoopChanges(); //loop the dialogue
 	ftrguard1->setTalkOnDefeat();
 	ftrguard1->addOpeningDialogue({{NULL, "Your teammates have a TEMPLE BUFF!"}, {NULL, "Their stats rose to 150%!"}});
+	ftrguard1->setXPReward(0);
 
 	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
 	ftrguard2->setLeader(true, 0, forestbranche2, false);
@@ -5849,6 +5857,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard2->setLoopChanges(); //loop the dialogue
 	ftrguard2->setTalkOnDefeat();
 	ftrguard2->addOpeningDialogue({{NULL, "Your teammmates have a TEMPLE DEBUFF!"}, {NULL, "Their stats fell to 75%!"}});
+	ftrguard2->setXPReward(0);
 
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
 	ftrguard3->setLeader(true, 0, forestbranche3, false);
@@ -5862,6 +5871,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftrguard3->setLoopChanges(); //loop the dialogue
 	ftrguard3->setTalkOnDefeat();
 	ftrguard3->addOpeningDialogue({{NULL, "Your team has SWAGGY!"}, {NULL, "Your stats rose to 175%!"}});
+	ftrguard3->setXPReward(0);
 	
 	//the boss!
 	NPC* ftboss = new NPC(*senseofself);
@@ -5881,6 +5891,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{NULL, "The smog fades from the room..."},
 							{NULL, "You see the OUTPUT ANTENNA OF HUMILITY left behind on the ground!"},
 							{NULL, "Your ESCAPE ORB hardened into a STONE ORB."}});
+	ftboss->setDialogue({{NULL, "SENSE OF SELF - *swirling smog noises*"}});
+	ftboss->addRejectionDialogue({{NULL, "SENSE OF SELF - *swirling smog noises*"}});
 	ftboss->setTalkOnDefeat();
 	ftboss->setForceBattle();
 	ftboss->addLinkedItem(outputantenna, foresttempleboss);
@@ -5893,6 +5905,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	ftboss->addLinkedRoom(foresttempleentrance, "in a wide sunny glade where the forest temple entrance used to be.");
 	ftboss->setEscapable(false);
 	ftboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
+	ftboss->setXPReward(0);
 
 	shared_ptr<WorldChange> ftsink = make_shared<WorldChange>(); //when the forest temple sinks into the ground
 	ftsink->exitPavings.push(make_tuple(dirtplain, foresttempleentrance, NORTH, SOUTH)); //very cool, there is a dirt plain here now
@@ -6023,6 +6036,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtguard11->setScaleFight();
 	dtguard11->setDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
 	dtguard11->addRejectionDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
+	dtguard11->setXPReward(0);
 
 	NPC* dtguard12 = new NPC(*shadowcreature);
 	dtguard12->setLeader(true, 0, deserttemplec, false);
@@ -6031,6 +6045,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtguard12->setScaleFight();
 	dtguard12->setDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
 	dtguard12->addRejectionDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
+	dtguard12->setXPReward(0);
 	
 	NPC* dtguard13 = new NPC(*masky);
 	dtguard13->setLeader(true, 0, deserttemplesw, false);
@@ -6039,6 +6054,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtguard13->setScaleFight();
 	dtguard13->setDialogue("¦|");
 	dtguard13->addRejectionDialogue(">¦|");
+	dtguard13->setXPReward(0);
 
 	NPC* dtguard21 = new NPC(*pyramid);
 	dtguard21->setLeader(true, 0, deserttemplen, false);
@@ -6047,6 +6063,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtguard21->setScaleFight();
 	dtguard21->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
 	dtguard21->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
+	dtguard21->setXPReward(0);
 
 	NPC* dtguard22 = new NPC(*pyramid);
 	dtguard22->setLeader(true, 0, deserttemple, false);
@@ -6055,6 +6072,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtguard22->setScaleFight();
 	dtguard22->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
 	dtguard22->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
+	dtguard22->setXPReward(0);
 
 	NPC* dtguard31 = new NPC(*pyramid);
 	dtguard31->setLeader(true, 0, deserttemplen, false);
@@ -6063,6 +6081,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtguard31->setScaleFight();
 	dtguard31->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
 	dtguard31->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
+	dtguard31->setXPReward(0);
 
 	NPC* dtguard32 = new NPC(*pyramid);
 	dtguard32->setLeader(true, 0, deserttemplew, false);
@@ -6071,6 +6090,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtguard32->setScaleFight();
 	dtguard32->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
 	dtguard32->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
+	dtguard32->setXPReward(0);
 
 	//the boss!
 	NPC* dtboss = new NPC(*thedark);
@@ -6078,7 +6098,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtboss->setLeader(true, 0, deserttempleboss, false);
 	dtboss->setScaleFight();
 	dtboss->addConversation({{NULL, "You approach THE DARK..."},
-							 {NULL, "..."}});
+							 {NULL, "THE DARK - ..."}});
 	dtboss->addLinkedConvo(dtboss, {{NULL, "THE DARK - *UNHOLY SCREECH*"},
 									{NULL, "THE DARK's screech reverberates against the walls, shaking the earth around you..."},
 									{NULL, "Rocks from the ceiling come loose..."},
@@ -6088,10 +6108,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 									{NULL, "It was very very big."},
 									{NULL, "You see the BIG RED BUTTON OF HOPE left behind on the ground!"},
 									{NULL, "Your ESCAPE ORB hardened into a STONE ORB."}});
+	dtboss->setDialogue({{NULL, "THE DARK - ..."}});
+	dtboss->addRejectionDialogue({{NULL, "THE DARK - ..."}});
 	dtboss->setTalkOnDefeat();
 	dtboss->setForceBattle();
-	dtboss->addLinkedItem(bigredbutton, foresttempleboss);
-	Item* deorb; //we implement this last after the rest of the forest temple stuff
+	dtboss->addLinkedItem(bigredbutton, deserttempleboss);
+	Item* deorb; //we implement this last after the rest of the desert temple stuff
 	dtboss->setLinkedOrb(deorb);
 	dtboss->addPaveLink(desertbuffer2, deserttemplestairs, NORTH, SOUTH); //make it so you can just walk out of the temple now
 	dtboss->addRedirect(desertbuffer1, desertbuffer2); //cause they're the same room
@@ -6109,8 +6131,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtboss->addLinkedRoom(deserttempleentrance, "on a large dune where the desert temple entrance used to be.");
 	dtboss->setEscapable(false);
 	dtboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
+	dtboss->setXPReward(0);
 
-	shared_ptr<WorldChange> dtsink = make_shared<WorldChange>(); //when the forest temple sinks into the ground
+	shared_ptr<WorldChange> dtsink = make_shared<WorldChange>(); //when the desert temple sinks into the ground
 	dtsink->exitDepavings.push({deserttempleentrance, IN_TEMPLE}); //can't go in the temple anymore
 	dtsink->redirectRooms.push({deserttemplestairs, deserttempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the big red button (for some reason)
 	dtsink->redirectRooms.push({desertbuffer1, deserttempleentrance});
@@ -6141,29 +6164,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 		{NULL, "The sands beneath your feet are shaking..."},
 		{NULL, "The sand has completely enveloped the temple!"}});
 
-	/*Room*  = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
-	Room*  = new Room("fully in the desert temple. You must DROP the ESCAPE ORB if you wish to leave.");
-	Room*  = new Room("in the desert temple. The bricks are a darker shade down here.");
-	Room* deserthallway2 = new Room("in a long dark hallway.");
-	Room* deserthallway3 = new Room("");
-	Room* deserthallway4 = new Room("");
-	Room* deserthallway5 = new Room("");
-	Room* deserthallway6 = new Room("");
-	Room* deserthallway7 = new Room("");
-	Room* desertbacktrack = new Room("back in the long hallway.");
-	Room* desertbacktrack2 = new Room("in the hallway. Looking back, you don't seem any farther into it.");
-	Room* deserttemple = new Room("in the desert temple. I wonder what your teammates think about it.");
-	Room* deserttemplec = new Room("in the center of the desert temple. There are three slots to drop LIGHT ORBs into."); //There's a platform heading down deeper into the temple.
-	Room* deserttemplew = new Room("at the far end of the desert temple. There are some maskies carved into the wall.");
-	Room* deserttemplenw = new Room("at a still lake with a black sand beach.");//light orb 3
-	Room* deserttemplen = new Room("in the desert temple. You keep seeing movement around you, but it's just shadows.");
-	Room* deserttemplene = new Room("in a garden of leafless trees. The atmosphere is very still here.");//light orb 2
-	Room* deserttemplesw = new Room("in the desert temple. The ceiling arches are really well-designed.");
-	Room* deserttemples = new Room("at a particularly well-lit area of the desert temple.");//light orb 1
-	Room* deserttemplese = new Room("in the desert temple. This corner has some scratches on the wall.");
-	Room* deserttemple2 = new Room("at the deepest level of the desert temple. The room to the NORTH is very very dark.");
-	Room* deserttempleboss = new Room("in an enormous arena filled with darkness.\nThere is no end in sight.");*/
-
 	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo, DOWN, deserttemple2);
 	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
 	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
@@ -6189,9 +6189,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 						  "A fragile black orb which you must DROP in order to exit the desert temple.",
 						  "A hard stone orb, the petrified version of the desert temple's entry/escape orb.",
 						  desertbuffer1, desertbuffer2, dtboss, {dtguard11, dtguard12, dtguard13, dtguard21, dtguard22, dtguard31, dtguard32}, dtodropchanges);
-
-
-
 
 	Item* coldorb1 = new MaterialItem("COLD ORB", "", limbo); 
 	Item* coldorb2 = new MaterialItem("COLD ORB", "", limbo);
@@ -6220,8 +6217,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* finalboss = new NPC(*burgermenace);
 	finalboss->setLeader(true, 10000, limbo, false);
-	//finalboss->setExtraXP(0); //so the boss doesn't give you an absurd amount of rewards
-	//finalboss->setExtraMonies(0);
+	//finalboss->setXPReward(0); //so the boss doesn't give you an absurd amount of rewards
+	//finalboss->setMonyReward(0);
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -6447,6 +6444,7 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 			} //also make roaming npcs roam
 			if (npc->getRoaming() && !npc->getRecruited() && !npc->getLeader()) {
 				npc->roam();
+				if (trackNPC(npc, false)) Rnpcs.insert(npc->getParent()); //track this npc because they moved so we should just start tracking them now
 			}
 		}
 	}
@@ -6531,24 +6529,29 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	} else if (battlestatus == 1) { //win
 		cout << "\nVICTORY!";
 		CinPause();
-		mony += battle.getMonyReward(); //adds the monies to the player's balance
-		//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is never just 1
-		cout << "\nYou earned " << battle.getMonyReward() << " monies! Now you have " << mony << " monies!";
-		CinPause();
-		//gives all npcs the xp reward
-		for (NPC* teammate : *party) {
-			teammate->addXp(battle.getXpReward());
+		//handle mony rewards
+		if (int monies = battle.getMonyReward()) {
+			mony += monies; //adds the monies to the player's balance
+			//prints how much monies were earned and the new current total. I don't care about grammar here because the reward is never just 1
+			cout << "\nYou earned " << monies << " monies! Now you have " << mony << " monies!";
+			CinPause();
 		}
-		//prints how much xp everyone got
-		cout << "\nYou";
-		if (party->size() > 1) { //it's kind of strange to say "your party" if it's just you, so we do a check for that
-			cout << " and your team";
-		}
-		cout << " gained " << battle.getXpReward() << " XP!";
-		CinPause();
-		//prints if any teammates leveled up and prints if so
-		for (NPC* teammate : *party) {
-			printLvlUpData(teammate);
+		//handle xp rewards
+		if (int xp = battle.getXpReward()) {
+			for (NPC* teammate : *party) { //gives all npcs the xp reward
+				teammate->addXp(xp);
+			}
+			//prints how much xp everyone got
+			cout << "\nYou";
+			if (party->size() > 1) { //it's kind of strange to say "your party" if it's just you, so we do a check for that
+				cout << " and your team";
+			}
+			cout << " gained " << xp << " XP!";
+			CinPause();
+			//prints if any teammates leveled up and prints if so
+			for (NPC* teammate : *party) {
+				printLvlUpData(teammate);
+			}
 		}
 		//sets the npc as defeated
 		npc->defeat();
@@ -7530,7 +7533,7 @@ void play(Save*& save) {
 		
 	//sets up the game world and places the player at the current room
 	NPC* self = SetupWorld(&inventory);
-	Rnpcs.insert(self); //self is a recruitable npc MARK: put this somewhere better
+	Rnpcs.insert(self); //self is a recruitable npc as in he is in your party
 	
 	vector<NPC*>* party = self->getParty(); //a pointer to the player's party
 
