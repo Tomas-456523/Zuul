@@ -53,6 +53,7 @@ public:
 	void checkFightEffects(); //check the enemy leader for if they have any team effects to apply to the player team
 	
 	NPC* addNPC(NPC* npc, NPC* summoner = NULL, bool altteam = false); //creates a new npc mid-battle
+	void numberNPC(NPC* npc, const vector<NPC*>& team); //adds a number to the end of an npc's name to account for duplicates
 
 	void buildReward(NPC* enemy, bool summon = false); //build up the reward for beating the fight depending on the npc passed
 	int getXpReward(); //gets how much xp was earned as a result of a victory

@@ -144,6 +144,7 @@ public: //you need to set stats on creation
 	Effect* getFightTeamEffect();
 	Effect* getFightLeadEffect();
 	Attack* getStaged();
+	bool getChangeName(); //get if this npc changes its name when transforming
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -249,6 +250,7 @@ public: //you need to set stats on creation
 	void transform(NPC* npc); //transform into the given npc
 	void chipStats(double maxpercent);
 	void stageAttack(double hppercent, Attack* attack);
+	void setChangeName(); //sets that it changes the name when transforming in battle
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER, size_t unless = Helper::NEVER);
@@ -419,6 +421,8 @@ protected:
 	int invincibility = 0;
 	int evasion = 0;
 	NPC* parrying = NULL; //who we parrying
+
+	bool transformchangename = false; //if it changes its name when doing a transformation attack
 
 	int extralives = 0; //how many extra lives this npc has
 	

@@ -70,7 +70,12 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	everyone.insert(everyone.begin(), team.begin(), team.end());
 
 	//de-duplicating the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
-	vector<char*> names; //each name
+	for (NPC* npc : team) {
+		numberNPC(newguy, &team);
+	}
+
+	//MARK: should we get rid of this code?:
+	/*vector<char*> names; //each name
 	vector<int> amount; //how many times that name appears
 	vector<int> count; //how many times we've counted that name while renaming them (like, we have BOB, and then we rename him to BOB 2. That means count == 2)
 	for (NPC* npc : team) {
@@ -105,7 +110,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	} //deallocates the names we were using
 	for (char* name : names) {
 		delete[] name;
-	}
+	}*/
 
 	if (!scaleteam) return; //don't scale the team if we're told not to (also skips reward adding, but that doesn't matter in every context scaleteam is set to false anyway)
 
@@ -126,6 +131,20 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 		team = &playerTeam;
 	}
 	NPC* newguy = new NPC(*npc);
+	numberNPC(newguy, &team); //number the npc so that the player can specify which one to target
+	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
+	buildReward(newguy, true); //add to the fight reward based on the new guy
+	newguy->setSummoner(summoner);
+	team->push_back(newguy);
+	everyone.push_back(newguy);
+	if (newguy->getOpener()) { //do the opening attack if they have one
+		checkOpeners({newguy});
+	}
+	encountered.insert(getBase(npc)); //we have encountered the npc so we track it as one that was encountered
+	return newguy; //return the guy we just newly created
+}
+//adds a number to the end of an npc's name if we need to, to account for duplicates
+void numberNPC(NPC* npc, const vector<NPC*>& team) {
 	int count = 1; //we include newguy so the name count starts at 1
 	for (int i = 0; i < team->size(); i++) { //renames the enemy according to the amount of the same named enemy present. (eg. there is a BOB here already and we add a new BOB. BOB sees there's another BOB and renames himself BOB 2)
 		const char* name = strstr((*team)[i]->getName(), newguy->getName());
@@ -143,16 +162,6 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 		snprintf(suffix, 12, " %d", count); //it has to be 12 and not 10 this time because the compiler was complaining
 		newguy->addSuffix(suffix); //apply the suffix
 	}
-	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
-	buildReward(newguy, true); //add to the fight reward based on the new guy
-	newguy->setSummoner(summoner);
-	team->push_back(newguy);
-	everyone.push_back(newguy);
-	if (newguy->getOpener()) { //do the opening attack if they have one
-		checkOpeners({newguy});
-	}
-	encountered.insert(getBase(npc)); //we have encountered the npc so we track it as one that was encountered
-	return newguy; //return the guy we just newly created
 }
 //build up the reward for beating the fight depending on the npc passed MARK: build reward
 void Battle::buildReward(NPC* enemy, bool summon) {
@@ -267,7 +276,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	if (attack->spbomb) { //sp bombs don't get multipliers or modifiers of any sort, power still increases due to level from sp stat
 		attackProcessing = attack->power;
 	} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
-		attackProcessing = pierceProcessing = 9999999; //just send as much damage as possible MARK: actually no, send damage equal to the health (direct damage)
+		attackProcessing = pierceProcessing = 9999999; //just send a lot of damage to make it print the cool 999 
 	} else { //normal attacks, we multiply the attack power/pierce and attack/pierce stat together so they both matter equally, and divide by 10 just cause I don't want the numbers to be too big
 		attackProcessing = attack->power * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0;
 		pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
@@ -356,7 +365,8 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		reciever->chipStats(attack->statchip);
 	}
 	if (Attack* recoilatt = reciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
-		carryOutAttack(recoilatt, reciever, attacker, true);
+		if (!recoilatt->targetAlly) carryOutAttack(recoilatt, reciever, attacker, true);
+		else carryOutAttack(recoilatt, reciever, reciever, true); //if it was an ally targeting attack, we launch it from the reciever
 	}
 }
 //hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
@@ -501,6 +511,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
 	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
 		attacker->transform(transformation);
+		//we also have to renumber their name if the npc changes their name when doing a transformation
+		if (attacker->getChangeName()) numberNPC(attacker, (attacker->getEnemy() ? enemyTeam, playerTeam));
 	}
 }
 //check all the given npcs for if they have an opening attack to do MARK: check openers

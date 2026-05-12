@@ -493,10 +493,27 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* deserttemple2 = new Room("at the deepest level of the desert temple. The room to the NORTH is very very dark.");
 	Room* deserttempleboss = new Room("in an enormous arena filled with darkness.\nThere is no end in sight.");
 
-	//buffer1
-	//buffer2
-	//shareItems
-	Room* volcanotemple = new Room("in the volcano temple.");
+	Room* volcanobuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
+	Room* volcanobuffer2 = new Room("fully in the volcano temple. You must DROP the ESCAPE ORB if you wish to leave.");
+	volcanobuffer2->shareItems(volcanobuffer1);
+	Room* volcanotemple = new Room("in the volcano temple, built with dull red bricks.\nThe path forward is blocked by a blazing fire; you feel someone staring you down through it.");
+	Room* volcanotempleboss = new Room("in an arena burning with fire. There's a firey figure in the center of the room.");
+	Room* volcanotemplel = new Room("in the volcano temple. ");
+	Room* volcanotempler = new Room("");
+	Room* volcanotemplelr = new Room("");
+	Room* volcanotemplec = new Room("in the center of the volcano temple, branching into many paths.\nYou realize red bricks are just normal bricks,\nhowever these red bricks are more volcanoey and templey.");
+	Room* volcanotemple1 = new Room("at a fork in the road; how classic and familiar and retro and a callback.\nTo the WEST you see a statue of a programmer with bad posture.\nTo the NORTH you see a statue of a super buff gymnast.");
+	Room* volcanotemple1x = new Room("at a dead end... the gymnast statue looks like it worked out a lot to get that buff.");
+	Room* volcanotemple1v = new Room("correct! This programmer statue looks like it doesn't work out very much.");
+	Room* volcanotemple1o = new Room("");
+	Room* volcanotemple2 = new Room("at a fork in the road.\nTo the NORTH you see a garden with trees and boulders.\nThe EAST exit is labeled, \"DANGEROUS CHEMICALS\".");
+	Room* volcanotemple2x = new Room("at a dead end... hopefully you don't break your bones with these sticks and stones...");
+	Room* volcanotemple2v = new Room("correct! These chemical names will never hurt you.");
+	Room* volcanotemple2o = new Room("");
+	Room* volcanotemple3 = new Room("at a fork in the road.\nTo the EAST you see a bronze fish.\nTo the SOUTH you see a golden piano.");
+	Room* volcanotemple3x = new Room("at a dead end... you can't tuna this golden piano...");
+	Room* volcanotemple3v = new Room("correct! This bronze fish seems to actually be a bug and not a fish on closer inspection.");
+	Room* volcanotemple3o = new Room("");
 
 	//Create the finale and post-game rooms MARK: TA
 	NPC* burgermenace;
@@ -953,6 +970,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	cacty->setBasicAttack(cactbomb);
 	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", false, 7, 0, 0, 0, 0, 0);
 	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
+	Attack* lifeplantheal = new Attack("LIFE", "sent its nutrients to its team", false, 0, -14, 0, 1, 1, 999);
+	lifeplantheal->focushits = false;
+	lifeplant->setRecoilAttack(lifeplantheal, false);
 	plantlifeplant->summon = lifeplant;
 	plantlifeplant->summonamount = 1;
 	cacty->addSpecialAttack(plantlifeplant);
@@ -1792,7 +1812,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							  {matilda, "I was holding on to it in hopes of finding someone who could help."},
 							  {self, "Oh thanks."},
 							  {self, "I will get your kid back!"}});
-	matilda->setDialogue({{matilda, "Ohhh my poor Jilly..."}, {matilda, "She must be so scared..."}, {matilda, "Thank you so much for offering to help!"}, {matilda, "I'll be praying for you from here!"}});
+	matilda->setDialogue({{matilda, "Oh my poor Jilly..."}, {matilda, "She must be so scared..."}, {matilda, "Thank you so much for offering to help!"}, {matilda, "I'll be praying for you from here!"}});
 	matilda->setGift(cloakingdevice);
 	matilda->setTalkMakeChanges(false);
 	matilda->setWorldCondition(JILLYQUEST);
@@ -1944,11 +1964,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
 	BURGER->setFreebie({{burgerman, "YOU CAN'T AFFORD A BURGER?"}, {burgerman, "I BELIEVE THERE SHOULD BE NO FINANCIAL BARRIERS TO ENJOYING A BURGER."}, {burgerman, "HERE, HAVE ONE ON THE HOUSE!"}, {self, "Oh thanks!"}});
 	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
-	burgerman->addRejectionDialogue({{self, "Hey wanna join my team?"}, {burgerman, "I'M SORRY."}, {burgerman, "IF I JOINED YOUR TEAM,"}, {burgerman, "HOW COULD I ENSURE EVERYONE GETS A BURGER?"}});
-	//MARK: Hey wanna help me destroy BURGERs?
-	//burgerman, "..."
-	//burgerman, "YOU'RE EVEN STUPIDER THAN I THOUGHT."
-	//ENDING ACHIEVED: WHAT THE HECK ARE YOU DOING
+	Conversation burgrej = {{self, "Hey wanna join my team?"}, {burgerman, "I'M SORRY."}, {burgerman, "IF I JOINED YOUR TEAM,"}, {burgerman, "HOW COULD I ENSURE EVERYONE GETS A BURGER?"}};
+	shared_ptr<Conversation> burgrej2 = make_shared<Conversation>(Conversation({self, "Hey wanna help me destroy BURGERs?"}, {burgerman, "..."}, {burgerman, "YOU'RE EVEN STUPIDER THAN I THOUGHT."}));
+	burgrej.alt = burgrej2;
+	burgrej.skipcondition = {TEMPLEQUEST};
+	burgerman->addRejectionDialogue(burgrej);
 	Conversation burgdeciet = {{burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
 							   {self, "I'm sorry :("},
 							   {self, "But like your employees kidnapped this kid,"},
@@ -2009,8 +2029,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	shared_ptr<Conversation> prisrej2 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest."},
 							  {burgerprisoner, "But I think you can see I'm not going anywhere..."},
 							  {NULL, "ARCHIBALD shakes his chains for emphasis."}}));
+	shared_ptr<Conversation> prisrej3 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest."},
+							  {burgerprisoner, "But I don't want to attract negative attention."}}));
 	prisrej.skipcondition = {TEMPLEQUEST};
 	prisrej.alt = prisrej2;
+	prisrej2->skipcondition = {ESCAPEDBASE};
+	prisrej2->alt = prisrej3;
 	burgerprisoner->addRejectionDialogue(prisrej);
 
 	//set up catching stuff which is used later in the basement part
@@ -2046,10 +2070,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 													  {NULL, "The elevator door catches on the BURGER MAN's foot."},
 													  {NULL, "The doors open again."},
 													  {self, ":|"}});
-
-	//MARK: custom fight deny text, deny links
-	//A fight with the BURGER MAN would end in surefire defeat.
-	//Use THE PLOT DEVICE!
 
 	Conversation priscon = {{burgerprisoner, "Hm?"},
 							{self, "Hi what are you doing in prison?"},
@@ -3097,7 +3117,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* salepick = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", limbo, pickthrow);
 	Item* saleknife = new ManholeItem("KNIFE", "\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", limbo, knifethrow);
 	Item* salecover = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", limbo, coverthrow);
-	Item* salespork = new ManholeItem("SPORK","\".\"\n- Oxford Languages", limbo, sporkthrow); //MARK: find the definition
+	Item* salespork = new ManholeItem("SPORK","\"Google changed their google definitions to use Gemini now and I can't find the source they used to get their definitions from before so I can't keep up the description theme :(\"\n- Tomas", limbo, sporkthrow); //MARK: find the definition
 
 	Item* tv = new MaterialItem("TV", "", limbo);
 	Item* hblender = new MaterialItem("BLENDER", "", limbo);
@@ -4746,19 +4766,54 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	despair->response = encourage; //player can use encourage once a teammate gets despair
 	forestknight->setImmunity(despair, {{forestknight, "You are a terrible beast..."}, {forestknight, "but this is no reason to give up hope!"}, {forestknight, "Friends, don't let this monster break your spirit!"}});
 
-	NPC* bolide = new NPC("", "BOLIDE", "", limbo, 0);
-	//meteor shower
-	//impact
+	NPC* bolide = new NPC("", "BOLIDE", "Rocky volcanic boulder, burning through the atmosphere straight at your face.", limbo, 0, Stats(100, 30, 6, 20, 8, 100, 9));
+	Attack* ablation = new Attack("ABLATION", "is falling to the earth", false, -5, 0, 0, 0, 0, 0);
+	ablation->recoil = 5;
+	bolide->setBasicAttack(ablation);
+	Attack* fragment = new Attack("FRAGMENT", "fragmented into fragments that fell onto the team", false, -5, 15, 17, 3, 3, 1);
+	fragment->focushits = false;
+	bolide->setRecoilAttack(fragment, false); //fragments on every hit
+	Attack* meteorshower = new Attack("METEOR SHOWER", "called its meteor friends to hit", false, 10, 9, 2, 3, 3);
+	meteorshower->focushits = false;
+	bolide->addSpecialAttack(meteorshower);
+	Attack* impact = new Attack("IMPACT", "crashed into", true, 30, 15, 1, 1, 3);
+	impact->recoil = 30;
+	bolide->addSpecialAttack(impact);
 
-	NPC* firefly = new NPC("", "FIREFLY", "", limbo, 0);
-	//firethrower
-	//
+	NPC* firefly = new NPC("", "FIREFLY", "Little bug made of fire and it flies. It does a little trolling (arson).", limbo, 0, Stats(20, 6, 20, 4, 20, 26, 9));
+	firefly->setRecoilAttack(burn);
+	Attack* firethower = new Attack("FIRETHROWER", "spewed a stream of flames at", false, -5, 15, 20, 1, 1, 1);
+	firethower->addEffect(onfire);
+	Attack* ringoffire = new Attack("RING OF FIRE", "flapped a ring of fire at", false, 6, 5, 20, 1, 1, 3); //for spreading on fire everywhere
+	ringoffire->addEffect(onfire);
+	Attack* motivation = new Attack("MOTIVATION", "lit a fire under", false, 10, 5, 10, 1, 1, 1, true); //mostly just so it wakes up monkey statues
+	Effect* motivated = new Effect("MOTIVATED", 5, 2, 0, 1.5);
+	firefly->setBasicAttack(firethower);
+	firefly->addSpecialAttack(ringoffire);
+	firefly->addSpecialAttack(motivation);
 
-	NPC* monkeystatue = new NPC("", "MONKEY STATUE", "", limbo, 0);
-	NPC* infernobo = new NPC("", "INFERNOBO", "", limbo, 0);
-	//gorilla warfare
-	//
-	//nova cannon
+	NPC* monkeystatue = new NPC("", "MONKEY STATUE", "Stone spherical monkey looking very peaceful as it sleeps in statue form.", limbo, 0, Stats(290, 100, 0, 100, 0, 0, 9));
+	NPC* infernobo = new NPC("", "INFERNOBO", "Firey spherical monkey in an uncontrollable rage after getting woken up.", limbo, 0, Stats(290, 20, 40, 20, 10, 30, 9));
+	Attack* sleepinertia = new Attack("SLEEP INERTIA", "exploded awake", false, 0, 1, 0, 1, 1, 999, true); //do one damage to teammates to wake up fellow monkey statues
+	sleepinertia->transformation = infernobo;
+	sleepinertia->focushits = false;
+	monkeystatue->setRecoilAttack(sleepinertia, false); //the monkey statue is docile until you hit it with any attack
+	monkeystatue->setChangeName(); //doesn't start as infernobo but it changes its name, for emphasizing the change
+	Attack* angery = new Attack("FIRE INTO FUEL", "rose in energy due to its anger", false, -5, 0, 0, 0, 0, 0); //infernobo recharges sp on every hit
+	angery->focushits = false;
+	infernobo->setRecoilAttack(angery, false);
+	Attack* gorillawarfare = new Attack("GORILLA WARFARE", "beat up", true, -5, 5, 0, 3, 3, 1);
+	gorillawarfare->afterdesc = " with gorilla tactics";
+	infernobo->setBasicAttack(gorillawarfare);
+	Attack* rileup = new Attack("RILE UP", "riled up", false, 5, 0, 0, 1, 1, 1);
+	Effect* riledup = new Effect("RILED UP", 3, 0, 0, 2, 1, 1, 2, 2);
+	rileup->addEffect(riledup);
+	rileup->targetself = true;
+	rileup->redundanteffect = false;
+	infernobo->addSpecialAttack(rileup);
+	Attack* novacannon = new Attack("NOVA CANNON", "fired a blast of energy at", false, 20, 20, 40, 1, 1, 1);
+	novacannon->afterdesc = " from its mouth";
+	infernobo->addSpecialAttack(novacannon);
 
 	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(6000, 15, 10, 0, 10, 14, 9), Stats(2, 0, 1, 0, 1, 1, 0));
 	NPC* firewithfir2 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning a bright blue.", limbo, 0,               Stats(6000, 15, 20, 0, 15, 21, 9), Stats(2, 0, 2, 0, 1, 2, 0));
@@ -4777,15 +4832,16 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//burny burn (recoil, because youre punching fire)
 
 	//firefight "fought"" with fire" (multi hit 1 target not too bad)
-	//ragebait
+	Attack* firefight = new Attack("FIREFIGHT", "fought", true, -5, 3, 6, 3, 3, 1);
+	firefight->afterdesc = " with fire";
 
 	//firefight
-	//spark "flicked an explosive spark at"
+	Attack* spark = new Attack("SPARK", "flicked an explosive spark at", false, 7, 15, 30, 1, 1, 3);
 	//ragebait
 
-	//spark (3 target)
+	Attack* basicspark = new Attack("SPARK", "flicked an explosive spark at", false, -5, 15, 30, 1, 1, 3);
 	//ragebait
-	//flame (bit 1 hit)
+	Attack* flame = new Attack("FLAME", "flamed", false, 20, 30, 50, 1, 1, 3);
 
 	//MARK: floria would just heal more? prolly don't allow beneficial moves
 	Attack* ragebait;
@@ -6198,18 +6254,74 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//MARK: volcano temple stuff
 
-	//
+	//vtguardl - bolide firefly
+	//vtguardr - firefly bolide
 
-	//
+	//vtguard1 - firefly firefly bolide bolide bolide
+	//vttrap1 - bolide bolide firefly
 
-	//
+	//vtguard2 - bolide firefly monkey monkey
+	//vttrap2 - firefly firefly firefly
+	
+	//vtguard3 - monkey monkey monkey firefly
+	//vttrap3 - monkey firefly firefly
 
+	//it doesn't look like you have time to go [path 1]
+	//you don't like the look of [path 2]
+
+	//I was walking down the street
+	//when I took note of the heat
+	//I then put on some sunscreen
+	//but then tripped on a fun bean
+	//I flew up to the moon
+	//as if it were a toon
+	//This story has no purpose
 	//
+	
+	//to the [direction] you see a statue of a buff gymnast
+	//to the [direction] you see a statue of a programmer
+
+	//You read the sign. It reads...
+	//\"Roses are red,
+	//Violets are blue;
+	//I tried to make a rhyme,
+	//It didn't quite work out.\"
+
+	//to the [direction] you see various sticks and stones
+	//the [direction] is labeled \"dangerous chemicals\"
+
+	//You read the sign. It reads...
+	//B - \"Hey person A,\"
+	//B - \"you smell\"
+	//A - \"Sticks and stones may break my bones\"
+	//A - \"but words will never hurt me.\"
+	//B - \"Yes but you smell like cyanide\"
+	//B - \"And it's hurting me.\"
+
+	//to the [direction] you see a golden piano
+	//to the [direction] you see a bronze fish
+
+	//You read the sign. It reads...
+	//I saw a silverfish made of bronze,
+	//and I saw a goldfish made of silver,
+	//but I didn't see a bronzefish made of gold.
+	//Furthermore,
+	//you can tune a fish,
+	//but you can't tuna piano!
 
 	NPC* vtboss = new NPC(*firewithfire);
+	vtboss->setMask("", "FIRE WITH FIRE", "A humanoid of flowing fire tapping his foot on the floor.")
 	vtboss->addConversation({{NULL, "FIRE WITH FIRE is tapping his foot on the floor."},
-							 {firewithfire, "Well it took you long enough to get here..."},
-							 {firewithfire, "I haven't got all day..."}});
+							 {firewithfire, "BRROOOOOOOO you're so slowwwwww... --."}
+							 {firewithfire, "What took you so long?"},
+							 {self, "what..."},
+							 {firewithfire, "Whateverrrr let's get this over with."},
+							 {firewithfire, "You don't look like you're gonna take much effort! ^^D"}});
+	vtboss->addLinkedConvo(vtboss, {{firewithfire, "AHHHHHHHHHHHHHH!!!"},
+									{firewithfire, "YOUR MOTHER!"},
+									{NULL, "FIRE WITH FIRE fizzled out..."},
+									{NULL, "You see the PLOTOMETER OF PATIENCE left behind on the ground!"},
+									{NULL, "Your ESCAPE ORB hardened into a STONE ORB."}});
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
 	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
@@ -7055,7 +7167,6 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
 		cout << "\n" << info->getText(); //prints the info
-		return; //return so we don't log it because it would be pretty pointless
 	//treasure chest items either give monies or are trapped and start a battle
 	} else if (!strcmp(item->getType(), "treasure")) {
 		TreasureItem* treasure = (TreasureItem*)item; //converts to the corresponding subclass

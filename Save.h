@@ -525,7 +525,7 @@ struct Save {
 				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
 				Room* room = roomsH[ParseNum(++data)]; //get the room this item was used in, which is sometimes important
 				bool log = true; //if we should releog this change, don't log if it didn't actually do anything
-				if (!strcmp(item->getType(), "BURGER")) {
+				if (!strcmp(item->getType(), "BURGER") || !strcmp(item->getType(), "info")) {
 					log = false;
 				} else if (!strcmp(item->getType(), "education")) {
 					for (Attack* attack : ((EducationItem*)item)->getAttacks()) { //much simpler than in the main useItem function since we can ignore all the text

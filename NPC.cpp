@@ -190,10 +190,10 @@ vector<NPC*>* NPC::getParty(size_t wave) { //gets the npc's party for leader npc
 size_t NPC::getWaves() { //get how many waves there are
 	return party.size();
 }
-NPC* NPC::getPursuer() {
+NPC* NPC::getPursuer() { //get who this npc is pursuing
 	return pursuer;
 }
-NPC* NPC::getPursuing() {
+NPC* NPC::getPursuing() { //get who is pursuing this npc
 	return pursuing;
 }
 pair<Room*, const char*>& NPC::getSpecial() {
@@ -224,6 +224,20 @@ Effect* NPC::getFightTeamEffect() {
 }
 Effect* NPC::getFightLeadEffect() {
 	return fightleadeffect;
+}
+Attack* NPC::getStaged() {
+	pair<double, Attack*> staged = {1, NULL};
+	while (!stagedattacks.empty()) { //keep going until we can't use the next one
+		//choose the next available attack if its before the next one and it's below the hp threshold
+		if (stagedattacks.front().first < staged.first && health <= stagedattacks.front().first * stats.hpmax) {
+			staged = stagedattacks.front();
+			stagedattacks.pop(); //pop the attack because we already checked/used it
+		} else break; //we're at the latest possible staged attack so just use this one	
+	}
+	return staged.second; //return whatever we found, which could be null if we found nothing
+}
+bool NPC::getChangeName() {
+	return transformchangename;
 }
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
@@ -1066,7 +1080,7 @@ void NPC::setFightEffects(Effect* team, Effect* lead) {
 //transform the npc to match the other npcs
 void NPC::transform(NPC* npc) {
 	title = npc->getTitle(); //set the identifiers
-	//strcpy(name, npc->getName());
+	if (transformchangename) strcpy(name, npc->getName()); //change the name if we do that
 	description = npc->getDescription();
 	int _level = level; //track old stats so we can reset them
 	double healthPercent = health/stats.hpmax;
@@ -1088,7 +1102,7 @@ void NPC::chipStats(double maxpercent) {
 	int chips[6]; //chip all the stats up to the maximum percentage
 	for (size_t i = 0; i < 6; i++) {
 		int change = Round(stats[i]*maxpercent*rand()/(RAND_MAX));
-		chips[i] = Clamp(change, 0, stats[i]-(i != 5 ? 5 : 0)); //stats can't fall below 5 because that would be silly, except speed, it doesn't not make sense for that to be that low
+		chips[i] = min(change, stats[i]-(i != 5 ? 5 : 0)); //stats can't fall below 5 because that would be silly, except speed, it doesn't not make sense for that to be that low
 	}
 	bool printed = false; //technically due to chance, we could potentially change print nothing, so we track it here so we know if we should pause
 	if (chips[0]) {
@@ -1123,16 +1137,8 @@ void NPC::chipStats(double maxpercent) {
 void NPC::stageAttack(double hppercent, Attack* attack) {
 	stagedattacks.push({hppercent, attack});
 }
-Attack* NPC::getStaged() {
-	pair<double, Attack*> staged = {1, NULL};
-	while (!stagedattacks.empty()) { //keep going until we can't use the next one
-		//choose the next available attack if its before the next one and it's below the hp threshold
-		if (stagedattacks.front().first < staged.first && health <= stagedattacks.front().first * stats.hpmax) {
-			staged = stagedattacks.front();
-			stagedattacks.pop(); //pop the attack because we already checked/used it
-		} else break; //we're at the latest possible staged attack so just use this one	
-	}
-	return staged.second; //return whatever we found, which could be null if we found nothing
+void NPC::setChangeName() {
+	transformchangename = true;
 }
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});
