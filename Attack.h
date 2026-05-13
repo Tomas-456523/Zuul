@@ -67,7 +67,9 @@ struct Attack {
 	bool prioritizenonleader = false; //if this attack prioritizes not hitting the leader
 	bool donotplayer = false; //if we should never ever hit the player
 	bool targetself = false; //self-explanatory
+	bool donotself = false; //if this attack should under no circumstances be targeted at the attacker
 	bool targetshark = false; //if this attack should only target sharks
+	bool skiptarget = false; //if in a multi-target attack, it hits everything around the target instead of including the target in the blast
 
 	int extralives = 0; //how many extra lives to give to the target
 

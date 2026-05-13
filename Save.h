@@ -599,6 +599,8 @@ struct Save {
 					for (Item* lorb : lightorbs) { //put the lorbs back
 						lorb->setRoom(room);
 					}
+				} else if (!strcmp(item->getType(), "coldorb")) {
+					((ColdOrb*)item)->extinguishFire();
 				} else if (!strcmp(item->getType(), "escapeorb")) { //do escape orb drop changes
 					((EscapeOrb*)item)->drop();
 				} else if (!strcmp(item->getType(), "manhole")) { //uncover manhole item exits

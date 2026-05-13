@@ -69,48 +69,10 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	//add everyone to a list of everyone for convenience
 	everyone.insert(everyone.begin(), team.begin(), team.end());
 
-	//de-duplicating the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
+	//de-duplicate the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
 	for (NPC* npc : team) {
-		numberNPC(newguy, &team);
+		numberNPC(npc, team);
 	}
-
-	//MARK: should we get rid of this code?:
-	/*vector<char*> names; //each name
-	vector<int> amount; //how many times that name appears
-	vector<int> count; //how many times we've counted that name while renaming them (like, we have BOB, and then we rename him to BOB 2. That means count == 2)
-	for (NPC* npc : team) {
-		char* name = new char[255]; //gets the name of the enemy
-		strcpy(name, npc->getName());
-		bool namefound = false; //searches names to see if we've already saved that name before
-		for (int i = 0; i < names.size(); i++) {
-			if (!strcmp(name, names[i])) {
-				amount[i]++; //increments how many "name"s there are
-				namefound = true; //we have indeed found that name now, and we break since we've found it
-				break;
-			}
-		} //we add the new name to the list, and that it appears once
-		if (!namefound) {
-			names.push_back(name);
-			amount.push_back(1);
-			count.push_back(0); //we haven't begun checking this yet, so it's set to 0
-		}
-	} //renames all the duplicate enemies
-	for (NPC* npc : team) {
-		for (int i = 0; i < names.size(); i++) { //we check all the names to see if one matches this enemy's name
-			if (!strcmp(npc->getName(), names[i])) {
-				if (amount[i] > 1) { //no need to rename the first one, so we only continue if it isn't
-					char suffix[10]; //the suffic to append to the enemy's name
-					//sets suffix to " ", and then increments the current name's count and sets the rest of it to the current number
-					snprintf(suffix, 10, " %d", ++count[i]); //I need 10 characters in the array because otherwise g++ complains
-					npc->addSuffix(suffix); //adds the number suffix to the enemy's name
-				}
-				break; //breaks because we found the name
-			}
-		}
-	} //deallocates the names we were using
-	for (char* name : names) {
-		delete[] name;
-	}*/
 
 	if (!scaleteam) return; //don't scale the team if we're told not to (also skips reward adding, but that doesn't matter in every context scaleteam is set to false anyway)
 
@@ -131,7 +93,7 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 		team = &playerTeam;
 	}
 	NPC* newguy = new NPC(*npc);
-	numberNPC(newguy, &team); //number the npc so that the player can specify which one to target
+	numberNPC(newguy, *team); //number the npc so that the player can specify which one to target
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
 	buildReward(newguy, true); //add to the fight reward based on the new guy
 	newguy->setSummoner(summoner);
@@ -144,14 +106,14 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	return newguy; //return the guy we just newly created
 }
 //adds a number to the end of an npc's name if we need to, to account for duplicates
-void numberNPC(NPC* npc, const vector<NPC*>& team) {
-	int count = 1; //we include newguy so the name count starts at 1
-	for (int i = 0; i < team->size(); i++) { //renames the enemy according to the amount of the same named enemy present. (eg. there is a BOB here already and we add a new BOB. BOB sees there's another BOB and renames himself BOB 2)
-		const char* name = strstr((*team)[i]->getName(), newguy->getName());
-		if (name == NULL || name != &(*team)[i]->getName()[0]) { //if we didn't find the name or it the name was found after the beginning, the npc has a different name so we continue
+void Battle::numberNPC(NPC* npc, const vector<NPC*>& team) {
+	int count = 1; //we include the given npc so the name count starts at 1
+	for (int i = 0; i < team.size(); i++) { //renames the enemy according to the amount of the same named enemy present. (eg. there is a BOB here already and we add a new BOB. BOB sees there's another BOB and renames himself BOB 2)
+		const char* name = strstr(team[i]->getName(), npc->getName());
+		if (name == NULL || name != &team[i]->getName()[0]) { //if we didn't find the name or it the name was found after the beginning, the npc has a different name so we continue
 			continue;
 		}
-		char charafter = (*team)[i]->getName()[strlen(newguy->getName())]; //check the char in the npc name after the newguy's name
+		char charafter = team[i]->getName()[strlen(npc->getName())]; //check the char in the npc name after the given npc's name
 		if (charafter != ' ' && charafter != '\0') { //skip this name if the next character isn't space or null terminator, because that means the name doesn't correspond and it's some other name that starts with the new guy's name
 			continue;
 		}
@@ -160,7 +122,7 @@ void numberNPC(NPC* npc, const vector<NPC*>& team) {
 	if (count > 1) { //we only add a suffix if there's >1 of that enemy. Otherwise it's pretty obvious it's BOB 1
 		char suffix[12]; //generate the suffix corresponding to the amount of similar names found
 		snprintf(suffix, 12, " %d", count); //it has to be 12 and not 10 this time because the compiler was complaining
-		newguy->addSuffix(suffix); //apply the suffix
+		npc->addSuffix(suffix); //apply the suffix
 	}
 }
 //build up the reward for beating the fight depending on the npc passed MARK: build reward
@@ -323,7 +285,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			CinPause();
 		}
 		if (crit) { //yeeeeaaaaaahhhhhhh!!!!!! critical hit lets goooooooo excitement (this is the reaction this message invokes) (or "oh shoot" if you got hit)
-			cout << "\nCRITICAL " << (attack->power > 0 ? "HIT" : "HEAL") << "!";
+			cout << "\nCRITICAL " << (attack->power >= 0 ? "HIT" : "HEAL") << "!";
 			CinPause();
 		}
 		if (reciever->getInvincible() && attack->power > 0) {
@@ -372,7 +334,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 //hits the targets (and surroundings depending on attack range), seperate function needed because this must be called multiple times for unfocused moves/attacks MARK: hit targets
 void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos) {
 	for (int i = 0; i < tarparty.size(); i++) { //hits all the targets, we must iterate in order to account for multi-target attacks
-		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2) { //if they're within range
+		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2 && !(attack->skiptarget && i == tarPos)) { //if they're within range and !(this is the target and we're skipping the target in this multi-target attack)
 			NPC* reciever = tarparty[i]; //who will recieve the damage, could be the target or the npc guarding the target
 			if (reciever->getAway() || (!attack->targetFainted && !reciever->getHealth())) { //ignore incapacitated affected npcs if we don't target incapacitated and also can't target away npcs
 				continue;
@@ -510,9 +472,10 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	}
 	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
 	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
+		cout << "\n" << attacker->getName() << " transformed into " << transformation->getName() << "!";
 		attacker->transform(transformation);
 		//we also have to renumber their name if the npc changes their name when doing a transformation
-		if (attacker->getChangeName()) numberNPC(attacker, (attacker->getEnemy() ? enemyTeam, playerTeam));
+		if (attacker->getChangeName()) numberNPC(attacker, (attacker->getEnemy() ? enemyTeam : playerTeam));
 	}
 }
 //check all the given npcs for if they have an opening attack to do MARK: check openers
@@ -536,7 +499,7 @@ void Battle::checkFightEffects() {
 	}
 }
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item
-bool Battle::useItem(const char* itemname) {
+bool Battle::useItem(const char* itemname, NPC* plr) {
 	Item* item = getItemInVector(*inventory, itemname); //finds the item; no need to check currentRoom this time!
 	char itemName[255] = "";
 	char npcName[255] = "";
@@ -595,6 +558,11 @@ bool Battle::useItem(const char* itemname) {
 			}
 			npc = playerTeam[0]; //set the target to the only possible one
 		}
+	}
+
+	if (plr->getWrath()) { //can't use items if the player has wrath
+		cout << "\nYou're too angry to use items!";
+		return false;
 	}
 
 	//hp items heal the target
@@ -665,7 +633,7 @@ bool Battle::useItem(const char* itemname) {
 	//info items give information as usual
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
-		cout << "\n" << info->getText(); //prints the info item's information
+		printConversation(&info->getText(), false); //prints the info item's information
 		commandcount[3]++; //increment successful item usings
 		return false;
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items are another way of just using their attack
@@ -824,6 +792,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 					}
 				} //if there's no one else to target, then just let the player try to hit the away npc because there's nothing better to do while waiting for them to come back
 			}
+			if (plr->getWrath() && attack->getBeneficial()) { //can't use beneficial attacks if self has wrath
+				cout << "\nYou're too angry to use beneficial attacks!";
+				return false;
+			}
 			if (plr->getSP() < attack->cost) { //we don't launch the attack if we don't have enough sp
 				cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << Round(attack->cost * plr->getSPUseMultiplier()) << ")";
 				return false; //could not launch attack
@@ -879,7 +851,7 @@ bool Battle::playerTurn(NPC* plr) {
 		ParseCommand(command, commandWord, commandExtension); //parses the command, splitting it into the command word and the rest (and a space)
 
 		if (!strcmp(commandWord, "USE")) { //for using an item
-			continuing = !useItem(commandExtension); //may potentially end the player turn if valid item is used
+			continuing = !useItem(commandExtension, plr); //may potentially end the player turn if valid item is used
 		} else if (!strcmp(commandWord, "INVENTORY")) { //for printing a list of items in the inventory
 			printInventory();
 		} else if (!strcmp(commandWord, "PARTY")) { //for printing a list of all teammates
@@ -935,6 +907,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->targetshark && !target->getShark()) continue; //shark-targeting attacks must have a shark to target
 		if (!attack->redundanteffect && target->getEffect(attack->appliedeffect, true)) continue; //if the attack shouldn't target npcs who already have the applied effect but the guy does have it
 		if (attack->donotplayer && target->getPlayerness()) continue; //don't hit the player if the attack says so
+		if (attack->donotself && target == npc) continue; //don't target yourself if you shouldn't do that with this attack
 		if (donttarget[attack].count(target->getParent())) continue; //don't target this target with this attack if we've marked it to do so
 		if (attack->protect) { //protect attacks have various conditions
 			if (target == npc) continue; //don't protect yourself because that would be wasting SP to do literally nothing (you're already taking your hits for yourself)
@@ -1008,6 +981,9 @@ Attack* Battle::chooseAttack(NPC* npc) {
 		if (_attack->hpthreshold * npc->getHealthMax() > npc->getHealth()) { //if the npc isn't damaged enough to use the attack, we don't use it
 			continue;
 		}
+		if (npc->getWrath() && attack->getBeneficial()) { //npcs don't use beneficial attacks if they're wrathful
+			continue;
+		}
 		//we add the weight of the attack to the limit
 		limit += npc->getWeight(_attack);
 		if (r < limit) { //we check if the limit has passed r. If so, that's the attack we choose
@@ -1039,6 +1015,10 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 		else attack = npc->getBasicAttack(); //just default to the basic attack for normal npcs
 
 		targets = getTargets(npc, attack); //find new targets with the new attack
+	}
+
+	if (npc->getWrath() && attack->getBeneficial()) { //if the npc ended up with a beneficial attack they can't use it if they're wrathful
+		attack = NULL;
 	}
 
 	if (targets.empty()) { //no targets were found for either the special or basic attack, so they just do nothing

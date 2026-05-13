@@ -481,8 +481,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* desertbacktrack2 = new Room("in the hallway. Looking back, you don't seem any farther into it.");
 	desertbacktrack->shareItems(deserthallway7); //they're all the end of the hallway
 	desertbacktrack2->shareItems(deserthallway7);
-	Room* deserttemple = new Room("in the desert temple. I wonder what your teammates think about it.");
-	Room* deserttemplec = new Room("in the center of the desert temple. There are three slots to drop LIGHT ORBs into."); //There's a platform heading down deeper into the temple.
+	Room* deserttemple = new Room("in the desert temple. I wonder what your teammates think about it."); //so the player hopefully realizes their team is gone here
+	Room* deserttemplec = new Room("in the center of the desert temple. There are three slots to drop LIGHT ORBs into.");
 	Room* deserttemplew = new Room("at the far end of the desert temple. There are some maskies carved into the wall.");
 	Room* deserttemplenw = new Room("at a still lake with a black sand beach.");//light orb 3
 	Room* deserttemplen = new Room("in the desert temple. You keep seeing movement around you, but it's just shadows.");
@@ -496,24 +496,24 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* volcanobuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
 	Room* volcanobuffer2 = new Room("fully in the volcano temple. You must DROP the ESCAPE ORB if you wish to leave.");
 	volcanobuffer2->shareItems(volcanobuffer1);
-	Room* volcanotemple = new Room("in the volcano temple, built with dull red bricks.\nThe path forward is blocked by a blazing fire; you feel someone staring you down through it.");
-	Room* volcanotempleboss = new Room("in an arena burning with fire. There's a firey figure in the center of the room.");
-	Room* volcanotemplel = new Room("in the volcano temple. ");
-	Room* volcanotempler = new Room("");
-	Room* volcanotemplelr = new Room("");
+	Room* volcanotemple = new Room("in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into.");
+	Room* volcanotempleboss = new Room("in an arena burning with fire. There's a fiery figure in the center of the room.");
+	Room* volcanotemplel = new Room("on a path with lava on both sides. Twin lavafalls flow lava into the temple.");
+	Room* volcanotempler = new Room("on a path with lava on both sides. Um ackshually it's magma, because it's underground.");
+	Room* volcanotemplelr = new Room("further into the volcano temple. It's a little cooler here, but that's still really hot.");
 	Room* volcanotemplec = new Room("in the center of the volcano temple, branching into many paths.\nYou realize red bricks are just normal bricks,\nhowever these red bricks are more volcanoey and templey.");
 	Room* volcanotemple1 = new Room("at a fork in the road; how classic and familiar and retro and a callback.\nTo the WEST you see a statue of a programmer with bad posture.\nTo the NORTH you see a statue of a super buff gymnast.");
-	Room* volcanotemple1x = new Room("at a dead end... the gymnast statue looks like it worked out a lot to get that buff.");
+	Room* volcanotemple1x = new Room("at a dead end... The gymnast statue looks like it worked out a lot to get that buff.");
 	Room* volcanotemple1v = new Room("correct! This programmer statue looks like it doesn't work out very much.");
-	Room* volcanotemple1o = new Room("");
+	Room* volcanotemple1o = new Room("in a very cold room full of ice. Water is actually surprisingly heavy.");
 	Room* volcanotemple2 = new Room("at a fork in the road.\nTo the NORTH you see a garden with trees and boulders.\nThe EAST exit is labeled, \"DANGEROUS CHEMICALS\".");
-	Room* volcanotemple2x = new Room("at a dead end... hopefully you don't break your bones with these sticks and stones...");
+	Room* volcanotemple2x = new Room("at a dead end... Hopefully you don't break your bones with these sticks and stones...");
 	Room* volcanotemple2v = new Room("correct! These chemical names will never hurt you.");
-	Room* volcanotemple2o = new Room("");
+	Room* volcanotemple2o = new Room("at the very cold end of the passageway. The bricks are stained a light blue here, as everyone knows happens in the cold.");
 	Room* volcanotemple3 = new Room("at a fork in the road.\nTo the EAST you see a bronze fish.\nTo the SOUTH you see a golden piano.");
-	Room* volcanotemple3x = new Room("at a dead end... you can't tuna this golden piano...");
-	Room* volcanotemple3v = new Room("correct! This bronze fish seems to actually be a bug and not a fish on closer inspection.");
-	Room* volcanotemple3o = new Room("");
+	Room* volcanotemple3x = new Room("at a dead end... You can't tuna this golden piano...");
+	Room* volcanotemple3v = new Room("correct! This bronze fish makes you wonder about the mysterious lack of bronzefish.");
+	Room* volcanotemple3o = new Room("in a very cold room for containing cold objects. The floor is a frozen lake.");
 
 	//Create the finale and post-game rooms MARK: TA
 	NPC* burgermenace;
@@ -1965,7 +1965,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	BURGER->setFreebie({{burgerman, "YOU CAN'T AFFORD A BURGER?"}, {burgerman, "I BELIEVE THERE SHOULD BE NO FINANCIAL BARRIERS TO ENJOYING A BURGER."}, {burgerman, "HERE, HAVE ONE ON THE HOUSE!"}, {self, "Oh thanks!"}});
 	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
 	Conversation burgrej = {{self, "Hey wanna join my team?"}, {burgerman, "I'M SORRY."}, {burgerman, "IF I JOINED YOUR TEAM,"}, {burgerman, "HOW COULD I ENSURE EVERYONE GETS A BURGER?"}};
-	shared_ptr<Conversation> burgrej2 = make_shared<Conversation>(Conversation({self, "Hey wanna help me destroy BURGERs?"}, {burgerman, "..."}, {burgerman, "YOU'RE EVEN STUPIDER THAN I THOUGHT."}));
+	shared_ptr<Conversation> burgrej2 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"}, {burgerman, "..."}, {burgerman, "YOU'RE EVEN STUPIDER THAN I THOUGHT."}}));
 	burgrej.alt = burgrej2;
 	burgrej.skipcondition = {TEMPLEQUEST};
 	burgerman->addRejectionDialogue(burgrej);
@@ -2327,7 +2327,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{developer, "Don't worry you will always truly be Bernard."},
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
-							{self, "Yoooo nice thanks.\n\n\n"}}; //MARK: is there a reason there's three newlines here?
+							{self, "Yoooo nice thanks."}};
 	devconvo.skipcondition = {ISBERNARD};
 	shared_ptr<Conversation> devconvo2 = make_shared<Conversation>(Conversation({{developer, "Ayy Bernard how's it going?"},
 							{self, "Pretty good!"},
@@ -2335,13 +2335,13 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{developer, "Yo nice."},
 							{developer, "Well good job getting here."},
 							{developer, "Here have this cool amazing new move."},
-							{self, "Yoooo nice thanks.\n\n\n"}})); //MARK: is there a reason there's three newlines here?
+							{self, "Yoooo nice thanks."}}));
 	devconvo.alt = devconvo2;
 	developer->addConversation(devconvo);
 	developer->addConversation({{self, "Yo developer man."},
 								{developer, "Yeah?"},
 								{self, "Why is everything text?"},
-								{developer, "Because the camera man is on vacation."},
+								{developer, "Because the cameraman is on vacation."},
 								{developer, "Only the narrator could cover his shift."},
 								{self, "Oh I see."}});
 	developer->addConversation({{self, "Can I recruit TECH DEMO MAN?"},
@@ -2351,7 +2351,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	burgerman->addLinkedConvo(developer, {{self, "Yo developer man."},
 	 {developer, "Hey what's up?"},
-	 {self, "wdym ???"},
 	 {self, "So I was wondering,"},
 	 {self, "what's up with all the parallel universes in the first game?"},
 	 {self, "Also who was the other BURGER MAN?"},
@@ -2424,7 +2423,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {developer, "the defender would like get in the way of the attack and be like,"},
 	 {NULL, "DEFENDER - \"NOOOOOOO! I WILL DEFEND YOU, SOMEONE!\""},
 	 {developer, "And then they would take the heal for the person they're defending."},
-	 {self, "How silly behavior."}});
+	 {self, "What silly behavior."}});
 	//save system stuff
 	//commentary about the world
 	developer->addConversation({{developer, "It's interesting how I have a very specific vision for how the world looks,"},
@@ -2459,7 +2458,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \		    \	 /' '\		  /  	  / \		  / \		  / \ */
 	{developer, "He's breakdancing!"}});
 	developer->addConversation({{developer, "I've noticed,"},
-	 {developer, "this game has a noticable lack of dinosaurs."}});
+	 {developer, "this game has a noticeable lack of dinosaurs."}});
 	//favorite game
 	//talk about the mountain {developer, ""}
 	developer->addConversation({{developer, "There was going to be a \"BIG CAT\" as the first enemy on the mountain,"},
@@ -2482,7 +2481,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	developer->addConversation({{developer, "This document that I used to plan this game says that this game is supposed to take place in..."},
 	 {NULL, "\"GENERIC FANTASY LAND\""},
 	 {developer, "cause I'm pretty sure it was supposed to be generic but with BURGERs,"},
-	 {developer, "but that was boring so I changed it to a cool amazing innovative fantasty land instead."},
+	 {developer, "but that was boring so I changed it to a cool amazing innovative fantasy land instead."},
 	 {NULL, "(well at least I hope it's cool amazing and innovative)"},
 	 {developer, "Idk what this place is called now, it's just the earth but fictional"},
 	 {developer, "so yea just the earth."}});
@@ -2529,16 +2528,19 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	 {NULL, "\nDEFEAT."},
 	 {NULL, "\nYou lost 0 monies."},
 	 {NULL, "\nYou are at the entrance of the woodlands.\nExits: NORTH, WEST\nNPCs: GRASSMAN\nThe NORTH exit is guarded by the GRASSMAN.\n> fight grassman\n"},
-	 {NULL, "\nYou can't fight GRASSMAN!\n>"},
-	 {NULL, "> ask grassman"},
+	 {NULL, "\nYou can't fight GRASSMAN!\n>"}, //this was due to the popNoFight function which I made for fakeout fights always setting isLeader to false even if the enemy wasn't set to nofight, since resetnofight was set to true by default
+	 {NULL, "> room"},
+	 {NULL, "\nYou are at the entrance of the woodlands.\nExits: NORTH, WEST\nNPCs: GRASSMAN\nThe NORTH exit is guarded by the GRASSMAN.\n> ask grassman\n"},
 	 {NULL, "\nGRASSMAN - *angry bush noises*\n> recruit grassman"},
-	 {NULL, "\nYou can't fight GRASSMAN!\n> go west"}, //this was due to the popNoFight function which I made for fakeout fights always setting isLeader to false even if the enemy wasn't set to nofight, since resetnofight was set to true by default
+	 {NULL, "\nGRASSMAN - *angry bush noises*"},
+	 {NULL, "\nGRASSMAN was not added to your party.\n> fight grassman"},
+	 {NULL, "\nYou can't fight GRASSMAN!\n> go west"},
 	 {NULL, "\nYou are in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.\nExits: EAST, IN TENT 1, IN TENT 2, IN TENT 3, SOUTH, WEST\nNPCs: VILLAGE ELDER ARCHIE\nThere is 0C���] here.\n> take 0C���]"}, //this one was because the backup item variable in Room I made for lobster callers was uninitialized
 	 {NULL, "\nThere is no \"0C���]\" here.\n> room"},
 	 {NULL, "\nYou are in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.\nExits: EAST, IN TENT 1, IN TENT 2, IN TENT 3, SOUTH, WEST\nNPCs: VILLAGE ELDER ARCHIE\nThere is 0C���] here.\n> go west"},
 	 {NULL, "\nYou are at the westernmost end of the village, where the second-tallest tent stands.\nIt's only two stories, but it's comparatively a tent mansion.\nExits: EAST, IN TENT\nThere is  here.\n> go east"},
 	 {NULL, "Segmentation fault (core dumped)"}, //I assume this had something to with the garbage item but it might've been something else
-	 {developer, "So yeah that's pretty much it."},
+	 {NULL, "\nTOMAS - \"So yeah that's pretty much it.\""},
 	 {developer, "When I saw that I wasn't even annoyed at the bugs cause it was so funny"},
 	 {developer, "like it just had such perfect comedic timing"},
 	 {developer, "I mean I was a little annoyed"},
@@ -2559,7 +2561,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* coverthrow = new Attack("HEAVY FRISBEE", "threw a heavy manhole cover at", false, 0, 80, 0, 1, 1, 1);
 	Attack* sporkthrow = new Attack("SPORK THROW", "threw a spork at", false, 0, 8000, 8000, 1, 1, 1);
 
-	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", "You looked through the telescope. You see an orbital office building!", tentlab);
+	Item* telescope = new InfoItem("TELESCOPE", "A large, robust, telescope for observing space.", {{NULL, "You looked through the telescope."}, {NULL, "You see an orbital office building!"}}, tentlab);
 	telescope->setDenial("The TELESCOPE is actually one of those observatory telescopes, so not the kind you can carry around.");
 	
 	Item* fork = new ManholeItem("FORK","\"An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.\"\n- Oxford Languages", forestfork, forkthrow);
@@ -2635,7 +2637,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	merchant->setDialogue("Welcome, my friend, to my store.");
 	merchant->addRejectionDialogue("No I want to sell things.");
 
-	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", "You did a kickflip. Very cool.", limbo);
+	Item* skateboard = new InfoItem("SKATEBOARD", "It's a pretty cool skateboard for doing cool skateboard things.", {{NULL, "You did a kickflip. Very cool."}}, limbo);
 	skateboard->setTakable();
 	desertshopfixed->setStock(skateboard, 1, 100, {{merchant, "Thank you for your monies."}});
 
@@ -2909,7 +2911,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	scissorliftse->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
 	scissorliftne->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
 
-	Item* rbtree = new InfoItem("RED-BLACK TREE", "A very cool tree with red and black fruits, rebalancing itself as it grows.", "You tried to grab one of the fruits but the tree rebalanced itself and you fell.", mountainpeak);
+	Item* rbtree = new InfoItem("RED-BLACK TREE", "A very cool tree with red and black fruits, rebalancing itself as it grows.", {{NULL, "You try to grab one of the RED-BLACK TREE's fruits."}, {NULL, "The tree rebalanced itself!"}, {NULL, "You fell down to the ground."}}, mountainpeak);
 	rbtree->setDenial("And how do you plan to TAKE an entire tree, exactly?");
 
 	Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", controlroom1, {{NULL, "You pull the drainage lever."}, {NULL, "You see the lava level lowering outside!"}});
@@ -3130,9 +3132,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Item* placeholderitem5 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem6 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	Item* placeholderitem7 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem8 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem9 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem10 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
 	
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -3395,8 +3394,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	sewercenter3->setExit(EAST, sewertreasure);
 	sewertreasure->setExit(WEST, sewercenter3);
 	volcanotempleentrance->setExit(UP, sewercenter3);
-	volcanotemplestairs->setExit(OUT/*SIDE*/, volcanotempleentrance);
-	volcanotemple->setExit(EAST, volcanotemplestairs);
 	sewercenter4->setExit(NORTHEAST, sewercenter2);
 	sewercenter4->setExit(SOUTHEAST, sewercenter1);
 	sewercenter4->setExit(WEST, sewermineswest);
@@ -3696,6 +3693,47 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	deserttemple2->setExit(UP, deserttemplec);
 	deserttemple2->setExit(NORTH, deserttempleboss);
 	deserttempleboss->setExit(SOUTH, deserttemple2);
+	volcanotemplestairs->setExit(OUT/*SIDE*/, volcanotempleentrance);
+	volcanotemplestairs->setExit(NORTHEAST, volcanobuffer1);
+	volcanobuffer1->setExit(SOUTHWEST, volcanotemplestairs);
+	volcanobuffer2->setExit(NORTHEAST, volcanotemple);
+	volcanotemple->setExit(NORTHEAST, volcanotempleboss);
+	volcanotemple->setExit(SOUTHWEST, volcanobuffer2);
+	volcanotemple->setExit(NORTH, volcanotemplel);
+	volcanotemple->setExit(EAST, volcanotempler);
+	volcanotemplel->setExit(SOUTH, volcanotemple);
+	volcanotemplel->setExit(EAST, volcanotemplelr);
+	volcanotempler->setExit(WEST, volcanotemple);
+	volcanotempler->setExit(NORTH, volcanotemplelr);
+	volcanotemplelr->setExit(SOUTH, volcanotempler);
+	volcanotemplelr->setExit(WEST, volcanotemplel);
+	volcanotemplelr->setExit(NORTHEAST, volcanotemplec);
+	volcanotemplec->setExit(SOUTHWEST, volcanotemplelr);
+	volcanotemplec->setExit(NORTHWEST, volcanotemple1);
+	volcanotemplec->setExit(NORTHEAST, volcanotemple2);
+	volcanotemplec->setExit(SOUTHEAST, volcanotemple3);
+	volcanotemple1->setExit(SOUTHEAST, volcanotemplec);
+	volcanotemple1->setExit(NORTH, volcanotemple1x);
+	volcanotemple1->setExit(WEST, volcanotemple1v);
+	volcanotemple1x->setExit(SOUTH, volcanotemple1);
+	volcanotemple1v->setExit(EAST, volcanotemple1);
+	volcanotemple1v->setExit(NORTHWEST, volcanotemple1o);
+	volcanotemple1o->setExit(SOUTHEAST, volcanotemple1v);
+	volcanotemple2->setExit(SOUTHWEST, volcanotemplec);
+	volcanotemple2->setExit(NORTH, volcanotemple2x);
+	volcanotemple2->setExit(EAST, volcanotemple2v);
+	volcanotemple2x->setExit(SOUTH, volcanotemple2);
+	volcanotemple2v->setExit(WEST, volcanotemple2);
+	volcanotemple2v->setExit(NORTHEAST, volcanotemple2o);
+	volcanotemple2o->setExit(SOUTHWEST, volcanotemple2v);
+	volcanotemple3->setExit(NORTHWEST, volcanotemplec);
+	volcanotemple3->setExit(SOUTH, volcanotemple3x);
+	volcanotemple3->setExit(EAST, volcanotemple3v);
+	volcanotemple3x->setExit(NORTH, volcanotemple3);
+	volcanotemple3v->setExit(WEST, volcanotemple3);
+	volcanotemple3v->setExit(SOUTHEAST, volcanotemple3o);
+	volcanotemple3o->setExit(NORTHWEST, volcanotemple3v);
+	volcanotempleboss->setExit(SOUTHWEST, volcanotemple);
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
 
@@ -4787,14 +4825,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Attack* ringoffire = new Attack("RING OF FIRE", "flapped a ring of fire at", false, 6, 5, 20, 1, 1, 3); //for spreading on fire everywhere
 	ringoffire->addEffect(onfire);
 	Attack* motivation = new Attack("MOTIVATION", "lit a fire under", false, 10, 5, 10, 1, 1, 1, true); //mostly just so it wakes up monkey statues
+	motivation->donotself = true; //do not light a fire under yourself
 	Effect* motivated = new Effect("MOTIVATED", 5, 2, 0, 1.5);
 	firefly->setBasicAttack(firethower);
 	firefly->addSpecialAttack(ringoffire);
 	firefly->addSpecialAttack(motivation);
 
-	NPC* monkeystatue = new NPC("", "MONKEY STATUE", "Stone spherical monkey looking very peaceful as it sleeps in statue form.", limbo, 0, Stats(290, 100, 0, 100, 0, 0, 9));
+	NPC* monkeystatue = new NPC("", "MONKEY STATUE", "Spherical stone monkey looking very peaceful as it sleeps in statue form.", limbo, 0, Stats(290, 100, 0, 100, 0, 0, 9));
 	NPC* infernobo = new NPC("", "INFERNOBO", "Firey spherical monkey in an uncontrollable rage after getting woken up.", limbo, 0, Stats(290, 20, 40, 20, 10, 30, 9));
-	Attack* sleepinertia = new Attack("SLEEP INERTIA", "exploded awake", false, 0, 1, 0, 1, 1, 999, true); //do one damage to teammates to wake up fellow monkey statues
+	Attack* sleepinertia = new Attack("SLEEP INERTIA", "exploded awake", false, 0, 1, 0, 1, 1, 3, true); //do one damage to teammates to wake up fellow monkey statues
+	sleepinertia->targetself = true; //center the blast on itself for a funny domino effect
+	sleepinertia->skiptarget = true; //don't hit itself again
 	sleepinertia->transformation = infernobo;
 	sleepinertia->focushits = false;
 	monkeystatue->setRecoilAttack(sleepinertia, false); //the monkey statue is docile until you hit it with any attack
@@ -4845,19 +4886,20 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//MARK: floria would just heal more? prolly don't allow beneficial moves
 	Attack* ragebait;
-	//self - {{firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate."}, {self, "SHUT UP >:|"}}
-	//floria - {{firewithfire, "Hey Floria your hat looks stupid."}, {firewithfire, "You're stupid."}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}}
+	//self - {{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate."}, {self, "SHUT UP >:|"}}
+	//self with viola - {{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}
+	//floria - {{firewithfire, "Hey Floria your hat looks stupid."}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}}
 	//egadwick - {{firewithfire, "Who let this fossil into the team?"}, {firweithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd..."}, {egadwick, "You don't understand the marvelousness of science!"}}
-	//absolom - {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! >:("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}}
-	//viola - {{firewithfire, ""}} comment about kidnapping
+	//absolom - {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}}
+	//viola - {{firewithfire, "Viola? Why are you here?"}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {viola, "ALRIGHT I GET IT!"}}
 	//mike - {{firewithfire, ""}} taunt about mine collapse?
 	//cacty - {{NULL, "FIRE WITH FIRE - *insults Cacty's mother in cactus language*"}, {NULL, "CACTY - *furious cactus noises*"}}
 	//michelin - {{firewithfire, ""}} insults chef abilities
 	//carlos - {{firewithfire, ""}} insults failure to hack mircosoft
 	//plum - {{firewithfire, "Oh you must be the famous fungus princess."}} etc.
 	//graham - {{firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA"}, {graham, "Hey.... you shut up! >:("}}
-	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "Even if you did, for you it's the same as donating penny shavings..."}, {richie, "STOP! >:("}}
-	//ratman - {{firewithfire, "Ratman!"}, {firewithfire, "..."}, {firewithfire, "Yeah you're just a weirdo in a rat costume."}, {ratman, "I will not tolerate this slander."}, {ratman, "Because I'm Ratman."}}
+	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history?"}, {richie, "STOP! >:("}}
+	//ratman - {{firewithfire, "Ratman!"}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}}
 	Effect* wrath;
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)
@@ -5785,37 +5827,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 									  {NULL, "It left behind a UNIHORN CORN in gratitude."}});
 	burgerscientist->setDialogue({{burgerscientist, "..."}, {NULL, "IVOR is toiling away at some sort of quantumn machinery."}});
 	burgerscientist->addRejectionDialogue({{self, "Hey wanna join my team?"}, {burgerscientist, "..."}, {NULL, "IVOR is toiling away at some sort of quantumn machinery and does not care about your offer."}});
-	Conversation bsjconv = {{burgerscientist, "I see you've found the child."},
-	 {burgerscientist, "She was going to be my next subject after the unihorn."},
-	 {burgerscientist, "We detected unusual signs of latent energy production from within her."},
-	 {burgerscientist, "You are a similar case, though you were far too developed at the time of detection,"},
-	 {burgerscientist, "rendering successful attempts at capturing you improbable."},
-	 {burgerscientist, "I understand you intend to return her to her mother."},
-	 {burgerscientist, "I will offer you 1,000,000,000 monies in exchange for leaving the child to me."},
-	 {self, "No. >:|"},
-	 {burgerscientist, "Very well."}};
-	shared_ptr<Conversation> bsjconv2 = make_shared<Conversation>(Conversation({{burgerscientist, "I see you have the child with you."},
-	 {NULL, "JILLY hides behind you."},
-	 {burgerscientist, "She was going to be my next subject after the unihorn."},
-	 {burgerscientist, "We detected unusual signs of latent energy production from within her."},
-	 {burgerscientist, "You are a similar case, though you were far too developed at the time of detection,"},
-	 {burgerscientist, "rendering successful attempts at capturing you improbable."},
-	 {burgerscientist, "With this in mind, I will offer you 1,000,000,000 monies in exchange for the child."},
-	 {self, "No. >:|"},
-	 {burgerscientist, "Very well."}}));
-	shared_ptr<Conversation> bsjconv3 = make_shared<Conversation>(Conversation({{burgerscientist, "I see you've taken the child back to her mother."},
-	 {burgerscientist, "She was going to be my next subject after the unihorn."},
-	 {burgerscientist, "We detected unusual signs of latent energy production from within her."},
-	 {burgerscientist, "You are a similar case, though you were far too developed at the time of detection,"},
-	 {burgerscientist, "rendering successful attempts at capturing you improbable."},
-	 {burgerscientist, "With this in mind, I will offer you 1,000,000,000 monies in exchange for bringing the child to me."},
-	 {self, "No. >:|"},
-	 {burgerscientist, "Very well."}}));
-	bsjconv.skipcondition = {SAVINGJILLY};
-	bsjconv.alt = bsjconv2;
-	bsjconv2->skipcondition = {JILLYSAVED};
-	bsjconv2->alt = bsjconv3;
-	jbchanges.linkedConversations.push({burgerscientist, bsjconv});
 
 	NPC* basementguard = new NPC(*burgerwarden);
 	basementguard->setLeader(true, 28, burgbasese);
@@ -6171,7 +6182,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtboss->addLinkedItem(bigredbutton, deserttempleboss);
 	Item* deorb; //we implement this last after the rest of the desert temple stuff
 	dtboss->setLinkedOrb(deorb);
-	dtboss->addPaveLink(desertbuffer2, deserttemplestairs, NORTH, SOUTH); //make it so you can just walk out of the temple now
+	dtboss->addPaveLink(desertbuffer2, deserttemplestairs, EAST, WEST); //make it so you can just walk out of the temple now
 	dtboss->addRedirect(desertbuffer1, desertbuffer2); //cause they're the same room
 	dtboss->addPaveLink(deserttemple, deserthallway7, EAST, WEST); //remove the infinite loop
 	dtboss->addPaveLink(deserthallway7, deserthallway6, EAST, WEST); //remove the infinite loop
@@ -6188,6 +6199,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtboss->setEscapable(false);
 	dtboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
 	dtboss->setXPReward(0);
+
+	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
 
 	shared_ptr<WorldChange> dtsink = make_shared<WorldChange>(); //when the desert temple sinks into the ground
 	dtsink->exitDepavings.push({deserttempleentrance, IN_TEMPLE}); //can't go in the temple anymore
@@ -6214,15 +6229,14 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtsink->redirectRooms.push({deserttemplese, deserttempleentrance});
 	dtsink->redirectRooms.push({deserttemple2, deserttempleentrance});
 	dtsink->redirectRooms.push({deserttempleboss, deserttempleentrance});
+	dtsink->linkedItems.push({lightorb1, limbo}); //move the light orbs to limbo so they don't get pushed out of the temple
+	dtsink->linkedItems.push({lightorb2, limbo});
+	dtsink->linkedItems.push({lightorb3, limbo});
 	dtboss->addEnterChanges(deserttempleentrance, dtsink);
 	dtboss->addLinkedWelcome(deserttempleentrance, {{NULL, "The ground rumbles..."},
 		{NULL, "The desert temple starts sinking into the sand!"},
 		{NULL, "The sands beneath your feet are shaking..."},
 		{NULL, "The sand has completely enveloped the temple!"}});
-
-	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo, DOWN, deserttemple2);
-	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
-	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
 
 	shared_ptr<WorldChange> dtdisappear = make_shared<WorldChange>(); //change to make the teammates disappear after reaching the end of the dark hallway
 	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb1});
@@ -6234,11 +6248,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	dtodropchanges.unLightOrb.push({self->getParty(), lightorb1});
 	dtodropchanges.unLightOrb.push({self->getParty(), lightorb2});
 	dtodropchanges.unLightOrb.push({self->getParty(), lightorb3});
+	dtodropchanges.deinventoryLinks.push({inventory, lightorb1}); //remove light orbs from inventory
+	dtodropchanges.deinventoryLinks.push({inventory, lightorb2});
+	dtodropchanges.deinventoryLinks.push({inventory, lightorb3});
 	dtodropchanges.linkedItems.push({lightorb1, deserttemples});
-	dtodropchanges.linkedItems.push({lightorb1, deserttemplenw});
-	dtodropchanges.linkedItems.push({lightorb1, deserttemplene});
+	dtodropchanges.linkedItems.push({lightorb2, deserttemplenw});
+	dtodropchanges.linkedItems.push({lightorb3, deserttemplene});
 	dtodropchanges.linkedEnterChanges.push({deserthallway7, dtdisappear}); //make the next entering of the temple make this happen again (if the player doesn't get there the first time, the original just gets overwritten so no problemo)
 	dtodropchanges.exitDepavings.push({deserttemplec, DOWN}); //get rid of the light orb exit
+	dtodropchanges.roomChanges.push({deserttemplec, "in the center of the desert temple. There are three slots to drop LIGHT ORBs into."});
 
 	deorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
 						  "A shiny black orb which you must TAKE in order to enter the desert temple.",
@@ -6246,73 +6264,93 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 						  "A hard stone orb, the petrified version of the desert temple's entry/escape orb.",
 						  desertbuffer1, desertbuffer2, dtboss, {dtguard11, dtguard12, dtguard13, dtguard21, dtguard22, dtguard31, dtguard32}, dtodropchanges);
 
-	Item* coldorb1 = new MaterialItem("COLD ORB", "", limbo); 
-	Item* coldorb2 = new MaterialItem("COLD ORB", "", limbo);
-	Item* coldorb3 = new MaterialItem("COLD ORB", "", limbo);
-	
-	Item* veorb = new MaterialItem("ENTRY ORB", "", limbo);
-
 	//MARK: volcano temple stuff
+	NPC* vtguardl = new NPC(*bolide);
+	vtguardl->setLeader(true, 0, volcanotemplel, false);
+	vtguardl->setParty({firefly});
+	vtguardl->blockExit(EAST, ENEMY, "guarded by the BOLIDE.", true);
+	vtguardl->setScaleFight();
+	vtguardl->setDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
+	vtguardl->addRejectionDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
+	vtguardl->setXPReward(0);
 
-	//vtguardl - bolide firefly
-	//vtguardr - firefly bolide
+	NPC* vtguardr = new NPC(*firefly);
+	vtguardr->setLeader(true, 0, volcanotempler, false);
+	vtguardr->setParty({bolide});
+	vtguardr->blockExit(NORTH, ENEMY, "guarded by the FIREFLY.", true);
+	vtguardr->setScaleFight();
+	vtguardr->setDialogue({{NULL, "FIREFLY - *mischievous sprite noises*"}});
+	vtguardr->addRejectionDialogue({{NULL, "FIREFLY - *mischievous sprite rejection*"}});
+	vtguardr->setXPReward(0);
 
-	//vtguard1 - firefly firefly bolide bolide bolide
-	//vttrap1 - bolide bolide firefly
+	NPC* vtguard1 = new NPC(*firefly);
+	vtguard1->setLeader(true, 0, volcanotemple1v, false);
+	vtguard1->setParty({firefly, bolide, bolide, bolide});
+	vtguard1->blockExit(NORTHWEST, ENEMY, "guarded by the FIREFLY.");
+	vtguard1->setScaleFight();
+	vtguard1->setDialogue({{NULL, "FIREFLY - *mischievous sprite noises*"}});
+	vtguard1->addRejectionDialogue({{NULL, "FIREFLY - *mischievous sprite rejection*"}});
+	vtguard1->setXPReward(0);
 
-	//vtguard2 - bolide firefly monkey monkey
-	//vttrap2 - firefly firefly firefly
+	NPC* vttrap1 = new NPC(*bolide);
+	vttrap1->setLeader(true, 0, volcanotemple1x, false);
+	vttrap1->setParty({bolide, firefly});
+	vttrap1->blockExit(SOUTH, ENEMY, "guarded by the BOLIDE.");
+	vttrap1->setScaleFight();
+	vttrap1->setDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
+	vttrap1->addRejectionDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
+	vttrap1->setXPReward(0);
+
+	NPC* vtguard2 = new NPC(*bolide);
+	vtguard2->setLeader(true, 0, volcanotemple2v, false);
+	vtguard2->setParty({firefly, monkeystatue, monkeystatue});
+	vtguard2->blockExit(NORTHEAST, ENEMY, "guarded by the BOLIDE.");
+	vtguard2->setScaleFight();
+	vtguard2->setDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
+	vtguard2->addRejectionDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
+	vtguard2->setXPReward(0);
+
+	NPC* vttrap2 = new NPC(*firefly);
+	vttrap2->setLeader(true, 0, volcanotemple2x, false);
+	vttrap2->setParty({firefly, firefly});
+	vttrap2->blockExit(SOUTH, ENEMY, "guarded by the FIREFLY.");
+	vttrap2->setScaleFight();
+	vttrap2->setDialogue({{NULL, "FIREFLY - *mischievous sprite noises*"}});
+	vttrap2->addRejectionDialogue({{NULL, "FIREFLY - *mischievous sprite rejection*"}});
+	vttrap2->setXPReward(0);
+
+	NPC* vtguard3 = new NPC(*monkeystatue);
+	vtguard3->setLeader(true, 0, volcanotemple3v, false);
+	vtguard3->setParty({monkeystatue, monkeystatue, firefly});
+	vtguard3->blockExit(SOUTHEAST, ENEMY, "guarded by the MONKEY STATUE.");
+	vtguard3->setScaleFight();
+	vtguard3->setDialogue({{NULL, "MONKEY STATUE - *sleeping monkey noises*"}});
+	vtguard3->addRejectionDialogue({{NULL, "MONKEY STATUE - *sleeping monkey noises*"}});
+	vtguard3->setXPReward(0);
+
+	NPC* vttrap3 = new NPC(*monkeystatue);
+	vttrap3->setLeader(true, 0, volcanotemple3x, false);
+	vttrap3->setParty({firefly, firefly});
+	vttrap3->blockExit(NORTH, ENEMY, "guarded by the MONKEY STATUE.");
+	vttrap3->setScaleFight();
+	vttrap3->setDialogue({{NULL, "MONKEY STATUE - *sleeping monkey noises*"}});
+	vttrap3->addRejectionDialogue({{NULL, "MONKEY STATUE - *sleeping monkey noises*"}});
+	vttrap3->setXPReward(0);
 	
-	//vtguard3 - monkey monkey monkey firefly
-	//vttrap3 - monkey firefly firefly
+	Item* riddle1 = new InfoItem("RIDDLE SIGN", "A sign displaying a hint at which path you should take. You need to USE it to read it.", {{NULL, "You read the sign. It reads..."}, {NULL, "\"Roses are red,"}, {NULL, " Violets are blue;"}, {NULL, " I tried to make a rhyme,"}, {NULL, " but it didn't quite work out.\""}}, volcanotemple1);
+	Item* riddle2 = new InfoItem("RIDDLE SIGN", "A sign displaying a hint at which path you should take. You need to USE it to read it.", {{NULL, "You read the sign. It reads..."}, {NULL, "B - \"Hey person A,\""}, {NULL, "B - \"you smell\""}, {NULL, "A - \"Sticks and stones may break my bones\""}, {NULL, "A - \"but words will never hurt me.\""}, {NULL, "B - \"Yes but you smell like cyanide\""}, {NULL, "B - \"and it's hurting me.\""}}, volcanotemple2);
+	Item* riddle3 = new InfoItem("RIDDLE SIGN", "A sign displaying a hint at which path you should take. You need to USE it to read it.", {{NULL, "You read the sign. It reads..."}, {NULL, "\"I saw a silverfish made of bronze,"}, {NULL, " and I saw a goldfish made of silver,"}, {NULL, " but I didn't see a bronzefish made of gold."}, {NULL, " Furthermore,"}, {NULL, " you can tune a fish,"}, {NULL, " but you can't tuna piano!\""}}, volcanotemple3);
 
-	//it doesn't look like you have time to go [path 1]
-	//you don't like the look of [path 2]
-
-	//I was walking down the street
-	//when I took note of the heat
-	//I then put on some sunscreen
-	//but then tripped on a fun bean
-	//I flew up to the moon
-	//as if it were a toon
-	//This story has no purpose
-	//
-	
-	//to the [direction] you see a statue of a buff gymnast
-	//to the [direction] you see a statue of a programmer
-
-	//You read the sign. It reads...
-	//\"Roses are red,
-	//Violets are blue;
-	//I tried to make a rhyme,
-	//It didn't quite work out.\"
-
-	//to the [direction] you see various sticks and stones
-	//the [direction] is labeled \"dangerous chemicals\"
-
-	//You read the sign. It reads...
-	//B - \"Hey person A,\"
-	//B - \"you smell\"
-	//A - \"Sticks and stones may break my bones\"
-	//A - \"but words will never hurt me.\"
-	//B - \"Yes but you smell like cyanide\"
-	//B - \"And it's hurting me.\"
-
-	//to the [direction] you see a golden piano
-	//to the [direction] you see a bronze fish
-
-	//You read the sign. It reads...
-	//I saw a silverfish made of bronze,
-	//and I saw a goldfish made of silver,
-	//but I didn't see a bronzefish made of gold.
-	//Furthermore,
-	//you can tune a fish,
-	//but you can't tuna piano!
+	Item* coldorb1 = new ColdOrb("COLD ORB", "An icy blue orb, good for cooling down hot fires like the one at the beginning of the temple.", volcanotemple1o, volcanotemple, NORTHEAST);
+	Item* coldorb2 = new ColdOrb("COLD ORB", "An icy blue orb, good for cooling down hot fires like the one at the beginning of the temple.", volcanotemple2o, volcanotemple, NORTHEAST);
+	Item* coldorb3 = new ColdOrb("COLD ORB", "An icy blue orb, good for cooling down hot fires like the one at the beginning of the temple.", volcanotemple3o, volcanotemple, NORTHEAST);
 
 	NPC* vtboss = new NPC(*firewithfire);
-	vtboss->setMask("", "FIRE WITH FIRE", "A humanoid of flowing fire tapping his foot on the floor.")
+	vtboss->setMask("", "FIRE WITH FIRE", "A humanoid of flowing fire tapping his foot on the floor.");
+	vtboss->setLeader(true, 0, volcanotempleboss, false);
+	vtboss->setScaleFight();
 	vtboss->addConversation({{NULL, "FIRE WITH FIRE is tapping his foot on the floor."},
-							 {firewithfire, "BRROOOOOOOO you're so slowwwwww... --."}
+							 {firewithfire, "BRROOOOOOOO you're so slowwwwww... --."},
 							 {firewithfire, "What took you so long?"},
 							 {self, "what..."},
 							 {firewithfire, "Whateverrrr let's get this over with."},
@@ -6322,6 +6360,82 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 									{NULL, "FIRE WITH FIRE fizzled out..."},
 									{NULL, "You see the PLOTOMETER OF PATIENCE left behind on the ground!"},
 									{NULL, "Your ESCAPE ORB hardened into a STONE ORB."}});
+	vtboss->setDialogue("Come onnn hurry up and fight me.");
+	vtboss->addRejectionDialogue("No why would I wanna join someone as short as you ^^D");
+	vtboss->setTalkOnDefeat();
+	vtboss->setForceBattle();
+	vtboss->addLinkedItem(plotometer, volcanotempleboss);
+	Item* veorb; //we implement this last after the rest of the volcano temple stuff
+	vtboss->setLinkedOrb(veorb);
+	vtboss->addPaveLink(volcanobuffer2, volcanotemplestairs, SOUTHWEST, NORTHEAST); //make it so you can just walk out of the temple now
+	vtboss->addRedirect(volcanobuffer1, volcanobuffer2); //cause they're the same room
+	vtboss->addLinkedRoom(volcanotempleboss, "in an arena cleared of its fire. It looks a little gray now.");
+	vtboss->addLinkedRoom(volcanobuffer2, "at the bottom of the temple stairs.");
+	vtboss->addLinkedRoom(volcanotemple, "in the volcano temple, built with dull red bricks.");
+	vtboss->addLinkedRoom(volcanotempleentrance, "in a massive cavern, where the volcano temple entrance used to be.\nThe rock burns bright red.");
+	vtboss->setEscapable(false);
+	vtboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
+	vtboss->setXPReward(0);
+
+	shared_ptr<WorldChange> vtsink = make_shared<WorldChange>(); //when the forest temple sinks into the ground
+	vtsink->exitDepavings.push({volcanotempleentrance, IN_TEMPLE}); //can't go in the temple anymore
+	vtsink->redirectRooms.push({volcanotemplestairs, volcanotempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the plotometer (for some reason)
+	vtsink->redirectRooms.push({volcanobuffer1, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanobuffer2, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotempleboss, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemplel, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotempler, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemplelr, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemplec, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple1, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple1x, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple1v, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple1o, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple2, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple2x, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple2v, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple2o, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple3, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple3x, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple3v, volcanotempleentrance});
+	vtsink->redirectRooms.push({volcanotemple3o, volcanotempleentrance});
+	vtsink->linkedItems.push({coldorb1, limbo}); //move the cold orbs to limbo so they don't get pushed out of the temple
+	vtsink->linkedItems.push({coldorb2, limbo});
+	vtsink->linkedItems.push({coldorb3, limbo});
+	vtboss->addEnterChanges(volcanotempleentrance, ftsink);
+	vtboss->addLinkedWelcome(volcanotempleentrance, {{NULL, "The ground around you rumbles..."},
+		{NULL, "The volcano temple starts receding into the wall!"},
+		{NULL, "More magma is pressured into the cavern from the cracks..."},
+		{NULL, "Falling rocks have fully covered the temple!"}});
+
+	WorldChange vtodropchanges;
+	vtodropchanges.deinventoryLinks.push({inventory, coldorb1}); //remove cold orbs from inventory
+	vtodropchanges.deinventoryLinks.push({inventory, coldorb2});
+	vtodropchanges.deinventoryLinks.push({inventory, coldorb3});
+	vtodropchanges.linkedItems.push({coldorb1, volcanotemple1o});
+	vtodropchanges.linkedItems.push({coldorb1, volcanotemple2o});
+	vtodropchanges.linkedItems.push({coldorb1, volcanotemple3o});
+	vtodropchanges.roomChanges.push({deserttemple, "in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into."});
+	vtodropchanges.exitBlocks.push(make_tuple(deserttemple, NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."));
+
+	veorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
+						  "A shiny orange orb which you must TAKE in order to enter the volcano temple.",
+						  "A fragile orange orb which you must DROP in order to exit the volcano temple.",
+						  "A hard stone orb, the petrified version of the volcano temple's entry/escape orb.",
+						  volcanobuffer1, volcanobuffer2, vtboss, {vtguardl, vtguardl, vtguard1, vttrap1, vtguard2, vttrap2, vtguard3, vttrap3}, vtodropchanges);
+
+
+
+
+
+
+
+
+
+
+
+	//MARK: finale stuff
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
 	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
@@ -6403,6 +6517,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
+	deserttemple->blockExit(NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."); //this can just be a regular fire exit since the hose is locked within BURGERSBURG
 
 	buildNPCData(); //build all the npc stuff in helper now that all the teammates and npcs have been set up
 	WorldState[CANDISMISS] = true; //we can dismiss teammates by default
@@ -6790,6 +6905,9 @@ void takeItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 	} else if (!strcmp(item->getType(), "lightorb") && ((LightOrb*)item)->getDropoff(currentRoom)) { //can't take the light orbs from the dropoff because they're locked in place
 		cout << "\nThe LIGHT ORB is locked in place and didn't budge!";
 		return;
+	} else if (!strcmp(item->getType(), "coldorb") && ((ColdOrb*)item)->getDropoff(currentRoom)) { //can't take the cold orbs from the dropoff because they're locked in place
+		cout << "\nThe COLD ORB is locked in place and didn't budge!";
+		return;
 	} 
 	//you're not allowed to take items not marked as takable
 	if (!item->getTakable()) {
@@ -6907,10 +7025,39 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 				CinPause();
 				cout << "An exit DOWNwards was opened!";
 			}
+			currentRoom->setDescription("in the center of the desert temple. There's a platform heading down deeper into the temple.");
 			for (Item* lorb : lightorbs) { //put the lorbs back
 				lorb->setRoom(currentRoom);
 			}
 			logW("u", item->getID(), currentRoom->getID()); //track the changes
+		}
+	} else if (!strcmp(item->getType(), "coldorb")) {
+		ColdOrb* orb = (ColdOrb*)item;
+		if (orb->getDropoff(currentRoom)) { //if this is the cold orb dropoff
+			CinPause();
+			cout << "The COLD ORB rolled into its slot!";
+			CinPause();
+			vector<Item*> coldorbs; //get all the cold orbs so we can check if we can unblock the exit yet
+			while (Item* corb = getItemTypeInVector(currentRoom->getItems(), "coldorb")) {
+				corb->unRoom();
+				coldorbs.push_back(corb);
+			}
+			if (coldorbs.size() >= 3) { //unblock the exit to the boss area!
+				orb->extinguishFire();
+				logW("u", item->getID(), currentRoom->getID()); //track the changes
+				currentRoom->setDescription("in the center of the desert temple. There's a platform heading down deeper into the temple.");
+				CinPause();
+				cout << "\nAll three COLD ORBs are in their slots!";
+				CinPause();
+				cout << "The orbs' coldness spread to the blazing fire...";
+				CinPause();
+				cout << "The fire was extinguished!";
+				CinPause();
+				cout << "\nYou can go NORTHEAST now!";
+			}	
+			for (Item* corb : coldorbs) { //put the corbs back
+				corb->setRoom(currentRoom);
+			}
 		}
 	} else if (!strcmp(item->getType(), "hose")) { //apply any blocks the hose does in this room
 		((HoseItem*)item)->drop(currentRoom);
@@ -7166,7 +7313,7 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	//info items print some info
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
-		cout << "\n" << info->getText(); //prints the info
+		printConversation(&info->getText(), false); //prints the info
 	//treasure chest items either give monies or are trapped and start a battle
 	} else if (!strcmp(item->getType(), "treasure")) {
 		TreasureItem* treasure = (TreasureItem*)item; //converts to the corresponding subclass
@@ -7274,6 +7421,10 @@ void useItem(Room* currentRoom, vector<Item*>* inventory, vector<NPC*>* party, c
 	//escape orbs get a unique error message as well
 	} else if (!strcmp(item->getType(), "escapeorb")) {
 		((EscapeOrb*)item)->printUseError();
+		return;
+	//light and cold orbs get slightly more detailed instructions than material items
+	} else if (!strcmp(item->getType(), "lightorb") || !strcmp(item->getType(), "coldorb")) {
+		cout << "\nYou can't use the " << itemname << "! You need to DROP it off at the designated location, instead.";
 		return;
 	} else { //other types of items must be used in battles
 		cout << "\nThe " << itemname << " can only be used in battle!";

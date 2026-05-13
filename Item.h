@@ -288,11 +288,11 @@ private:
 //info items for printing text
 class InfoItem : public Item {
 public:
-	InfoItem(const char* _name, const char* _description, const char* _text, Room* _room);
+	InfoItem(const char* _name, const char* _description, const Conversation& _text, Room* _room);
 
-	const char* getText(); //get the text to print
+	const Conversation& getText(); //get the text to print
 private:
-	const char* text; //the text to print
+	Conversation text; //the text to print
 };
 
 //treasure items, for giving monies and maybe fighting an enemy trap
@@ -415,5 +415,18 @@ private:
 	Room* dropoff; //must drop the light orb in this room
 	Room* limbo; //store teammates in limbo
 	pair<const char*, Room*> downwards; //the exit that gets opened once you drop all three light orbs at the dropoff
+};
+
+//cold orbs, for getting rid of the fire in the volcano temple
+class ColdOrb : public Item {
+public:
+	ColdOrb(const char* _name, const char* desc, Room* _room, Room* _dropoff, const char* _blockdir);
+
+	void extinguishFire(); //unblock the exit to the boss area
+
+	bool getDropoff(Room* room); //get if this is the correct room
+private:
+	const char* blockdir; //the direction the boss room is blocked in
+	Room* dropoff; //must drop the cold orb in this room
 };
 #endif

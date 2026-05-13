@@ -26,7 +26,7 @@ public:
 
 	int FIGHT(); //starts the battle process and returns an int based on the outcome
 
-	bool useItem(const char* itemname); //use an item in the player's inventory
+	bool useItem(const char* itemname, NPC* plr); //use an item in the player's inventory
 	void printTeam(vector<NPC*>& team, bool printLevel = true, bool printSP = false, bool printFainted = true); //print everyone in the given team
 	void printInventory(); //print the contents of the inventory
 	void printParty(); //print everyone in the player's party

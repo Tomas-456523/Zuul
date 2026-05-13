@@ -79,12 +79,14 @@ namespace Helper {
 	}
 	//finds an npc in the given vector who has the given name
 	NPC* getNPCInVector(vector<NPC*>& the_vector, const char* npcname) {
+		NPC* player = NULL; //store the player if we find them first, we prioritize non-players  in case the player's name matches some npc's
 		for (NPC* npc : the_vector) { //if the npc isn't defeated and the name matches, we return that
 			if (!npc->getDefeated() && !strcmp(npc->getName(), npcname)) {
-				return npc;
+				if (!npc->getPlayerness()) return npc;
+				player = npc;
 			}
 		}
-		return NULL; //no valid npc was found so return null
+		return player; //return the player if we found them or probably just null because we found no matching npc
 	}
 	//finds an item in the given vector that has the given name
 	Item* getItemInVector(vector<Item*>& the_vector, const char* itemname) {
@@ -481,6 +483,11 @@ namespace Helper {
 			pair<vector<Item*>*, Item*>& data = changes.inventoryLinks.front();
 			data.first->push_back(data.second);
 			changes.inventoryLinks.pop();
+		}
+		while (!changes.deinventoryLinks.empty()) {
+			pair<vector<Item*>*, Item*>& data = changes.deinventoryLinks.front();
+			data.first->erase(remove(data.first->begin(), data.first->end(), data.second), data.first->end());
+			changes.deinventoryLinks.pop();
 		}
 		while (!changes.roamLinks.empty()) { //this is assuming we previously set roamrooms prior to setting roaming
 			NPC* npc = changes.roamLinks.front();

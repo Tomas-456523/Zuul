@@ -451,12 +451,12 @@ Attack* ManholeItem::getAttack() {
 }
 
 //info items, for printing information
-InfoItem::InfoItem(const char* _name, const char* _description, const char* _text, Room* _room) : Item(_name, _description, _room, false, false) {
+InfoItem::InfoItem(const char* _name, const char* _description, const Conversation& _text, Room* _room) : Item(_name, _description, _room, false, false) {
 	text = _text; //sets the text that it says
 	type = "info"; //sets the type
 }
 //gets the text that is printed by using the item
-const char* InfoItem::getText() {
+const Conversation& InfoItem::getText() {
 	return text;
 }
 
@@ -662,5 +662,20 @@ void LightOrb::paveDown() {
 }
 //get if this is the correct room
 bool LightOrb::getDropoff(Room* room) {
+	return room == dropoff;
+}
+
+//cold orbs, for getting rid of the fire in the volcano temple
+ColdOrb::ColdOrb(const char* _name, const char* desc, Room* _room, Room* _dropoff, const char* _blockdir) : Item(_name, desc, _room, true, false, false) {
+	type = "coldorb";
+	dropoff = _dropoff;
+	blockdir = _blockdir;
+}
+//unblock the exit to the boss area
+void ColdOrb::extinguishFire() {
+	dropoff->unblockExit(blockdir);
+}
+//get if this is the correct room
+bool ColdOrb::getDropoff(Room* room) {
 	return room == dropoff;
 }

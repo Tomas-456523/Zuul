@@ -90,6 +90,7 @@ public: //you need to set stats on creation
 	int getHypnotized(); //hypnosis amount
 	int getFrozen(); //freeze amount
 	int getRecovering(); //recovery amount
+	int getWrath(); //wrath amount
 	int getConvoSize(); //how many conversations are left to say
 	bool getRespawn(); //if they should respawn
 	bool getBoss();
@@ -439,6 +440,7 @@ protected:
 
 	int hypnosis = 0; //how hypnotized the npc is
 	int freeze = 0; //how frozen the npc is
+	int wrath = 0; //how wrathful the npc is
 	bool away = false; //if the npc is away from the battle (bool because the npc can't get hit by another awaying attack because away means can't get hit, unlike freeze and stuff)
 	int recovering = 0; //if the npc is recovering from some attack and can't move
 	bool defeated = false; //if the npc is defeated (appears in the room)

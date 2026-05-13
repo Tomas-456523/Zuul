@@ -312,6 +312,9 @@ int NPC::getFrozen() {
 int NPC::getRecovering() {
 	return recovering;
 }
+int NPC::getWrath() {
+	return wrath;
+}
 bool NPC::getTalkOnDefeat() {
 	return talkOnDefeat;
 }
@@ -842,18 +845,17 @@ void NPC::blockExit(const char* _exitBlocking, const char* type, const char* rea
 }
 void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
 	if (stats.hpmax <= 999) damage = min(damage, 999); //cap damage printing at 999, unless we actually have reason to print that high
-	if (damage > 0) {
+	if (damage >= 0) {
 		cout << "\n" << name << " took " << damage << " damage";
 	} else if (damage < 0) {
 		cout << "\n" << name << " recovered " << -damage << " HP";
 	} else {
-		cout << "\n" << name << " was not affected";
+		cout << "\n" << name << " barely felt the hit.";
 	}
-	if (status != NULL) { //prints the status that caused it
+	if (damage && status != NULL) { //prints the status that caused it
 		cout << " due to " << status;
 	}
 	if (damage) cout << "!";
-	else cout << ".";
 	cout << "\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
 }
 void NPC::printEffects() { //prints the effects this npc has
@@ -1222,8 +1224,12 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 		freeze++;
 	}
 	if (effect->hypnotize && affector) { //adds hypnosis to the npc
-		if (!hypnosis && affector) cout << "\n" << name << " is now fighting for the enemy!"; //if the npc wasn't already hynotized
+		if (!hypnosis) cout << "\n" << name << " is now fighting for the enemy!"; //if the npc wasn't already hynotized
 		hypnosis++;
+	}
+	if (effect->wrath) {
+		if (!wrath && affector) cout << "\n" << name << " is very angry at " << affector->getName() << "!"; //if the npc wasn't already wrathful
+		wrath++;
 	}
 	if (effect->tiring) { //adds recovering to the npc
 		if (!recovering && affector) cout << "\n" << name << " is recovering from the attack!";//print it if the npc wasn't already recovering
@@ -1328,7 +1334,11 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 			}
 			if (effect->hypnotize && affector) { //adds hypnosis to the npc
 				hypnosis -= stacks;
-				if (!hypnosis && affector) cout << "\n" << name << " snapped out of it!"; //if the npc was hynotized
+				if (!hypnosis) cout << "\n" << name << " snapped out of it!"; //if the npc was hynotized
+			}
+			if (effect->wrath) { //removes wrath from the npc
+				wrath -= stacks;
+				if (!wrath && affector) cout << "\n" << name << " calmed down!";
 			}
 			if (effect->tiring) { //removes recovering from the npc
 				recovering -= stacks;
@@ -1451,7 +1461,7 @@ void NPC::tickEffect(Effect* effect) {
 void NPC::calculateWeights() {
 	if (!standard_attack) { //if we don't have a basic attack just weight every special attack equally (if we don't pull a special attack when choosing one just reroll)
 		for (Attack* attack : special_attacks) {
-			if (level >= attack->minLevel) {
+			if (level >= attack->minLevel && !(wrath && attack->getBeneficial())) { //npcs don't use beneficial attacks if they're wrathful
 				attackWeights[attack] = 100/special_attacks.size();
 			}
 		}

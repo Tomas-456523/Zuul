@@ -35,7 +35,7 @@ struct Effect {
 	bool tiring = false; //if the effect makes the affected tired and not be able to move (to differentiate from frozen pretty much)
 	int falldamage = 0; //if remove == true, how much damage the affected npc takes on return
 	bool spreadfalldamage = false; //if fall damage should affect surroundings
-	bool wrath = false; //
+	bool wrath = false; //if this effect prevents you from doing beneficial moves
 
 	int guardset = 0; //if this effect sets guard on the target
 

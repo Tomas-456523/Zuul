@@ -48,6 +48,7 @@ struct WorldChange {
 
 	std::queue<std::pair<Item*, Room*>> linkedItems; //items that change rooms
 	std::queue<std::pair<std::vector<Item*>*, Item*>> inventoryLinks; //items that are put into the inventory on this change
+	std::queue<std::pair<std::vector<Item*>*, Item*>> deinventoryLinks; //items that taken from the inventory on this change (just removed, its room must be manually set as well)
 
 	std::queue<std::pair<NPC*, Item*>> linkedGifts; //give gift to npc for them to give to player
 	std::queue<NPC*> linkedDegifts; //remove gift from npc so they don't give to player
