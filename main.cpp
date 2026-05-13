@@ -412,7 +412,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							 {NULL, "You have arrived at your destination."}});
 	Room* BURGERRESTAURANT = new Room("in the BURGER RESTAURANT. You can see the sun barely shining over the horizon.\nThe BURGER MAN is waiting for you to order a BURGER.");
 	Conversation burgwelcome = {{NULL, "BURGER MAN - \"HELLO VALUED CUSTOMER!\""}, {NULL, "BURGER MAN - \"WELCOME TO MY BURGER RESTAURANT!\""}};
-	burgwelcome.skipcondition = {BEATCEO};
+	burgwelcome.skipcondition = {TEMPLEQUEST};
 	BURGERRESTAURANT->setWelcome(burgwelcome);
 	Room* elevatorbottom = new Room("in the elevator, deep down in the restricted level of the BURGER RESTAURANT.");
 	elevatorbottom->shareItems(elevator);
@@ -517,10 +517,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	//Create the finale and post-game rooms MARK: TA
 	NPC* burgermenace;
-	Room* abyssrestaurant = new Room("");
-	Room* abysselevatortop = new Room("");
-	Room* abysselevator = new Room("");
-	Room* abysselevatorbottom = new Room("");
+	Room* abyssrestaurant = new Room("in the BURGER RESTAURANT. The furniture is scattered all over the floor.\nYou only see the color black outside.");
+	Room* abysselevatortop = new Room("in the elevator, elevated all the way to the top.");
+	Room* abysselevator = new Room("at ground level, far far below the ground you know.");
+	Room* abysselevatorbottom = new Room("in the restricted level of the elevator, taken along with the rest of the restaurant.");
 	Room* abyss = new Room("right outside the BURGER RESTAURANT in the depths of the world.");
 	abyss->setWelcome({{NULL, "You are unbelievably deep underground."},
 					   {NULL, "The high temperatures of the deep have been replaced with coldness."},
@@ -4015,9 +4015,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	greer->addSpecialAttack(scaldingsteam);
 
 	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 10, 0, 1, 0.65);
-	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 1, 1, 1); //contact attacks for the lavamen
+	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 1, 1, 1); //contact attacks for the lavamen
 	burn->addEffect(onfire);
-	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 1, 1, 1);
+	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 1, 1, 1);
 	reallyburn->addEffect(extrafire);
 
 	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats(20, 0, 25, 0, 25, 10, 9)); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
@@ -4870,54 +4870,75 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//teammates calm down naturally after a few turns (and increase wrath meter less), but you can CALM DOWN them so they calm down faster (5 by default probably)
 	//then you get the plotometer
 
-	//burny burn (recoil, because youre punching fire)
-
-	//firefight "fought"" with fire" (multi hit 1 target not too bad)
+	Attack* burnyburn = new Attack("BURNY BURN", "burned", false, 0, 0, 0, 1, 1, 1); //if you punch fire you get on fire
+	burnyburn->addEffect(onfire);
 	Attack* firefight = new Attack("FIREFIGHT", "fought", true, -5, 3, 6, 3, 3, 1);
 	firefight->afterdesc = " with fire";
-
-	//firefight
+	firefight->addEffect(onfire);
+	Attack* firefirefire = new Attack("FIRE FIRE FIRE", "fired at will", 5, 6, 6, 1, 1, 1); //phase 1 is too boring with only one attack
+	Effect* smoldering = new Effect("SMOLDERING", 1, 3, 0, 1);
+	firefirefire->addEffect(smoldering);
+	Attack* ragebait = new Attack("RAGEBAIT", "ragebaited", false, 8, 0, 0, 1, 1, 1);
+	Effect* wrath = new Effect("WRATH", 5, 0, 0, 1.5, 1, 1, 1, 1.5);
+	wrath->wrath = true; //sounds about right
+	//MARK: should wrath increase sp usage? prolly not but decide
+	ragebait->addEffect(wrath);
 	Attack* spark = new Attack("SPARK", "flicked an explosive spark at", false, 7, 15, 30, 1, 1, 3);
-	//ragebait
-
-	Attack* basicspark = new Attack("SPARK", "flicked an explosive spark at", false, -5, 15, 30, 1, 1, 3);
-	//ragebait
+	Attack* basicspark = new Attack("SPARK", "flicked an explosive spark at", false, -5, 15, 30, 1, 1, 3); //spark but it's a basic attack and generates sp instead of needing it
 	Attack* flame = new Attack("FLAME", "flamed", false, 20, 30, 50, 1, 1, 3);
+	flame->addEffect(onfire);
 
-	//MARK: floria would just heal more? prolly don't allow beneficial moves
-	Attack* ragebait;
-	//self - {{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate."}, {self, "SHUT UP >:|"}}
-	//self with viola - {{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}
-	//floria - {{firewithfire, "Hey Floria your hat looks stupid."}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}}
-	//egadwick - {{firewithfire, "Who let this fossil into the team?"}, {firweithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd..."}, {egadwick, "You don't understand the marvelousness of science!"}}
-	//absolom - {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}}
-	//viola - {{firewithfire, "Viola? Why are you here?"}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {viola, "ALRIGHT I GET IT!"}}
-	//mike - {{firewithfire, ""}} taunt about mine collapse?
-	//cacty - {{NULL, "FIRE WITH FIRE - *insults Cacty's mother in cactus language*"}, {NULL, "CACTY - *furious cactus noises*"}}
-	//michelin - {{firewithfire, ""}} insults chef abilities
-	//carlos - {{firewithfire, ""}} insults failure to hack mircosoft
-	//plum - {{firewithfire, "Oh you must be the famous fungus princess."}} etc.
-	//graham - {{firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA"}, {graham, "Hey.... you shut up! >:("}}
-	//richie - {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history?"}, {richie, "STOP! >:("}}
-	//ratman - {{firewithfire, "Ratman!"}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}}
-	Effect* wrath;
+	Attack* calmdown = new Attack("CALM DOWN", "calmed down", false, 0, 0, 0, 1, 1, 1);
+	calmdown->selfcancel = wrath;
+	//MARK: should you only be able to calm down yourself or everyone? make calmdown unfocused if only self, and make selfcancel just cancel
+
+	Conversation selfrb = {{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate."}, {self, "SHUT UP >:|"}};
+	shared_ptr<Conversation> selfrb2 = make_shared<Conversation>(Conversation({{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}));
+	selfrb.alt = selfrb2;
+	selfrb.skipcondition = VIOLAREC;
+	ragebait->setTargetConv(self, selfrb);
+	ragebait->setTargetConv(floria, {{firewithfire, "Hey Floria your hat looks stupid."}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}});
+	ragebait->setTargetConv(egadwick, {{firewithfire, "Who let this fossil into the team?"}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd..."}, {egadwick, "You don't understand the marvelousness of science!"}});
+	ragebait->setTargetConv(forestknight, {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
+	forestknight->setImmunity(wrath, {}); //he doesn't say anything here cause he says everything up there ^^^
+	ragebait->setTargetConv(viola, {{firewithfire, "Viola? Why are you here?"}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {viola, "ALRIGHT I GET IT!"}});
+	ragebait->setTargetConv(mike, {});
+	ragebait->setTargetConv(cacty, {{NULL, "FIRE WITH FIRE - *insults Cacty's mother in cactus language*"}, {NULL, "CACTY - *furious cactus noises*"}});
+	ragebait->setTargetConv(michelin, {});
+	ragebait->setTargetConv(carlos, {});
+	ragebait->setTargetConv(plum, {}); // - {{firewithfire, "Oh you must be the famous fungus princess."}} etc.
+	ragebait->setTargetConv(graham, {{firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA"}, {graham, "Hey.... you shut up! >:("}});
+	ragebait->setTargetConv(richie, {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history?"}, {richie, "STOP! >:("}});
+	ragebait->setTargetConv(ratman, {{firewithfire, "Ratman!"}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}});
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)
 	burgermenace = new NPC("", "THE BURGER MENACE", "", limbo, 0, Stats(), Stats());
 	//burger tendril
+	//3 hit
 	//
-
-	//burger boom
+	//3 hit
 
 	NPC* adversary = new NPC("", "THE ADVERSARY", "", limbo, 0, Stats(), Stats());
 	//pitchfork
 	//
+	//3 hit
+	//aoe
 
+	Attack* phasechange = new Attack("", "shed his BURGERy shell", false, 0, 50, 0, 1, 1, 999);
+	phasechange->attackconvo = {{burgermenace, "I'VE HAD ENOUGH OF THIS BURGERY SHELL WEIGHING ME DOWN."}, {NULL, "Cracks started glowing in THE BURGER MENACE's BURGERy exterior!"}, {NULL, "The BURGERy shell exploded open!"}, {NULL, "The blast revealed..."}, {NULL, "THE ADVERSARY!"}, {NULL, "The BURGERy shell flew at the team!"}};
+	phasechange->repeatconvo = true; //he says this every fight because this is more of a cutscene
+//MARK: actually should we not repeat it?
+	//MARK: 
+	phasechange->focushits = false;
+	phasechange->transformation = adversary;
+	burgermenace->stageAttack(.5, phasechange);
+	//MARK: make it do % health
 
 	//MARK: make sure all the 0 hit and 0 target moves actually make sense with that
 	//MARK: probably no attack should have 0 damage and non-0 hits
 	//MARK: all 0 target attacks should be for affecting self or summoning stuff like that, nothing to do with the other team (except makinhg a summon for them)
 	//MARK: make sure NO ATTACKS accidentally don't have a bool as the third slot
+	//MARK: make sure your attacks' stats are set up in the correct spot
 
 	//set up overworld enemies  MARK: enemies (world)
 	NPC* forestguard = new NPC(*grassman);
@@ -5181,6 +5202,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	viola->setForceBattle();
 	viola->setEscapable(false);
 	viola->setTalkOnRecruit(true);
+	child->setRecruitCondition(VIOLAREC);
 
 	NPC* springguard = new NPC(*greer);
 	springguard->setLeader(true, 20, NULL, false);

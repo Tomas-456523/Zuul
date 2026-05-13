@@ -4,6 +4,7 @@
 #define ATTACK
 
 #include <vector>
+#include <utility>
 #include <cstring>
 #include "Effect.h"
 using namespace std;
@@ -81,6 +82,28 @@ struct Attack {
 	NPC* transformation = NULL; //the attacker transforms into this npc
 
 	double statchip = 0; //how much % of the target's stats this attack chips away (random between 0 and this)
+
+	Conversation attackconvo; //conversation that happens when doing the attack (prints instead of "ATTACKER used ATTACK")
+	bool repeatconvo = false; //if the conversation prints every time the attack goes instead of just the first time you ever see it
+	vector<pair<NPC*, Conversation>> specificconvo; //the attack conversation is this when using it on this specific npc
+
+	Conversation getConvo(NPC* npc) { //gets a conversation or the specific one for the npc if there is one
+		Conversation theconvo = attackconvo;
+		if (!repeatconvo) attackconvo = {}; //reset the attack conversation
+		for (pair<NPC*, Conversation>& nc : specificconvo) {
+			if (nc.first == npc) {
+				theconvo = nc.second;
+				//remove this conversation if we don't repeat the conversation
+				if (!repeatconvo) specificconvo.erase(remove(specificconvo.begin(), specificconvo.end(), theconvo), specificconvo.end());
+				break;
+			}
+		}
+		return theconvo;
+	}
+
+	void setTargetConv(NPC* npc, const Conversation& conv) { //I just havet his helper function cause it looks nicer than spamming attack->specificconvo.push_back({npc, {{npc1, "dialogue"}, {npc2, "ok"}}});
+		specificconvo.push_back({npc, conv});
+	}
 
 	//constructs the attack
 	//default stats are for testing purposes

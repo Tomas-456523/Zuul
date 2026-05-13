@@ -403,8 +403,10 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		else spusedup[attacker->getParent()] -= spchange; //increase sp usage tracker if this is a special attack which spends sp
 	}
 	//says what happened depending on if it was normal or due to recoil
-	if (!recoil) cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //using normal attack
-	else if (attack->focushits) cout << "\n" << target->getName() << " was affected by " << attacker->getName() << "'s " << attack->name << "!"; //attack triggered target's recoil or attack had recoil and hit teammate as well and this is the result of either situation
+	if (!recoil) { //using normal attack
+		if (Conversation convo = attack->getConvo(target)) printConversation(convo, true); //print the attack conversation if there is one
+		else cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //normal attack text
+	} else if (attack->focushits) cout << "\n" << target->getName() << " was affected by " << attacker->getName() << "'s " << attack->name << "!"; //attack triggered target's recoil or attack had recoil and hit teammate as well and this is the result of either situation
 	else cout << "\n" << attacker->getName() << "'s team was affected by " << attacker->getName() << "'s " << attack->name << "!"; //this was the result of a recoiling regular attack that hits the team unfocusedly
 
 	//print description of the attack and what the attacker did
@@ -792,7 +794,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 					}
 				} //if there's no one else to target, then just let the player try to hit the away npc because there's nothing better to do while waiting for them to come back
 			}
-			if (plr->getWrath() && attack->getBeneficial()) { //can't use beneficial attacks if self has wrath
+			if (plr->getWrath() && attack->getBeneficial() && !attack->cancel && !attack->cancel->wrath) { //can't use beneficial attacks if self has wrath, unless it's to cure wrath
 				cout << "\nYou're too angry to use beneficial attacks!";
 				return false;
 			}
