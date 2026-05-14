@@ -121,6 +121,7 @@ public: //you need to set stats on creation
 	bool getRoaming();
 	bool getRoamHelp();
 	Effect* getTargetEffect();
+	Effect* getAvoidEffect();
 	bool getBanker();
 	int getBalance();
 	time_t getDepositTime();
@@ -146,6 +147,7 @@ public: //you need to set stats on creation
 	Effect* getFightLeadEffect();
 	Attack* getStaged();
 	bool getChangeName(); //get if this npc changes its name when transforming
+	bool getTrackRage(); //get if this is the volcano temple boss that tracks rage for phases
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -234,6 +236,7 @@ public: //you need to set stats on creation
 	void setBlockUnless(size_t condition);
 	void setRoaming(bool roam = true, bool helpout = true); //does help out by default
 	void setTargetEffect(Effect* effect);
+	void setAvoidEffect(Effect* effect);
 	void setRoamRooms(initializer_list<Room*> rooms);
 	void roam();
 	void setTalkMakeChanges(bool miscworks = true); //set if the npc should make changes by ASKing, not FIGHTing, also variable asking if miscellaneous dialogue other than normal convos should work
@@ -252,6 +255,8 @@ public: //you need to set stats on creation
 	void chipStats(double maxpercent);
 	void stageAttack(double hppercent, Attack* attack);
 	void setChangeName(); //sets that it changes the name when transforming in battle
+	void setTrackRage(initializer_list<pair<double, NPC*>> stages); //set that this is the volcano temple boss which tracks rage
+	void trackRage(double damage, NPC* attacker); //tracks rage in the rage meter and does stuff accordingly
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER, size_t unless = Helper::NEVER);
@@ -338,9 +343,14 @@ protected:
 	Attack* opener = NULL; //the attack that happens when this npc goes into battle
 	queue<pair<double, Attack*>> stagedattacks; //queue the second attacks to be done when at < maxhp*first health, used for force setting the next attack when reaching hp thresholds
 
+	bool trackrage = false; //if this is the volcano temple boss which has a rage meter that is basically what the whole fight revolves around
+	int ragemeter = 0; //how much rage the boss has accumulated, which is about the same as how much damage it took due to wrathful hits, though non-player characters contribute less
+	queue<pair<double, NPC*>> ragestages; //for the volcano temple boss, transforms into these phases after reaching this % of health lost due to rage
+
 	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack
 
 	Effect* targeteffect = NULL; //prioritize hitting targets with this effect
+	Effect* avoideffect = NULL; //prioritize NOT hitting targets with this effect
 
 	//give these effects to the opposing team if this is a team leader
 	Effect* fightteameffect = NULL; //the opposing team gets this effect during battle

@@ -167,8 +167,11 @@ void Battle::attachEffect(NPCEffect* effect) {
 	if (effect->effect->speedbuff != 1) { //if the speed has changes
 		speedSort(effect->affected); //reconfigure the npc's speed and turn stuff to account for the new speed
 	}
-	if (Attack* response = effect->effect->response) { //if the player gets some response to this effect, give them that so they can use it
+	//if the player gets some response to this effect, give them that so they can use it
+	if (effect->effect->response && (!effect->effect->respondifplayer || effect->affected->getPlayerness())) { //some effects only give the response if the player is affected
+		Attack* response = effect->effect->response;
 		bool pfound = false; //we only want to print it once but technically there might be more than one player so we have this check
+		set<NPC*> players; //we have this check specifically because the SUPERSMOOTHIE might make duplicate positions for the exact same npc instance
 		for (NPC* npc : playerTeam) { //the player might've gotten duplicated due to kosmic katana so we check for playerness in a for loop
 			if (npc->getPlayerness() && !getAttackInVector(npc->getSpecialAttacks(), response->name)) { //don't readd the move because that'd be silly and bad and stuff
 				npc->addSpecialAttack(response);
@@ -292,6 +295,9 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
 			CinPause();
 		}
+		if (reciever->getTrackRage() && attacker->getWrath()) { //track rage from the damage if this enemy tracks rage and the player is wrathful
+			reciever->trackRage(effectiveAttack, attacker);
+		}
 		if (reciever->getHealth() <= 0 && !attack->targetFainted) break; //stop hitting because the guy is already incapacitated
 	}
 	if (!hits) cout << "\nThe attack missed!";
@@ -404,7 +410,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	}
 	//says what happened depending on if it was normal or due to recoil
 	if (!recoil) { //using normal attack
-		if (Conversation convo = attack->getConvo(target)) printConversation(convo, true); //print the attack conversation if there is one
+		Conversation convo = attack->getConvo(target->getParent());
+		if (!convo.empty()) printConversation(&convo, true); //print the attack conversation if there is one
 		else cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //normal attack text
 	} else if (attack->focushits) cout << "\n" << target->getName() << " was affected by " << attacker->getName() << "'s " << attack->name << "!"; //attack triggered target's recoil or attack had recoil and hit teammate as well and this is the result of either situation
 	else cout << "\n" << attacker->getName() << "'s team was affected by " << attacker->getName() << "'s " << attack->name << "!"; //this was the result of a recoiling regular attack that hits the team unfocusedly
@@ -563,7 +570,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	}
 
 	if (plr->getWrath()) { //can't use items if the player has wrath
-		cout << "\nYou're too angry to use items!";
+		cout << "\nYou're too wrathful to use items!";
 		return false;
 	}
 
@@ -779,7 +786,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 			target = tarteam[0];
 		}
 
-		if (attack && target) { //if we found a valid attack and target for that attack, we (try to) launch it!
+		if (attack && (target || !attack->targets)) { //if we found a valid attack and target for that attack (unless the attack doesn't use targets), we (try to) launch it!
 			if (target->getHealth() <= 0 && !attack->targetFainted) { //if trying to hit incapacitated npc
 				cout << "\n" << commandExtensionP << " is incapacitated";
 				if (attack->getBeneficial()) cout << "! " << attack->name << " won't have any effect!"; //different text based on if trying to help or attack the incapacitated target
@@ -794,8 +801,12 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 					}
 				} //if there's no one else to target, then just let the player try to hit the away npc because there's nothing better to do while waiting for them to come back
 			}
-			if (plr->getWrath() && attack->getBeneficial() && !attack->cancel && !attack->cancel->wrath) { //can't use beneficial attacks if self has wrath, unless it's to cure wrath
-				cout << "\nYou're too angry to use beneficial attacks!";
+			if (plr->getWrath() && attack->getBeneficial() && !(attack->cancel && attack->cancel->wrath)) { //can't use beneficial attacks if self has wrath, unless it's to cure wrath
+				cout << "\nYou're too wrathful to use beneficial attacks!";
+				return false;
+			}
+			if (!attack->targets && target) { //clarify to the player how the 0-target move works
+				cout << attack->name << " doesn't need a target!";
 				return false;
 			}
 			if (plr->getSP() < attack->cost) { //we don't launch the attack if we don't have enough sp
@@ -948,6 +959,13 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		vector<NPC*> _targets; //store the npcs with the effect to see if prioritization would remove all valid targets
 		for (NPC* target : targets) {
 			if (target->getEffect(teffect, true)) _targets.push_back(target); //add the target if they have the targeted effect
+		}
+		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filter everyone out
+	}
+	if (Effect* aeffect = npc->getAvoidEffect()) { //if the npc prioritizes hitting targets without this effect, filter out npcs with the effect
+		vector<NPC*> _targets; //store the npcs without the effect to see if prioritization would remove all valid targets
+		for (NPC* target : targets) {
+			if (!target->getEffect(aeffect, true)) _targets.push_back(target); //add the target if they don't have the targeted effect
 		}
 		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filter everyone out
 	}

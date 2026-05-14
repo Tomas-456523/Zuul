@@ -7,6 +7,7 @@
 #include <utility>
 #include <cstring>
 #include "Effect.h"
+#include "Conversation.h"
 using namespace std;
 
 class NPC;
@@ -87,24 +88,6 @@ struct Attack {
 	bool repeatconvo = false; //if the conversation prints every time the attack goes instead of just the first time you ever see it
 	vector<pair<NPC*, Conversation>> specificconvo; //the attack conversation is this when using it on this specific npc
 
-	Conversation getConvo(NPC* npc) { //gets a conversation or the specific one for the npc if there is one
-		Conversation theconvo = attackconvo;
-		if (!repeatconvo) attackconvo = {}; //reset the attack conversation
-		for (pair<NPC*, Conversation>& nc : specificconvo) {
-			if (nc.first == npc) {
-				theconvo = nc.second;
-				//remove this conversation if we don't repeat the conversation
-				if (!repeatconvo) specificconvo.erase(remove(specificconvo.begin(), specificconvo.end(), theconvo), specificconvo.end());
-				break;
-			}
-		}
-		return theconvo;
-	}
-
-	void setTargetConv(NPC* npc, const Conversation& conv) { //I just havet his helper function cause it looks nicer than spamming attack->specificconvo.push_back({npc, {{npc1, "dialogue"}, {npc2, "ok"}}});
-		specificconvo.push_back({npc, conv});
-	}
-
 	//constructs the attack
 	//default stats are for testing purposes
 	Attack(const char* _name, const char* _description, bool _contact, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {
@@ -134,6 +117,26 @@ struct Attack {
 	//sets the true description of the attack, so that it can be seen in the attacks menu
 	void addDescription(const char* desc) {
 		trueDesc = desc;
+	}
+
+	//gets a conversation or the specific one for the npc if there is one
+	Conversation getConvo(NPC* npc) {
+		Conversation theconvo = attackconvo;
+		if (!repeatconvo) attackconvo = {}; //reset the attack conversation
+		for (vector<pair<NPC*, Conversation>>::iterator nc = specificconvo.begin(); nc != specificconvo.end(); nc++) {
+			if (nc->first == npc) {
+				theconvo = nc->second;
+				//remove this conversation if we don't repeat the conversation
+				if (!repeatconvo) specificconvo.erase(nc);
+				break;
+			}
+		}
+		return theconvo;
+	}
+
+	//I just havet his helper function cause it looks nicer than spamming attack->specificconvo.push_back({npc, {{npc1, "dialogue"}, {npc2, "ok"}}});
+	void setTargetConv(NPC* npc, const Conversation& conv) {
+		specificconvo.push_back({npc, conv});
 	}
 
 	//gets (estimates) if you want to be hit by this attack, like buffs or heals and stuff like that

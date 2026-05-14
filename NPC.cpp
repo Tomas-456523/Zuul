@@ -236,8 +236,11 @@ Attack* NPC::getStaged() {
 	}
 	return staged.second; //return whatever we found, which could be null if we found nothing
 }
-bool NPC::getChangeName() {
+bool NPC::getChangeName() { //get if this npc changes its name when transforming
 	return transformchangename;
+}
+bool NPC::getTrackRage() { //get if this is the volcano temple boss that tracks rage for phases
+	return trackrage;
 }
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
@@ -412,6 +415,9 @@ bool NPC::getRoamHelp() {
 }
 Effect* NPC::getTargetEffect() { //get the effect this npc like to prioritize when targeting
 	return targeteffect;
+}
+Effect* NPC::getAvoidEffect() {
+	return avoideffect;
 }
 bool NPC::getBanker() {
 	return banker;
@@ -827,6 +833,9 @@ void NPC::setRoamRooms(initializer_list<Room*> rooms) {
 void NPC::setTargetEffect(Effect* effect) {
 	targeteffect = effect;
 }
+void NPC::setAvoidEffect(Effect* effect) {
+	avoideffect = effect;
+}
 void NPC::setTalkMakeChanges(bool miscworks) {
 	talktochange = true;
 	miscdoeschange = miscworks;
@@ -1139,8 +1148,32 @@ void NPC::chipStats(double maxpercent) {
 void NPC::stageAttack(double hppercent, Attack* attack) {
 	stagedattacks.push({hppercent, attack});
 }
-void NPC::setChangeName() {
+void NPC::setChangeName() { //sets that it changes the name when transforming in battle
 	transformchangename = true;
+}
+void NPC::setTrackRage(initializer_list<pair<double, NPC*>> stages) { //set that this is the volcano temple boss which tracks rage
+	trackrage = true;
+	for (const pair<double, NPC*>& stage : stages) {
+		ragestages.push(stage);
+	}
+}
+void NPC::trackRage(double damage, NPC* attacker) { //tracks rage in the rage meter and does stuff accordingly
+	//rage goes up by a third of the damage (minimum of 1) because wrath makes attack x1.5, so the damage wrath gives the player is the same portion the boss recieves as rage
+	//the rage meter is based on how much % of health was taken away due to wrathful hits, though non-player characters contribute less
+	int rage = max(Round(damage/(attacker->getPlayerness() ? 3 : 7.5)), 1); //non-player characters increase wrath less since the player can't control them
+	cout << "\n" << attacker->getName() << "'s WRATH fueled " << name << "'s fire!";
+	CinPause();
+	ragemeter += rage;
+	if (!ragestages.empty() && Round(ragestages.front().first*stats.hpmax) <= ragemeter) { //if we've reached a phase, transform into that phase
+		transform(ragestages.front().second);
+		cout << "\n" << name << " started burning brighter!";
+		CinPause();
+		ragestages.pop();
+	} else if (ragestages.empty()) { //no more phases left, just increase attack
+		attackMultiplier += rage/30.0;
+		cout << "\n" << name <<  "'s ATTACK rose to " << attackMultiplier << "x!";
+		CinPause();
+	}
 }
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});

@@ -1798,6 +1798,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							  {self, "We beat up this big lava knight thing on the way here."},
 							  {self, "He was like at least triple the height of this building."},
 							  {matilda, "I appreciate your humor, but..."},
+							  {matilda, "..."},
+							  {matilda, "How old are you?"},
+							  {self, "12."},
+							  {self, "..."},
+							  {self, "oh"},
 							  {self, "Look I can manipulate energy!"},
 							  {NULL, "You make an ENERGY BALL above your hand."},
 							  {matilda, "Oh."},
@@ -1966,8 +1971,11 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
 	Conversation burgrej = {{self, "Hey wanna join my team?"}, {burgerman, "I'M SORRY."}, {burgerman, "IF I JOINED YOUR TEAM,"}, {burgerman, "HOW COULD I ENSURE EVERYONE GETS A BURGER?"}};
 	shared_ptr<Conversation> burgrej2 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"}, {burgerman, "..."}, {burgerman, "YOU'RE EVEN STUPIDER THAN I THOUGHT."}}));
+	shared_ptr<Conversation> burgrej3 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"}, {burgerman, "..."}}));
 	burgrej.alt = burgrej2;
 	burgrej.skipcondition = {TEMPLEQUEST};
+	burgrej2->alt = burgrej3;
+	burgrej2->skipcondition = {GOTPLOTDEVICE};
 	burgerman->addRejectionDialogue(burgrej);
 	Conversation burgdeciet = {{burgerman, "YOU HAVE BEEN MAKING QUITE THE MESS."},
 							   {self, "I'm sorry :("},
@@ -2030,7 +2038,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							  {burgerprisoner, "But I think you can see I'm not going anywhere..."},
 							  {NULL, "ARCHIBALD shakes his chains for emphasis."}}));
 	shared_ptr<Conversation> prisrej3 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest."},
-							  {burgerprisoner, "But I don't want to attract negative attention."}}));
+							  {burgerprisoner, "But I don't want to attract unnecessary attention from the BURGER MAN."}}));
 	prisrej.skipcondition = {TEMPLEQUEST};
 	prisrej.alt = prisrej2;
 	prisrej2->skipcondition = {ESCAPEDBASE};
@@ -4617,9 +4625,10 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//set absolom immunity
 	//improve dialogue
 	//hindsight 20/20
+	//make escape orb remove sense of self attacks
 
 	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
-	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
+	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
 	senseofself->setBoss(true);
 	//temple of humility in the forest, gives output antenna of humility
 	//forest temple is pretty standard, with some branching paths and combat and choices that allow you to buff yourself or buff your teammates
@@ -4643,38 +4652,49 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//phase 3: do the final player temptation and switch to more advanced player moveset (energize player while on their team, do not target player if on that team)
 	//if plr gets to 0 hp, sustain them at 1 hp (sos's energize should do that) so they can do the choice
 	//MARK: DO NOT TARGET NPC AGAIN IF THE EFFECT FAILED DUE TO IMMUNITY
-
-	//4 different 2 sp use temptation attacks, one base, 3 from choice orbs
-	//NULL, "He only cares about himself; don't you remember how he chose to buff himself over you?"
-	//NULL, "Why don't you join the better side? We got plenty of team buffs here!"
-
-	//NULL, "He only cares about himself, don't you remember?"
-	//NULL, "He chose to debuff you guys 'cause he could NEVER take one for the team..."
-	//NULL, "Why don't you join the better side? You'll never get debuffed here!"
-
-	//NULL, "Why are you with him?"
-	//NULL, "He can't help but be the star of the show!"
-	//NULL, "Keeping the cool big buff for himself at your expense!"
-	//NULL, "Join the better side! There's plenty of stardom to share here!"
-
-	//basic:
-	//NULL, "Why are you on his side?"
-	//NULL, "You could do so much better; he doesn't deserve you!"
-	//NULL, "Come join the better side!"
-
-	//MARK: these attacks have placeholder stats
+	
+	Attack* spotlight = new Attack("SPOTLIGHT", "put the spotlight on", false, 2, 0, 0, 1, 1, 1);
+	//double attack
+	//halve teammates attack
+	Effect* pride = new Effect("PRIDE", 2147483647, 0, 0, 1.5); //he promises buffs so this buffs attack by 1.5x
+	pride->hypnotize = true;
+	//pride->redundanteffect = false;
+	senseofself->setAvoidEffect(pride); //he doesn't target guys he tempted because that wouldn't be very convincing
+	senseofsel2->addSpecialAttack(spotlight);
+	//this is the same temptation attack except it doesn't cost sp, this is for when we force the attack to be sent
+	Attack* calltostardomfree = new Attack("CALL TO STARDOM", "tempted", false, 0, 0, 0, 1, 1, 1);
+	calltostardomfree->afterdesc = " into joining the better side";
+	//these three temptation attacks are identical to the first except they get added by choosing the selfish choices in the life orbs
+	Attack* calltostardom1 = new Attack("CALL TO STARDOM", "tempted", false, 2, 0, 0, 1, 1, 1); //since we're adding identical attacks, it effectively makes the same move more likely to be chosen
+	calltostardom1->afterdesc = " into joining the better side";
+	calltostardom1->attackconvo = {{NULL, "\nSENSE OF SELF used CALL TO STARDOM!"}, {senseofself, "Hey! Don't you remember the first choice in the temple?"}, {senseofself, "He chose to buff himself, when he could've helped you guys out!"}, {senseofself, "I won't keep the buffs to myself! Join me!"}};
+	Attack* calltostardom2 = new Attack("CALL TO STARDOM", "tempted", false, 2, 0, 0, 1, 1, 1);
+	calltostardom2->afterdesc = " into joining the better side";
+	calltostardom2->attackconvo = {{NULL, "\nSENSE OF SELF used CALL TO STARDOM!"}, {senseofself, "Why are you still on his team?"}, {senseofself, "Don't you remember at the lake when he chose to debuff you?"}, {senseofself, "He could NEVER take one for the team..."}, {senseofself, "I won't treat you like that!"}};
+	Attack* calltostardom3 = new Attack("CALL TO STARDOM", "tempted", false, 2, 0, 0, 1, 1, 1);
+	calltostardom3->afterdesc = " into joining the better side";
+	calltostardom3->attackconvo = {{NULL, "\nSENSE OF SELF used CALL TO STARDOM!"}, {senseofself, "Man, remember the room with the flowers?"}, {senseofself, "This guy can't help but be the star of the show!"}, {senseofself, "He kept the SUPER SWAGGiness alllll to himself..."}, {senseofself, "But here, there's plenty of stardom and buffs to share!"}, {senseofself, "Come over here!"}};
 	Attack* coolpunch = new Attack("COOL PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
 	coolpunch->afterdesc = " very coolly";
-
-	Attack* coolenergyball = new Attack("COOL ENERGY BALL", "threw a very cool energy ball at", 10, 12, 10, 1, 1, 1);
-
+	senseofself->setBasicAttack(coolpunch);
+	Attack* coolenergyball = new Attack("COOL ENERGY BALL", "threw a very cool energy ball at", false, 10, 12, 10, 1, 1, 1);
+	senseofself->addSpecialAttack(coolenergyball);
 	Attack* supersidekick = new Attack("SUPER SIDE KICK", "jumped at", true, -5, 20, 0, 1, 1, 1);
-	kick->afterdesc = " with a super cool side kick";
-
+	supersidekick->afterdesc = " with a super cool side kick";
+	senseofsel2->setBasicAttack(supersidekick);
 	Attack* superswaggyenergyball = new Attack("SUPER SWAGGY ENERGY BALL", "threw a super swaggy ball of energy at", false, 10, 20, 10, 1, 1, 1);
-	
+	senseofsel2->addSpecialAttack(superswaggyenergyball);
 	Attack* turbopunchflurry = new Attack("TURBO PUNCH FLURRY", "unleashed a huge barrage of cool punches", true, 15, 5, 0, 10, 10, 1);
 	turbopunchflurry->focushits = false;
+	senseofsel2->addSpecialAttack(turbopunchflurry);
+
+	Attack* apolagize = new Attack("APOLAGIZE TO", "apolagized to", false, 0, 0, 0, 1, 1, 1); //apolagizing only costs a turn, not sp
+	apolagize->cancel = pride;
+	apolagize->addDescription("Take a turn to apolagize to a teammate with PRIDE in hopes of bringing them back.");
+	pride->response = apolagize; //player can apolagize once a teammate gets pride
+
+	//MARK: make it so SP bomb doesn't use hypnotized teammates' sp
+	//can't use apolagize while in the spotlight
 
 	//Attack* hindsight2020 = new Attack("HINDSIGHT 20/20");
 	//senseofself, "Well they're all incapacitated."
@@ -4688,13 +4708,21 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//NULL, "SENSE OF SELF catches you as you fall."
 	//SENSE OF SELF used ENERGIZE!
 	//SENSE OF SELF is maintaining SELF's hp!
-
+	
 	//senseofself, "Hey man,"
 	//senseofself, "I'm sorry about this whole 'you but better' shtick."
 	//senseofself, "I just wanted to show you,"
-	//senseofself, "You can't rely on these people!"
+
+	//senseofself, "you can't rely on these people!"
 	//senseofself, "Look how quick they were to betray you!"
 	//senseofself, "You don't need them!"
+	//OR
+	//senseofself, "you can do so much better than these people!"
+	//senseofself, "You're in charge!"
+	//senseofself, "You're the leader!"
+	//senseofself, "When you're alone in the spotlight,"
+	//senseofself, "you can do so much!"
+
 	//senseofself, "But what could be better..."
 	//senseofself, "than two of you?!"
 	//senseofself, "Help me finish them off, and we can defeat BURGER together!"
@@ -4704,13 +4732,9 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//if you join him he just instakills you after you defeat your other teammates
 	//you can also GO BACK if you haven't defeated them all yet
 	//then you get the antenna
-
-	NPC* placeholder = new NPC("", "PLACEHOLDER MAN", "", limbo, 0); //I'm putting these here so I can edit the temples later without messing up my test saves from before I made the temples due to offset npc ids
-	NPC* placeholder2 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
-	NPC* placeholder3 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
-	NPC* placeholder4 = new NPC("", "PLACEHOLDER MAN", "", limbo, 0);
-
-	//{{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, you're the least of your team anyway..."}}
+	
+	//MARK: UNCOMMENT
+	//forestknight->setImmunity(pride, {{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever who needs you..."}});
 
 	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(30, 0, 10, 0, 20, 30, 9));
 	Attack* shadowslap = new Attack("SHADOW SLAP", "slapped away", true, -5, 6, 12, 1, 1, 1);
@@ -4724,12 +4748,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 
 	NPC* masky = new NPC("", "MASKY", "Plain white mask floating in the air who warps the world depending on its fluctuating mood.\nIts resting expression is ¦|", limbo, 0, Stats(20, 25, 7, 45, 4, 11, 9));
 	//:D - heal teammate, buff teammate (unchip stats), or make teammate radiant
-	Attack* happyheal = new Attack(":D", "is thinking happy thoughts.", false, 0, -10, 0, 1, 1, 1, true);
+	Attack* happyheal = new Attack(":D", "is in a good mood.", false, 0, -10, 0, 1, 1, 1, true);
 	happyheal->afterdesc = " recovered health";
-	Attack* happyunchip = new Attack(":D", "is thinking happy thoughts.", false, 0, 0, 0, 1, 1, 1, true);
+	Attack* happyunchip = new Attack(":D", "is in a good mood.", false, 0, 0, 0, 1, 1, 1, true);
 	happyunchip->afterdesc = "'s strength grew";
 	happyunchip->statchip = -0.05; //up to 5% stat increasing
-	Attack* happyradiate = new Attack(":D", "is thinking happy thoughts.", false, 0, 0, 0, 1, 1, 1, true);
+	Attack* happyradiate = new Attack(":D", "is in a good mood.", false, 0, 0, 0, 1, 1, 1, true);
 	happyradiate->afterdesc = " started glowing brightly";
 	Effect* radiant = new Effect("RADIANT", 3, 0, 0, 1.5, 1, 1, 1.5, 2);
 	happyradiate->addEffect(radiant);
@@ -4737,12 +4761,12 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	masky->addSpecialAttack(happyunchip);
 	masky->addSpecialAttack(happyradiate);
 	//D: - damage enemy, big chip enemy stats, or turn them into stone
-	Attack* saddamage = new Attack("D:", "is thinking sad thoughts.", false, 0, 20, 50, 1, 1, 1);
+	Attack* saddamage = new Attack("D:", "is in a bad mood.", false, 0, 20, 50, 1, 1, 1);
 	saddamage->afterdesc = " took internal damage";
-	Attack* sadchip = new Attack("D:", "is thinking sad thoughts.", false, 0, 15, 5, 1, 1, 1);
+	Attack* sadchip = new Attack("D:", "is in a bad mood.", false, 0, 15, 5, 1, 1, 1);
 	sadchip->afterdesc = "'s strength fell";
-	sadchip->statchip = 0.05; //up to 5% stat chipping
-	Attack* sadstone = new Attack("D:", "is thinking sad thoughts.", false, 0, 0, 0, 1, 1, 1);
+	sadchip->statchip = 0.10; //up to 10% stat chipping
+	Attack* sadstone = new Attack("D:", "is in a bad mood.", false, 0, 0, 0, 1, 1, 1);
 	sadstone->afterdesc = " turned into stone";
 	Effect* stone = new Effect("STONE", 3, 0, 0, 1, 0.75, 1.5);
 	sadstone->addEffect(stone);
@@ -4857,78 +4881,91 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	infernobo->addSpecialAttack(novacannon);
 
 	NPC* firewithfire = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, who really loves getting people mad.", limbo, 0, Stats(6000, 15, 10, 0, 10, 14, 9), Stats(2, 0, 1, 0, 1, 1, 0));
-	NPC* firewithfir2 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning a bright blue.", limbo, 0,               Stats(6000, 15, 20, 0, 15, 21, 9), Stats(2, 0, 2, 0, 1, 2, 0));
-	NPC* firewithfir3 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning an intense purple hue.", limbo, 0,       Stats(6000, 15, 30, 0, 20, 28, 9), Stats(2, 0, 3, 0, 2, 3, 0));
+	NPC* firewithfir2 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning a bright blue.", limbo, 0,               Stats(6000, 15, 20, 0, 15, 21, 9), Stats(2, 0, 2, 0, 1, 2, 0)); //fire with fire increases in phase after getting hit wrathfully. The ideal battle is you get to phase 2 due to teammates and if you get to phase 3 it's the player's fault
+	NPC* firewithfir3 = new NPC("", "FIRE WITH FIRE", "Humanoid formed of flowing fire, burning an intense purple hue.", limbo, 0,       Stats(6000, 15, 30, 0, 20, 28, 9), Stats(2, 0, 3, 0, 2, 3, 0)); //if you reach the third phase you're not really intended to win anymore
 	firewithfire->setBoss(true);
-	//temple of patience in the volcano area, gives plotometer of patience
-	//you do puzzles and fight fire enemies
-	//then you fight fire with fire
-	//he says stuff that tempts you and your teammates into wrath
-	//wrath gives x1.5 attack but wrath attacks also increase phase meter of fwf
-	//you can CALM DOWN but you lose the boost
-	//fwf increases in heat up to two times after getting wrathfully hit enough, and in the third phase all attacks add to his attack (so you can't just attack wrathfully with no consequences then)
-	//teammates calm down naturally after a few turns (and increase wrath meter less), but you can CALM DOWN them so they calm down faster (5 by default probably)
-	//then you get the plotometer
-
 	Attack* burnyburn = new Attack("BURNY BURN", "burned", false, 0, 0, 0, 1, 1, 1); //if you punch fire you get on fire
 	burnyburn->addEffect(onfire);
+	Attack* scorchyscorch = new Attack("SCORCHY SCORCH", "scorched", false, 0, 0, 0, 1, 1, 1);
+	scorchyscorch->addEffect(extrafire);
+	Effect* superfire = new Effect("SUPER ON FIRE", 3, 15, 0, 1, 0.4);
+	Attack* incinerateyincinerate = new Attack("INCINERATEY INCINERATE", "incinerated", false, 0, 0, 0, 1, 1, 1);
+	incinerateyincinerate->addEffect(superfire);
 	Attack* firefight = new Attack("FIREFIGHT", "fought", true, -5, 3, 6, 3, 3, 1);
 	firefight->afterdesc = " with fire";
 	firefight->addEffect(onfire);
-	Attack* firefirefire = new Attack("FIRE FIRE FIRE", "fired at will", 5, 6, 6, 1, 1, 1); //phase 1 is too boring with only one attack
-	Effect* smoldering = new Effect("SMOLDERING", 1, 3, 0, 1);
+	Attack* firefirefire = new Attack("FIRE FIRE FIRE", "fired at will", 5, 6, 6, 3, 3, 1); //phase 1 is too boring with only the basic attack
+	Effect* smoldering = new Effect("SMOLDERING", 1, 3);
+	firefirefire->focushits = false;
 	firefirefire->addEffect(smoldering);
 	Attack* ragebait = new Attack("RAGEBAIT", "ragebaited", false, 8, 0, 0, 1, 1, 1);
 	Effect* wrath = new Effect("WRATH", 5, 0, 0, 1.5, 1, 1, 1, 1.5);
 	wrath->wrath = true; //sounds about right
-	//MARK: should wrath increase sp usage? prolly not but decide
 	ragebait->addEffect(wrath);
+	ragebait->redundanteffect = false; //fire with fire spreads out the temptations to more efficiently build up rage points
 	Attack* spark = new Attack("SPARK", "flicked an explosive spark at", false, 7, 15, 30, 1, 1, 3);
 	Attack* basicspark = new Attack("SPARK", "flicked an explosive spark at", false, -5, 15, 30, 1, 1, 3); //spark but it's a basic attack and generates sp instead of needing it
 	Attack* flame = new Attack("FLAME", "flamed", false, 20, 30, 50, 1, 1, 3);
-	flame->addEffect(onfire);
-
-	Attack* calmdown = new Attack("CALM DOWN", "calmed down", false, 0, 0, 0, 1, 1, 1);
+	flame->addEffect(extrafire);
+	firewithfire->setBasicAttack(firefight);
+	firewithfire->setRecoilAttack(burnyburn);
+	firewithfire->addSpecialAttack(ragebait);
+	firewithfire->addSpecialAttack(firefirefire);
+	firewithfir2->setBasicAttack(firefight);
+	firewithfir2->setRecoilAttack(scorchyscorch);
+	firewithfir2->addSpecialAttack(ragebait);
+	firewithfir2->addSpecialAttack(spark);
+	firewithfir3->setBasicAttack(basicspark);
+	firewithfir3->setRecoilAttack(incinerateyincinerate);
+	firewithfir3->addSpecialAttack(ragebait);
+	firewithfir3->addSpecialAttack(flame);
+	Attack* calmdown = new Attack("CALM DOWN", "took a breather", false, 0, 0, 0, 1, 1, 0);
+	calmdown->addDescription("Take a breather in order to calm down and make your WRATH wear off.");
 	calmdown->selfcancel = wrath;
-	//MARK: should you only be able to calm down yourself or everyone? make calmdown unfocused if only self, and make selfcancel just cancel
-
-	Conversation selfrb = {{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate."}, {self, "SHUT UP >:|"}};
-	shared_ptr<Conversation> selfrb2 = make_shared<Conversation>(Conversation({{NULL, "FIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}));
+	calmdown->focushits = false;
+	wrath->response = calmdown;
+	wrath->respondifplayer = true; //the player can only calm themselves down so we only give the attack if the player is affected
+	firewithfire->setTrackRage({{0.1, firewithfir2}, {0.2, firewithfir3}}); //phase 2 after 10% rage and phase 3 after 20%, relative to total health
+	NPC* viola; //we need viola here for fire with fire to recognize her
+	Conversation selfrb = {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate. ^^D"}, {self, "SHUT UP >:|"}};
+	shared_ptr<Conversation> selfrb2 = make_shared<Conversation>(Conversation({{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}));
 	selfrb.alt = selfrb2;
-	selfrb.skipcondition = VIOLAREC;
+	selfrb.skipcondition = {VIOLAREC};
 	ragebait->setTargetConv(self, selfrb);
-	ragebait->setTargetConv(floria, {{firewithfire, "Hey Floria your hat looks stupid."}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}});
-	ragebait->setTargetConv(egadwick, {{firewithfire, "Who let this fossil into the team?"}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd..."}, {egadwick, "You don't understand the marvelousness of science!"}});
-	ragebait->setTargetConv(forestknight, {{firewithfire, "Here we have the mighty forest knight..."}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA!"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
+	ragebait->setTargetConv(floria, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Floria your hat looks stupid. ^^D\""}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}});
+	ragebait->setTargetConv(egadwick, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Who let this fossil into the team?\""}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd! ^^D"}, {egadwick, "You don't understand the marvelousness of science!"}});
+	ragebait->setTargetConv(forestknight, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the mighty forest knight...\""}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA! ^^D"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me into wrath!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
 	forestknight->setImmunity(wrath, {}); //he doesn't say anything here cause he says everything up there ^^^
-	ragebait->setTargetConv(viola, {{firewithfire, "Viola? Why are you here?"}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {viola, "ALRIGHT I GET IT!"}});
-	ragebait->setTargetConv(mike, {});
-	ragebait->setTargetConv(cacty, {{NULL, "FIRE WITH FIRE - *insults Cacty's mother in cactus language*"}, {NULL, "CACTY - *furious cactus noises*"}});
-	ragebait->setTargetConv(michelin, {});
-	ragebait->setTargetConv(carlos, {});
-	ragebait->setTargetConv(plum, {}); // - {{firewithfire, "Oh you must be the famous fungus princess."}} etc.
-	ragebait->setTargetConv(graham, {{firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA"}, {graham, "Hey.... you shut up! >:("}});
-	ragebait->setTargetConv(richie, {{firewithfire, "Here we have the rich dirtbag of the group..."}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history?"}, {richie, "STOP! >:("}});
-	ragebait->setTargetConv(ratman, {{firewithfire, "Ratman!"}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}});
+	ragebait->setTargetConv(viola, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Viola? Why are you here?\""}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {firewithfire, "BAHAHAHAHANULL! ^FIRE WITH FIRE - \"^D"}, {viola, "ALRIGHT I GET IT!"}});
+	ragebait->setTargetConv(mike, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh I just realized,\""}, {firewithfire, "you're carrying around dynamite!"}, {firewithfire, "I thought those were candles,"}, {firewithfire, "since that's about as hard as your dynamite hits! BAHAHAHA! ^^D"}, {mike, "Oh yeah?"}, {mike, "I'm gonna make you eat those words! HAHAHAHA!"}});
+	ragebait->setTargetConv(cacty, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - *insults Cacty's mother in cactus language*\""}, {NULL, "CACTY - *furious cactus noises*"}});
+	ragebait->setTargetConv(michelin, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Michelin, Mr. Purposeless!\""}, {michelin, "Bro what the heck."}, {firewithfire, "Well it's true!"}, {firewithfire, "Your whole job is to make food,"}, {firewithfire, "yet it tastes like what it turns into when you're done! ^^D"}, {michelin, "Hmmmm >:/"}, {michelin, "I'm gonna..."}, {firewithfire, "You're gonna what?"}, {firewithfire, "Give me food poisoning? ^^D"}, {firewithfire, "BAHAHAHAHA!"}, {michelin, "I'M GONNA MAKE YOU SHUT UP!"}});
+	ragebait->setTargetConv(carlos, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Carlos remember when your monthlong hacking attempt got foiled by some kid unplugging your computer?"}, {carlos, "..."}, {firewithfire, "Well I was right down here below you the whole time."}, {firewithfire, "You looked so stupid! BAHAHAHA! ^^D"}, {firewithfire, "BrO wHaT tHe HeCk"}, {firewithfire, "I wAs LiKe SeCoNdS fRoM sTeAlInG AlL oF mIcRoSoFtS mOnIeS"}, {carlos, "hey i know where u live i can-"}, {firewithfire, "*you"}, {carlos, "SHUT THE HECK UP"}});
+	ragebait->setTargetConv(plum, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh you must be the famous fungus princess.\""}, {firewithfire, "Hey I bet you liiiike Browser, don't you? ^^D"}, {plum, "WHAT?"}, {firewithfire, "Well why else do you get kidnapped so easily?"}, {firewithfire, "'ohhhh noooo I can't afford security with my enormous royal budget'"}, {firewithfire, "BAHAHAHA!"}, {plum, "I'm getting around to it!"}, {firewithfire, "Suuuuuure, suuuuuuure. ^^D"}});
+	ragebait->setTargetConv(graham, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Look at this bozo.\""}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA! ^^D"}, {graham, "Hey.... you shut up! >:("}});
+	ragebait->setTargetConv(richie, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the rich dirtbag of the group...\""}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history? ^^D"}, {richie, "STOP! >:("}});
+	ragebait->setTargetConv(ratman, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Ratman!\""}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {firewithfire, "BAHAHAHAHA! ^^D"}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}});
 	
 	//10000, Stats(6000000, 60000, 30000, 60000, 60000, 60000, 9000), Stats(20, 2, 1, 2, 2, 2, 0)
 	burgermenace = new NPC("", "THE BURGER MENACE", "", limbo, 0, Stats(), Stats());
 	//burger tendril
-	//3 hit
 	//
-	//3 hit
+	//chokehold
+	//
+	//on the house (explosion)
 
 	NPC* adversary = new NPC("", "THE ADVERSARY", "", limbo, 0, Stats(), Stats());
 	//pitchfork
 	//
-	//3 hit
-	//aoe
+	//levitation (dot + freeze)
+	//temptation (pride)
+	//temptation (despair)
+	//temptation (wrath)
+	//
 
 	Attack* phasechange = new Attack("", "shed his BURGERy shell", false, 0, 50, 0, 1, 1, 999);
-	phasechange->attackconvo = {{burgermenace, "I'VE HAD ENOUGH OF THIS BURGERY SHELL WEIGHING ME DOWN."}, {NULL, "Cracks started glowing in THE BURGER MENACE's BURGERy exterior!"}, {NULL, "The BURGERy shell exploded open!"}, {NULL, "The blast revealed..."}, {NULL, "THE ADVERSARY!"}, {NULL, "The BURGERy shell flew at the team!"}};
+	phasechange->attackconvo = {{burgermenace, "I HAVE HAD ENOUGH OF THIS BURGERY SHELL WEIGHING ME DOWN."}, {NULL, "Cracks started glowing in THE BURGER MENACE's BURGERy exterior!"}, {NULL, "THE BURGER MENACE exploded open!"}, {NULL, "The blast revealed..."}, {NULL, "<<< THE ADVERSARY >>>"}, {NULL, "\nPieces of THE BURGER MENACE flew at the team!"}};
 	phasechange->repeatconvo = true; //he says this every fight because this is more of a cutscene
-//MARK: actually should we not repeat it?
-	//MARK: 
 	phasechange->focushits = false;
 	phasechange->transformation = adversary;
 	burgermenace->stageAttack(.5, phasechange);
@@ -5154,7 +5191,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	florian->setWorldCondition(TAMEDLOBSTER);
 
 	//set up teammate viola MARK: Viola
-	NPC* viola = new NPC(*tkviola);
+	viola = new NPC(*tkviola);
 	npcChar[viola] = 'v'; //Viola's character representation is v for Viola
 	viola->setLeader(true, 10, cliff2);
 	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
@@ -6438,8 +6475,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	vtodropchanges.linkedItems.push({coldorb1, volcanotemple1o});
 	vtodropchanges.linkedItems.push({coldorb1, volcanotemple2o});
 	vtodropchanges.linkedItems.push({coldorb1, volcanotemple3o});
-	vtodropchanges.roomChanges.push({deserttemple, "in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into."});
-	vtodropchanges.exitBlocks.push(make_tuple(deserttemple, NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."));
+	vtodropchanges.roomChanges.push({volcanotemple, "in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into."});
+	vtodropchanges.exitBlocks.push(make_tuple(volcanotemple, NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."));
 
 	veorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
 						  "A shiny orange orb which you must TAKE in order to enter the volcano temple.",
@@ -7728,8 +7765,8 @@ void printHelp(const char** validCommands, const char** flavorText, size_t comma
 }
 
 //save the game so we can store it as a file, and return if we want to keep going after saving MARK: save world
-bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat, bool& laws) { //laws = last action was save
-	cout << "\nSaving..."; //print loading because it looks nice in case there's some lag
+bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat, bool& laws, bool gameend = false) { //laws = last action was save
+	cout << (gameend ? "\r" : "\n") << "Saving..."; //print loading because it looks nice in case there's some lag
 
 	commandcount[15]++; //increment successful saving before actually saving it so it goes in the data
 	laws = true; //this is the saving function so the last function we did was indeed save
@@ -7742,17 +7779,21 @@ bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat, b
 	ofstream savefile(filename); //make the new file or open an existing file and write into it the new data
 
 	if (!savefile) { //couldn't save the file for some reason
-		cout << "\nFailed to create new save file. Would you like to EXPORT your save data instead,\nso you can IMPORT it in the main menu when you want to continue? (YES or NO)";
+		cout << "\rFailed to save data into a file. Would you like to EXPORT your save data instead,\nso you can IMPORT it in the main menu when you want to continue? (YES or NO)";
 		if (AOrB(NULL, "YES", "NO")) printSave(save->data); //print the data to export it, this way the player isn't forced to lose their data
-		else cout << "\nAlrighty then."; //alrighty then message
+		else { //alrighty then message
+			cout << "\nAlrighty then.";
+			if (gameend) CinPause(); //it flows better if we pause after the alrighty during the automatic "game ended" save since the player wouldn't keep playing afterwards
+			cout << "\n"; //formatting!
+		}
 		return true; //just don't quit if we got an error
 	}
 	savefile << save->data;
-
+	if (gameend) return false; //if this is the automatic save when getting an ending, we don't need to do anything after this point because we already know we're quitting (automatically!)
 	savetime = time(NULL); //update the time we last saved because we just saved
+	cout << "\rSuccessfully saved your progress!"; //success message! 
 
 	if (strcmp(andwhat, "AND QUIT")) {
-		cout << "\rSuccessfully saved your progress!"; //success message! unless we were also quitting
 		if (strcmp(andwhat, "")) { //if we typed something in addition to SAVE but it wasn't AND QUIT
 			CinPause();
 			cout << "\nYou seem to have also typed something uninterpretable after SAVE.\nAre you trying to SAVE AND QUIT? (YES or NO)"; //in case there was a typo or something, idk why else you would type something after SAVE
@@ -7761,7 +7802,9 @@ bool saveWorld(Save*& save, int monies, time_t& savetime, const char* andwhat, b
 				return true;
 			} //the YES path continues down to that return false down there
 		} else return true; //return true for normal path
-	} else {cout << "\r          "; } //MARK: fix this bandaid fix
+	} else { //formatting for going to the main menu if we did quit
+		cout << "\n";
+	}
 	return false; //quit the game in addition to saving
 }
 
@@ -8002,6 +8045,7 @@ void play(Save*& save) {
 
 	//say a prompt or something for reentering the title screen
 	if (WorldState[GAMEEND]) { //give a unique title screen that says continue instead of begin after getting an ending
+		saveWorld(save, mony, savetime, "", savedlast, true); //save the game automatically after getting an ending
 		cout << "\r" << getTitle() << "\nPress ENTER to continue.";
 		CinPause();
 	} else { //the player quit normally so print message depending on game state
@@ -8010,7 +8054,8 @@ void play(Save*& save) {
 			else if (WorldState[JILLYQUEST]) cout << "\rYou give up on your quest to save JILLY.";
 			else cout << "\rYou give up on your quest to get the BURGER.";
 		} else { //player has saved at some point like a normal person
-			if (WorldState[TEMPLEQUEST]) cout << "\rYou take a nap. You will continue on your quest to destroy BURGER later!";
+			if (WorldState[BURGERMENDEF]) cout << "\nYou take a nap."; //no more quest so you just take a normal nap (the game saves and quits automatically after making BURGMENDEF true so there's no corresponding didn't save text for this one)
+			else if (WorldState[TEMPLEQUEST]) cout << "\rYou take a nap. You will continue on your quest to destroy BURGER later!";
 			else if (WorldState[JILLYQUEST]) cout << "\rYou take a nap. You will continue on your quest to save JILLY later!";
 			else cout << "\rYou take a nap. You will continue on your quest to get the BURGER later!";
 		}

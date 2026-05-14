@@ -54,6 +54,7 @@ struct Effect {
 	bool bond = false; //if this is something we should remove from the affected npc when the affector is incapacitated, only used in opening attacks (also handled by Battle)
 
 	Attack* response = NULL; //someone getting this effect makes it so the player can now use this attack
+	bool respondifplayer = false; //if the response should only be added if the player was affected, not just anybody
 
 	//constructs the effect
 	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, double _attackbuff = 1, double _defensebuff = 1, double _toughbuff = 1, double _piercebuff = 1, double _speedbuff = 1) {

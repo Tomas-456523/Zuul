@@ -29,6 +29,7 @@ namespace Helper {
 		LOBSTERPRISON,
 		ESCAPEDBASE,
 		CANDISMISS, //if you're currently allowed to dismiss your teammates
+		GOTPLOTDEVICE,
 		BURGERMANDEF,
 		BURGERMENDEF,
 		GAMEEND, //when the player reaches an ending
