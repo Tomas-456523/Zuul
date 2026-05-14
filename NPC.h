@@ -93,7 +93,7 @@ public: //you need to set stats on creation
 	int getWrath(); //wrath amount
 	int getConvoSize(); //how many conversations are left to say
 	bool getRespawn(); //if they should respawn
-	bool getBoss();
+	bool getBoss(bool finalb = false); //get if this is the boss, and we can also get if this is the final boss
 	double getAttMultiplier();
 	double getDefMultiplier();
 	double getToughMultiplier();
@@ -209,7 +209,7 @@ public: //you need to set stats on creation
 	NPCEffect* setEffect(Effect* effect, NPC* affector = NULL); //add an effect to the npc and return a pointer to the associated npceffect
 	NPCEffect* removeEffect(Effect* effect, NPC* affector);
 	void tickEffect(Effect* effect);
-	void setBoss(bool boss);
+	void setBoss(bool boss, bool finalb = false); //set boss, and we can clarify if it is of the final variety
 	void setXPReward(int xp);
 	void setMonyReward(int monies);
 	void setTalkOnRecruit(bool talk);
@@ -301,8 +301,8 @@ public: //you need to set stats on creation
 	bool getTalkOnDefeat(); //gets if the npc talks after being defeated
 	void setTalkOnDefeat(bool talk = true); //sets if the npc talks after being defeated
 
-	bool getForceBattle(); //gets if the npc forces battle after talking
-	void setForceBattle(bool force = true); //set if the npc forces battle after talking
+	bool getForceBattle(bool uponarrival = false); //gets if the npc forces battle after talking, or after arriving at the room
+	void setForceBattle(bool force = true, bool uponarrival = false); //set if the npc forces battle after talking (or upon arriving at the room)
 
 	bool getLobster(); //get if it's the lobster
 	void setLobster(Room* tunnels, bool lobster = true); //set if it's a lobster plus set its home to the tunnels since it actually starts somewhere else
@@ -388,6 +388,7 @@ protected:
 	bool isLeader;
 	bool isEnemy = false;
 	bool isBoss = false; //bosses cannot be instakilled
+	bool finalBoss = false; //if this is the final boss
 
 	bool fifth = false; //if this is a bonus fifth teammate
 
@@ -461,6 +462,7 @@ protected:
 	bool gotRespawnChanges = false;
 
 	bool forcebattle = false; //if we force the player to battle after talking
+	bool fightwhenarrive = false; //if we force the player to fight this npc upon arriving at the room
 	bool talkOnDefeat = false; //if the npc talks when defeated
 
 	const char* exitBlocking = NULL; //enemy npcs may block an exit until they are defeated

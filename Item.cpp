@@ -679,3 +679,8 @@ void ColdOrb::extinguishFire() {
 bool ColdOrb::getDropoff(Room* room) {
 	return room == dropoff;
 }
+
+//THE PLOT DEVICE, for doing whatever the plot requires
+THEPLOTDEVICE::THEPLOTDEVICE : Item() {
+	type = "THEPLOTDEVICE"
+}

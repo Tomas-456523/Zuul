@@ -429,4 +429,14 @@ private:
 	const char* blockdir; //the direction the boss room is blocked in
 	Room* dropoff; //must drop the cold orb in this room
 };
+
+//THE PLOT DEVICE, for doing whatever the plot requires
+class THEPLOTDEVICE : public Item {
+public:
+	THEPLOTDEVICE();
+
+	
+private:
+
+}
 #endif

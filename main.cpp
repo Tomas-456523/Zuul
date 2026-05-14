@@ -444,6 +444,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* burglab = new Room("in the BURGER LABORATORY. There's many nasty looking needles and contraptions.\nThere's a UNIHORN here in quantumn chains.");
 	Room* burgplatn = new Room("on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories endlessly churning out BURGERs.");
 	Room* burgplate = new Room("next to the BURGER assembly line. There's some BURGER cultists cursing BURGERs as they pass by.");
+	Room* burgplatedry = new Room("next to the BURGER assembly line, ground to a halt. There's some BURGER cultists having a discussion.");
 	Room* burgplats = new Room("on the platform. There's some diagrams describing BURGERs here and a room to the side.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON, full of cells and torture devices.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. The rock is very hot here.");
@@ -538,28 +539,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	Room* abyss9 = new Room("at the bottom of a cliff; it's a pretty tall cliff.");
 	Room* abyss10 = new Room("on the highest stretch of ground you can see.\nThe end of the path is right up ahead.");
 	Room* aboss = new Room("at a sheer drop-off, staring down THE BURGER MENACE.");
-	aboss->setWelcome({{NULL, "You're at the end of the abyssal path, at a sheer drop-off."},
-					   {NULL, "You look over the edge."},
-					   {NULL, "You only see the wall of the cliff heading into darkness."},
-					   {NULL, "A faint light appears from the darkness..."},
-					   {NULL, "Suddenly, from the depths flew up..."},
-					   {NULL, "<<< THE BURGER MENACE >>>"},
-					   {NULL, "You look up at the BURGER MENACE."},
-					   {self, ">:|"},
-					   {burgermenace, "I DIDN'T APPRECIATE WHAT YOU DID TO MY BURGER MAN,"},
-					   {burgermenace, "SO I BROUGHT YOU DOWN HERE TO HAVE A CHAT FACE TO FACE."},
-					   {self, "So everything that happened is your fault? >:|"},
-					   {burgermenace, "YES, AND WHAT DO YOU THINK YOU WILL DO ABOUT IT?"},
-					   {burgermenace, "YOU ARE WEAK."},
-					   {burgermenace, "YOU ARE WORTHLESS."},
-					   {burgermenace, "YOU ARE NOTHING."},
-					   {burgermenace, "NOTHING YOU DID WILL HAVE EVER MATTERED."},
-					   {burgermenace, "YOU WILL NEVER HAVE MATTERED."},
-					   {self, "We'll see about that >:|"},
-					   {NULL, "You and your team are filled with the power of PLOT!"},
-					   {NULL, "Your stats rose to 100000%!"}});
-					   //BATTLE BEGIN!
-
+	
 	////////////////////////
 	/////
 
@@ -1530,44 +1510,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
 	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who was used as a puppet of BURGER.\nHe wears a formal business suit and a traumatized expression.", limbo, 1, Stats(10, 2, 4, 1, 0, 4, 5));
 	npcChar[hj] = 'h'; //Henry Jerry's character representation is h for Henry Jerry
-	//something about bright light and lighning or something
-	//{NULL, "The BURGER MAN's BURGERy shell fades to ashes."},
-	//{NULL, "You can make out a figure left behind in the cloud..."},
-	//{NULL, "..."},
-	//{self, "WHAT!?!?"},
-	//{self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"},
-	//{hj, "Yeah that's my name."},
-	//{NULL, "You feel a heavy rumbling in the restaurant..."},
-	//{NULL, "*rumbling*"},
-	//{NULL, "BURGER TENDRILS shoot up around the BURGER RESTAURANT from deep below!"},
-	//{NULL, "The BURGER TENDRILS wrap around the restaurant until you can see them out the window."},
-	//{NULL, "The BURGER RESTAURANT gets jerked downwards!"},
-	//{NULL, "You all slam against the roof."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "You fall below the cloud level."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "You see the city skyline and the ground pass by outside."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "The rock outside starts glowing redder and redder."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "Suddenly, the outside goes pitch black!"},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "..."},
-	//{NULL, "The BURGER RESTAURANT crashes onto solid ground!"},
-	//{NULL, "You all faceplant violently."},
-	//{NULL, "You have arrived at your destination."}
 	
 	//{hj, "Shoot, bro."},
 	//{hj, "The news guy looks so much older than I remember."},
@@ -2092,6 +2034,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{self, "Well I was going on a BURGER QUEST,"},
 							{self, "but then I started saving this kid that was kidnapped,"},
 							{self, "so then I went to their headquarters,"},
+							{self, "and then I fought a bunch of rich people,"},
 							{self, "and I found this button there,"},
 							{self, "which looked like the BURGER RESTAURANT's"},
 							{self, "so I put the button in the wall and I came down here."},
@@ -2123,7 +2066,7 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 							{burgerprisoner, "I know you'd be capable of doing it."},
 							{burgerprisoner, "If you're willing, I can tell you how."},
 							{NULL, "\nYou are on a quest to get a BURGER."},
-							{NULL, "But now you have the opportunity to change your quest."}, //You have the opportunity to change your quest now.
+							{NULL, "But now you have the opportunity to change your quest."},
 							{NULL, "Do you want to accept this DESTROY BURGER QUEST? (YES or NO)"}};
 	shared_ptr<Conversation> prisyes = make_shared<Conversation>(Conversation({{self, "..."},
 							{self, "Alright I'll do it."},
@@ -2229,6 +2172,74 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	forgorending.convochanges = forgorchanges;
 	templequest->linkedDialogue.push({burgerman, forgorending}); //cannot be heard in the basement because he just catches you if you ASK him
 	prisyes->convochanges = templequest;
+
+	//{burgerman, "WAIT."},
+	//{burgerman, "DON'T DO ANYTHING RASH."},
+	//{burgerman, "LOOK OUTSIDE."},
+	//{burgerman, "IT'S A VERY GOOD VIEW."},
+	//{burgerman, "YOU CAN SEE THE WHOLE WORLD FROM HERE."},
+	//{burgerman, "ALL OF IT IS MINE."},
+	//{burgerman, "I WILL GIVE IT ALL TO YOU,"},
+	//{burgerman, "IN EXCHANGE FOR THE PLOT DEVICE."},
+	//{NULL, "Give THE PLOT DEVICE to the BURGER MAN? (YES or NO)"},
+	
+	//if yes
+	//{NULL, "You hand over THE PLOT DEVICE to the BURGER MAN."},
+	//{burgerman, "YOU HAVE YOURSELF A DEAL!"},
+	//{NULL, "\nThe BURGER MAN gave you control over all the earth."},
+	//{NULL, "All the countries and kingdoms,"},
+	//{NULL, "and all the BURGER corporation's profits are yours."},
+	//{NULL, "You have more than you could ever know what to do with."},
+	//{NULL, "But what good is gaining the whole world,"},
+	//{NULL, "if you lose your own soul?"},
+	//{NULL, "\n\t<<< BURGER QUEST COMPLETE? >>>"
+	//       "\n\t<<<     ENDING ACHIEVED:   >>>"
+	//       "\n\t<<<     PASSING KING OF    >>>"
+	//		 "\n\t<<<     A PASSING WORLD    >>>"}
+	
+	//if no:
+	//{self, "Nah I'm good."},
+	//{NULL, "You press down on THE PLOT DEVICE's BIG RED BUTTON!"},
+	//{NULL, "A bolt of lightning flies at the BURGER MAN from THE PLOT DEVICE's OUTPUT ANTENNA!"},
+	//{burgerman, ",,,"}, //comma elipsis kind of perfectly captures what I was going for, like dramatically staring something down, but not in a cool confident way, but rather a "oh shoot" kind of way but not in a panicky oh shoot, but still a scared oh shoot, you know?
+	//{NULL, "Electricity sparks from the BURGER MAN!"},
+	//{NULL, "The BURGER MAN's BURGERy shell bursts into ashes!"},
+	//{NULL, "You can make out a figure left behind in the cloud..."},
+	//{NULL, "..."},
+	//{self, "WHAT!?!?"},
+	//{self, "The BURGER QUEST 1 protagonist, Henry Jerry?!?!"},
+	//{hj, "Yeah that's my name."},
+	//{NULL, "You feel a heavy rumbling in the restaurant..."},
+	//{NULL, "*rumbling*"},
+	//{NULL, "BURGER TENDRILS shoot up around the BURGER RESTAURANT from deep below!"},
+	//{NULL, "The BURGER TENDRILS wrap around the restaurant until you can see them out the window."},
+	//{NULL, "The BURGER RESTAURANT gets jerked downwards!"},
+	//{NULL, "You all slam against the roof."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "You fall below the cloud level."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "You see the city skyline and the ground pass by outside."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "The rock outside starts glowing redder and redder."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "Suddenly, the outside goes pitch black!"},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "..."},
+	//{NULL, "The BURGER RESTAURANT crashes onto solid ground!"},
+	//{NULL, "You all faceplant violently."},
+	//{NULL, "You have arrived at your destination."}
 
 	NPC* jimmyjohn = new NPC("SHOPKEEPER", "JIMMY JOHN", "The owner of the village convenience store. He has an italian accent.", tentstore, 30);
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
@@ -2598,49 +2609,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	switchhelper2->setConveyor(conveyor4);
 	switchhelper2->setConveyor(conveyor5);
 
-	//after getting the final boss down to 0 hp:
-
-	//{adversary, "I WILL NOT BE DEFEATED BY << YOU >> OF ALL PEOPLE."},
-	//{NULL, "THE ADVERSARY lunges at you!"},
-
-	//{NULL, "THE PLOT DEVICE's PLOTOMETER locked onto THE ADVERSARY!"},
-	//> USE THE PLOT DEVICE
-	
-	//You press down on THE PLOT DEVICE's BIG RED BUTTON!
-	//A bolt of lightning flies at THE ADVERSARY from THE PLOT DEVICE's OUTPUT ANTENNA!
-
-	//THE ADVERSARY explodes into sparks of lightning!
-	//The blast rumbles through THE ABYSS!
-
-	//VICTORY!
-
-	//You did it!
-	//Although you began on a quest to get a BURGER,
-	//you have just defeated the father of BURGERs.
-
-	//{NULL, "All around the world, all the BURGERs fade to ashes."},
-	//{NULL, "The BURGER RESTAURANT has been left to rot in the depths."},
-	//{NULL, "The BURGER corporation has been deprived of its leadership..."},
-	//{NULL, "and its source of revenue."},
-	//{NULL, "BURGER's grasp on the world has been completely dissolved."},
-	//{NULL, "\n\t<<< BURGER QUEST COMPLETE! >>>"
-	//       "\n\t<<<    ENDING ACHIEVED:    >>>"
-	//       "\n\t<<<      BURG NO MORE      >>>"},
-	
-	//{NULL, "\nHENRY JERRY - \"Well, in the end, this has truly been a BURGER QUEST too.\""}, //I have to do the NULL "fake speaker" trick here so I can have an extra newline at the start
-	//{self, "Say that again?"},
-
-	//{NULL, "\nThank you so much for playing BURGER QUEST 2: ELECTRIC BOOGALOO all the way to the end!"},
-	//{NULL, "I hope this has been an enjoyable and meaningful experience."},
-	//{NULL, "May we meet again on the road ahead!"},
-	//{NULL, "- Tomas"}}
-
-	//{{hj, "Well I'm gonna go home I guess."},
-	//{self, "Alright cya."},
-	//{NULL, "HENRY JERRY went back to his house."},
-	//{self, "..."},
-	//{self, "Wait how are we supposed to get back?"}}
-
 	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant and owner of the desert store. He really wants your monies.", limbo, 12);
 	merchant->setDialogue("Welcome, my friend, to my store.");
 	merchant->addRejectionDialogue("No I want to sell things.");
@@ -2850,7 +2818,8 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	valvechanges.linkedDescriptions.push({cacty, "Sharp cactus, hydrated back to health. He has a remarkable pink flower and rooty legs to move around."});
 	valvechanges.roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
 	valvechanges.recruitLinks.push(cacty);
-	//valvechanges.roomChanges.push({basement, "something about how BURGER production has ceased"});
+	valvechanges.roomChanges.push({burgplatn, "on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories, though their BURGER production has ceased."});
+	valvechanges.redirectRooms.push({burgplate, burgplatedry});
 
 	Attack* cooldown = new Attack("COOL DOWN", "poured sand coolant on", false, 0, 0, 0, 1, 1, 1);
 	Effect* cooled = new Effect("COOLED", 6, 0, 0, 1, 1, 1, 1, 0.75);
@@ -4569,9 +4538,17 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	burgerwarden->addSpecialAttack(guillotine);
 
 	NPC* burgercultist = new NPC("", "BURGER CULTIST", "Worshipper of BURGER aligned with its evil values. They wear a yellow robe and triangular hood.", limbo, 0, Stats(50, 15, 35, 5, 60, 0, 9));
-	//burger magic (damage)
-	//sorcery (sp leak)
-	//curse (very heavy dot)
+	Attack* burgermagic = new Attack("BURGER MAGIC", "hurt", false, -5, 20, 20, 1, 1, 1);
+	burgermagic->afterdesc = " with magic";
+	Attack* sorcery = new Attack("SORCERY", "turned", false, 18, 25, 20, 1, 1, 1, false, 0, 100); //remove all sp from target
+	sorcery->afterdesc = "'s energy into blood";
+	Attack* curse = new Attack("CURSE", "cursed", false, 30, 0, 0, 1, 1, 1);
+	curse->redundanteffect = false;
+	Effect* cursed = new Effect("CURSED", 2147483647, 30); //permanent dot
+	curse->addEffect(curse);
+	burgercultist->setBasicAttack(burgermagic);
+	burgercultist->addSpecialAttack(sorcery);
+	burgercultist->addSpecialAttack(curse);
 
 	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(25, 6, 15, 5, 15, 7, 9));
 	Effect* macerated = new Effect("MACERATED", 4, 9, 0, 1, 1, 1, 1, 0.25);
@@ -5893,19 +5870,15 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	basementguard->setDialogue("...");
 	basementguard->addRejectionDialogue("...");
 
-	NPC* burgercultists = new NPC(*burgercultist); //MARK: FINISH THESE GUYS
-	burgercultists->setMask("", "BURGER CULTISTS", "A group of hooded figures in yellow robes cursing the BURGERs on the assembly line.");
-	burgercultists->setLeader(true, 25, limbo); //burgplate MARK: put them back
+	NPC* burgercultists = new NPC(*burgercultist);
+	burgercultists->setMask("", "BURGER CULTISTS", "A group of hooded figures in yellow robes in charge of cursing the BURGERs on the assembly line.");
+	burgercultists->setLeader(true, 25, burgplate, false);
 	burgercultists->setParty({burgercultist, burgercultist, burgercultist, burgercultist});
 	burgercultists->setDialogue("...");
 	burgercultists->addRejectionDialogue("...");
-	burgercultists->addLinkedRoom(burgplate, ""); //MARK: what the heck is this?
-
-
-
-
-
-
+	burgercultists->addLinkedRoom(burgplate, "next to the BURGER assembly line. The BURGERs pass by uncursed.");
+	burgercultists->addLinkedRoom(burgplatedry, "next to the BURGER assembly line, ground to a halt.");
+	valvechanges.defeatRooms.push({burgercultists, burgplatedry}); //they are in the dry version of the room if you turned the water valve
 
 	//choice orb effects MARK: forest temple stuff
 	Effect* fbuff = new Effect("TEMPLE BUFF", 2147483647, 0, 0, 1.5, 1.5, 1.5, 1.5, 1.5);
@@ -6484,16 +6457,6 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 						  "A hard stone orb, the petrified version of the volcano temple's entry/escape orb.",
 						  volcanobuffer1, volcanobuffer2, vtboss, {vtguardl, vtguardl, vtguard1, vttrap1, vtguard2, vttrap2, vtguard3, vttrap3}, vtodropchanges);
 
-
-
-
-
-
-
-
-
-
-
 	//MARK: finale stuff
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
@@ -6501,9 +6464,89 @@ NPC* SetupWorld(vector<Item*>* inventory) {
 	powerofplot->speedbuff = 1000;
 
 	NPC* finalboss = new NPC(*burgermenace);
-	finalboss->setLeader(true, 10000, limbo, false);
-	//finalboss->setXPReward(0); //so the boss doesn't give you an absurd amount of rewards
-	//finalboss->setMonyReward(0);
+	finalboss->setLeader(true, 10000, aboss, false);
+	finalboss->setFightEffects(powerofplot, powerofplot);
+	finalboss->setBoss(true, true); //this is the boss which is also the final boss
+	finalboss->addConversation({{NULL, "You reach the end of the abyssal path, at a sheer drop-off."},
+					   {NULL, "You look over the edge."},
+					   {NULL, "You only see the wall of the cliff heading into darkness."},
+					   {NULL, "A faint light appears from the darkness..."},
+					   {NULL, "Suddenly, from the depths flew up..."},
+					   {NULL, "<<< THE BURGER MENACE >>>"},
+					   {NULL, "You look up at the BURGER MENACE."},
+					   {self, ">:|"},
+					   {burgermenace, "I DIDN'T APPRECIATE WHAT YOU DID TO MY BURGER MAN,"},
+					   {burgermenace, "SO I BROUGHT YOU DOWN HERE TO HAVE A CHAT FACE TO FACE."},
+					   {self, "So everything that happened is your fault? >:|"},
+					   {burgermenace, "YES, AND WHAT DO YOU THINK YOU WILL DO ABOUT IT?"},
+					   {burgermenace, "YOU ARE WEAK."},
+					   {burgermenace, "YOU ARE WORTHLESS."},
+					   {burgermenace, "YOU ARE NOTHING."},
+					   {burgermenace, "NOTHING YOU DID WILL HAVE EVER MATTERED."},
+					   {burgermenace, "YOU WILL NEVER HAVE MATTERED."},
+					   {self, "We'll see about that >:|"},
+					   {NULL, "You and your team are filled with the POWER OF PLOT!"},
+					   {NULL, "Your stats rose to 100000%!"}});
+	finalboss->addLinkedConvo(finalboss, {{adversary, "I WILL NOT BE DEFEATED BY << YOU >> OF ALL PEOPLE."},
+										  {NULL, "THE ADVERSARY lunges at you!"},
+										  {NULL, "\nTHE PLOT DEVICE's PLOTOMETER locked onto THE ADVERSARY!"}});
+										  //> USE THE PLOT DEVICE
+	finalboss->addLinkedConvo(finalboss, {{NULL, "You press down on THE PLOT DEVICE's BIG RED BUTTON!"},
+										  {NULL, "A bolt of lightning flies at THE ADVERSARY from THE PLOT DEVICE's OUTPUT ANTENNA!"},
+										  {NULL, "\nTHE ADVERSARY explodes into sparks of lightning!"},
+										  {NULL, "The blast rumbles through THE ABYSS!"},
+										  {NULL, "\nVICTORY!"}, //we skipped the normal victory print after beating the final boss
+										  {NULL, "\nYou did it!"},
+										  {NULL, "Although you began on a quest to get a BURGER,"},
+										  {NULL, "you have just defeated the father of BURGERs."},
+										  {NULL, "All around the world, all the BURGERs fade to ashes."},
+										  {NULL, "The BURGER RESTAURANT has been left to rot in the depths."},
+										  {NULL, "The BURGER corporation has been deprived of its leadership..."},
+										  {NULL, "and its source of revenue."},
+										  {NULL, "BURGER's grasp on the world has been completely dissolved."},
+										  {NULL, "\n\t<<< BURGER QUEST COMPLETE! >>>"
+												 "\n\t<<<    ENDING ACHIEVED:    >>>"
+												 "\n\t<<<      BURG NO MORE      >>>"},
+										  {NULL, "\nHENRY JERRY - \"Well, in the end, this has truly been a BURGER QUEST too.\""}, //I have to do the NULL "fake speaker" trick here so I can have an extra newline at the start
+										  {self, "Say that again?"},
+										  {NULL, "\nThank you so much for playing BURGER QUEST 2: ELECTRIC BOOGALOO all the way to the end!"},
+										  {NULL, "I hope this has been an enjoyable and meaningful experience."},
+										  {NULL, "May we meet again on the road ahead!"},
+										  {NULL, "- Tomas"}});
+	finalboss->setDialogue({{burgermenace, "YOU WILL NEVER HAVE MATTERED."}, {self, "We'll see about that >:|"}});
+	finalboss->addRejectionDialogue("...");
+	finalboss->setTalkOnDefeat();
+	finalboss->setForceBattle(true, true); //you get forced into battle the first time you get here
+	finalboss->addLinkedRoom(aboss, "at a sheer drop-off, the location of your climactic final battle.");
+	finalboss->addLinkedRoom(abyss7, "at the far end of the abyssal crater. The rocks look very climbable.");
+	finalboss->addLinkedRoom(abyss6, "in the middle of the crater. You see a rock that looks like a duck.");
+	finalboss->addLinkedRoom(abyss5, "at the end of the crater. The path back continues.");
+	finalboss->addLinkedRoom(abyss10, "on the highest stretch of ground you can see.");
+	finalboss->setEscapable(false);
+	finalboss->setWorldCondition(BURGERMENDEF);
+	finalboss->setXPReward(0); //so the boss doesn't give you an absurd amount of rewards
+	finalboss->setMonyReward(0);
+
+	//MARK: TO DO LIST
+	//finish the fight itself
+	//make the stuff after getting boss to 0 hp
+	//time machine
+		//time machine after defeat?
+	//assembling the plot device
+	//church
+	//save system branching conversations
+	//hj's house
+	//hj moveset
+	//hj dialogue
+	//hj leaving team and no longer being 5th teammate
+	//different welcome back text
+	//different help text
+
+	//{{hj, "Well I'm gonna go home I guess."},
+	//{self, "Alright cya."},
+	//{NULL, "HENRY JERRY went back to his house."},
+	//{self, "..."},
+	//{self, "Wait how are we supposed to get back?"}}
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -6616,6 +6659,9 @@ void PrintRoomData(Room* currentRoom, NPC* player = NULL, bool track = false) {
 		cout << "\nThe " << pursuer->getName() << " is " << abs(dist) << " room" << (abs(dist) > 1 ? "s" : "") << " to the " << direction << ".";
 	}
 }
+
+//MARK: FIX THIS
+void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, const char* name, int& mony, bool track = false);
 
 //move the player and co. to a new room based on direction, or also just teleopring to forceDest if given MARK: travel
 void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vector<Item*>* inventory, bool forceTravel = false, Room* forceDest = NULL) {
@@ -6739,7 +6785,16 @@ void travel(Room* currentRoom, const char* direction, vector<NPC*>* party, vecto
 		roomCanidate->setItem(roomgift); //put the item in the room
 	} //do any changes the room might have to make
 	roomCanidate->doEnterChanges();
-	PrintRoomData(roomCanidate, (*party)[0]); //prints the data of the new current room
+	bool forcedbattle = false; //if one of the npcs in the room forced a battle, so we don't print room data after that since it gets printed in fight() after the battle anyway
+	for (NPC* npc : roomCanidate->getNpcs()) { //if one of the npcs in the room forces a battle, start the battle with them
+		if (npc->getForceBattle(true)) {
+			//this band-aid fix works because the final boss doesn't affect monies anyway
+			int fakemony = 0; //MARK: remove this band-aid fix
+			fight(currentRoom, party, inventory, npc->getName(), fakemony, false);
+			forcedbattle = true;
+		}
+	}
+	if (forcebattle) PrintRoomData(roomCanidate, (*party)[0]); //prints the data of the new current room
 	if (!forceTravel) commandcount[0]++; //increment go counter because successful going if this was from the main command getting area
 }
 
@@ -6803,15 +6858,17 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 	if (battlestatus == 0) { //lose
 		cout << "\nDEFEAT.";
 		CinPause();
-		int monyLoss = mony - mony/2; //the player loses half their monies, rounding up
-		mony -= monyLoss;
-		cout << "\nYou lost " << monyLoss << " mon";
-		if (monyLoss == 1) { //prints ending based on quantity because I love proper grammar (when it's reasonably convenient to program)
-			cout << "y.";
-		} else {
-			cout << "ies.";
+		if (!npc->getBoss(true)) { //don't take monies if you lose to the final boss, because it's like you just go to before the battle because logically you'd prolly die after losing to the final boss //MARK: consider changing this?
+			int monyLoss = mony - mony/2; //the player loses half their monies, rounding up
+			mony -= monyLoss;
+			cout << "\nYou lost " << monyLoss << " mon";
+			if (monyLoss == 1) { //prints ending based on quantity because I love proper grammar (when it's reasonably convenient to program)
+				cout << "y.";
+			} else {
+				cout << "ies.";
+			}
+			CinPause();
 		}
-		CinPause();
 	} else if (battlestatus == 1) { //win
 		cout << "\nVICTORY!";
 		CinPause();
@@ -6920,6 +6977,8 @@ void fight(Room* currentRoom, vector<NPC*>* party, vector<Item*>* inventory, con
 			npc->setLeader(false); //make it not a leader so you can't fight it and so you can use it
 		} else if (npc->getThief()) {
 			mony = 0; //if you were fighting someone marked "thief" you lose all your monies (doesn't necessarily mean they were the thief, just means you lose all your monies)
+		} else if (npc->getBoss(true)) { //if this is the final boss, do final stuff!
+			WorldState[GAMEEND] = true; //game ends after beating the final boss
 		}
 	}
 	if (roamio) party->erase(remove(party->begin(), party->end(), roamio), party->end());
@@ -7031,6 +7090,10 @@ void dropItem(Room* currentRoom, vector<Item*>* inventory, const char* itemname,
 			cout << "\nYou have no \"" << itemname << "\"."; //I know ". is grammatically inaccurate but it looks way better than ."
 			invaliditem++; //track interaction with item not there
 		}
+		return;
+	}
+	if (!strcmp(item->getType(), "THEPLOTDEVICE")) { //if the player can drop the device, then I have to deal with more states. It's prolly more responsible to not drop the device, anyway!
+		cout << "\nYou probably shouldn't leave THE PLOT DEVICE just lying around...";
 		return;
 	}
 	if (!strcmp(item->getType(), "escapeorb")) { //the escape/entry orbs require extra confirmation before being dropped due to their effects
@@ -7869,7 +7932,9 @@ void play(Save*& save) {
 	if (save) Save::LoadGame(save, self, &inventory, mony);
 
 	//flavor text printed by printHelp
-	const char* flavorText[16] = {
+	const char* flavorText[16];
+	
+	if (!WorldState[BURGERMENDEF]) flavorText = {
 		"What even is a BURGER?", //You practice your breakdancing skills now that you're done with your BURGER QUEST.
 		"You consider the state of the economy.",
 		"You are blue dabadeedabadai.",
@@ -7884,6 +7949,23 @@ void play(Save*& save) {
 		"You spot a quick brown fox jumping over a lazy dog.",
 		"You say hello to the world.",
 		"I could really go for a burger right now. Too bad they only sell BURGERs here.", //You realize how you've never seen a normal burger.
+		"You have a cake and eat it too.",
+		"You take a potato chip... and eat it."
+	}; else flavorText = {
+		"You practice your breakdancing skills now that you're done with your BURGER QUEST.",
+		"You consider the state of the economy.",
+		"You are blue dabadeedabadai.",
+		"You are beginning to believe.",
+		"You forgor.",
+		"You accidentally find spoilers for the ending of BURGER QUEST 2. Good thing you already beat it.",
+		"You realize you don't have an oven.",
+		"You spot a billboard advertising literally nothing.",
+		"You ask a passerby what the valid commands are. The guy looks at you really confused.",
+		"You stop it and get some help.",
+		"We have been trying to reach you about your car's extended warranty.",
+		"You spot a quick brown fox jumping over a lazy dog.",
+		"You say hello to the world.",
+		"You realize how you've never seen a normal burger.",
 		"You have a cake and eat it too.",
 		"You take a potato chip... and eat it."
 	};

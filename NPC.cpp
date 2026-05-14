@@ -321,7 +321,12 @@ int NPC::getWrath() {
 bool NPC::getTalkOnDefeat() {
 	return talkOnDefeat;
 }
-bool NPC::getForceBattle() {
+bool NPC::getForceBattle(bool uponarrival) {
+	if (uponarrival) {
+		bool fight = fightwhenarrive;
+		fightwhenarrive = false; //only force the fight the first time
+		return fight;
+	}
 	return forcebattle;
 }
 int NPC::getConvoSize() {
@@ -336,8 +341,9 @@ bool NPC::getRespawn() {
 	}
 	return respawns;
 }
-bool NPC::getBoss() {
-	return isBoss;
+bool NPC::getBoss(bool finalb) {
+	if (finalb) return finalBoss; //get if this is the final boss
+	return isBoss; //get if this is any kind of boss
 }
 double NPC::getAttMultiplier() {
 	return attackMultiplier;
@@ -742,8 +748,9 @@ void NPC::setLobsterChanges(const WorldChange& changes) { //set lobster changes 
 void NPC::doLobsterChanges() { //does the lobster changes
 	applyWorldChange(lobsterchanges);
 }
-void NPC::setBoss(bool boss) {
+void NPC::setBoss(bool boss, bool finalb) {
 	isBoss = boss;
+	finalBoss = finalb;
 }
 void NPC::setXPReward(int xp) {
 	xpReward = xp;
@@ -1193,8 +1200,9 @@ void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }
-void NPC::setForceBattle(bool force) { //set if the npc forces battle after talking
+void NPC::setForceBattle(bool force, bool uponarrival) { //set if the npc forces battle after talking
 	forcebattle = force;
+	fightwhenarrive = uponarrival;
 }
 //sets an effect on the npc, affected by the given affector. Affector is also treated as the way to know if it's in battle or not MARK: set effect
 NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
