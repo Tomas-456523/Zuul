@@ -455,7 +455,7 @@ namespace Helper {
 		while (!changes.exitPavings.empty()) { //block the exits
 			tuple<Room*, Room*, const char*, const char*>& data = changes.exitPavings.front();
 			get<0>(data)->setExit(get<2>(data), get<1>(data)); //first room goes to second room via first exit
-			get<1>(data)->setExit(get<3>(data), get<0>(data)); //second room goes to first room via second exit
+			if (get<3>(data)) get<1>(data)->setExit(get<3>(data), get<0>(data)); //second room goes to first room via second exit
 			changes.exitPavings.pop();
 		}
 		while (!changes.exitDepavings.empty()) { //remove the exits
@@ -570,12 +570,17 @@ namespace Helper {
 			((LightOrb*)data.second)->setTeammate(NULL, data.first); //put the teammate back
 			changes.unLightOrb.pop();
 		}
+		while (!changes.defifthLinks.empty()) { //make fifth teammates not fifth
+			changes.defifthLinks.front()->setFifth(false);
+			changes.defifthLinks.pop();
+		}
 		if (Item* orb = changes.linkedOrb) { //petrify the linked escape/entry orb
 			((EscapeOrb*)orb)->petrify();
 		}
 		if (changes.worldcon != NEVER) { //NEVER will never be true, but otherwise we set that this thing has been done
 			WorldState[changes.worldcon] = true;
 		}
+		WorldState[changes.uncon] = false; //falsify the uncondition, no need to check if it's NEVER because NEVER should be false anyway
 	}
 	//gives the player the attack the weapon item has, weapon items can be gotten through different places so we have this helper
 	void applyWeaponAttack(NPC* player, Item* item) {

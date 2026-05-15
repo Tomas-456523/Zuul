@@ -68,9 +68,12 @@ struct WorldChange {
 	std::queue<std::pair<std::vector<NPC*>*, Item*>> linkedLightOrbs; //give these light orbs the teammates from the party
 	std::queue<std::pair<std::vector<NPC*>*, Item*>> unLightOrb; //make these light orbs give the teammate back to the party
 
+	std::queue<NPC*> defifthLinks; //make these npcs not fifth teammates
+
 	Item* linkedOrb = NULL; //petrify this orb, a very specific functionality
 
 	size_t worldcon = Helper::NEVER; //world condition that this affects, unless it's NEVER then it doesn't do anything
+	size_t uncon = Helper::NEVER; //make this world condition be false
 };
 
 #endif

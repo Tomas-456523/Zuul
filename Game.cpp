@@ -70,12 +70,16 @@ void Game::SetupWorld() {
 	const char* TO_FLOOR_1 = "TO FLOOR 1";
 	const char* TO_FLOOR_2 = "TO FLOOR 2";
 	const char* IN_THE_HOLE = "IN THE HOLE";
+	const char* IN_TIME_MACHINE = "IN TIME MACHINE";
 	//fast travel directions
 	const char* TO_THE_VILLAGE = "TO THE VILLAGE";
 	const char* TO_THE_DESERT = "TO THE DESERT";
 	const char* TO_THE_HIGHLANDS = "TO THE HIGHLANDS";
 	const char* TO_BURGERSBURG = "TO BURGERSBURG";
 	const char* TO_THE_BASEMENT = "TO THE BASEMENT";
+	//time machine directions
+	const char* TO_THE_ABYSS = "TO THE ABYSS";
+	const char* TO_THE_VOID = "TO THE VOID";
 
 	//set the direction reverser map in Helper MARK: reverse directions
 	ReverseDirection[NORTH] = SOUTH;
@@ -426,8 +430,9 @@ void Game::SetupWorld() {
 								{NULL, "The rock outside is glowing red hot..."},
 								{NULL, "The elevator dings."}});
 	Room* burgerbasement = new Room("at the entrance of the BURGER BASEMENT. The walls are a tealish gray, and the lights emit a constant hum.");
-	Room* burgbasenw = new Room("in a sort of BURGER storage room, on a metal platform above a pit of BURGERs.");
-	Room* burgbasene = new Room("at the entrance of a storage room. There is no physical door, just the doorway with a metallic outline.");
+	Room* burgbasehole = new Room("at the entrance room of the BURGER BASEMENT, though there's just a little sliver of it left.");
+	Room* burgbasenw = new Room("in a sort of BURGER storage room, on a metal platform above a pit of BURGERs."); //in a sort of BURGER storage room, though the most of BURGERs have fallen into the hole.
+	Room* burgbasene = new Room("at the entrance of a storage room. There is no physical door, just the doorway with a metallic outline."); //at the entrance of a storage room, with the hole on the other side.
 	Room* burgbasew = new Room("at the entrance of a basement room, labeled the cooler room.");
 	Room* burgbasec = new Room("in the middle of the BURGER BASEMENT, featuring many control panels and security cameras.\nYou'd like to press all the buttons but they all need key access.");
 	Room* burgbasee = new Room("at a side room of the basement, with a window overlooking the BURGER assembly line.");
@@ -516,7 +521,8 @@ void Game::SetupWorld() {
 	Room* abyssrestaurant = new Room("in the BURGER RESTAURANT. The furniture is scattered all over the floor.\nYou only see the color black outside.");
 	Room* abysselevatortop = new Room("in the elevator, elevated all the way to the top.");
 	Room* abysselevator = new Room("at ground level, far far below the ground you know.");
-	Room* abysselevatorbottom = new Room("in the restricted level of the elevator, taken along with the rest of the restaurant.");
+	Room* abysselevatorbottom = new Room("in the restricted level of the elevator. The AC can't prevent the intense heat at this depth.");
+	Room* abyssbasement = new Room("in a chunk of the BURGER BASEMENT, dragged down along with the rest of the restaurant.\nYou're blocked by a wall of natural rock.");
 	Room* abyssentrance = new Room("in the entrance of the BURGER RESTAURANT. The glass is very structurally sound to be intact after all that.");
 	Room* abyss = new Room("right outside the BURGER RESTAURANT in the depths of the world.");
 	abyss->setWelcome({{NULL, "You are unbelievably deep underground."},
@@ -548,11 +554,11 @@ void Game::SetupWorld() {
 	Room* vendingroom = new Room("in the vending machine room. It's a whole warehouse of vending machines for anything you can think of!");
 	Room* statsroom = new Room("in the statistics room, for getting the statistics of your life.");
 
-	Room* mainstreethole = new Room("at the end of main street. There is a gaping hole where the BURGER RESTAURANT used to be.");
+	Room* mainstreethole = new Room("at the end of main street. There is a gaping hole where the BURGER RESTAURANT used to be.\nThe time machine is parked here.");
 	
 	Room* home = new Room("in Henry Jerry's multiuse bed/dining/living room.");
 	Room* juiceroom = new Room("in Henry Jerry's portal juice room.");
-	Room* yard = new Room("at Henry Jerry's backyard, in the void.");
+	Room* yard = new Room("at Henry Jerry's backyard, in the void.\nThe time machine is parked here.");
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
@@ -1508,21 +1514,10 @@ void Game::SetupWorld() {
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
 	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who you freed from BURGER.\nHe wears a formal business suit and a spaced out expression.", abyssrestaurant, 1, Stats(10, 2, 4, 1, 0, 4, 9));
 	npcChar[hj] = 'h'; //Henry Jerry's character representation is h for Henry Jerry
-	
-	//{hj, "Shoot, bro."},
-	//{hj, "The news guy looks so much older than I remember."},
-	//{hj, "And my house is so decayed..."},
-	//{hj, "How many years did I miss?"},
-	//{self, "Probably like 67."},
-	//{hj, "Hahahahaha 67"},
-	//{self, Hahahhahaha},
-	//{hj, Hahahhahaha},
-	//{self, Hahahhahaha},
-	//{self, 67},
-	//{hj, Hahahhahaha},
+	hj->setFifth(true); //he is a fifth teammate because you're supposed to have a full team here anyway
 
 	//{hj, "You know, there's an ANTI-SKELETON DEVICE lying around in my old office."},
-	//{hj, "Shame the portal's busted because we could probably actually pick it up now,"},
+	//{hj, "Shame the portal's out of juice because we could probably actually pick it up now,"},
 	//{hj, "with this game's brand new multi-word parsing."}
 
 	//{hj, "Back in my day,"},
@@ -1537,6 +1532,14 @@ void Game::SetupWorld() {
 	//And a new job.
 	//Because everyone is skeletons now at my old job.
 
+	//Portal juice is really expensive.
+	//And corporate-issued.
+	//Hence why I need a new job.
+	//Though I guess I had a weird company,
+	//so maybe I won't be able to use the portal anymore...
+
+	//It's very nice of Cheryl to help me get back home.
+
 	Conversation hjrec = {{hj, "This place reminds me of the negative first universe."}, {hj, "But like it has actual ground."}};
 	shared_ptr<Conversation> hjrec2 = make_shared<Conversation>(Conversation({hj, "Wow so this is what the world looks like."}));
 	hjrec.skipcondition = {BURGMENDEF};
@@ -1549,12 +1552,12 @@ void Game::SetupWorld() {
 	hjdismiss.alt = hjdismiss2;
 	hj->addDismissalDialogue(hjdismiss);
 	
-	hj->setDialogue({{hj, "Uhhhhhhhhhhhhhhhhhhh..."}, {hj, "I have a headache..."}}); //MARK: fix this
-	hj->addRecruitmentDialogue({{hj, "Man, I did a lot of bad things as the BURGER MAN..."},
-								{hj, "Can I go with you?"},
-								{hj, "I want to do something against BURGER..."},
-								{self, "Yeah I was about to ask you."},
-								{hj, "Well that works out pretty well then."}});
+	hj->addConversation({{hj, "Man, I did a lot of bad things as the BURGER MAN..."},
+						 {hj, "Can I go with you?"},
+						 {hj, "I want to do something against BURGER..."}});
+	hj->addRecruitmentDialogue({{self, "Yeah you can join my team."},
+								{hj, "Nice, thanks."}});
+	hj->setDialogue({{hj, "Uhhhhhhhhhhhhhhhhhhh..."}, {hj, "I have a headache..."}});
 
 	//{self, "Hey wanna join my team?"},
 	//{hj, "?"},
@@ -1619,8 +1622,25 @@ void Game::SetupWorld() {
 							{fisho, "It's not much but I'm sure it'll be useful to you."},
 							{self, "Thanks dad."},
 							{fisho, "Of course! Well, have a safe trip!"}};
-	//MARK: alternates for DESTROY BURGER QUEST and postgame
+	shared_ptr<Conversation> fishdef2 = make_shared<Conversation>(Conversation({{fisho, "Hey I heard you're finally on a BURGER QUEST?"},
+							{self, "No I'm actually trying to destroy BURGERS now."},
+							{fisho, "I see."},
+							{fisho, "Well, I caught this fish if you want it."},
+							{fisho, "It's not much but I'm sure it'll be useful to you."},
+							{self, "Thanks dad."},
+							{fisho, "Of course! Well, have a safe trip!"}}));
+	shared_ptr<Conversation> fishdef3 = make_shared<Conversation>(Conversation({{fisho, "Hey I heard you finally went on a BURGER QUEST?"},
+							{self, "Yeah but then I realized BURGERs were evil and I destroyed them."},
+							{fisho, "I see."},
+							{fisho, "(kids are so imaginative.)"},
+							{fisho, "Well, I caught this fish if you want it."},
+							{fisho, "It's not much but I'm sure it'll be useful to you."},
+							{self, "Thanks dad."},
+							{fisho, "Of course! Well, have a safe trip!"}}));
 	fishdef.skipcondition = {TEMPLEQUEST};
+	fishdef2->skipcondition = {BURGMENDEF};
+	fishdef.alt = fishdef2;
+	fishdef2->alt = fishdef3;
 	fisho->addConversation(fishdef);
 
 	Item* fish = new HpItem("HEALTHY FISH", "A fish given by your dad to support your BURGER QUEST. (heals 15 HP)", limbo, 15);
@@ -1646,7 +1666,24 @@ void Game::SetupWorld() {
 							 {mango, "Here, take this cake I made just for this occasion!"},
 							 {self, "Thanks mom."},
 							 {mango, "Of course sweetie! Have a safe trip!"}};
-	//MARK: alternates for DESTROY BURGER QUEST and postgame
+	shared_ptr<Conversation> mangodef2 = make_shared<Conversation>(Conversation({{mango, "Ah! I've heard you're on your BURGER QUEST."},
+							 {mango, "I'm just so proud!"},
+							 {self, "I'm actually like trying to destroy BURGERs now."},
+							 {mango, "..."}
+							 {mango, "Here, I made this cake for the occasion,"},
+							 {mango, "I'm sure you'll come to your senses soon..."},
+							 {self, "Thanks mom."},
+							 {mango, "Of course sweetie! Have a safe trip!"}}));
+	shared_ptr<Conversation> mangodef3 = make_shared<Conversation>(Conversation({{mango, "Oh, sweetie!"},
+							 {mango, "I made this cake to commemorate your BURGER QUEST,"},
+							 {mango, "but you just rushed right out!"},
+							 {mango, "Here you go!"},
+							 {self, "Thanks mom."},
+							 {mango, "Of course sweetie!"}}));
+	mangodef.skipcondition = {TEMPLEQUEST};
+	mangodef2->skipcondition = {BURGMENDEF};
+	mangodef.alt = mangodef2;
+	mangodef2->alt = mangodef3;
 	mango->addConversation(mangodef);
 
 	Item* cake = new HpItem("HEALTHY CAKE", "A cake your mom made to commemorate your BURGER QUEST. (heals 100 HP)", limbo, 100);
@@ -2103,7 +2140,7 @@ void Game::SetupWorld() {
 							{burgerprisoner, "but it was disassembled long ago,"},
 							{burgerprisoner, "and scattered across three temples."},
 							{self, "You mean the ancient temples?"},
-							{self, "They're sealed shut by ancient technology!"},
+							{self, "They're sealed shut by ancient technology."},
 							{self, "No matter what anybody's tried, they've never made it inside!"},
 							{burgerprisoner, "Oh to open them you just gotta ASK NICELY."},
 							{self, "Oh I see."},
@@ -2195,10 +2232,20 @@ void Game::SetupWorld() {
 	usetheplotdevice.roomChanges.push({BURGERSBURG, "at the gate of BURGERSBURG. They might want to update the name of the city at some point..."});
 	usetheplotdevice.roomChanges.push({mountainpeak, "at the peak of the mountain, watching over a sea of clouds.\nThere's a tent here in the style of your home village."});
 	usetheplotdevice.roomChanges.push({fdintermission3, "on the path between the woodlands and the wastelands. Dead trees surround you."});
+	usetheplotdevice.roomChanges.push({burgbasenw, "in a sort of BURGER storage room, though the most of BURGERs have fallen into the hole."});
+	usetheplotdevice.roomChanges.push({burgbasene, "at the entrance of a storage room, with the hole on the other side."});
+	usetheplotdevice.redirectRooms.push({burgerbasement, abyssbasement});
+	usetheplotdevice.exitPavings.push(make_tuple(burgbasenw, burgbasehole, EAST, WEST)); //because the room was redirected to the abyss, we have this other room and link the rest of the basement to it
+	usetheplotdevice.exitPavings.push(make_tuple(burgbasene, burgbasehole, WEST, EAST));
+	usetheplotdevice.exitPavings.push(make_tuple(burgbasec, burgbasehole, NORTH, SOUTH));
+	usetheplotdevice.exitPavings.push(make_tuple(burgbasene, abyss, IN_THE_HOLE, NULL));
+	usetheplotdevice.exitPavings.push(make_tuple(burgbasene, abyss, IN_THE_HOLE, NULL));
+	usetheplotdevice.exitPavings.push(make_tuple(burgbasene, abyss, IN_THE_HOLE, NULL));
+	usetheplotdevice.uncon = CANDISMISS; //can't dismiss your teammates because the time machine hasn't arrived yet
 	//MARK: finish with the changes
 	
 	//THE PLOT DEVIIIIIIIIIIIIIIIIIIIIIICE!!!!!!!!!!!!!!!!!!!!!!!!!! which you use to get to the final boss
-	Item* THEPLOTDEVICE = new THEPLOTDEVICE("THE PLOT DEVICE", "", limbo, BURGERRESTAURANT, 
+	Item* THEPLOTDEVICE = new THEPLOTDEVICE("THE PLOT DEVICE", "The device mastefully engineered to do whatever the plot requires.", limbo, BURGERRESTAURANT, 
 		{{burgerman, "WAIT."}, //initial use text
 		 {burgerman, "DON'T DO ANYTHING RASH."},
 		 {burgerman, "LOOK OUTSIDE."},
@@ -2288,6 +2335,12 @@ void Game::SetupWorld() {
 	plotchanges.linkedDialogue.push({burgerprisoner, {{burgerprisoner, "It's time to finally get the BURGER MAN!"}, {burgerprisoner, "Godspeed on your mission!"}}});
 	plotchanges.exitUnblocks.push({BURGERRESTAURANT, IN_ELEVATOR}); //BURGER MAN unblocks the elevator because he wants you to leave
 	plotchanges.worldcon = GOTPLOTDEVICE;
+
+	WorldChange abyssescape;
+	abyssescape.roomChanges.push(abyss, "right outside the BURGER RESTAURANT in the depths of the world.\nThere is a time machine parked here.");
+	abyssescape.defeatRooms.push(cheryl, abyss);
+	abyssescape.worldcon = CANDISMISS; //you can dismiss teammates after getting to this point so you can change your team again since the teammates can go back home via the time machine
+	aboss->setEnterChanges(abyssescape); //you can leave the abyss after enocuntering the BURGER MENACE whether you lose or win, so you can adjust your team in the case of losing and so you can just leaver for both cases
 
 	burgerprisoner->setInternalBlender(bpblender); //he can put together THE PLOT DEVICE so we give him an "internal blender" so he can actually do that
 
@@ -3133,6 +3186,13 @@ void Game::SetupWorld() {
 						 {cheryl, "Well I'll be in the time machine."},
 						 {cheryl, "..."},
 						 {cheryl, "Bye."}});
+	cheryl->addRejectionDialogue("I've got things to do, sorry.");
+	cheryl->addConversation({{self, "So you made this time machine?"}, {cheryl, "Yeah."}, {self, "Nice."}});
+	cheryl->setDialogue({{cheryl, "I do enjoy not being an evil skeleton."}});
+	cheryl->setTalkMakeChanges(); //when talking to cheryl she opens and goes in the time machine
+	cheryl->addDefeatRoom(cheryl, timemachine);
+	cheryl->addPaveLink(abyss, timemachine, IN_TIME_MACHINE, OUT);
+	cheryl->addLinkedRoom(abyss, "right outside the BURGER RESTAURANT in the depths of the world.\nThe time machine is parked here."); //because the time machine is more familiar now we change it to "the time machine" from "a time machine"
 
 	Item* simulator = new MaterialItem("SIMULATOR", "", limbo);
 	Item* statsanalyzer = new MaterialItem("STATISTICS ANALYZER", "", limbo);
@@ -3148,17 +3208,10 @@ void Game::SetupWorld() {
 	Item* salecover = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", limbo, coverthrow);
 	Item* salespork = new ManholeItem("SPORK","\"Google changed their google definitions to use Gemini now and I can't find the source they used to get their definitions from before so I can't keep up the description theme :(\"\n- Tomas", limbo, sporkthrow); //MARK: find the definition
 
-	Item* tv = new MaterialItem("TV", "", limbo);
-	Item* hblender = new MaterialItem("BLENDER", "", limbo);
-	Item* sign = new MaterialItem("SIGN", "", limbo);
-
-	Item* placeholderitem = new MaterialItem("PLACEHOLDER ITEM", "", limbo); //placeholder items for adding more items in the future without affecting my item ids
-	Item* placeholderitem2 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem3 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem4 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem5 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem6 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
-	Item* placeholderitem7 = new MaterialItem("PLACEHOLDER ITEM", "", limbo);
+	Item* tv = new InfoItem("TV", "A very cool flatscreen tv for watching tv.", {{NULL, "The TV is out of batteries!"}} home); //they're all out of batteries logically, also it's an excuse to not make the portal destinations
+	Item* hblender = new InfoItem("BLENDER", "A very cool blender for blending stuff into smoothies.", {{NULL, "The BLENDER is out of batteries!"}} juiceroom);
+	Item* portalgenerator = InfoItem("PORTAL GENERATOR", "A corporate-issued device for generating portals to go places.", {{NULL, "The PORTAL GENERATOR is out of juice!"}} yard);
+	Item* tablet = new MaterialItem("TABLET", "A tablet for displaying graphics and playing games", {{NULL, "The TABLET is out of batteries!"}}, limbo);
 	
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -3761,6 +3814,45 @@ void Game::SetupWorld() {
 	volcanotemple3v->setExit(SOUTHEAST, volcanotemple3o);
 	volcanotemple3o->setExit(NORTHWEST, volcanotemple3v);
 	volcanotempleboss->setExit(SOUTHWEST, volcanotemple);
+	abyssrestaurant->setExit(IN_ELEVATOR, abysselevatortop);
+	abysselevatortop->setExit(OUT, abyssrestaurant);
+	abysselevatortop->setExit(TO_THE_BOTTOM, abysselevator);
+	abysselevatortop->setExit(TO_GROUND_LEVEL, abysselevatorbottom);
+	abysselevatorbottom->setExit(OUT, ); //MARK: DO THIS
+	abysselevatorbottom->setExit(TO_THE_TOP, abysselevatortop);
+	abysselevatorbottom->setExit(TO_GROUND_LEVEL, abysselevator);
+	abysselevator->setExit(OUT, abyssentrance);
+	abysselevator->setExit(TO_THE_TOP, abysselevatortop);
+	abysselevator->setExit(TO_THE_BOTTOM, abysselevator);
+	abyssentrance->setExit(IN_ELEVATOR, abysselevator);
+	abyssentrance->setExit(OUT, abyss);
+	abyss->setExit(INSIDE, abyssentrance);
+	abyss->setExit(SOUTH, abyss2);
+	abyss2->setExit(NORTH, abyss);
+	abyss2->setExit(SOUTHEAST, abyss3);
+	abyss3->setExit(NORTHWEST, abyss2);
+	abyss3->setExit(SOUTH, abyss4);
+	abyss4->setExit(NORTH, abyss3);
+	abyss4->setExit(DOWN, abyss5);
+	abyss5->setExit(UP, abyss4);
+	abyss5->setExit(SOUTH, abyss6);
+	abyss6->setExit(NORTH, abyss5);
+	abyss6->setExit(SOUTHWEST, abyss7);
+	abyss7->setExit(NORTHEAST, abyss6);
+	abyss7->setExit(UP, abyss8);
+	abyss8->setExit(DOWN, abyss7);
+	abyss8->setExit(SOUTH, abyss9);
+	abyss9->setExit(NORTH, abyss8);
+	abyss9->setExit(UP, abyss10);
+	abyss10->setExit(DOWN, abyss9);
+	abyss10->setExit(SOUTH, aboss);
+	aboss->setExit(NORTH, abyss10);
+	mainstreethole->setExit(SOUTH, mainstreet4);
+	mainstreethole->setExit(EAST, coolstreet5);
+	mainstreethole->setExit(WEST, newstreet5);
+	mainstreethole->setExit(IN_THE_HOLE, burgbasehole);
+	burgbasehole->setExit(IN_THE_HOLE, abyss);
+	timemachine->setExit(TO_BURGERSBURG, timemachine); //how the time machine works is that you GO to the place you want to go and it sets the OUT exit to wherever you just went, and removes the TO_[place you just went] exit, but to start you can only go to BURGERSBURG from the Abyss
 	tunnels->setExit(TO_THE_VILLAGE, tentstation);
 	tunnels->setExit(TO_THE_DESERT, desertstation);
 
@@ -6573,6 +6665,7 @@ void Game::SetupWorld() {
 	finalboss->addLinkedRoom(abyss6, "in the middle of the crater. You see a rock that looks like a duck.");
 	finalboss->addLinkedRoom(abyss5, "at the end of the crater. The path back continues.");
 	finalboss->addLinkedRoom(abyss10, "on the highest stretch of ground you can see.");
+	finalboss->addLinkedRoom(burgbasenw, "in a sort of BURGER storage room, full of ashes.\nHalf of the room was pulled into the hole.");
 	finalboss->setEscapable(false);
 	finalboss->setWorldCondition(BURGERMENDEF);
 	finalboss->setXPReward(0); //so the boss doesn't give you an absurd amount of rewards
@@ -6605,25 +6698,48 @@ void Game::SetupWorld() {
 	finalboss->addLinkedDesc(burgerprisoner, "A priest gray with age, who helped you to finally destroy BURGER.");
 	finalboss->addLinkedRoom(tentchurch, "in the village church. It's a really big tent, complete with stained glass and everything.\nMaybe people will start coming here again, now that the priest is back!");
 	finalboss->addDefeatRoom(burgerprisoner, tentchurch);
+	finalboss->addLinkedConvo(archie, {{archie, "Hey!"},
+		{archie, "Did you see what happened to the BURGER RESTAURNT?"},
+		{archie, "It's kind of just..."},
+		{archie, "not there anymore?"},
+		{self, "Oh yeah BURGERs are evil,"},
+		{self, "so I used THE PLOT DEVICE to free the BURGER MAN from BURGER,"},
+		{self, "because he was actually just Henry Jerry but controlled by the BURGER MENACE,"},
+		{self, "who was the guy who made BURGERs,"},
+		{self, "but he didn't appreciate me plot devicing the BURGER MAN,"},
+		{self, "so he dragged the BURGER RESTAURANT into the Abyss to fight me,"},
+		{self, "but that turned out to be a bad decision because I just plot deviced him too."},
+		{self, "And then I came back in a time machine."},
+		{archie, "..."},
+		{archie, "(guess I'll have to ask around.)"}});
+	finalboss->addLinkedConvo(archie, {{archie, "Did you see that the priest is back?"},
+		{archie, "I never thought he'd come back."},
+		{archie, "I was still a young boy when he was around."},
+		{archie, "He disappeared about the same time the BURGER RESTAURANT popped up."},
+		{archie, "I thought he went to get a BURGER but something happened to him,"},
+		{archie, "but I asked, and it turns out he's not too big a fan..."},
+		{archie, "..."},
+		{archie, "I haven't been to church for a long time..."},
+		{archie, "it might be worth trying it again."}});
+	finalboss->addDefeatRoom(hj, home); //Henry Jerry goes back home
+	finalboss->addDismissLink(party, hj); //hj leaves your party too
+	finalboss->addDefifthLink(hj); //hj becomes a normal teammate type
 
 	//MARK: TO DO LIST
 	//finish the fight itself
 	//time machine
-		//time machine after defeat?
-	//assembling the plot device
 	//save system branching conversations
 	//hj's house
 	//hj dialogue
-	//hj leaving team and no longer being 5th teammate
-	//different welcome back text
-	//cheryl
 	//THE PLOT DEVICE
+	//fight burger man
 
-	//{{hj, "Well I'm gonna go home I guess."},
-	//{self, "Alright cya."},
-	//{NULL, "HENRY JERRY went back to his house."},
-	//{self, "..."},
-	//{self, "Wait how are we supposed to get back?"}}
+	//time machine appears in enter changes
+	//time machine opens after asking cheryl
+	//time machine exits must always work
+
+	//hj house universe numbers (start at 7)
+	//hj house items
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -7754,7 +7870,7 @@ void Game::dismissNPC(Room* currentRoom, const char* npcname) {
 		cout << "\n" << npcname << " was not dismissed.";
 		return;
 	} //you can't dismiss the npc because it's in a temple where you need your team or the final boss prelude where you wouldn't be able to get them back
-	if (!WorldState[CANDISMISS]) { //MARK: fix this
+	if (!WorldState[CANDISMISS] && !npc->getFifth()) {
 		cout << "\nYour team has no way to go back home right now!";
 		return;
 	} //removes the npc from your party
@@ -8069,6 +8185,16 @@ void Game::play() {
 	} else { //welcome the player back if they are using existing save data
 		cout << "\rWelcome back!";
 		CinPause();
+	}
+	
+	if (WorldState[BURGERMENDEF] && !WorldState[POSTGAME]) {
+		Conversation welcome = {{NULL, "\nHENRY JERRY - \"Well I'm gonna go home I guess.\""},
+								{self, "Alright cya."},
+								{NULL, "HENRY JERRY went back to his house."},
+								{self, "..."},
+								{self, "Wait how are we supposed to get back?"}}
+		printConversation(&welcome, true);
+		WorldState[POSTGAME] = true;
 	}
 
 	sessions++; //we have one more session since we're playing!

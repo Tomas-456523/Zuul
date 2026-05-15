@@ -1220,6 +1220,9 @@ void NPC::addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges) {
 void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
 	changes.back().linkedWelcomes.push({room, welcome});
 }
+void NPC::addDismissLink(vector<NPC*>* party, NPC* npc) {
+	changes.back().dismissLinks.push({party, npc});
+}
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }

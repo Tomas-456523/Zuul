@@ -281,6 +281,7 @@ public: //you need to set stats on creation
 	void addPaveLink(Room* from, Room* to, const char* dir1, const char* dir2);
 	void addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges);
 	void addLinkedWelcome(Room* room, const Conversation& welcome);
+	void addDismissLink(vector<NPC*>* party, NPC* npc);
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one

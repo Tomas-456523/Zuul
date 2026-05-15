@@ -723,7 +723,12 @@ struct Save {
 				while (*data != '|' && *data != '=') {
 					Item* item = itemsH[adjustItemID(ParseNum(++data), discontinuity)];
 					int roomid = ParseNum(++data);
-					if (roomid == -1) { //-1 means NULL room which means they go in the inventory
+					//all the BURGERs faded to ashes after beating the game so we delete all of them if the final boss has been defeated
+					if (WorldState[BURGERMENDEF] && item->getType("BURGER")) {
+						item->unRoom();
+						discontinuity.insert(id); //log the discontinuity because we're about to delete the item
+						delete item;
+					} else if (roomid == -1) { //-1 means NULL room which means they go in the inventory
 						item->unRoom();
 						inventory->push_back(item);
 						//make sure the player has their weapon items' attacks
