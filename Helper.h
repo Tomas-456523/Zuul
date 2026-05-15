@@ -64,6 +64,7 @@ namespace Helper {
 	extern std::vector<Save*> saves; //all the player's saves
 
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
+	extern std::map<const char*, Room*> TimeMachineDirection; //map to find all the time machine directions and where they go
 	extern std::map<NPC*, char> npcChar; //map to find the char that represents each recruitable npc, used by the save system
 	extern std::map<char, NPC*> charNPC; //the last map but reversed
 	

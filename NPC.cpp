@@ -1223,6 +1223,9 @@ void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
 void NPC::addDismissLink(vector<NPC*>* party, NPC* npc) {
 	changes.back().dismissLinks.push({party, npc});
 }
+void NPC::addDefifthLink(NPC* npc) {
+	changes.back().defifthLinks.push(npc);
+}
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
 }

@@ -542,14 +542,8 @@ void Game::SetupWorld() {
 	Room* abyss10 = new Room("on the highest stretch of ground you can see.\nThe end of the path is right up ahead.");
 	Room* aboss = new Room("at a sheer drop-off, staring down THE BURGER MENACE.");
 	
-	////////////////////////
-	/////
-
-	/////
-
-	//MARK: When you put the redirect in mainstreet5, make sure you can't go in the hole with the hose
-
 	Room* timemachine = new Room("in the time machine! It's much bigger on the inside, complete with a donut-shaped layout.");
+	timemachine->setTimeMachine(true);
 	Room* simulatorroom = new Room("in the simulator room, for simulating battles.");
 	Room* vendingroom = new Room("in the vending machine room. It's a whole warehouse of vending machines for anything you can think of!");
 	Room* statsroom = new Room("in the statistics room, for getting the statistics of your life.");
@@ -562,6 +556,11 @@ void Game::SetupWorld() {
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
+
+	//set up time machine exits MARK: time machine exits
+	TimeMachineDirection[TO_THE_VOID] = yard;
+	TimeMachineDirection[TO_BURGERSBURG] = mainstreethole;
+	TimeMachineDirection[TO_THE_ABYSS] = abyss;
 
 	//Create NPCs and items MARK: make npcs, items, etc.
 	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
@@ -1516,45 +1515,23 @@ void Game::SetupWorld() {
 	npcChar[hj] = 'h'; //Henry Jerry's character representation is h for Henry Jerry
 	hj->setFifth(true); //he is a fifth teammate because you're supposed to have a full team here anyway
 
-	//{hj, "You know, there's an ANTI-SKELETON DEVICE lying around in my old office."},
-	//{hj, "Shame the portal's out of juice because we could probably actually pick it up now,"},
-	//{hj, "with this game's brand new multi-word parsing."}
-
-	//{hj, "Back in my day,"},
-	//{hj, "we didn't have any of these fancy commands,"},
-	//{hj, "like FIGHT"},
-	//{hj, "or RECRUIT"},
-	//{hj, "or ASK"},
-	//{hj, "or SAVE..."},
-	//{self, "That sounds like simpler times."}
-
-	//I need to get a hobby.
-	//And a new job.
-	//Because everyone is skeletons now at my old job.
-
-	//Portal juice is really expensive.
-	//And corporate-issued.
-	//Hence why I need a new job.
-	//Though I guess I had a weird company,
-	//so maybe I won't be able to use the portal anymore...
-
-	//It's very nice of Cheryl to help me get back home.
-
 	Conversation hjrec = {{hj, "This place reminds me of the negative first universe."}, {hj, "But like it has actual ground."}};
 	shared_ptr<Conversation> hjrec2 = make_shared<Conversation>(Conversation({hj, "Wow so this is what the world looks like."}));
-	hjrec.skipcondition = {BURGMENDEF};
+	hjrec.skipcondition = {BURGERMENDEF};
 	hjrec.alt = hjrec2;
 	hj->addRecruitedDialogue(hjrec);
 
 	Conversation hjdismiss = {{hj, "I'm just gonna head back to the restaurant I guess."}, {hj, "It has a good view, that's one good thing about it."}};
 	shared_ptr<Conversation> hjdismiss2 = make_shared<Conversation>(Conversation({hj, "Well I'm just gonna head back home then."}));
-	hjdismiss.skipcondition = {BURGMENDEF};
+	hjdismiss.skipcondition = {BURGERMENDEF};
 	hjdismiss.alt = hjdismiss2;
 	hj->addDismissalDialogue(hjdismiss);
 	
-	hj->addConversation({{hj, "Man, I did a lot of bad things as the BURGER MAN..."},
-						 {hj, "Can I go with you?"},
-						 {hj, "I want to do something against BURGER..."}});
+	Conversation segway = {{hj, "Man, I did a lot of bad things as the BURGER MAN..."},
+						   {hj, "Can I go with you?"},
+						   {hj, "I want to do something against BURGER..."}};
+	segway.skipcondition = {BURGERMENDEF};
+	hj->addConversation(segway);
 	hj->addRecruitmentDialogue({{self, "Yeah you can join my team."},
 								{hj, "Nice, thanks."}});
 	hj->setDialogue({{hj, "Uhhhhhhhhhhhhhhhhhhh..."}, {hj, "I have a headache..."}});
@@ -1638,7 +1615,7 @@ void Game::SetupWorld() {
 							{self, "Thanks dad."},
 							{fisho, "Of course! Well, have a safe trip!"}}));
 	fishdef.skipcondition = {TEMPLEQUEST};
-	fishdef2->skipcondition = {BURGMENDEF};
+	fishdef2->skipcondition = {BURGERMENDEF};
 	fishdef.alt = fishdef2;
 	fishdef2->alt = fishdef3;
 	fisho->addConversation(fishdef);
@@ -1681,7 +1658,7 @@ void Game::SetupWorld() {
 							 {self, "Thanks mom."},
 							 {mango, "Of course sweetie!"}}));
 	mangodef.skipcondition = {TEMPLEQUEST};
-	mangodef2->skipcondition = {BURGMENDEF};
+	mangodef2->skipcondition = {BURGERMENDEF};
 	mangodef.alt = mangodef2;
 	mangodef2->alt = mangodef3;
 	mango->addConversation(mangodef);
@@ -3060,6 +3037,7 @@ void Game::SetupWorld() {
 	hose->addBlocker(ceoelevator1, TO_THE_TOP, "You pressed the button to go TO THE TOP but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO THE TOP but the door reopened after closing on the FIRE HOSE on the ground.");
 	hose->addBlocker(ceoelevator2, TO_FLOOR_1, "You pressed the button to go TO FLOOR 1 but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO FLOOR 1 but the door reopened after closing on the FIRE HOSE on the ground.");
 	hose->addBlocker(ceoelevator2, TO_THE_TOP, "You pressed the button to go TO THE TOP but the door reopened after closing on your FIRE HOSE.", "You pressed the button to go TO THE TOP but the door reopened after closing on the FIRE HOSE on the ground.");
+	hose->addBlocker(mainstreethole, IN_THE_HOLE, "You tried to go IN THE HOLE but got pulled back by your FIRE HOSE.", NULL);
 	hose->setStationBlock("You started going into the tunnels but got pulled off your lobster by your fully extended FIRE HOSE!");
 
 	WorldChange hsdropceoele1; //changes if you drop the hose in the floor 1 ceo elevator
@@ -6724,6 +6702,21 @@ void Game::SetupWorld() {
 	finalboss->addDefeatRoom(hj, home); //Henry Jerry goes back home
 	finalboss->addDismissLink(party, hj); //hj leaves your party too
 	finalboss->addDefifthLink(hj); //hj becomes a normal teammate type
+	finalboss->addLinkedConvo(hj, {{hj, "You know, there's an ANTI-SKELETON DEVICE lying around in my old office."},
+								   {hj, "Shame the portal's out of juice because we could probably actually pick it up now,"},
+								   {hj, "with this game's brand new multi-word parsing."}});
+	finalboss->addLinkedConvo(hj, {{hj, "Back in my day,"},
+								   {hj, "we didn't have any of these fancy commands,"},
+								   {hj, "like FIGHT"},
+								   {hj, "or RECRUIT"},
+								   {hj, "or ASK"},
+								   {hj, "or SAVE..."},
+								   {self, "That sounds like simpler times."}});
+	finalboss->addLinkedConvo(hj, {{hj, "I need to get a hobby."},
+								   {hj, "And a new job."},
+								   {hj, "Because everyone is skeletons now at my old job."}});
+	finalboss->addLinkedDialogue(hj, {{hj, "I wonder how you find employment."}});
+	finalboss->addPaveLink(timemachine, timemachine, TO_THE_VOID, NULL); //you can go to the void from the time machine after beating the game
 
 	//MARK: TO DO LIST
 	//finish the fight itself
@@ -6740,6 +6733,8 @@ void Game::SetupWorld() {
 
 	//hj house universe numbers (start at 7)
 	//hj house items
+	//save time machine direction (because you might be in the time machine when saving)
+	//save universe #
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -6971,6 +6966,52 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 		roomCanidate->setItem(roomgift); //put the item in the room
 	} //do any changes the room might have to make
 	roomCanidate->doEnterChanges();
+
+	//timemachineexits (tme)
+	//to void  - yard
+	//to BB    - mainstreethole
+	//to abyss - abyss
+
+	//when going to time machine, remove all exits
+	//if going in from outside:
+		//make OUT go to the outside room
+		//set all tme exits except the one where tme[exit] == outside room
+	//if going to time machine from machine:
+		//make OUT go to tme[direction]
+		//set all tme exits except "direction"
+
+	//what if we're in the abyss, and we're entering the time machine, but we last left the time machine in the city. This means that "to the city" is not an exit in the time machine right now but it is one that should be there
+
+	//set the time machine exits if we're going to the time machine
+	if (roomCanidate->getTimeMachine()) {
+		bool traveling; //if we're space traveling in the time machine
+		if (!strcmp(direction, "INSIDE")) { //if we're going into the time machine from outside
+			traveling = false;
+		} else if (currentRoom->getTimeMachine()) { //if we're going to the time machine from inside the time machine (we're space traveling)
+			traveling = true;
+		} else {
+			//MARK: GET THE ELSE CASE
+		}
+		vector<const char*> existing; //space travel directions that currently we can currently travel to from the time machine
+		for (map<const char*, Room*>::iterator spaces = TimeMachineDirection.begin() : TimeMachineDirection; spaces != TimeMachineDirection.end(); spaces++) {
+			if (roomCanidate->getExit(spaces)) { //if this is one of the exits that currently exist in the time machine
+				existing.push_back(spaces->first);
+				roomCanidate->removeExit(spaces->first);
+			} else if (spaces->second == currentRoom) { //if this is the exit that leads outside of the time machine to the room that we're in right now
+				existing.push_back(spaces->first);
+			}
+		}
+		const char* out = NULL; //MARK: GET THIS
+		if (traveling) {
+			roomCanidate->setExit(out, TimeMachineDirection[direction]);
+		} else {
+			roomCanidate->setExit(out, currentRoom);
+		}
+		
+		for (const char* dir : existing) {
+
+		}
+	}
 	bool forcedbattle = false; //if one of the npcs in the room forced a battle, so we don't print room data after that since it gets printed in fight() after the battle anyway
 	for (NPC* npc : roomCanidate->getNpcs()) {
 		if (npc->getForceBattle(true)) { //if one of the npcs in the room forces a battle, start the battle with them
@@ -8302,7 +8343,7 @@ void Game::play() {
 			else if (WorldState[JILLYQUEST]) cout << "\rYou give up on your quest to save JILLY.";
 			else cout << "\rYou give up on your quest to get the BURGER.";
 		} else { //player has saved at some point like a normal person
-			if (WorldState[BURGERMENDEF]) cout << "\nYou take a nap."; //no more quest so you just take a normal nap (the game saves and quits automatically after making BURGMENDEF true so there's no corresponding didn't save text for this one)
+			if (WorldState[BURGERMENDEF]) cout << "\nYou take a nap."; //no more quest so you just take a normal nap (the game saves and quits automatically after making BURGERMENDEF true so there's no corresponding didn't save text for this one)
 			else if (WorldState[TEMPLEQUEST]) cout << "\rYou take a nap. You will continue on your quest to destroy BURGER later!";
 			else if (WorldState[JILLYQUEST]) cout << "\rYou take a nap. You will continue on your quest to save JILLY later!";
 			else cout << "\rYou take a nap. You will continue on your quest to get the BURGER later!";

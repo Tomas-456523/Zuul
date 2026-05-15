@@ -61,6 +61,9 @@ bool Room::getStation() {
 bool Room::getGym() {
 	return gym;
 }
+bool Room::getTimeMachine() {
+	return timemachine;
+}
 bool Room::getTempleEntrance() {
 	return templeentrance;
 }
@@ -243,6 +246,9 @@ void Room::setStation(bool stat) {
 }
 void Room::setGym(bool _gym) {
 	gym = _gym;
+}
+void Room::setTimeMachine(bool _machine) {
+	timemachine = _machine;
 }
 void Room::setTempleEntrance(const char* exit, Room* temple, const Conversation& opentext) {
 	templeentrance = true;

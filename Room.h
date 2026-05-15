@@ -36,6 +36,7 @@ public:
 	Room* getRedirect(); //get if the room redirects to another one
 	bool getStation(); //gets if this room is a station
 	bool getGym(); //gets if this room is a gym
+	bool getTimeMachine(); //gets if this room is the time machine
 	bool getTempleEntrance(); //gets if this room is a temple entrance
 	bool getBlocked(const char* direction); //gets if the given exit is blocked
 	const char* getBlockType(const char* direction); //gets the type of the exit's block
@@ -61,6 +62,7 @@ public:
 	void setRedirect(Room* room); //sets a redirect to another room
 	void setStation(bool stat = true); //sets if this room is a station
 	void setGym(bool _gym = true); //sets if this room is a gym
+	void setTimeMachine(bool _machine = true); //sets if this room is the time machine
 	void setConveyor(Room* altroom, const char* conveyorexit); //sets if this room is a conveyor + references the FORWARD exit in conveyor rooms
 	void setTempleEntrance(const char* exit, Room* temple, const Conversation& opentext); //makes this room a temple entrance, so we can ASK NICELY to open it
 	void setDescription(const char* _description); //reset the description, used by items that change things
@@ -104,6 +106,7 @@ private:
 
 	bool station = false; //if it's a train station
 	bool gym = false; //if it's the gym
+	bool timemachine = false; //if this is the time machine
 
 	bool templeentrance = false; //if it's a temple entrance and you can ASK NICELY to set the entrance
 	pair<const char*, Room*> templesettings = {NULL, NULL};

@@ -623,6 +623,7 @@ namespace Helper {
 	//reset all the external maps and thingymadoodles to not be full of garbage data
 	void emptyExterns() {
 		ReverseDirection.clear();
+		TimeMachineDirection.clear();
 		npcChar.clear();
 		charNPC.clear();
 		memset(commandcount, 0, sizeof(commandcount));
@@ -787,11 +788,10 @@ namespace Helper {
 		return name;
 	}
 
-	//all the player's saves
-	vector<Save*> saves;
-
-	//map to find the opposite of the given direction (e.g. ReverseDirection[SOUTH] == NORTH)
-	map<const char*, const char*> ReverseDirection;
+	vector<Save*> saves; //all the player's saves
+	
+	map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction (e.g. ReverseDirection[SOUTH] == NORTH)
+	map<const char*, Room*> TimeMachineDirection; //map to find all the time machine directions and where they go
 
 	//stuff that we need to be able to update as we play the game, that the save system uses, or npc statistics
 
