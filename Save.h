@@ -1,5 +1,8 @@
 //header file for the world saves
 
+#ifndef SAVE
+#define SAVE
+
 #include <vector>
 #include <cstring>
 #include <fstream>
@@ -58,7 +61,7 @@ struct Save {
 	*  Section T: The room that each tunnel direction leads to, in the order of their index in the tunnel lobster tunnel directions, -1 if the exit hasn't been discovered yet
 	*  - The order of exit setting doesn't matter in this section because the exit maps in Room sorts the exits in alphabetical order anyway
 	*  Section B: Exists after depositing money in the bank, stores current bank balance and last time used bank ([balance],[time])
-	*  Section S: All the world states as 0 or 1 (26 states as of now, not including NEVER), since some states are changed by things other than world changes
+	*  Section S: All the world states as 0 or 1 (27 states as of now, not including NEVER or GAMEEND), since some states are changed by things other than world changes
 	*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
 	*  Section C: 18 integers representing how many times used each command (validly), so something like C[go],[take],[drop],[use],[recruit],[dismiss],[ask],[inventory],[party],[attacks],[room],[analyze],[fight],[buy],[help],[save],[enemies],[run]
 	*  
@@ -226,8 +229,8 @@ struct Save {
 				if (*p != ',') return false; //check the dividing comma
 				if (!verifyNum(++p, 64)) return false; //check the deposit time
 			} else if (*p == 'S') { //states
-				for (size_t i = 0; i < NEVER; i++) {
-					if (*(++p) != '0' && *p != '1') return false; //must be a bitstring of NEVER characters long
+				for (size_t i = 0; i < GAMEEND; i++) {
+					if (*(++p) != '0' && *p != '1') return false; //must be a bitstring of GAMEEND characters long
 				}
 				p++; //go past the bitstring
 			} else if (*p == 'Q') { //play time, how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
@@ -436,9 +439,9 @@ struct Save {
 			snprintf(bankstuff, 100, "|B%d,%lld", banker->getBalance(), (long long)banker->getDepositTime());
 			addChunk(save->data, bankstuff, save->savesize); //add the banking section!
 		}
-		//Section S, store all the world states except for never
+		//Section S, store all the world states except for never and gameend
 		addChunk(save->data, "|S", save->savesize);
-		for (size_t i = 0; i < Helper::NEVER; i++) {
+		for (size_t i = 0; i < Helper::GAMEEND; i++) {
 			addChunk(save->data, (Helper::WorldState[i] ? "1" : "0"), save->savesize);
 		}
 		//Section Q, store how long the player has played on this file plus some silly error data plus some other potentially interesting stats
@@ -754,7 +757,7 @@ struct Save {
 				long long time = ParseNum(++data);
 				charNPC['n']->manualSetBankData(balance, time); //set the bank balance and the bank time
 			} else if (*data == 'S') { //s for states, set all the world states
-				for (size_t i = 0; *(++data) != '|' && *data != '='; i++) { //set all the states except for NEVER because that's not tracked by SaveWorld
+				for (size_t i = 0; *(++data) != '|' && *data != '='; i++) { //set all the states except for NEVER and GAMEEND because that's not tracked by SaveWorld
 					WorldState[i] = *data - '0';
 				}
 			} else if (*data == 'Q') { //q for it's the randomest letter I could think of, random stats
@@ -792,3 +795,5 @@ struct Save {
 		delete[] data;
 	}
 };
+
+#endif

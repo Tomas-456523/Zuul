@@ -242,6 +242,9 @@ bool NPC::getChangeName() { //get if this npc changes its name when transforming
 bool NPC::getTrackRage() { //get if this is the volcano temple boss that tracks rage for phases
 	return trackrage;
 }
+Item* NPC::getInternalBlender() { //get the blender item that this npc has
+	return internalblender;
+}
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
 	pos.first = Clamp(pos.first, 0, pursueRooms.size()-1);
@@ -1181,6 +1184,26 @@ void NPC::trackRage(double damage, NPC* attacker) { //tracks rage in the rage me
 		cout << "\n" << name <<  "'s ATTACK rose to " << attackMultiplier << "x!";
 		CinPause();
 	}
+}
+void NPC::setInternalBlender(Item* blender) { //set a blender item which is part of the npc so they can craft stuff
+	internalblender = blender;
+}
+bool NPC::blendItems(vector<Item*>* inventory) { //try to blend items from the inventory together with the internal blender and return whether we could blend anything successfully
+	BlenderItem* blender = (BlenderItem*)internalblender;
+	vector<Item*> ingredients; //track the ingredients we found
+	for (const char* ingredient : blender->getIngredients()) { //check if weave all the ingredients by sorting them into have and not have
+		if (Item* item = getItemInVector(*inventory, ingredient)) ingredients.push_back(item); //add the ingredients that we find to the vector
+		else return false; //return false because at least one ingredient was missing so we can't create the internal blender's product
+	}
+	for (Item* item : ingredients) { //delete all the items being used up
+		deleteItem(currentRoom, inventory, item);
+	}
+	Item* product = blender->getProduct();
+	product->unRoom(); //removes the item from the room
+	inventory->push_back(product); //adds it to the inventory
+	printConversation(&blender->getUseText(), true); //prints the blender's use text
+	applyWorldChange(blender->getChanges());
+	internalblender = NULL; //we can't make anything else now so make the internal blender null so we don't check the whole inventory on proceeding conversations with this character
 }
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	changes.back().linkedGifts.push({npc, item});

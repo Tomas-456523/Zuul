@@ -32,6 +32,7 @@ namespace Helper {
 	void printNPCData(NPC* npc, bool battle = false); //prints the data of the npc
 	void printItemData(Item* item); //prints the data of the item
 	void printAttacks(NPC* npc); //prints the attacks that the given npc has
+	void printHelp(const char** validCommands, const char** flavorText, size_t commandAmount, size_t flavorAmount, bool track = true); //prints all the available commands from the given menu
 	void deleteItem(Room* currentRoom, std::vector<Item*>* inventory, Item* item); //deletes the item and removes it from the inventory or current room based on where it was
 	int Clamp(int num, int min, int max); //returns num with a minimum return value of min and a maximum of max
 	double ClampD(double num, double min, double max); //same as Clamp but for floats instead of ints

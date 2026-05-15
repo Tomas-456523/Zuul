@@ -32,7 +32,6 @@ public:
 	void printParty(); //print everyone in the player's party
 	void printEnemies(); //print all the opponents
 	void analyze(const char* name); //print the data of the given item or npc
-	void printHelp(); //print the valid command words and extensions
 	bool runAway(); //try to escape the battle
 	void checkEffects(NPC* npc); //checks all the npc's tracked effects for if they're at duration 0
 	void attachEffect(NPCEffect* effect); //add the effect to the alleffects vector and make sure no duplicates occur

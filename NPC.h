@@ -148,6 +148,7 @@ public: //you need to set stats on creation
 	Attack* getStaged();
 	bool getChangeName(); //get if this npc changes its name when transforming
 	bool getTrackRage(); //get if this is the volcano temple boss that tracks rage for phases
+	Item* getInternalBlender(); //get the blender item that this npc has
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -257,6 +258,8 @@ public: //you need to set stats on creation
 	void setChangeName(); //sets that it changes the name when transforming in battle
 	void setTrackRage(initializer_list<pair<double, NPC*>> stages); //set that this is the volcano temple boss which tracks rage
 	void trackRage(double damage, NPC* attacker); //tracks rage in the rage meter and does stuff accordingly
+	void setInternalBlender(Item* blender); //set a blender item which is part of the npc so they can craft stuff
+	bool blendItems(vector<Item*>* inventory); //try to blend items from the inventory together with the internal blender and return whether we could blend anything successfully
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER, size_t unless = Helper::NEVER);
@@ -397,6 +400,8 @@ protected:
 	Conversation blockreason; //says why they don't wanna go there
 
 	bool quantumn = false; //if it's pretending to be there but actually does nothing and can't be interacted with
+
+	Item* internalblender = NULL; //the blender item that this npc has as a part of them so that they can craft things if the player has the ingredients
 
 	vector<NPC*> guardians; //what npcs are guarding this one
 	NPC* guarding = NULL; //what npc this npc is guarding

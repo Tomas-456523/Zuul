@@ -131,13 +131,13 @@ void Battle::buildReward(NPC* enemy, bool summon) {
 	double xp = enemy->getXpReward();
 	double mony = enemy->getMonyReward();
 
-	if (enemy->getBoss()) { //bosses give double rewards that do not diminish
+	if (enemy->getBoss()) { //bosses give double rewards that do not diminish, and they also don't affect the non-boss enemies' rewards
 		xp *= 2;
 		mony *= 2;
 	} else { //give diminishing returns for the rewards so the player doesn't level up too fast
-		double diminish = pow(1.5, enemycount++);
-		xp /= diminish;
-		mony /= diminish;
+		double diminish = 1.0/++enemycount; //by multiplying it by 1/amount, the rewards diminish BUT still approach infinity, so big encounters don't not matter
+		xp *= diminish;
+		mony *= diminish;
 	}
 
 	if (summon) { //summons get lower rewards so it doesn't go too high, but they still matter barely
@@ -650,6 +650,9 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		carryOutAttack(weapon->getAttack(), playerTeam[0], npc);
 		if (weapon->getAttack()->getBeneficial()) helpslaunched[player]++;
 		else attackslaunched[player]++;
+	} else if (!strcmp(item->getType(), "THEPLOTDEVICE")) { //plot device does(n't need to do) nothing in battle
+		cout << "\nTHE PLOT DEVICE's PLOTOMETER isn't locked onto anything!";
+		return false;
 	} else { //otherwise the player tried to use an item that is only usable in the overworld so we give an error message
 		cout << "\nThe " << itemname << " can't be used in battle!";
 		return false;
@@ -721,16 +724,6 @@ void Battle::analyze(const char* name) {
 		return;
 	} //error message if nothing matches the given name
 	cout << "\nThere is no item or person named \"" << name << "\" here!";
-}
-//prints some flavor text and all the valid commands
-void Battle::printHelp() {
-	cout << "\n";
-	cout << flavorText[rand() % 8]; //prints a random flavor text
-	cout << "\nValid commands:";
-	for (int i = 0; i < 9; i++) { //prints all the valid commands
-		cout << "\n" << validCommands[i];
-	}
-	commandcount[14]++; //increment successful helping
 }
 //tries to escape the battle MARK: run away
 bool Battle::runAway() {
@@ -876,7 +869,7 @@ bool Battle::playerTurn(NPC* plr) {
 		} else if (!strcmp(commandWord, "ANALYZE")) { //for printing analysis of item or npc
 			analyze(commandExtension);
 		} else if (!strcmp(commandWord, "HELP")) { //for printing all available commands and flavor text
-			printHelp();
+			printHelp(validCommands, flavorText, 9, 8);
 		} else if (!strcmp(commandWord, "RUN")) { //for trying to run away
 			keepFighting = continuing = !runAway(); //ends the player turn (and the whole battle) if we successfully run away
 		} else if (!strlen(command)) { //if the player typed nothing, don't try to do anything
@@ -1079,8 +1072,7 @@ int Battle::FIGHT() {
 	checkOpeners(everyone); //check any opening moves the npcs may have
 	checkFightEffects(); //check if this fight has any fight effects from the enemy leader
 
-	bool continuing = true;
-	while (continuing) { //the main battle loop! continues until continuing is set to false, only if the player successfully runs away
+	for (bool continuing = true; continuing;) { //the main battle loop! continues until continuing is set to false, only if the player successfully runs away
 		if (turn.empty()) { //we put everyone in order again if the turn queue is empty
 			reorder(); //also clear went and reset known speeds
 		}

@@ -32,7 +32,7 @@ namespace Helper {
 		GOTPLOTDEVICE,
 		BURGERMANDEF,
 		BURGERMENDEF,
-		GAMEEND, //when the player reaches an ending
+		GAMEEND, //when the player reaches an ending, this is not carried over when loading saves
 		NEVER //never set never to true
 	};
 

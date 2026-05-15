@@ -681,6 +681,24 @@ bool ColdOrb::getDropoff(Room* room) {
 }
 
 //THE PLOT DEVICE, for doing whatever the plot requires
-THEPLOTDEVICE::THEPLOTDEVICE : Item() {
-	type = "THEPLOTDEVICE"
+THEPLOTDEVICE::THEPLOTDEVICE(const char* _name, const char* desc, Room* _room, Room* useroom, const Conversation& usetext, const Conversation& give, const Conversation& use, const WorldChange& changes) : Item(_name, _desc, _room, true, false, false) {
+	type = "THEPLOTDEVICE";
+	useRoom = useroom;
+	useText = usetext;
+	givedevice = give;
+	usedevice = use;
+	usechanges = changes;
+}
+void THEPLOTDEVICE::doChanges() { //does the plot device's changes
+	applyWorldChange(usechanges);
+}
+const THEPLOTDEVICE::Conversation& getUseText() const {
+	return useText;
+}
+const THEPLOTDEVICE::Conversation& getChoiceText(bool which) const {
+	if (which) return usedevice;
+	return givedevice;
+}
+bool THEPLOTDEVICE::getUsable(Room* room) { //get if this is the room to use the device in
+	return room == useRoom;
 }

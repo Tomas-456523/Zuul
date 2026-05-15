@@ -177,7 +177,18 @@ namespace Helper {
 			}
 		}
 		commandcount[9]++; //increment successful attacksing
-	}	
+	}
+	//prints all the available commands from the given menu
+	void printHelp(const char** validCommands, const char** flavorText, size_t commandAmount, size_t flavorAmount, bool track) {
+		if (flavorText) { //prints a random flavor text if we passed any
+			cout << "\n" << flavorText[rand() % flavorAmount];
+		}
+		cout << "\nCommands: "; //prints all the valid commands
+		for (int i = 0; i < commandAmount; i++) {
+			cout << "\n" << validCommands[i];
+		}
+		if (track) commandcount[14]++; //increment successful helping
+	}
 	//deletes the item from existence and removes it from the inventory or current room based on where it was
 	void deleteItem(Room* currentRoom, vector<Item*>* inventory, Item* item) {
 		for (Item* _item : *inventory) { //first check if it's in the inventory

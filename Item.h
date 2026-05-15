@@ -433,10 +433,19 @@ private:
 //THE PLOT DEVICE, for doing whatever the plot requires
 class THEPLOTDEVICE : public Item {
 public:
-	THEPLOTDEVICE();
+	THEPLOTDEVICE(const char* _name, const char* desc, Room* _room, Room* useroom, const Conversation& usetext, const Conversation& give, const Conversation& use, const WorldChange& changes);
 
-	
+	void doChanges(); //does the plot device's changes
+	const Conversation& getUseText() const;
+	const Conversation& getChoiceText(bool which) const;
+
+	bool getUsable(Room* room); //get if this is the room to use the device in
 private:
+	WorldChange usechanges; //changes that happen when the plot device is used
+	Room* useRoom; //must be used in this room
 
-}
+	Conversation useText; //the initial use text for the device
+	Conversation givedevice; //if giving in to the BURGER MAN's temptation before fully using the device
+	Conversation usedevice; //if you don't fall for the temptation and use the device
+};
 #endif
