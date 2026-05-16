@@ -36,7 +36,7 @@ struct Save {
 	*  - Items that were used up in battle, denoted by x[item]
 	*  - NPCs that were defeated, denoted by d[npc]
 	*  - NPCs that caused respawn changes, denoted by r[npc]
-	*  - NPCs that were talked to, denoted by a[npc], with an optional modifier for different types of dialogue (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
+	*  - NPCs that were talked to, denoted by a[npc], with an optional modifier for different types of dialogue (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym), and also .a or .b for branching dialogue
 	*  - Enter changes, denoted by e[room]
 	*  - Room welcomes that were triggered, denoted by w[room]
 	*  - If the player was caught by a pursuer, denoted by p[npc]
@@ -62,7 +62,7 @@ struct Save {
 	*  - The order of exit setting doesn't matter in this section because the exit maps in Room sorts the exits in alphabetical order anyway
 	*  Section B: Exists after depositing money in the bank, stores current bank balance and last time used bank ([balance],[time])
 	*  Section S: All the world states as 0 or 1 (27 states as of now, not including NEVER or GAMEEND), since some states are changed by things other than world changes
-	*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries
+	*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries, universe number, and time machine location
 	*  Section C: 18 integers representing how many times used each command (validly), so something like C[go],[take],[drop],[use],[recruit],[dismiss],[ask],[inventory],[party],[attacks],[room],[analyze],[fight],[buy],[help],[save],[enemies],[run]
 	*  
 	*  Example save: BQ2|V0|NBOB THE BUILDER|M10|Wu123.23,x3244,e300,a123.o|U156|Ra1.3.123.0|Pavk|E43,23,67,50|C1,2,3,4,5,6,7|I12.0,234.-1,324.0,53.2,13.0,4324.3,456.201|LCOOL LOBSTER,110|T1.123,2.12,0.112|B10,2|S01010101010101111010010101|Q2198139=
@@ -151,7 +151,7 @@ struct Save {
 			} else if (*p == 'M') { //check if the monies amount is valid
 				if (!verifyNum(++p, 32)) return false;
 			} else if (*p == 'W') {
-				if (sections.count('U') || sections.count('R') || sections.count('I') || sections.count('S')) return false; //section W must precede these sections because otherwise it could overwrite stuff they set, or they could be missing data
+				if (sections.count('U') || sections.count('R') || sections.count('I') || sections.count('S') || sections.count('Q')) return false; //section W must precede these sections because otherwise it could overwrite stuff they set, or they could be missing data
 				for (p++;; p++) {
 					if (strchr("bxdrewpt", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
 						if (!verifyNum(++p)) return false; //check item/npc/room id
@@ -161,13 +161,12 @@ struct Save {
 						if (!verifyNum(++p)) return false; //check room id
 						if (*p == '.') { //check the optional point for choice orbs
 							if (*(++p) != 'a' && *p != 'b') return false;
-							p++; //MARK: check if this is a choice orb item?
+							p++;
 						}
 					} else if (*p == 'a') {
 						if (!verifyNum(++p)) return false; //check npc id
-						if (*p == '.') { //the optional conversation type, check that it's a valid type
-							if (!strchr("rejdiog", *(++p))) return false;
-							//MARK: BRANCHING PATHS
+						if (*p == '.') { //the optional conversation type, check that it's a valid type, or that it's a or b for branching conversations
+							if (!strchr("rejdiogab", *(++p))) return false;
 							p++; //make sure we're at the position after this subsection
 						}
 					}
@@ -241,7 +240,7 @@ struct Save {
 				}
 				if (*p != ',') return false; //check the dividing comma
 				if (!verifyNum(++p, 64)) return false; //check times entered nothing
-				for (size_t i = 0; i < 2; i++) { //check biggest sp bomb and parry count
+				for (size_t i = 0; i < 4; i++) { //check biggest sp bomb, parry count, current universe, and time machine location
 					if (*p != ',') return false; //check the dividing comma
 					if (!verifyNum(++p, 32)) return false;
 				}
@@ -444,10 +443,10 @@ struct Save {
 		for (size_t i = 0; i < Helper::GAMEEND; i++) {
 			addChunk(save->data, (Helper::WorldState[i] ? "1" : "0"), save->savesize);
 		}
-		//Section Q, store how long the player has played on this file plus some silly error data plus some other potentially interesting stats
+		//Section Q, store how long the player has played on this file plus some silly error data plus some other potentially interesting stats plus some BQ1-related things
 		playtime += difftime(time(NULL), lastsave); //this might lose one second per save (command), but that's basically nothing so that's fine
 		char sectionQ[1000];
-		snprintf(sectionQ, 1000, "|Q%.0f,%d,%d,%d,%d,%d,%lld,%d,%d", playtime, sessions, invalidcommand, invalidmove, invalidnpc, invaliditem, nothingtosay, biggestspbomb, successfulparries);
+		snprintf(sectionQ, 1000, "|Q%.0f,%d,%d,%d,%d,%d,%lld,%d,%d,%d,%d", playtime, sessions, invalidcommand, invalidmove, invalidnpc, invaliditem, nothingtosay, biggestspbomb, successfulparries, currentUniverse, tmlocation);
 		addChunk(save->data, sectionQ, save->savesize);
 		//Section C, store how many times each command has been used
 		addChunk(save->data, "|C", save->savesize);
@@ -611,6 +610,8 @@ struct Save {
 					room->setExit(cover->getDirection(), cover->getRoom());
 					cover->getRoom()->unblockExit(ReverseDirection[cover->getDirection()]); //also unblock the exit from below
 					cover->nullifyRoom();
+				} else if (!strcmp(item->getType(), "PLOTDEVICE")) { //do the plot device's changes
+					((PLOTDEVICE*)item)->doChanges();
 				}
 				//ignore xp items because we aready track xp in section R, but they do get used up
 
@@ -641,7 +642,6 @@ struct Save {
 			} else if (*data == 'r') { //handle respawn changes
 				npcsH[ParseNum(++data)]->undefeat(); //undefeat() also logs it in W automatically
 			} else if (*data == 'a') { //pop dialogue because it's already been heard, plus any world changes the conversation has (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym)
-				//MARK: THIS DOES NOT HANDLE BRANCHING DIALOGUE AT ALL
 				NPC* npc = npcsH[ParseNum(++data)];
 				if (*data != '.') { //normal conversation
 					npc->printDialogue(false, NULL, false);
@@ -660,7 +660,13 @@ struct Save {
 					npc->printOpeningDialogue(false);
 				} else if (*data == 'g') { //gym dialogue
 					npc->popGymDialogue();
+				} else if (*data == 'a' || 'b') { //branching dialogue (there is only ever a max branching depth of 1)
+					bool branch = *data == 'b'; //b means branch 2 and passing true means branch 2
+					npc->printDialogue(false, NULL, false, &branch); //pass the conversation while forcing the branch, very nice system
+					//branching conversations don't give gifts, cause that's how it's set up
 				} //logging is done by npc automatically, and so are any conversation changes by printConversation
+
+				if (*data != ',') data++; //skip the dividing comma if we didn't skip it due to checking the suboption from the optional .
 			} else if (*data == 'e') { //room enter changes
 				roomsH[ParseNum(++data)]->doEnterChanges(); //this function also logs the thing automatically
 			} else if (*data == 'w') { //do room welcomes
@@ -724,9 +730,9 @@ struct Save {
 					Item* item = itemsH[adjustItemID(ParseNum(++data), discontinuity)];
 					int roomid = ParseNum(++data);
 					//all the BURGERs faded to ashes after beating the game so we delete all of them if the final boss has been defeated
-					if (WorldState[BURGERMENDEF] && item->getType("BURGER")) {
+					if (WorldState[BURGERMENDEF] && !strcmp(item->getType(), "BURGER")) {
 						item->unRoom();
-						discontinuity.insert(id); //log the discontinuity because we're about to delete the item
+						discontinuity.insert(item->getID()); //log the discontinuity because we're about to delete the item
 						delete item;
 					} else if (roomid == -1) { //-1 means NULL room which means they go in the inventory
 						item->unRoom();
@@ -754,7 +760,7 @@ struct Save {
 					else { //yes exit, set the room that it goes to
 						Room* room = roomsH[id];
 						sectionT[i] = room;
-						lobster->paveTunnel(room, i); //set this tunnel exit to go to this room specifically
+						lobster->paveTunnel(room); //set this tunnel exit so we can go to this room
 					}
 				}
 			} else if (*data == 'B') { //b for bank, set bank data
@@ -775,6 +781,12 @@ struct Save {
 				nothingtosay = ParseNum(++data);
 				biggestspbomb = ParseNum(++data);
 				successfulparries = ParseNum(++data);
+				currentUniverse = ParseNum(++data);
+				tmlocation = ParseNum(++data);
+				Room* tm; //get the time machine so we can use the time machine location
+				for (Room* room : roomsH) if (room->getTimeMachine()) tm = room;
+				//update the time machine to reflect the last place we put it at. This is mainly important for if the player saves in the time machine
+				updateTimeMachine(tm, TimeMachineDirection[tmlocation].second);
 			} else if (*data == 'C') { //c for commands, probably (might be a coincidence)
 				for (size_t i = 0; i < 18; i++) { //set all the amounts
 					commandcount[i] = ParseNum(++data);

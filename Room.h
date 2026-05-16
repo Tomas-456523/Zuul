@@ -40,6 +40,7 @@ public:
 	bool getTempleEntrance(); //gets if this room is a temple entrance
 	bool getBlocked(const char* direction); //gets if the given exit is blocked
 	const char* getBlockType(const char* direction); //gets the type of the exit's block
+	const char* getSpecialExit(); //gets the special exit which is different for different room types but we basically just use it for the time machine's OUT
 	Item* popBackup(); //take the backup from the room to check if we should put it there
 
 	void doEnterChanges();
@@ -62,7 +63,7 @@ public:
 	void setRedirect(Room* room); //sets a redirect to another room
 	void setStation(bool stat = true); //sets if this room is a station
 	void setGym(bool _gym = true); //sets if this room is a gym
-	void setTimeMachine(bool _machine = true); //sets if this room is the time machine
+	void setTimeMachine(const char* out); //sets if this room is the time machine, plus the out direction because we need it for time machine space travel exit stuff
 	void setConveyor(Room* altroom, const char* conveyorexit); //sets if this room is a conveyor + references the FORWARD exit in conveyor rooms
 	void setTempleEntrance(const char* exit, Room* temple, const Conversation& opentext); //makes this room a temple entrance, so we can ASK NICELY to open it
 	void setDescription(const char* _description); //reset the description, used by items that change things
@@ -101,7 +102,7 @@ private:
 
 	Room* redirect = NULL; //the room thatgoing to this room redirects you to (eg. going to the abandoned town redirects you to the fixed town after doing stuff)
 
-	const char* conveyorExit = NULL; //the conveyor belt exit (FORWARD)
+	const char* specialExit = NULL; //the conveyor belt exit (FORWARD) or the time machine exit (OUT)
 	Room* altRoom = NULL; //used by conveyor belts, their direction switches to altRoom when a switch item is used
 
 	bool station = false; //if it's a train station

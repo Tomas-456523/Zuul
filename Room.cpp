@@ -81,6 +81,9 @@ const char* Room::getBlockType(const char* direction) { //get why it's blocked
 	}
 	return NULL; //null because it's not actually blocked
 }
+const char* Room::getSpecialExit() { //gets the special exit which is different for different room types but we basically just use it for the time machine's OUT
+	return specialExit;
+}
 Item* Room::popBackup() {
 	Item* _backup;
 	if (onebackup) { //if there is only one backup
@@ -247,8 +250,9 @@ void Room::setStation(bool stat) {
 void Room::setGym(bool _gym) {
 	gym = _gym;
 }
-void Room::setTimeMachine(bool _machine) {
-	timemachine = _machine;
+void Room::setTimeMachine(const char* out) {
+	timemachine = true;
+	specialExit = out;
 }
 void Room::setTempleEntrance(const char* exit, Room* temple, const Conversation& opentext) {
 	templeentrance = true;
@@ -257,7 +261,7 @@ void Room::setTempleEntrance(const char* exit, Room* temple, const Conversation&
 }
 void Room::setConveyor(Room* altroom, const char* conveyorexit) {
 	altRoom = altroom;
-	conveyorExit = conveyorexit;
+	specialExit = conveyorexit;
 }
 void Room::setDescription(const char* _description) {
 	description = _description;
@@ -291,7 +295,7 @@ void Room::setEnterChanges(const WorldChange& changes, size_t condition) {
 	hasenterchanges = true;
 }
 void Room::switchConveyor() { //swaps the altRoom and the FORWARD exit, effectively reversing the conveyor movement
-	swap(altRoom, exits[conveyorExit]);
+	swap(altRoom, exits[specialExit]);
 }
 //block the exit, and save why it's blocked and a description of the blockage
 void Room::blockExit(const char* direction, const char* blocktype, const char* reason) {

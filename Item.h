@@ -312,10 +312,9 @@ private:
 //conveyor switches, for switching the direction of conveyor belts
 class ConveyorSwitch : public Item {
 public:
-	ConveyorSwitch(const char* _name, const char* _description, Room* _room);
+	ConveyorSwitch(const char* _name, const char* _description, Room* _room, initializer_list<Room*> _conveyors);
 
-	void setConveyor(Room* room); //adds the room to the list of affected rooms
-	vector<Room*> getConveyors(); //returns the list of affected rooms
+	const vector<Room*>& getConveyors(); //returns the list of affected rooms
 private:
 	vector<Room*> conveyors; //the affected rooms
 };
@@ -431,9 +430,9 @@ private:
 };
 
 //THE PLOT DEVICE, for doing whatever the plot requires
-class THEPLOTDEVICE : public Item {
+class PLOTDEVICE : public Item {
 public:
-	THEPLOTDEVICE(const char* _name, const char* desc, Room* _room, Room* useroom, const Conversation& usetext, const Conversation& give, const Conversation& use, const WorldChange& changes);
+	PLOTDEVICE(const char* _name, const char* desc, Room* _room, Room* useroom, const Conversation& usetext, const Conversation& give, const Conversation& use, const WorldChange& changes);
 
 	void doChanges(); //does the plot device's changes
 	const Conversation& getUseText() const;

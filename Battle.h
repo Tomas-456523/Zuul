@@ -70,7 +70,6 @@ private:
 	set<NPC*> went; //everyone who already went this round, in order to account for speed shenanigans and also multiposition
 
 	vector<NPCEffect*> alleffects; //a list of all the effects affecting their npcs
-	//vector<tuple<NPC*, NPC*, Effect*>> bonds; //effects given to npc 1 to npc 2 so when npc 1 is incapacitated, we know to remove the effect from npc 2
 	map<Attack*, set<NPC*>> donttarget; //track which attacks we don't want to do on these npcs anymore
 
 	vector<Item*>* inventory; //pointer to the player's inventory

@@ -282,14 +282,14 @@ public: //you need to set stats on creation
 	void addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges);
 	void addLinkedWelcome(Room* room, const Conversation& welcome);
 	void addDismissLink(vector<NPC*>* party, NPC* npc);
-	void addDefifthLink(NPC* npc);
+	void addHJLink(NPC* npc, const Conversation& newrecruitment); //set the very specific linked changes for Henry Jerry
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
 	void setLoopChanges(); //manually set to loop the last changes in the changes queue
 	void setMask(const char* _title, const char* _name, const char* _desc); //make fake identity for the npc outside battle
 	
-	void printDialogue(bool lastpause, Conversation* thisone = NULL, bool actuallyprint = true); //optionally pass a conversation to print, used by these 3 functions below
+	void printDialogue(bool lastpause, Conversation* thisone = NULL, bool actuallyprint = true, bool* forcebranch = NULL); //optionally pass a conversation to print, used by these 3 functions below
 	void printRejectionDialogue(bool actuallyprint = true); //prints the rejection dialogue for the npc
 	void printRecruitmentDialogue(bool actuallyprint = true); //prints the recruitment dialogue for the npc
 	void printDismissalDialogue(bool actuallyprint = true); //prints the dismissal dialogue for the npc
@@ -314,12 +314,14 @@ public: //you need to set stats on creation
 	void setLobsterChanges(const WorldChange& changes); //set lobster changes for that one scene
 	void doLobsterChanges(); //does the lobster changes
 
-	void paveTunnel(Room* room, int specificexit = -1); //paves an exit back to the given room from the tunnels (for lobster only)
+	void paveTunnel(Room* room); //paves an exit back to the given room from the tunnels (for lobster only)
 	void setTunnelDirection(Room* room, const char* direction); //sets tunnel directions (for lobster only)
 
 	void defeat(); //set the enemy to defeated and do a bunch of defeated processes if applicable
 	void undefeat(); //set the enemy to not defeated
 protected:
+	WorldChange& getBackChange(); //helper for getting the back change while also starting a new one if the changes queue is empty. This is so we don't repeat a bunch of if changes empty in each change-editing function
+
 	const char* title; //the title of the character (eg. VILLAGE ELDER)
 	char name[255]; //the name, must not be const because we add suffixes sometimes
 	const char* description; //npc's description when analyzed
@@ -414,7 +416,7 @@ protected:
 	WorldChange lobsterchanges; //changes that happen when the lobster appears after being captured
 
 	bool isShark = false; //if this is a shark
-	map<Room*, const char*> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
+	vector<pair<Room*, const char*>> tunnelLinks; //tunnel links for setting them to get back from the tunnels if it's the lobster
 
 	bool banker = false; //if its a banker we can withdraw or deposit monies
 	bool thief = false; //if its a thief you lose all your monies after beating them

@@ -481,15 +481,12 @@ vector<Item*>& TreasureItem::getItems() {
 }
 
 //conveyor switches, for switching the direction of conveyor belt rooms in one factory
-ConveyorSwitch::ConveyorSwitch(const char* _name, const char* _description, Room* _room) : Item(_name, _description, _room, false) {
+ConveyorSwitch::ConveyorSwitch(const char* _name, const char* _description, Room* _room, initializer_list<Room*> _conveyors) : Item(_name, _description, _room, false) {
 	type = "switch"; //sets the type
-}
-//adds the conveyor to the switch's list of conveyors
-void ConveyorSwitch::setConveyor(Room* room) {
-	conveyors.push_back(room);
+	conveyors = _conveyors; //sets the converyors to the given list of conveyors
 }
 //returns a list of all rooms this item affects
-vector<Room*> ConveyorSwitch::getConveyors() {
+const vector<Room*>& ConveyorSwitch::getConveyors() {
 	return conveyors;
 }
 
@@ -681,24 +678,24 @@ bool ColdOrb::getDropoff(Room* room) {
 }
 
 //THE PLOT DEVICE, for doing whatever the plot requires
-THEPLOTDEVICE::THEPLOTDEVICE(const char* _name, const char* desc, Room* _room, Room* useroom, const Conversation& usetext, const Conversation& give, const Conversation& use, const WorldChange& changes) : Item(_name, _desc, _room, true, false, false) {
-	type = "THEPLOTDEVICE";
+PLOTDEVICE::PLOTDEVICE(const char* _name, const char* desc, Room* _room, Room* useroom, const Conversation& usetext, const Conversation& give, const Conversation& use, const WorldChange& changes) : Item(_name, desc, _room, true, false, false) {
+	type = "PLOTDEVICE";
 	useRoom = useroom;
 	useText = usetext;
 	givedevice = give;
 	usedevice = use;
 	usechanges = changes;
 }
-void THEPLOTDEVICE::doChanges() { //does the plot device's changes
+void PLOTDEVICE::doChanges() { //does the plot device's changes
 	applyWorldChange(usechanges);
 }
-const THEPLOTDEVICE::Conversation& getUseText() const {
+const Conversation& PLOTDEVICE::getUseText() const {
 	return useText;
 }
-const THEPLOTDEVICE::Conversation& getChoiceText(bool which) const {
+const Conversation& PLOTDEVICE::getChoiceText(bool which) const {
 	if (which) return usedevice;
 	return givedevice;
 }
-bool THEPLOTDEVICE::getUsable(Room* room) { //get if this is the room to use the device in
+bool PLOTDEVICE::getUsable(Room* room) { //get if this is the room to use the device in
 	return room == useRoom;
 }

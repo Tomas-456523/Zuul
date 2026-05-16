@@ -41,10 +41,11 @@ namespace Helper {
 	int aliveCount(std::vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
 	std::vector<NPC*> getAlive(const std::vector<NPC*>& team); //get vector with only the npcs above 0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
-	void printConversation(const Conversation* _convo, bool finalpause, bool actuallyprint = true); //print a conversation in conversation order
+	void printConversation(const Conversation* _convo, bool finalpause, bool actuallyprint = true, bool* forcebranch = NULL); //print a conversation in conversation order
 	void printLvlUpData(NPC* npc); //print the level up data of the given npc
 	void applyWorldChange(WorldChange& changes); //apply the changes to the world which are in the given stuff to change
 	void applyWeaponAttack(NPC* player, Item* item); //gives the player the attack the weapon item has, weapon items can be gotten through different places so we have this helper
+	void updateTimeMachine(Room* timemachine, Room* destination, Room* from = NULL); //set up time machine exits, we do this from travel and load, so we have this helper function
 	bool getCardinal(const char* direction); //get if the direction given is a cardinal direction
 	const char* getTitle(); //get the title screen text, this is so I can modify it from one place since it gets printed in the beginning but also endings
 	void buildNPCData(); //set up all the npc maps, including reversing the npc to char map so we can get the npc from the char
@@ -58,15 +59,17 @@ namespace Helper {
 	void trackConv(NPC* npc, const char* extension = NULL); //track item conversation, with this helper it's easier to put the extension
 	bool trackNPC(NPC* npc, bool frombattle = true); //get if this is an npc whose stats we track
 	long long getID(const char* data, size_t range); //get the id that this chunk of data is representing, or -2 if it's nothing
-	char* getName(const char* data); //get the name from save data but return NULL if it's invalid for whatever reason. Also make sure to delete whatever this returns
 	
 	//I actually have to use std:: here since you shouldn't use namespaces in h files
 	extern std::vector<Save*> saves; //all the player's saves
 
 	extern std::map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction, tied to the Helper object
-	extern std::map<const char*, Room*> TimeMachineDirection; //map to find all the time machine directions and where they go
+	extern std::vector<std::pair<const char*, Room*>> TimeMachineDirection; //"map" to find all the time machine directions and where they go. It's not an actual map so the indices are consistent across program launchings
 	extern std::map<NPC*, char> npcChar; //map to find the char that represents each recruitable npc, used by the save system
 	extern std::map<char, NPC*> charNPC; //the last map but reversed
+
+	extern int tmlocation; //location of the time machine by position of the corresponding exit in TimeMachineDirection
+	extern int currentUniverse; //which universe it is, used when traveling in Henry Jerry's house. Starts at seven because it's the natural/resting quantumn state of the universe
 	
 	extern std::vector<Room*> roomsH; //a bunch of vectors for every object created in the game, so they can all be deleted later
 	extern std::vector<NPC*> npcsH;

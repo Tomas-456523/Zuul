@@ -650,7 +650,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		carryOutAttack(weapon->getAttack(), playerTeam[0], npc);
 		if (weapon->getAttack()->getBeneficial()) helpslaunched[player]++;
 		else attackslaunched[player]++;
-	} else if (!strcmp(item->getType(), "THEPLOTDEVICE")) { //plot device does(n't need to do) nothing in battle
+	} else if (!strcmp(item->getType(), "PLOTDEVICE")) { //plot device does(n't need to do) nothing in battle
 		cout << "\nTHE PLOT DEVICE's PLOTOMETER isn't locked onto anything!";
 		return false;
 	} else { //otherwise the player tried to use an item that is only usable in the overworld so we give an error message

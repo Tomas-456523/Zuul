@@ -282,7 +282,7 @@ namespace Helper {
 		}
 	}
 	//prints a conversation, must be here because having this as Conversation's function was causing a plethora of compiler errors
-	void printConversation(const Conversation* _convo, bool finalpause, bool actuallyprint) { //pass a pointer so it's easier to do all the alt stuff
+	void printConversation(const Conversation* _convo, bool finalpause, bool actuallyprint, bool* forcebranch) { //pass a pointer so it's easier to do all the alt stuff
 		if (actuallyprint) cout << "\n";
 		const Conversation* current = _convo;
 		while (current->goToAlt()) { //keep going until we didn't find a new alt conversation
@@ -301,9 +301,12 @@ namespace Helper {
 			}
 		}
 		if (current->branch1.first) { //if one of the four components isn't NULL I'm assuming I made all of them equal something otherwise why would I put a branch
-			if (AOrB(NULL, current->branch1.first, current->branch2.first)) {
+			bool a = (forcebranch && !(*forcebranch)) || (!forcebranch && AOrB(NULL, current->branch1.first, current->branch2.first));
+			if (a) { //choose the branch by going with the forced choice, or getting the player to choose a choice if there is no forced choice (forced choice is for the loading system)
+				addChunk(sectionW, ".a", wsize); //also log the branching decision in section W so the save system can recreate the choice the player made
 				printConversation(current->branch1.second.get(), finalpause, actuallyprint);
 			} else {
+				addChunk(sectionW, ".b", wsize);
 				printConversation(current->branch2.second.get(), finalpause, actuallyprint);
 			}
 		} else if (Conversation* next = current->next.get()) {
@@ -570,9 +573,10 @@ namespace Helper {
 			((LightOrb*)data.second)->setTeammate(NULL, data.first); //put the teammate back
 			changes.unLightOrb.pop();
 		}
-		while (!changes.defifthLinks.empty()) { //make fifth teammates not fifth
-			changes.defifthLinks.front()->setFifth(false);
-			changes.defifthLinks.pop();
+		if (changes.hjLink) { //do stuff for Henry Jerry after beating the game
+			changes.hjLink->first->setFifth(false); //he is only a fifth teammate pre-postgame
+			changes.hjLink->first->setTalkOnRecruit(false); //he only had this so the segway can work when recruiting but the segway isn't in the postgame
+			changes.hjLink->first->addRecruitmentDialogue(changes.hjLink->second); //give him the new recruitment dialogue, normal links only add regular conversations
 		}
 		if (Item* orb = changes.linkedOrb) { //petrify the linked escape/entry orb
 			((EscapeOrb*)orb)->petrify();
@@ -588,6 +592,31 @@ namespace Helper {
 		Attack* attack = weapon->getAttack();
 		player->addSpecialAttack(attack);
 		cout << player->getName() << " can now use " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
+	}
+	//set up time machine exits, we do this from travel and load, so we have this helper function
+	void updateTimeMachine(Room* timemachine, Room* destination, Room* from) {
+		set<const char*> existing; //space travel directions that currently we can currently travel to from the time machine
+		const char* out = timemachine->getSpecialExit(); //the time machine stores the out exit in its special exit variable, so we get it here to make it go to the appropriate destination
+		//find where the outside of the time machine is right now, explained after the for loop, and also used after the for loop as well
+		map<const char*, Room*> tmdir(TimeMachineDirection.begin(), TimeMachineDirection.end()); //copy the "map" as an actual map so it's easier to use
+		
+		for (size_t i = 0; i < TimeMachineDirection.size(); i++) {
+			pair<const char*, Room*>& spaces = TimeMachineDirection[i];
+			if (timemachine->getExit(spaces.first)) { //pop the existing time machine exits to the list of existing exits
+				existing.insert(spaces.first);
+				timemachine->removeExit(spaces.first);
+			} //also track the exit to the current room, and the exit to the existing location of the time machine as existing exits
+			if (spaces.second == from || spaces.second == timemachine->getExit(out)) {
+				existing.insert(spaces.first);
+			} //save the location of the time machine if we got to the destination which we are going to set as what's outside of the time machine
+			if (spaces.second == destination) {
+				tmlocation = i;
+			}
+		} //set OUT to go to wherever it should, the destination direction if we're space traveling in the time machine, or the current room if we're travelling into it
+		timemachine->setExit(out, destination);
+		for (const char* dir : existing) { //set all the time machine space travel exits except for the one where we already are, because that would be redundant
+			if (tmdir[dir] != destination) timemachine->setExit(dir, timemachine);
+		}
 	}
 	//get if the direction given is a cardinal direction
 	bool getCardinal(const char* direction) {
@@ -760,40 +789,16 @@ namespace Helper {
 		}
 		return total * sign;
 	}
-	//get the name from save data but return NULL if it's invalid for whatever reason. Also make sure to delete whatever this returns
-	char* getName(const char* data) {
-		size_t len = strlen(data);
-		if (len > 254) return NULL; //names can't be that long so it's invalid
-		char* name = new char[len+1];
-		bool escaping = false;
-		size_t j = 0;
-		for (size_t i = 0; i <= len; i++) { //include the null terminator for convenience
-			if (!escaping && data[i] == '\\') {
-				escaping = true;
-			} else if (escaping && data[i] != '\\' && data[i] != ',' && data[i] != '=' && data[i] != '|') {
-				delete[] name;
-				return NULL;
-			} else if (!escaping && (data[i] == ',' || data[i] == '=' || data[i] == '|')) {
-				delete[] name;
-				return NULL;
-			} else {
-				name[j++] = data[i];
-				escaping = false;
-			}
-		}
-		if (escaping) {
-			delete[] name;
-			return NULL;
-		}
-		return name;
-	}
 
 	vector<Save*> saves; //all the player's saves
 	
 	map<const char*, const char*> ReverseDirection; //map to find the opposite of the given direction (e.g. ReverseDirection[SOUTH] == NORTH)
-	map<const char*, Room*> TimeMachineDirection; //map to find all the time machine directions and where they go
+	vector<pair<const char*, Room*>> TimeMachineDirection; //"map" to find all the time machine directions and where they go. It's not an actual map so the indices are consistent across program launchings
 
 	//stuff that we need to be able to update as we play the game, that the save system uses, or npc statistics
+
+	int tmlocation = 2; //location of the time machine by position of the corresponding exit in TimeMachineDirection
+	int currentUniverse = 7; //which universe it is, used when traveling in Henry Jerry's house
 
 	//map to find the char that represents each recruitable npc (e.g. npcChar[self] == a)
 	map<NPC*, char> npcChar;

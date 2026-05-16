@@ -41,8 +41,6 @@ NPC::NPC(const char* _title, const char* _name, const char* _description, Room* 
 	sp = stats.spmax / 3; //start battle at a third of max sp and has to be built up
 
 	setLevel(_level);
-
-	changes.push(WorldChange()); //make sure we have a changes object available to edit
 }
 NPC::NPC(const NPC& other) { //copy constructor, we do not need to set the stats because we only copy during battle when stats should be the same and during setup world where all the templates are level 0 anyway
 	*this = other;
@@ -80,6 +78,8 @@ void NPC::printRecruitmentDialogue(bool actuallyprint) {
 		printDialogue(true);
 		speakOnRecruit = false; //only do this once
 	}
+	//don't print outdated recruitment dialogue (the other types of dialogue don't become outdated as far as I know)
+	while (!recruitmentDialogue.empty() && recruitmentDialogue.front().getOutdated()) recruitmentDialogue.pop();
 	if (recruitmentDialogue.empty()) return;
 	printDialogue(true, &recruitmentDialogue.front(), actuallyprint);
 	recruitmentDialogue.pop();
@@ -547,25 +547,20 @@ const Stats& NPC::getStatScale() {
 	return scale;
 }
 void NPC::setWorldCondition(size_t cond) {//set a world condition for this npc to edit on defeat
-	changes.back().worldcon = cond;
+	getBackChange().worldcon = cond;
 }
 void NPC::setRecruitCondition(size_t cond) {
 	recruitcondition = cond;
 }
-void NPC::paveTunnel(Room* room, int specificexit) { //sets the direction back to the lobster's current position from the tunnel
-	if (specificexit >= 0) { //if we passed a specified exit, we use that
-		map<Room*, const char*>::iterator specific = tunnelLinks.begin();
-		advance(specific, specificexit);
-		home->setExit(specific->second, room); //make the exit go to this one specifically
-		return; //return becuse we're not doing the normal thing
-	}
-	size_t exitnum = 0; //we go by iterator instead of just using the key so we can get the number for section T of the save system
-	for (map<Room*, const char*>::iterator tunafish = tunnelLinks.begin(); tunafish != tunnelLinks.end(); tunafish++) { //you can tune a fish, but you can't tuna piano
-		if (tunafish->first == room) { //if the rooms match we set the exit to this room
-			home->setExit(tunafish->second, room);
-			sectionT[exitnum] = room; //get that the exit we just set goes to this room at the moment
+void NPC::paveTunnel(Room* room) { //sets the direction back to the lobster's current position from the tunnel
+	set<const char*> foundexits; //some rooms in the "map" can have the same direction, so we track the duplicates here
+	for (pair<Room*, const char*>& tunafish : tunnelLinks) { //you can tune a fish, but you can't tuna piano
+		if (tunafish.first == room) { //if the rooms match we set the exit to this room
+			home->setExit(tunafish.second, room);
+			sectionT[foundexits.size()] = room; //get that the exit we just set goes to this room at the moment
+			return; //return because there's nothing else to do here
 		}
-		exitnum++; //we didn't find it in this index so increment it
+		foundexits.insert(tunafish.second); //we've checked this one already
 	}
 }
 Item* NPC::takeGift() { //takes the gift from the npc and nullifies it because there's only one gift
@@ -851,7 +846,7 @@ void NPC::setTalkMakeChanges(bool miscworks) {
 	miscdoeschange = miscworks;
 }
 void NPC::setTunnelDirection(Room* room, const char* direction) { //sets the tunnel direction based on the room the lobster goes through
-	tunnelLinks[room] = direction;
+	tunnelLinks.emplace_back(room, direction);
 }
 void NPC::blockExit(const char* _exitBlocking, const char* type, const char* reason, bool bothsides) { //sets that this enemy is blocking an exit
 	exitBlocking = _exitBlocking;
@@ -1005,61 +1000,61 @@ void NPC::setGuard(int _guard, bool additive) {
 //all the changes editors edit the most recently added changes object and should only be called on world setup lest we segfault due to a lack of thing in queue
 void NPC::addRecruitLink(NPC* npc, size_t condition, size_t unless) { //links this npc to be set to recuritable later
 	if (condition != NEVER) {
-		changes.back().conditionalRecruits.push(make_tuple(npc, condition, unless)); //the default unless is NEVER so if we didn't pass anything, never will never be true so the unless won't affect anything if we didn't intend it to
+		getBackChange().conditionalRecruits.push(make_tuple(npc, condition, unless)); //the default unless is NEVER so if we didn't pass anything, never will never be true so the unless won't affect anything if we didn't intend it to
 	} else { 
-		changes.back().recruitLinks.push(npc);
+		getBackChange().recruitLinks.push(npc);
 	}
 }
 void NPC::addDecruitLink(NPC* npc, size_t condition) { //links this npc to be set to recuritable later
 	if (condition != NEVER) {
-		changes.back().conditionalDecruits.push({npc, condition});
+		getBackChange().conditionalDecruits.push({npc, condition});
 	} else { 
-		changes.back().decruitLinks.push(npc);
+		getBackChange().decruitLinks.push(npc);
 	}
 }
 void NPC::addLinkedRoom(Room* room, const char* desc) { //room's description gets changed to this after this npc is defeated
-	changes.back().roomChanges.push({room, desc});
+	getBackChange().roomChanges.push({room, desc});
 }
 void NPC::addLinkedDialogue(NPC* speaker, const Conversation& dialogue) {
-	changes.back().linkedDialogue.push({speaker, dialogue});
+	getBackChange().linkedDialogue.push({speaker, dialogue});
 }
 void NPC::addLinkedTitle(NPC* npc, const char* title) {
-	changes.back().linkedTitles.push({npc, title});
+	getBackChange().linkedTitles.push({npc, title});
 }
 void NPC::addLinkedDesc(NPC* npc, const char* desc) {
-	changes.back().linkedDescriptions.push({npc, desc});
+	getBackChange().linkedDescriptions.push({npc, desc});
 }
 void NPC::addLinkedConvo(NPC* speaker, const Conversation& dialogue) { //add a conversation to add to the linked npc
-	changes.back().linkedConversations.push({speaker, dialogue});
+	getBackChange().linkedConversations.push({speaker, dialogue});
 }
 void NPC::addLinkedStats(NPC* npc, Stats stats) {
-	changes.back().linkedStats.push({npc, stats});
+	getBackChange().linkedStats.push({npc, stats});
 }
 void NPC::addLinkedItem(Item* item, Room* room) {
-	changes.back().linkedItems.push({item, room});
+	getBackChange().linkedItems.push({item, room});
 }
 void NPC::addAttackRemoval(NPC* npc, Attack* attack) {
-	changes.back().removeAttacks.push({npc, attack});
+	getBackChange().removeAttacks.push({npc, attack});
 }
 void NPC::addDefeatRoom(NPC* npc, Room* room) {
-	changes.back().defeatRooms.push({npc, room});
+	getBackChange().defeatRooms.push({npc, room});
 }
 void NPC::setGift(Item* item, bool fightfirst) { //set a gift to give to the player after talking
 	gift = item;
 	battleReward = fightfirst;
 }
 void NPC::addRedirect(Room* room1, Room* room2) { //makes room1 redirect to room2 after being defeated
-	changes.back().redirectRooms.push({room1, room2});
+	getBackChange().redirectRooms.push({room1, room2});
 }
 void NPC::guardItem(Item* item) { //guard the given item until defeat
 	item->setGuard(this);
-	changes.back().guardedItems.push(item);
+	getBackChange().guardedItems.push(item);
 }
 void NPC::addDeleaderLink(NPC* npc) {
-	changes.back().deleaderLinks.push(npc);
+	getBackChange().deleaderLinks.push(npc);
 }
 void NPC::addRoamLink(NPC* npc) {
-	changes.back().roamLinks.push(npc);
+	getBackChange().roamLinks.push(npc);
 }
 void NPC::setPursuer(NPC* npc) {
 	pursuer = npc;
@@ -1204,27 +1199,32 @@ bool NPC::blendItems(vector<Item*>* inventory) { //try to blend items from the i
 	printConversation(&blender->getUseText(), true); //prints the blender's use text
 	applyWorldChange(blender->getChanges());
 	internalblender = NULL; //we can't make anything else now so make the internal blender null so we don't check the whole inventory on proceeding conversations with this character
+	return true; //return true because we successfully blended the items!
 }
 void NPC::addLinkedGift(NPC* npc, Item* item) {
-	changes.back().linkedGifts.push({npc, item});
+	getBackChange().linkedGifts.push({npc, item});
 }
 void NPC::setLinkedOrb(Item* orb) {
-	changes.back().linkedOrb = orb;
+	getBackChange().linkedOrb = orb;
 }
 void NPC::addPaveLink(Room* from, Room* to, const char* dir1, const char* dir2) {
-	changes.back().exitPavings.push(make_tuple(from, to, dir1, dir2));
+	getBackChange().exitPavings.push(make_tuple(from, to, dir1, dir2));
 }
 void NPC::addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges) {
-	changes.back().linkedEnterChanges.push({room, enterchanges});
+	getBackChange().linkedEnterChanges.push({room, enterchanges});
 }
 void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
-	changes.back().linkedWelcomes.push({room, welcome});
+	getBackChange().linkedWelcomes.push({room, welcome});
 }
 void NPC::addDismissLink(vector<NPC*>* party, NPC* npc) {
-	changes.back().dismissLinks.push({party, npc});
+	getBackChange().dismissLinks.push({party, npc});
 }
-void NPC::addDefifthLink(NPC* npc) {
-	changes.back().defifthLinks.push(npc);
+void NPC::addHJLink(NPC* npc, const Conversation& newrecruitment) { //set the very specific linked changes for Henry Jerry
+	getBackChange().hjLink = make_shared<pair<NPC*, Conversation>>(npc, newrecruitment);
+}
+WorldChange& NPC::getBackChange() {
+	if (changes.empty()) changes.push(WorldChange()); //make sure we have a changes object available to edit
+	return changes.back();
 }
 void NPC::setTalkOnDefeat(bool talk) {
 	talkOnDefeat = talk;
@@ -1608,7 +1608,7 @@ void NPC::addSuffix(const char* suffix) { //adds a suffix to the end of the npc'
 	strcat(name, suffix);
 }
 //prints the npc's dialogue, prioritizing thisone if it's passed MARK: print dialogue
-void NPC::printDialogue(bool lastpause, Conversation* thisone, bool actuallyprint) {
+void NPC::printDialogue(bool lastpause, Conversation* thisone, bool actuallyprint, bool* forcebranch) {
 	Conversation conversation; //uninitialized, please initialize
 	if (thisone) { //if we passed thisone, print that one
 		conversation = *thisone;
@@ -1634,7 +1634,7 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone, bool actuallyprin
 	} else { //regular dialogue
 		conversation = dialogue;
 	}
-	printConversation(&conversation, lastpause, actuallyprint); //courtesy of Helper
+	printConversation(&conversation, lastpause, actuallyprint, forcebranch); //courtesy of Helper
 	if (talktochange && !changes.empty() && (miscdoeschange || !thisone)) { //don't do changes if misc don't do changes and thisone wasn't NULL and was instead passed, so no special dialogue
 		applyWorldChange(changes.front()); //apply all the world changes associated with this npc
 		if (!loopLastChange || changes.size() > 1) changes.pop(); //pop the changes if we don't need them anymore (not the last one OR it's the last one and we don't loop it)
