@@ -443,6 +443,7 @@ void Game::SetupWorld() {
 	Room* burgboiler = new Room("in the cooler room. The air conditioner is working overtime, complete with its own air conditioner.");
 	Room* burglab = new Room("in the BURGER LABORATORY. There's many nasty looking needles and contraptions.\nThere's a UNIHORN here in quantumn chains.");
 	Room* burgplatn = new Room("on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories endlessly churning out BURGERs.");
+	Room* burgplatno = new Room("on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories endlessly churning, though they cannot produce anything anymore.");
 	Room* burgplate = new Room("next to the BURGER assembly line. There's some BURGER cultists cursing BURGERs as they pass by.");
 	Room* burgplatedry = new Room("next to the BURGER assembly line, ground to a halt. There's some BURGER cultists having a discussion.");
 	Room* burgplats = new Room("on the platform. There's some diagrams describing BURGERs here and a room to the side.");
@@ -465,7 +466,7 @@ void Game::SetupWorld() {
 	Room* forestbranche3 = new Room("on the eastern branch of the forest temple. The structural integrity of this hallway is questionable.");
 	Room* foresttemple4 = new Room("in a long hallway of the forest temple. You don't see any flora past this point.");
 	Room* foresttemple5 = new Room("at the end of the hallway. Lots of purple smog flows from the room to the NORTH.");
-	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center.");
+	Room* foresttempleboss = new Room("in a very spacious arena, filled with dense purple smog.\nThe smog is concentrated in the center; it's really getting to your head...");
 	Room* dirtplain = new Room("in the dirt plain where the forest temple entrance used to be.\nSoon, the grass will grow here again.");
 	
 	Room* desertbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
@@ -517,7 +518,6 @@ void Game::SetupWorld() {
 	Room* volcanotemple3o = new Room("in a very cold room for containing cold objects. The floor is a frozen lake.");
 
 	//Create the finale and post-game rooms MARK: TA
-	NPC* burgermenace;
 	Room* abyssrestaurant = new Room("in the BURGER RESTAURANT. The furniture is scattered all over the floor.\nYou only see the color black outside.");
 	Room* abysselevatortop = new Room("in the elevator, elevated all the way to the top.");
 	Room* abysselevator = new Room("at ground level, far far below the ground you know.");
@@ -1071,7 +1071,7 @@ void Game::SetupWorld() {
 	Effect* flambed = new Effect("FLAMBE'D", 5, 5, 0, 1, 0.8);
 	flambe->addEffect(flambed);
 	flambe->synergies.push_back(marinated);
-	flambe->cancel = marinated;
+	flambe->cancels = {marinated};
 	michelin->addSpecialAttack(flambe);
 	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 0, 0, 1, 1, 1, true, 11);
 	Effect* hotsauced = new Effect("HOT SAUCED", 5, 0, 0, 1.25, 0.75);
@@ -1520,9 +1520,7 @@ void Game::SetupWorld() {
 	hjrec.alt = hjrec2;
 	hj->addRecruitedDialogue(hjrec);
 	Conversation hjdismiss = {{hj, "I'm just gonna head back to the restaurant I guess."}, {hj, "It has a good view, that's one good thing about it."}};
-	shared_ptr<Conversation> hjdismiss2 = make_shared<Conversation>(Conversation({{hj, "Well I'm just gonna head back home then."}}));
 	hjdismiss.skipcondition = {BURGERMENDEF};
-	hjdismiss.alt = hjdismiss2;
 	hj->addDismissalDialogue(hjdismiss);
 	Conversation segway = {{hj, "Man, I did a lot of bad things as the BURGER MAN..."},
 						   {hj, "Can I go with you?"},
@@ -1533,7 +1531,7 @@ void Game::SetupWorld() {
 								{hj, "Nice, thanks."}});
 	hj->setDialogue({{hj, "Uhhhhhhhhhhhhhhhhhhh..."}, {hj, "I have a headache..."}});
 	hj->setTalkOnRecruit(true); //so the segway can work
-	Attack* carefulconsideration = new Attack("CAREFUL CONSIDERATION", "trying to figure out what to do about", false, -5, 0, 0, 1, 1, 1);
+	Attack* carefulconsideration = new Attack("CAREFUL CONSIDERATION", "is trying to figure out what to do about", false, -5, 0, 0, 0, 0, 0);
 	Attack* briefbase = new Attack("BRIEFBASE", "bonked", true, 10, 5, 0, 1, 1, 1);
 	briefbase->afterdesc = " with his briefcase as if with a baseball bat";
 	Attack* resourcefulness = new Attack("RESOURCEFULNESS", "threw a nearby rock at", true, 10, 4, 0, 1, 1, 1);
@@ -1705,6 +1703,7 @@ void Game::SetupWorld() {
 	child->setDialogue({{child, "Are we going back home, mister?"}, {self, "Yeah just a second."}});
 	child->addRecruitmentDialogue({{self, "Alright I'm taking you back to your mom now."}, {child, "YAY!"}, {child, "Thank you mister!"}});
 	child->addDismissalDialogue({{self, "Actually can you just stay here a little longer?"}, {child, "Okay."}, {NULL, "JILLY went to a hiding spot in the storage room."}});
+	child->addRejectionDialogue({{child, "No I wanna stay here with my mom :("}});
 	Conversation jdr = {{child, "What?"}, {child, "But you said you'd take me back to my mom!"}, {child, "Come on! It's not too far away!"}};
 	shared_ptr<Conversation> jdr2 = make_shared<Conversation>(Conversation({{self, "Actually can you just stay here a little longer?"}, {child, "Okay."}, {NULL, "JILLY went to a hiding spot in the storage room."}, {NULL, "..."}, {NULL, "JILLY came back!"}, {child, "O_O"}}));
 	shared_ptr<Conversation> jdr3 = make_shared<Conversation>(Conversation({{child, "No way!"}, {child, "I don't wanna go with that monster!"}}));
@@ -1918,7 +1917,7 @@ void Game::SetupWorld() {
 	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo, burgabtconv, burghint);
 	Item* freeboiga = new BURGERItem(*(BURGERItem*)(BURGER));
 
-	NPC* burgerman = new NPC("", "BURGER MAN", "The manager and mascot of BURGERs. He has a BURGER for a head and a stick figure body.", BURGERRESTAURANT, 1000, Stats(600000, 6000, 3000, 6000, 3000, 6000, 9), Stats(20, 2, 1, 2, 2, 2, 0));
+	NPC* burgerman = new NPC("", "BURGER MAN", "The manager and mascot of BURGERs. He has a BURGER for a head and a stick figure body.", BURGERRESTAURANT, 1000, Stats(600000, 6000, 3000, 6000, 3000, 6000, 9), Stats(3, 2, 1, 2, 1, 2, 0));
 	//burgerman->setLeader(true, 0, BURGERRESTAURANT, false);
 	burgerman->setNoFight(false); //you can kind of fight the BURGER MAN but not really, leader status won't reset if trying to account for try to fight without THE PLOT DEVICE and then you get bad ending, then try to fight in the true ending
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
@@ -2900,6 +2899,7 @@ void Game::SetupWorld() {
 	valvechanges.roomChanges.push({oasis, "in the town oasis, now fully restored! Some signs of greenery are starting to return."});
 	valvechanges.recruitLinks.push(cacty);
 	valvechanges.roomChanges.push({burgplatn, "on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories, though their BURGER production has ceased."});
+	valvechanges.roomChanges.push({burgplatno, "on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories, now obsolete and inoperational."});
 	valvechanges.redirectRooms.push({burgplate, burgplatedry});
 
 	Attack* cooldown = new Attack("COOL DOWN", "poured sand coolant on", false, 0, 0, 0, 1, 1, 1);
@@ -3678,6 +3678,9 @@ void Game::SetupWorld() {
 	burgplatn->setExit(UPSTAIRS, burgbasese);
 	burgplatn->setExit(EAST, burgplate);
 	burgplatn->setExit(SOUTH, burgplats);
+	burgplatno->setExit(UPSTAIRS, burgbasese);
+	burgplatno->setExit(EAST, burgplate);
+	burgplatno->setExit(SOUTH, burgplats);
 	burgplats->setExit(NORTHEAST, burgplate);
 	burgplats->setExit(NORTH, burgplatn);
 	burgplats->setExit(IN_ROOM, BURGERPRISON);
@@ -4071,7 +4074,7 @@ void Game::SetupWorld() {
 	Effect* flung = new Effect("FLUNG", 1);
 	flung->remove = true;
 	flung->falldamage = 30;
-	fling->cancel = suspended; //throwing someone into the air makes them no longer frozen in place
+	fling->cancels = {suspended}; //throwing someone into the air makes them no longer frozen in place
 	fling->addEffect(flung);
 	tkviola->addSpecialAttack(fling);
 	Attack* suspend = new Attack("SUSPEND", "suspended", false, 7, 0, 0, 1, 1, 1);
@@ -4402,7 +4405,7 @@ void Game::SetupWorld() {
 	tossed->remove = true;
 	tossaside->addEffect(tossed);
 	tossaside->synergies.push_back(stretched);
-	tossaside->cancel = stretched;
+	tossaside->cancels = {stretched};
 	crimmind->setBasicAttack(chuck);
 	crimmind->addSpecialAttack(stretch);
 	crimmind->addSpecialAttack(tossaside);
@@ -4719,68 +4722,21 @@ void Game::SetupWorld() {
 	junglenaut->addSpecialAttack(constrict);
 	junglenaut->addSpecialAttack(piledrive);
 
-	//MARK: TO DO LIST
-	//make temptation attack
-	//make mid battle choice
-	//different choice dialogue depending on if getting there due to phase or due to player ko
-	//make sos be able to help player if they get ko'd early, and while "hypnotized"
-	//hypnosis while still having choice
-	//make the choice orbs add more temptation attacks
-	//attacks can have conversations
-	//make description different if hypnotized?
-	//set absolom immunity
-	//improve dialogue
-	//hindsight 20/20
-	//make escape orb remove sense of self attacks
-	//world reflecting lack of BURGERs and restaurants
-
 	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
 	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
-	senseofself->setBoss(true);
-	//temple of humility in the forest, gives output antenna of humility
-	//forest temple is pretty standard, with some branching paths and combat and choices that allow you to buff yourself or buff your teammates
-	//and probably a puzzle or two (prolly one)
-	//sos starts by copying your attacks but better,
-	//then tempts teammates into joining him (prize), effectiveness depends on how many times you helped yourself
-	//"He only cares about himself."
-	//"He doesn't deserve you!"
-	//"Why don't you join the better side?"
-	//you can use your attack APOLAGIZE TO to ask teammates to come back
-	//near the end any remaining hypnotized teammates are sent back by sos and he tells you
-
-	//MARK: make the description change depending on if he's on your side or not
-	//disguised desc: He's another you! What could be better than that?
-
-	//MARK: IMPORTANT:
-	//force use temptation at two points (90% hp and 77% hp)
-	//before the second point, do not target player if theyre below 25% hp
-	//phase 1: until 90% hp: just show off with cooler version of basic plr attacks
-	//phase 2: until 30% hp: bulk of the battle with previous moveset but also temptation
-	//phase 3: do the final player temptation and switch to more advanced player moveset (energize player while on their team, do not target player if on that team)
-	//if plr gets to 0 hp, sustain them at 1 hp (sos's energize should do that) so they can do the choice
-	//MARK: DO NOT TARGET NPC AGAIN IF THE EFFECT FAILED DUE TO IMMUNITY
-	
-	Attack* spotlight = new Attack("SPOTLIGHT", "put the spotlight on", false, 2, 0, 0, 1, 1, 1);
-	//double attack
-	//halve teammates attack
-	Effect* pride = new Effect("PRIDE", 2147483647, 0, 0, 1.5); //he promises buffs so this buffs attack by 1.5x
-	pride->hypnotize = true;
-	//pride->redundanteffect = false;
-	senseofself->setAvoidEffect(pride); //he doesn't target guys he tempted because that wouldn't be very convincing
-	senseofsel2->addSpecialAttack(spotlight);
-	//this is the same temptation attack except it doesn't cost sp, this is for when we force the attack to be sent
-	Attack* calltostardomfree = new Attack("CALL TO STARDOM", "tempted", false, 0, 0, 0, 1, 1, 1);
-	calltostardomfree->afterdesc = " into joining the better side";
-	//these three temptation attacks are identical to the first except they get added by choosing the selfish choices in the life orbs
-	Attack* calltostardom1 = new Attack("CALL TO STARDOM", "tempted", false, 2, 0, 0, 1, 1, 1); //since we're adding identical attacks, it effectively makes the same move more likely to be chosen
-	calltostardom1->afterdesc = " into joining the better side";
-	calltostardom1->attackconvo = {{NULL, "\nSENSE OF SELF used CALL TO STARDOM!"}, {senseofself, "Hey! Don't you remember the first choice in the temple?"}, {senseofself, "He chose to buff himself, when he could've helped you guys out!"}, {senseofself, "I won't keep the buffs to myself! Join me!"}};
-	Attack* calltostardom2 = new Attack("CALL TO STARDOM", "tempted", false, 2, 0, 0, 1, 1, 1);
-	calltostardom2->afterdesc = " into joining the better side";
-	calltostardom2->attackconvo = {{NULL, "\nSENSE OF SELF used CALL TO STARDOM!"}, {senseofself, "Why are you still on his team?"}, {senseofself, "Don't you remember at the lake when he chose to debuff you?"}, {senseofself, "He could NEVER take one for the team..."}, {senseofself, "I won't treat you like that!"}};
-	Attack* calltostardom3 = new Attack("CALL TO STARDOM", "tempted", false, 2, 0, 0, 1, 1, 1);
-	calltostardom3->afterdesc = " into joining the better side";
-	calltostardom3->attackconvo = {{NULL, "\nSENSE OF SELF used CALL TO STARDOM!"}, {senseofself, "Man, remember the room with the flowers?"}, {senseofself, "This guy can't help but be the star of the show!"}, {senseofself, "He kept the SUPER SWAGGiness alllll to himself..."}, {senseofself, "But here, there's plenty of stardom and buffs to share!"}, {senseofself, "Come over here!"}};
+	senseofself->setBoss(true);	
+	Attack* spotlight = new Attack("SPOTLIGHT", "put the spotlight on", false, 0, 0, 0, 1, 1, 999); //this is automatically bad by itself since it's a net loss in terms of team stats
+	Effect* inthespotlight = new Effect("IN THE SPOTLIGHT", 2147483647, 0, 0, 2, 2, 2, 2, 2);
+	inthespotlight->nobeneficial = true;
+	Effect* outthespotlight = new Effect("BACKGROUND CHARACTER", 2147483647, 0, 0, 0.2, 0.2, 0.2, 0.2, 0.2);
+	spotlight->addEffect(inthespotlight);
+	spotlight->nonspecificeffect = outthespotlight;
+	spotlight->onlyplayer = true; //this is a player-character-focused temptation since he's the leader
+	spotlight->nottoohypno = true; //sense of self only uses spotlight if less than 2 teammates are hypnotized, because otherwise there's not enough net loss to make staying in the spotlight unoptimal (due to pride giving immunity to this), and also mechanic/choice clutter
+	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "SENSE OF SELF - \"Alright, you think you're the main character?\""}, {senseofself, "PROVE IT."}};
+	senseofself->stageAttack(0.7, spotlight); //(try to) use the attack at these points specifically
+	senseofself->stageAttack(0.45, spotlight);
+	//copies of the player's attacks except cooler
 	Attack* coolpunch = new Attack("COOL PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
 	coolpunch->afterdesc = " very coolly";
 	senseofself->setBasicAttack(coolpunch);
@@ -4794,54 +4750,81 @@ void Game::SetupWorld() {
 	Attack* turbopunchflurry = new Attack("TURBO PUNCH FLURRY", "unleashed a huge barrage of cool punches", true, 15, 5, 0, 10, 10, 1);
 	turbopunchflurry->focushits = false;
 	senseofsel2->addSpecialAttack(turbopunchflurry);
-
+	Effect* pride = new Effect("PRIDE", 2147483647, 0, 0, 1.5); //he promises buffs so this buffs attack by 1.5x
+	pride->hypnotize = true;
+	pride->immunity = outthespotlight;
+	senseofself->setAvoidEffect(pride); //he doesn't target guys he tempted because that wouldn't be very convincing
+	senseofsel2->addSpecialAttack(spotlight);
+	forestknight->setImmunity(pride, {{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, who needs you..."}});
+	//these three temptation attacks are identical, but each gets added by choosing the selfish choices in the life orbs, so effectively each selfish choice increases the likelyhood this attack gets chosen
+	Attack* recruit1 = new Attack("RECRUIT", "tempted", false, 2, 0, 0, 1, 1, 1); //since we're adding identical attacks, it effectively makes the same move more likely to be chosen
+	recruit1->afterdesc = " into joining the better side, calling to mind your selfish choices";
+	recruit1->donotplayer = true;
+	recruit1->ignoreeffect = outthespotlight; //don't tempt npcs out of the spotlight, because that might lead to situations where it's optimal to keep the spotlight which is counter-thematic
+	recruit1->redundanteffect = false; //reapplying this would be counterproductive since it lasts forever if ignored
+	recruit1->hpthreshold = 0.9; //he just shows off for the first few turns to have a basis to call himself "better" on
+	recruit1->addEffect(pride);
+	recruit1->cancels = {outthespotlight}; //get rid of the spotlight debuff since they're on sense of self's team now
+	Attack* recruit2 = new Attack(*recruit1);
+	Attack* recruit3 = new Attack(*recruit1);
+	recruit1->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Hey! Don't you remember the first choice in the temple?\""}, {senseofself, "He chose to buff himself, when he could've helped you guys out!"}, {senseofself, "I won't keep the buffs to myself! Join me!"}};
+	recruit2->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Why are you still on his team?\""}, {senseofself, "Don't you remember at the lake when he chose to debuff you?"}, {senseofself, "He could NEVER take one for the team..."}, {senseofself, "I won't treat you like that!"}};
+	recruit3->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Man, remember the room with the flowers?\""}, {senseofself, "This guy can't help but be the star of the show!"}, {senseofself, "He kept the SUPER SWAGGiness alllll to himself..."}, {senseofself, "But here, there's plenty of stardom and buffs to share!"}, {senseofself, "Come over here!"}};
+	//moves to get rid of the temptation statuses
 	Attack* apolagize = new Attack("APOLAGIZE TO", "apolagized to", false, 0, 0, 0, 1, 1, 1); //apolagizing only costs a turn, not sp
-	apolagize->cancel = pride;
+	apolagize->cancels = {pride};
 	apolagize->addDescription("Take a turn to apolagize to a teammate with PRIDE in hopes of bringing them back.");
-	pride->response = apolagize; //player can apolagize once a teammate gets pride
-
-	//MARK: make it so SP bomb doesn't use hypnotized teammates' sp
-	//can't use apolagize while in the spotlight
-
-	//Attack* hindsight2020 = new Attack("HINDSIGHT 20/20");
-	//senseofself, "Well they're all incapacitated."
-	//senseofself, "All the credit goes to meee! >B)"
-	//self, "what?"
-	//NULL, "You blow up behind SENSE OF SELF as he looks away"
-	//NULL, "because it's cooler not to look at explosions."
-
-	//NULL, "SENSE OF SELF shrinks down to your height."
-	//OR
-	//NULL, "SENSE OF SELF catches you as you fall."
-	//SENSE OF SELF used ENERGIZE!
-	//SENSE OF SELF is maintaining SELF's hp!
-	
-	//senseofself, "Hey man,"
-	//senseofself, "I'm sorry about this whole 'you but better' shtick."
-	//senseofself, "I just wanted to show you,"
-
-	//senseofself, "you can't rely on these people!"
-	//senseofself, "Look how quick they were to betray you!"
-	//senseofself, "You don't need them!"
-	//OR
-	//senseofself, "you can do so much better than these people!"
-	//senseofself, "You're in charge!"
-	//senseofself, "You're the leader!"
-	//senseofself, "When you're alone in the spotlight,"
-	//senseofself, "you can do so much!"
-
-	//senseofself, "But what could be better..."
-	//senseofself, "than two of you?!"
-	//senseofself, "Help me finish them off, and we can defeat BURGER together!"
-	//NULL, "Join SENSE OF SELF? (YES or NO)"
-	//hey it was all just to show you you can't rely on these ppl
-	//join me and WE can defeat BURGER together!
-	//if you join him he just instakills you after you defeat your other teammates
-	//you can also GO BACK if you haven't defeated them all yet
-	//then you get the antenna
-	
-	//MARK: UNCOMMENT
-	//forestknight->setImmunity(pride, {{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever who needs you..."}});
+	pride->teamresponse = apolagize; //player can apolagize once a teammate gets pride
+	Attack* sharethespotlight = new Attack("SHARE THE SPOTLIGHT", "shared the spotlight", false, 0, 0, 0, 1, 1, 999, true);
+	sharethespotlight->addDescription("Share the spotlight with your team and remove all spotlight statuses.");
+	sharethespotlight->cancels = {inthespotlight, outthespotlight};
+	sharethespotlight->focushits = false;
+	inthespotlight->teamresponse = sharethespotlight;
+	Attack* goback = new Attack("GO BACK", "came back to the team", false, 0, 0, 0, 1, 1, 0);
+	goback->addDescription("Leave the team of only yous and go back your original team.");
+	goback->selfcancel = pride;
+	goback->focushits = false;
+	pride->playerresponse = goback;
+	//final temptation stuff, which is where sense of self tempts the player into joining his side near the end of the fight
+	Conversation prop1 = {{senseofself, "Hey man,"}, //if at least one teammate turned to sense of self's side
+						  {senseofself, "I'm sorry about this whole 'you but better' shtick."},
+						  {senseofself, "I just wanted to show you,"},
+						  {senseofself, "you can't rely on these people!"},
+						  {senseofself, "Look how quick they were to betray you!"},
+						  {senseofself, "You don't need them!"},
+						  {senseofself, "But what could be better..."},
+						  {senseofself, "than two of you?!"},
+						  {senseofself, "Help me finish them off, and we can defeat BURGER together!"},
+						  {NULL, "Join SENSE OF SELF? (YES or NO)"}};
+	shared_ptr<Conversation> prop2 = make_shared<Conversation>(Conversation({{senseofself, "Hey man,"}, //if nobody joined sense of self's side, he says this instead
+						  {senseofself, "I'm sorry about this whole 'you but better' shtick."},
+						  {senseofself, "I just wanted to show you,"},
+						  {senseofself, "you can do so much better than these people!"},
+						  {senseofself, "You're in charge!"},
+						  {senseofself, "You're the leader!"},
+						  {senseofself, "When you're alone in the spotlight,"},
+						  {senseofself, "you can do so much!"},
+						  {senseofself, "But what could be better..."},
+						  {senseofself, "than two of you?!"},
+						  {senseofself, "Help me finish them off, and we can defeat BURGER together!"},
+						  {NULL, "Join SENSE OF SELF? (YES or NO)"}}));
+	prop1.alt = prop2;
+	prop1.skipcondition = GAMEEND; //we use game ended as a convenient skip condition which we modify from Battle during the business proposition, since it's supposed to be false during gameplay anyway
+	Attack* getout = new Attack("BUSINESS PROPOSITION", "is making a business proposition to you", false, 0, 0, 0, 1, 1, 999);
+	getout->cancels = {inthespotlight, outthespotlight, pride}; //get rid of everyone's effects because this is a new part of the fight
+	getout->transformation = senseofsel2; //turns into phase 2, stronger and cooler attacks and doesn't do any other temptations anymore
+	getout->focushits = false;
+	senseofself->setProposition(0.2389567, getout, pride, prop1); //pride effect works for the player as well
+	Attack* hindsight2020 = new Attack("HINDSIGHT 20/20", "", false, 0, 9999, 9999, 1, 1, 1); //you blow up if you're on his team when the rest of your team is incapacitated
+	hindsight2020->instakill = true; //it's very easy to avoid so you just explode
+	hindsight2020->attackconvo = {{senseofself, "Well they're all incapacitated."}, //you should've seen this coming, but hindsight 20/20
+								  {senseofself, "All the credit goes to meee! >B)"},
+								  {self, "what?"},
+								  {NULL, "\nSENSE OF SELF used HINDSIGHT 20/20!"},
+								  {NULL, "\nYou blow up behind SENSE OF SELF as he looks away"},
+								  {NULL, "because it's cooler not to look at explosions."}};
+	hindsight2020->repeatconvo = true; //it's funny so repeat it
+	senseofsel2->setBetrayal(hindsight2020);
 
 	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(30, 0, 10, 0, 20, 30, 9));
 	Attack* shadowslap = new Attack("SHADOW SLAP", "slapped away", true, -5, 6, 12, 1, 1, 1);
@@ -4930,9 +4913,9 @@ void Game::SetupWorld() {
 	thedark->stageAttack(0.3, worstnightmare); //do this attack when reaching 30% health
 	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1); //encouraging only costs a turn, not sp
 	encourage->afterdesc = " to keep fighting";
-	encourage->cancel = despair;
+	encourage->cancels = {despair};
 	encourage->addDescription("Take a turn to encourage a teammate with DESPAIR to have hope and keep fighting!");
-	despair->response = encourage; //player can use encourage once a teammate gets despair
+	despair->teamresponse = encourage; //player can use encourage once a teammate gets despair
 	forestknight->setImmunity(despair, {{forestknight, "You are a terrible beast..."}, {forestknight, "but this is no reason to give up hope!"}, {forestknight, "Friends, don't let this monster break your spirit!"}});
 
 	NPC* bolide = new NPC("", "BOLIDE", "Rocky volcanic boulder, burning through the atmosphere straight at your face.", limbo, 0, Stats(100, 30, 6, 20, 8, 100, 9));
@@ -5006,8 +4989,10 @@ void Game::SetupWorld() {
 	firefirefire->focushits = false;
 	firefirefire->addEffect(smoldering);
 	Attack* ragebait = new Attack("RAGEBAIT", "ragebaited", false, 8, 0, 0, 1, 1, 1);
-	Effect* wrath = new Effect("WRATH", 5, 0, 0, 1.5, 1, 1, 1, 1.5);
+	Effect* wrath = new Effect("WRATH", 3, 0, 0, 1.5, 1, 1, 1, 1.5);
+	wrath->playerduration = 5; //it's longer for the player because they have to calm down manually while the teammates calm down automatically
 	wrath->wrath = true; //sounds about right
+	wrath->nobeneficial = true; //too angry to be helpful
 	ragebait->addEffect(wrath);
 	ragebait->redundanteffect = false; //fire with fire spreads out the temptations to more efficiently build up rage points
 	Attack* spark = new Attack("SPARK", "flicked an explosive spark at", false, 7, 15, 30, 1, 1, 3);
@@ -5030,7 +5015,7 @@ void Game::SetupWorld() {
 	calmdown->addDescription("Take a breather in order to calm down and make your WRATH wear off.");
 	calmdown->selfcancel = wrath;
 	calmdown->focushits = false;
-	wrath->response = calmdown;
+	wrath->playerresponse = calmdown;
 	wrath->respondifplayer = true; //the player can only calm themselves down so we only give the attack if the player is affected
 	firewithfire->setTrackRage({{0.1, firewithfir2}, {0.2, firewithfir3}}); //phase 2 after 10% rage and phase 3 after 20%, relative to total health
 	NPC* viola; //we need viola here for fire with fire to recognize her
@@ -5053,30 +5038,88 @@ void Game::SetupWorld() {
 	ragebait->setTargetConv(richie, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the rich dirtbag of the group...\""}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history? ^^D"}, {richie, "STOP! >:("}});
 	ragebait->setTargetConv(ratman, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Ratman!\""}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {firewithfire, "BAHAHAHAHA! ^^D"}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}});
 	
-	//10000, Stats(600000, 6000, 3000, 6000, 6000, 3000, 9), Stats(20, 2, 1, 2, 2, 2, 0)
-	burgermenace = new NPC("", "THE BURGER MENACE", "The creator of BURGERs. He looks like a giant winged BURGER.", limbo, 0, Stats(1000000, 10000, 5000, 10000, 5000, 10000, 9), Stats()); //MARK: unfinished
-	//burger tendril
-	//
-	//chokehold
-	//
-	//on the house (explosion)
+	//the final boss!
+	NPC* burgermenace = new NPC("", "THE BURGER MENACE", "The creator of BURGERs. He looks like a giant winged BURGER.", limbo, 0, Stats(900000, 10000, 5000, 10000, 5000, 10000, 9), Stats(5, 2, 1, 2, 1, 2, 0));
+	burgermenace->setBoss(true); //of the final variety
+	Attack* burgertendril = new Attack("BURGER TENDRIL", "struck", true, -5, 7, 5, 1, 1, 1);
+	burgermenace->setBasicAttack(burgertendril);
+	burgertendril->afterdesc = " with a BURGER TENDRIL";
+	Attack* burgerwingbeat = new Attack("BURGER WINGBEAT", "flapped a blast of BURGER energy at", false, 5, 15, 20, 1, 1, 1);
+	burgermenace->addSpecialAttack(burgerwingbeat);
+	Attack* chokehold = new Attack("CHOKEHOLD", "grabbed", true, 15, 5, 5, 1, 1, 1);
+	chokehold->afterdesc = " in a chokehold";
+	Effect* choking = new Effect("IN A CHOKEHOLD", 3, 15);
+	choking->freeze = true;
+	chokehold->addEffect(choking);
+	burgermenace->addSpecialAttack(chokehold);
+	Attack* mince = new Attack("MINCE", "violently lashed around BURGER TENDRILs", true, 15, 5, 5, 5, 5, 1);
+	mince->focushits = false;
+	burgermenace->addSpecialAttack(mince);
+	Attack* onthehouse = new Attack("ON THE HOUSE", "served", false, 20, 22, 22, 1, 1, 3);
+	onthehouse->afterdesc = " an explosion on the house";
+	burgermenace->addSpecialAttack(onthehouse);
 
-	NPC* adversary = new NPC("", "THE ADVERSARY", "", limbo, 0, Stats(), Stats());
-	//pitchfork
-	//
-	//levitation (dot + freeze)
+	NPC* burgerdemon = new NPC("", "BURGER DEMON", "Nasty demon of the Abyss supporting the BURGER cause.", limbo, 0, Stats(90000, 30000, 1000, 30000, 1000, 30000, 9), Stats(1, 1, 0, 1, 0, 1, 0));
+	Attack* darkerenergy = new Attack("DARKER ENERGY", "fired a dark energy missile at", false, 0, 15, 15, 1, 1, 1); //by dark energy I mean energy that is dark, not the scientific one
+	darkerenergy->afterdesc = ", darker than dark";
+	burgerdemon->addSpecialAttack(darkerenergy);
+	Attack* burgertendrils = new Attack("BURGER TENDRILS", "lashed BURGER TENDRILs at the team", true, 0, 5, 5, 2, 2, 1);
+	burgertendrils->focushits = false;
+	burgerdemon->addSpecialAttack(burgertendrils);
+	Attack* summoning = new Attack("SUMMON", "summoned BURGER DEMONs", false, 0, 0, 0, 0, 0, 0);
+	summoning->summon = burgerdemon;
+	summoning->summonamount = 2;
+	burgermenace->stageAttack(.75, summoning); //summon two BURGER demons halfway into phase 1 just for variety and stuff
+
+	NPC* adversary = new NPC("", "THE ADVERSARY", "", limbo, 0, Stats(900000, 8000, 7000, 8000, 7000, 15000, 9), Stats(5, 2, 1, 2, 1, 2, 0));
+	Attack* pitchfork = new Attack("PITCHFORK", "pierced", true, -5, 7, 5, 1, 1, 1);
+	pitchfork->afterdesc = " with his pitchfork";
+	adversary->setBasicAttack(pitchfork);
+	Attack* darkestenergy = new Attack("DARKEST ENERGY", "fired a blast of dark energy at", false, 5, 15, 25, 1, 1, 1);
+	darkestenergy->afterdesc = " from his pitchfork, darker than dark";
+	adversary->addSpecialAttack(darkestenergy);
+	Attack* levitation = new Attack("LEVITATION", "started levitating", false, 15, 5, 5, 1, 1, 1);
+	levitation->afterdesc = " painfully";
+	Effect* levitating = new Effect("LEVITATING", 3, 15);
+	levitating->freeze = true;
+	levitation->addEffect(levitating);
+	adversary->addSpecialAttack(levitation);
+	//the boss has three temptation attacks of low sp, which add up to 9 sp, making it pretty likely that one will be used. We make new effects here because they have slightly different mechanics
 	//temptation (pride)
-	//temptation (despair)
-	//temptation (wrath)
-	//
-
-	Attack* phasechange = new Attack("", "shed his BURGERy shell", false, 0, 50, 0, 1, 1, 999);
+	Attack* temptationp = new Attack("TEMPTATION", "tempted", false, 3, 0, 0, 1, 1, 1);
+	temptationp->afterdesc = " into PRIDE";
+	adversary->addSpecialAttack(temptationp);
+	//pretty much the same as the dark's terror, except not permanent so if the player gets incapacitated the teammates can still fight even if they're all despaired (this is fine in the dark fight because it's focused around the mechanic whereas here it's the culmination of your whole quest, including resisting the other temples' vices)
+	Attack* temptationd = new Attack("TEMPTATION", "tempted", false, 3, 0, 0, 1, 1, 1);
+	temptationd->afterdesc = " into DESPAIR";
+	Effect* adespair = new Effect("DESPAIR", 5); //5 is pretty long but not unrecoverable
+	adespair->freeze = true;
+	temptationd->addEffect(adespair);
+	encourage->cancels.push_back(adespair); //reuse encourage from the dark
+	adespair->teamresponse = encourage;
+	temptationd->donotplayer = true; //player cannot be tempted into despair
+	temptationd->redundanteffect = false; //reapplying it would be a waste of a turn
+	forestknight->setImmunity(adespair, {{forestknight, "I shall not despair in this moment!"}, {forestknight, "Fight on, friends!"}, {forestknight, "Resist everything our foe throws at us!"}}); //we have to set the immunity here
+	adversary->addSpecialAttack(temptationd);
+	//works a little differently than fire with fire's wrath. If you do a wrathful hit to him, the wrath gives him a foothold and he gets a buff to all stats (duration of 5 for player hits and 3 for teammate)
+	Attack* temptationw = new Attack("TEMPTATION", "tempted", false, 3, 0, 0, 1, 1, 1);
+	temptationw->afterdesc = " into WRATH";
+	Effect* foothold = new Effect("FOOTHOLD", 3, 0, 0, 1.25, 1.25, 1.25, 1.25, 1.25);
+	burgermenace->setResponseEffect(wrath, foothold); //burger menace transforms into the adversary but transformations don't change response effects so we set the effect for the burger menace
+	adversary->addSpecialAttack(temptationw);
+	Attack* devestation = new Attack("DEVESTATION", "devestated the battlefield with dark energy explosions", false, 25, 10, 25, 3, 3, 3);
+	devestation->focushits = false;
+	adversary->addSpecialAttack(devestation);
+	//MARK: custom knight immunity text?
+	Attack* phasechange = new Attack("", "shed his BURGERy shell", false, 0, 50, 0, 1, 1, 999); //burger menace changes into the adversary at 50% health
 	phasechange->attackconvo = {{burgermenace, "I HAVE HAD ENOUGH OF THIS BURGERY SHELL WEIGHING ME DOWN."}, {NULL, "Cracks started glowing in THE BURGER MENACE's BURGERy exterior!"}, {NULL, "THE BURGER MENACE exploded open!"}, {NULL, "The blast revealed..."}, {NULL, "<<< THE ADVERSARY >>>"}, {NULL, "\nPieces of THE BURGER MENACE flew at the team!"}};
 	phasechange->repeatconvo = true; //he says this every fight because this is more of a cutscene
 	phasechange->focushits = false;
 	phasechange->transformation = adversary;
+	phasechange->trashsummons = true; //destroy remaining BURGER demons because the fight isn't BURGER-themed anymore, also it's more about just focusing on the final boss
+	phasechange->cancels = {choking}; //because the BURGER TENDRILs choking them just exploded and stuff
+	phasechange->percentagebased = true; //does 50% health
 	burgermenace->stageAttack(.5, phasechange);
-	//MARK: make it do % health
 
 	//MARK: make sure all the 0 hit and 0 target moves actually make sense with that
 	//MARK: probably no attack should have 0 damage and non-0 hits
@@ -5755,7 +5798,6 @@ void Game::SetupWorld() {
 	gamblongo->setDialogue({{gamblongo, "ahahaha i am gamblongo the gamble monster"}});
 
 	NPC* evilgrandma = new NPC(*grandma);
-	
 	evilgrandma->setLeader(true, 22, rightstreet3, false);
 	evilgrandma->setMask("GRANDMA", "MARGE", "She looks like a poor grandma getting beat up and robbed by Ratman.");
 	evilgrandma->setTalkOnDefeat();
@@ -5776,7 +5818,7 @@ void Game::SetupWorld() {
 										  {ratman, "This grandma has been terrorizing the city for many years."},
 										  {ratman, "But now she's going straight to the BURGERSBURG asylum."},
 										  {ratman, "Because I'm Ratman."},
-										  {NULL, "RATMAN grappling hooks away carrying a tied up MARGE."}});
+										  {NULL, "RATMAN grappling hooks away carrying a tied up MARGE."}}); //he leaves here because roamLinks make them roam immediately after
 	
 	theratman = new NPC(*ratman); //MARK: Ratman
 	npcChar[theratman] = 'b'; //Ratman's character representation is b for Batman
@@ -5795,6 +5837,7 @@ void Game::SetupWorld() {
 										  {grandma, "HAHAHAHAHAHAHAHA!"},
 										  {grandma, "THANK YOU FOR BEING SO DUMB!"},
 										  {NULL, "MARGE athletically sprints away with all your monies."},
+										  {NULL, "You now have 0 monies!"},
 										  {ratman, "Why'd you get in the way, kid?"},
 										  {self, "Well it looked like you were beating up a poor grandma."},
 										  {self, "Why didn't you clarify better what you were doing?"},
@@ -6056,7 +6099,7 @@ void Game::SetupWorld() {
 	ftlguard3->addLinkedDialogue(ftlguard3, {{NULL, "Your team's SWAGGY faded..."}});
 	ftlguard3->setLoopChanges(); //loop the dialogue
 	ftlguard3->setTalkOnDefeat();
-	ftlguard3->addOpeningDialogue({{NULL, "You have SUPER SWAGGY!"}, {NULL, "Your stats rose to 300%!"}});
+	ftlguard3->addOpeningDialogue({{NULL, "Your team has SWAGGY!"}, {NULL, "Your stats rose to 175%!"}});
 	ftlguard3->setXPReward(0);
 	
 	//right path guards
@@ -6085,7 +6128,7 @@ void Game::SetupWorld() {
 	ftrguard2->addLinkedDialogue(ftrguard2, {{NULL, "Your teammates' TEMPLE DEBUFF faded..."}});
 	ftrguard2->setLoopChanges(); //loop the dialogue
 	ftrguard2->setTalkOnDefeat();
-	ftrguard2->addOpeningDialogue({{NULL, "Your teammmates have a TEMPLE DEBUFF!"}, {NULL, "Their stats fell to 75%!"}});
+	ftrguard2->addOpeningDialogue({{NULL, "Your teammates have a TEMPLE DEBUFF!"}, {NULL, "Their stats fell to 75%!"}});
 	ftrguard2->setXPReward(0);
 
 	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
@@ -6099,7 +6142,7 @@ void Game::SetupWorld() {
 	ftrguard3->addLinkedDialogue(ftrguard3, {{NULL, "Your SUPER SWAGGY faded..."}});
 	ftrguard3->setLoopChanges(); //loop the dialogue
 	ftrguard3->setTalkOnDefeat();
-	ftrguard3->addOpeningDialogue({{NULL, "Your team has SWAGGY!"}, {NULL, "Your stats rose to 175%!"}});
+	ftrguard3->addOpeningDialogue({{NULL, "You have SUPER SWAGGY!"}, {NULL, "Your stats rose to 300%!"}});
 	ftrguard3->setXPReward(0);
 	
 	//the boss!
@@ -6170,6 +6213,7 @@ void Game::SetupWorld() {
 	choicea1.exitPavings.push(make_tuple(foresttemple2, forestbranchw, NORTHWEST, SOUTHEAST));
 	choicea1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
 	choicea1.linkedItems.push({choice1, limbo});
+	choicea1.linkedAttacks.push({ftboss, recruit1}); //the selfish choices give the boss more attacks to tempt your teammates away
 	WorldChange choiceb1;
 	choiceb1.exitPavings.push(make_tuple(foresttemple, forestbranche, SOUTH, NORTH));
 	choiceb1.exitPavings.push(make_tuple(foresttemple2, forestbranche, NORTH, SOUTH));
@@ -6197,6 +6241,7 @@ void Game::SetupWorld() {
 	choiceb2.exitPavings.push(make_tuple(foresttemple3, forestbranche2, NORTHEAST, SOUTHWEST));
 	choiceb2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
 	choiceb2.linkedItems.push({choice2, limbo});
+	choiceb2.linkedAttacks.push({ftboss, recruit2}); //the selfish choices give the boss more attacks to tempt your teammates away
 	choice2 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple2, choicea2, choiceb2,
 								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
 								 {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE DEBUFF.\""},
@@ -6219,6 +6264,7 @@ void Game::SetupWorld() {
 	choiceb3.exitPavings.push(make_tuple(foresttemple4, forestbranche3, NORTHEAST, SOUTHWEST));
 	choiceb3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
 	choiceb3.linkedItems.push({choice3, limbo});
+	choiceb3.linkedAttacks.push({ftboss, recruit3}); //the selfish choices give the boss more attacks to tempt your teammates away
 	choice3 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple3, choicea3, choiceb3,
 								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
 								 {NULL, "CHOICE ORB - \"A - Share a buff with your team.\""},
@@ -6249,6 +6295,9 @@ void Game::SetupWorld() {
 	ftodropchanges.linkedItems.push({choice1, foresttemple});
 	ftodropchanges.linkedItems.push({choice2, foresttemple2});
 	ftodropchanges.linkedItems.push({choice3, foresttemple3});
+	ftodropchanges.removeAttacks.push({ftboss, recruit1}); //remove the teammate-facing temptation attacks because the player might choose differently the next time
+	ftodropchanges.removeAttacks.push({ftboss, recruit2});
+	ftodropchanges.removeAttacks.push({ftboss, recruit3});
 
 	//f(orest temple) e(ntry/escape) orb
 	feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
@@ -6539,7 +6588,7 @@ void Game::SetupWorld() {
 	vtboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
 	vtboss->setXPReward(0);
 
-	shared_ptr<WorldChange> vtsink = make_shared<WorldChange>(); //when the forest temple sinks into the ground
+	shared_ptr<WorldChange> vtsink = make_shared<WorldChange>(); //when the volcano temple sinks into the ground
 	vtsink->exitDepavings.push({volcanotempleentrance, IN_TEMPLE}); //can't go in the temple anymore
 	vtsink->redirectRooms.push({volcanotemplestairs, volcanotempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the plotometer (for some reason)
 	vtsink->redirectRooms.push({volcanobuffer1, volcanotempleentrance});
@@ -6565,7 +6614,7 @@ void Game::SetupWorld() {
 	vtsink->linkedItems.push({coldorb1, limbo}); //move the cold orbs to limbo so they don't get pushed out of the temple
 	vtsink->linkedItems.push({coldorb2, limbo});
 	vtsink->linkedItems.push({coldorb3, limbo});
-	vtboss->addEnterChanges(volcanotempleentrance, ftsink);
+	vtboss->addEnterChanges(volcanotempleentrance, vtsink);
 	vtboss->addLinkedWelcome(volcanotempleentrance, {{NULL, "The ground around you rumbles..."},
 		{NULL, "The volcano temple starts receding into the wall!"},
 		{NULL, "More magma is pressured into the cavern from the cracks..."},
@@ -6576,8 +6625,8 @@ void Game::SetupWorld() {
 	vtodropchanges.deinventoryLinks.push({&inventory, coldorb2});
 	vtodropchanges.deinventoryLinks.push({&inventory, coldorb3});
 	vtodropchanges.linkedItems.push({coldorb1, volcanotemple1o});
-	vtodropchanges.linkedItems.push({coldorb1, volcanotemple2o});
-	vtodropchanges.linkedItems.push({coldorb1, volcanotemple3o});
+	vtodropchanges.linkedItems.push({coldorb2, volcanotemple2o});
+	vtodropchanges.linkedItems.push({coldorb3, volcanotemple3o});
 	vtodropchanges.roomChanges.push({volcanotemple, "in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into."});
 	vtodropchanges.exitBlocks.push(make_tuple(volcanotemple, NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."));
 
@@ -6585,17 +6634,16 @@ void Game::SetupWorld() {
 						  "A shiny orange orb which you must TAKE in order to enter the volcano temple.",
 						  "A fragile orange orb which you must DROP in order to exit the volcano temple.",
 						  "A hard stone orb, the petrified version of the volcano temple's entry/escape orb.",
-						  volcanobuffer1, volcanobuffer2, vtboss, {vtguardl, vtguardl, vtguard1, vttrap1, vtguard2, vttrap2, vtguard3, vttrap3}, vtodropchanges);
+						  volcanobuffer1, volcanobuffer2, vtboss, {vtguardl, vtguardr, vtguard1, vttrap1, vtguard2, vttrap2, vtguard3, vttrap3}, vtodropchanges);
 
-	//MARK: finale stuff
-
-	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable
+	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable MARK: finale stuff
 	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
 	powerofplot->speedbuff = 1000;
 
 	NPC* finalboss = new NPC(*burgermenace);
 	finalboss->setLeader(true, 10000, aboss, false);
-	finalboss->setFightEffects(powerofplot, powerofplot);
+	finalboss->alterSp(-9999999); //starts with too much sp due to the high level so we get rid of that
+	finalboss->setFightEffects(powerofplot, powerofplot); //you and your team are filled with the POWER OF PLOT!
 	finalboss->setBoss(true, true); //this is the boss which is also the final boss
 	finalboss->addConversation({{NULL, "You reach the end of the abyssal path, at a sheer drop-off."},
 					   {NULL, "You look over the edge."},
@@ -6710,7 +6758,7 @@ void Game::SetupWorld() {
 		{archie, "Maybe I'll stop by again."}});
 	finalboss->addDefeatRoom(hj, home); //Henry Jerry goes back home
 	finalboss->addDismissLink(party, hj); //hj leaves your party too
-	finalboss->addHJLink(hj, {{self, "Hey wanna join my team?"}, {hj, "?"}, {hj, "Isn't the game already over?"}, {self, "Yeah but you can still walk around"}, {self, "and 100% the game and stuff."}, {hj, "Sure why not"}}); //hj becomes a normal non-fifth teammate type, doesn't print regular conversations on recruitment anymore and he has new recruitment dialogue
+	finalboss->addHJLink(hj, {{self, "Hey wanna join my team?"}, {hj, "?"}, {hj, "Isn't the game already over?"}, {self, "Yeah but you can still walk around"}, {self, "and 100% the game and stuff."}, {hj, "Sure why not"}}, {{hj, "Well I'm just gonna head back home then."}}); //hj becomes a normal non-fifth teammate type, doesn't print regular conversations on recruitment anymore and he has new recruitment and dismissal dialogue
 	finalboss->addLinkedConvo(hj, {{hj, "You know, there's an ANTI-SKELETON DEVICE lying around in my old office."},
 								   {hj, "Shame the portal's out of juice because we could probably actually pick it up now,"},
 								   {hj, "with this game's brand new multi-word parsing."}});
@@ -6726,6 +6774,10 @@ void Game::SetupWorld() {
 								   {hj, "Because everyone is skeletons now at my old job."}});
 	finalboss->addLinkedDialogue(hj, {{hj, "I wonder how you find employment."}});
 	finalboss->addPaveLink(timemachine, timemachine, TO_THE_VOID, NULL); //you can go to the void from the time machine after beating the game
+	finalboss->addDefeatRoom(burgercultists, limbo);
+	finalboss->addLinkedRoom(burgplate, "next to the BURGER assembly line, carrying along any remaining ashes.");
+	finalboss->addLinkedRoom(burgplatedry, "next to the BURGER assembly line, ground to a halt.");
+	finalboss->addRedirect(burgplatn, burgplatno); //we have the redirect to reflect the 4 states the room can possibly be in (able to run or not, and physically capable of producing BURGERS or not)
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");

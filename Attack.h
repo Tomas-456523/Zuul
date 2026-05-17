@@ -35,6 +35,7 @@ struct Attack {
 	int recoil = 0; //how much damage the user takes (calculated later using their own attack stat)
 	int guardset = 0; //set guard on the attacker
 	int targuard = 0; //set guard on the target
+	bool percentagebased = false; //if the attack power is the % of the health it takes, versus just normal power which is used to calculate damage
 
 	bool spbomb = false;
 	bool protect = false; //if this is a move that makes the mover start defending the target
@@ -50,8 +51,12 @@ struct Attack {
 	bool redundanteffect = true; //allow doing effect attack if the target has the effect already
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
 	vector<Effect*> synergies; //if the target has these effects effect, the attack power goes up by 1.5x each
-	Effect* cancel = NULL; //attack removes this effect
+	vector<Effect*> cancels = NULL; //attack removes these effects
+	Effect* ignoreeffect = NULL; //don't target npcs who have this effect
 	Effect* selfcancel = NULL; //attack removes this effect from self
+
+	Effect* nonspecificeffect = NULL; //for multiple-target attacks, there might be a different applied effect
+	NPC* specifictarget = NULL; //if there's a specificeffect set, we store who the specific target is here (more convenient)
 
 	bool affectselfbeforeattack = false; //if we should apply self stat changes before the attack as opposed to as a result of it afterwards
 
@@ -68,16 +73,20 @@ struct Attack {
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated
 	bool prioritizenonleader = false; //if this attack prioritizes not hitting the leader
 	bool donotplayer = false; //if we should never ever hit the player
+	bool onlyplayer = false; //if we should only hit the player
 	bool targetself = false; //self-explanatory
 	bool donotself = false; //if this attack should under no circumstances be targeted at the attacker
 	bool targetshark = false; //if this attack should only target sharks
 	bool skiptarget = false; //if in a multi-target attack, it hits everything around the target instead of including the target in the blast
+	bool nottoohypno = false; //only do this attack if not too many of the target team is hypnotized (balance/gameplay feel reasons)
 
 	int extralives = 0; //how many extra lives to give to the target
 
 	bool risky = false; //if we shouldn't do this move to a teammate below half health
 
 	bool take = false; //if this attack is an attack that makes the attacker take the target
+
+	bool trashsummons = false; //if this attack also incapacitates all of the attacker's summons
 
 	bool transformtotar = false; //if this attack makes the attacker transform into the target (if this is true, NPC* transformation will be overridden on use)
 	NPC* transformation = NULL; //the attacker transforms into this npc

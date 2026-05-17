@@ -96,7 +96,7 @@ struct Save {
 		int maxdigits = (bits-_sign)*log10(2)+1;
 		for (; isdigit((unsigned char)*data); data++) {
 			int digit = *data - '0'; //the digit we are adding
-			if (total > (intlimit-(sign+1)/2-digit)/10) return false; //do some math to make sure adding this new digit won't over or underflow, and of course if it will, retun false cause it's bad
+			if (total > (intlimit-(sign+1)/2-digit)/10) return false; //do some math to make sure adding this new digit won't over or underflow, and of course if it will, return false cause it's bad
 			total = total * 10 + digit; //move the total's places forward and add the digit to the ones place
 			digits++; //increment digits because we added a digit
 		}

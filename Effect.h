@@ -16,6 +16,7 @@ namespace Helper { //forward declare Helper to add effects to effectsH
 struct Effect {
 	const char* name; //the name of the effect, (e.g. "POISON")
 	int duration; //how long the effect lasts
+	int playerduration; //it might have a different duration for the player, but it's just the regular duration by default
 
 	int damage; //how much damage the effect does per tick
 	int spleak; //how much sp this effect leaks per tick
@@ -31,11 +32,13 @@ struct Effect {
 
 	bool freeze = false; //if the effect causes the target to get frozen
 	bool hypnotize = false; //if the effect causes the target to get hypnotized (attack own party)
+	bool hypnocontrol = false; //if this attack hypnotizes, if the player can still control themselves while hypnotized
 	bool remove = false; //if the attack removes the target from the fight temporarily
 	bool tiring = false; //if the effect makes the affected tired and not be able to move (to differentiate from frozen pretty much)
 	int falldamage = 0; //if remove == true, how much damage the affected npc takes on return
 	bool spreadfalldamage = false; //if fall damage should affect surroundings
-	bool wrath = false; //if this effect prevents you from doing beneficial moves
+	bool wrath = false; //if this effect invokes wrath in the affected npc
+	bool nobeneficial = false; //if this effect prevents you from using beneficial attacks
 
 	int guardset = 0; //if this effect sets guard on the target
 
@@ -50,16 +53,17 @@ struct Effect {
 	int multipositioning = 0; //how many shallow copies of the affected npc to make in battle (not handled by NPC, but rather by Battle), used by the SUPERSMOOTHIE
 
 	Effect* attackeffect = NULL; //what attack effect to give to the target
+	Effect* immunity = NULL; //having the effect makes you immune to this effect
 
 	bool bond = false; //if this is something we should remove from the affected npc when the affector is incapacitated, only used in opening attacks (also handled by Battle)
 
-	Attack* response = NULL; //someone getting this effect makes it so the player can now use this attack
-	bool respondifplayer = false; //if the response should only be added if the player was affected, not just anybody
+	Attack* teamresponse = NULL; //a teammate getting this effect makes it so the player can now use this attack
+	Attack* playerresponse = NULL; //if the player was affected, they get the response
 
 	//constructs the effect
 	Effect(const char* _name, int _duration, int _damage = 0, int _spleak = 0, double _attackbuff = 1, double _defensebuff = 1, double _toughbuff = 1, double _piercebuff = 1, double _speedbuff = 1) {
 		name = _name;
-		duration = _duration;
+		playerduration = duration = _duration; //player duration is normal duration by default
 		damage = _damage;
 		spleak = _spleak;
 		attackbuff = _attackbuff;

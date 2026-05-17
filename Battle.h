@@ -34,8 +34,8 @@ public:
 	void analyze(const char* name); //print the data of the given item or npc
 	bool runAway(); //try to escape the battle
 	void checkEffects(NPC* npc); //checks all the npc's tracked effects for if they're at duration 0
-	void attachEffect(NPCEffect* effect); //add the effect to the alleffects vector and make sure no duplicates occur
-	void detatchEffect(NPCEffect* effect); //handle effect removal
+	void attachEffect(NPCEffect* effect); //handle stuff that happens when setting effects
+	void detatchEffect(NPCEffect* effect); //handle stuff that happens when removing effects
 	void handleKnockout(NPC* npc); //handles stuff related to when the npc gets incapacitated
 	void hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry = false); //hit one of the targets from hitTargets
 	void hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos); //hit the target, and surroundings if needed
@@ -50,6 +50,7 @@ public:
 	void setupWave(bool pteam, size_t wave, bool scaleteam); //sets up a new wave for the given side
 	void checkOpeners(const vector<NPC*>& checks); //check the given npcs for if they have opening moves
 	void checkFightEffects(); //check the enemy leader for if they have any team effects to apply to the player team
+	bool doBusinessProposition(NPC* sos, NPC* plr, bool faint); //do the business proposition, which is a very specific choice sequence for the forest temple boss, and return what the player chose
 	
 	NPC* addNPC(NPC* npc, NPC* summoner = NULL, bool altteam = false); //creates a new npc mid-battle
 	void numberNPC(NPC* npc, const vector<NPC*>& team); //adds a number to the end of an npc's name to account for duplicates
@@ -69,8 +70,8 @@ private:
 	map<NPC*, int> knownspeeds; //maps npcs to their speed so we can detect if the speed has changed, and not do the turn if it's a different speed
 	set<NPC*> went; //everyone who already went this round, in order to account for speed shenanigans and also multiposition
 
-	vector<NPCEffect*> alleffects; //a list of all the effects affecting their npcs
-	map<Attack*, set<NPC*>> donttarget; //track which attacks we don't want to do on these npcs anymore
+	map<Effect*, set<NPC*>> donteffect; //track which effects we don't want to apply on these npcs anymore
+	bool beenhypno = false; //if anybody has been hypnotized in this battle, used by the forest temple boss in the business proposition
 
 	vector<Item*>* inventory; //pointer to the player's inventory
 

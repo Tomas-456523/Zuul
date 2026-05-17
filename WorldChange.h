@@ -68,7 +68,7 @@ struct WorldChange {
 	std::queue<std::pair<std::vector<NPC*>*, Item*>> linkedLightOrbs; //give these light orbs the teammates from the party
 	std::queue<std::pair<std::vector<NPC*>*, Item*>> unLightOrb; //make these light orbs give the teammate back to the party
 
-	std::shared_ptr<std::pair<NPC*, Conversation>> hjLink; //does stuff to Henry Jerry after beating the game (he had like three specific functionalities so it's prolly best to just have it be grouped)
+	std::shared_ptr<std::tuple<NPC*, Conversation, Conversation>> hjLink; //does stuff to Henry Jerry after beating the game (he had a few specific functionalities so it's prolly best to just have it be grouped)
 
 	Item* linkedOrb = NULL; //petrify this orb, a very specific functionality
 

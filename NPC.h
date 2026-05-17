@@ -88,6 +88,7 @@ public: //you need to set stats on creation
 	Item* takeGift(); //return and nullify the gift item
 	vector<Effect*> getEffects();
 	int getHypnotized(); //hypnosis amount
+	bool getInControl(); //get if the npc can control themselves (only important for player, makes player act like npc if false)
 	int getFrozen(); //freeze amount
 	int getRecovering(); //recovery amount
 	int getWrath(); //wrath amount
@@ -113,6 +114,7 @@ public: //you need to set stats on creation
 	int popExtraLives();
 	bool popKO(); //pop the ko status (if we've done the process after the npc gets incapacitated)
 	Effect* getAttackEffect();
+	map<Effect*, Effect*> getResponseEffects(); //gets the effect responses map, we don't just get it from here so we can instead have a temporary, duplicated map, so this one doesn't get inflated by NULL values
 	bool getMasked();
 	const char* getHiddenTitle();
 	const char* getHiddenName();
@@ -149,6 +151,12 @@ public: //you need to set stats on creation
 	bool getChangeName(); //get if this npc changes its name when transforming
 	bool getTrackRage(); //get if this is the volcano temple boss that tracks rage for phases
 	Item* getInternalBlender(); //get the blender item that this npc has
+	Effect* getBeneficialBlocker(); //get effect blocking use of beneficial moves and items
+	bool popProposition(bool force = false); //pop if this is the forest temple boss which has a proposition to join him
+	const Conversation& getPropConv(); //get the proposition conversation
+	Effect* getPropEffect();
+	Attack* getPropAttack();
+	Attack* getBetrayal(); //get the betrayal attack that can happen in the forest temple boss after all your teammates get defeated if you joined the boss's side
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -207,7 +215,7 @@ public: //you need to set stats on creation
 	void addSuffix(const char* suffix); //add suffix to end of npc name
 	void setGuard(int _guard, bool additive); //set guard to block attacks
 	void setGift(Item* item, bool fightfirst = false); //item to give when talking
-	NPCEffect* setEffect(Effect* effect, NPC* affector = NULL); //add an effect to the npc and return a pointer to the associated npceffect
+	NPCEffect* setEffect(Effect* effect, NPC* affector = NULL, int manualduration = -1); //add an effect to the npc and return a pointer to the associated npceffect
 	NPCEffect* removeEffect(Effect* effect, NPC* affector);
 	void tickEffect(Effect* effect);
 	void setBoss(bool boss, bool finalb = false); //set boss, and we can clarify if it is of the final variety
@@ -220,6 +228,7 @@ public: //you need to set stats on creation
 	void setParrying(NPC* _parrying);
 	void addExtraLives(int howmany);
 	void setAttackEffect(Effect* effect);
+	void setResponseEffect(Effect* effect, Effect* response);
 	void setGymStart(time_t start);
 	void setWorldCondition(size_t cond); //set a world condition for this npc to edit on defeat
 	void setRecruitCondition(size_t cond);
@@ -260,6 +269,8 @@ public: //you need to set stats on creation
 	void trackRage(double damage, NPC* attacker); //tracks rage in the rage meter and does stuff accordingly
 	void setInternalBlender(Item* blender); //set a blender item which is part of the npc so they can craft stuff
 	bool blendItems(vector<Item*>* inventory); //try to blend items from the inventory together with the internal blender and return whether we could blend anything successfully
+	void setProposition(double hp, Attack* attack, Effect* effect, const Conversation& text); //sets the business proposition for the forest temple boss
+	void setBetrayal(Attack* attack); //set the betrayal attack that can happen in the forest temple boss after all your teammates get defeated if you joined the boss's side
 
 	void addLinkedConvo(NPC* speaker, const Conversation& dialogue);
 	void addRecruitLink(NPC* npc, size_t condition = Helper::NEVER, size_t unless = Helper::NEVER);
@@ -282,7 +293,7 @@ public: //you need to set stats on creation
 	void addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges);
 	void addLinkedWelcome(Room* room, const Conversation& welcome);
 	void addDismissLink(vector<NPC*>* party, NPC* npc);
-	void addHJLink(NPC* npc, const Conversation& newrecruitment); //set the very specific linked changes for Henry Jerry
+	void addHJLink(NPC* npc, const Conversation& newrecruitment, const Conversation& newdismissal); //set the very specific linked changes for Henry Jerry
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
 	void startNewChanges(bool looplast = false); //start a new defeat changes in the changes queue and if we should loop this one if it's the last one
@@ -355,6 +366,7 @@ protected:
 	queue<pair<double, NPC*>> ragestages; //for the volcano temple boss, transforms into these phases after reaching this % of health lost due to rage
 
 	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack
+	map<Effect*, Effect*> responseEffects; //if hit by an npc with the first effect, this npc gets the second effect
 
 	Effect* targeteffect = NULL; //prioritize hitting targets with this effect
 	Effect* avoideffect = NULL; //prioritize NOT hitting targets with this effect
@@ -369,6 +381,13 @@ protected:
 	map<Effect*, Conversation> immuneText; //stuff this npc says if immune to the effect and someone tries to apply the effect
 
 	map<Attack*, int> attackWeights; //the weight of the npc's attacks
+
+	bool gotproposition = false; //if this is the forest temple boss with this very specific functionality
+	double prophealth = 0; //at what % health he does the proposition
+	Conversation proptext;
+	Effect* yeseffect = NULL; //the effect you get if you agree
+	Attack* propattack = NULL; //attack it does before the proposition
+	Attack* betrayalattack = NULL; //the betrayal attack that can happen in the forest temple boss after all your teammates get defeated if you joined the boss's side
 
 	queue<Conversation> conversations; //npcs can have discussions with the player character, and they're stored as a queue of vectors of pairs of dialogue and the npc that spoke it
 
@@ -465,6 +484,7 @@ protected:
 	int recovering = 0; //if the npc is recovering from some attack and can't move
 	bool defeated = false; //if the npc is defeated (appears in the room)
 	bool respawns = true; //if the npc appears again after battle
+	bool incontrol = true; //if the npc can control themselves (only important for player, makes player act like npc if false)
 	
 	NPC* respawnreq = NULL; //who needs to be present (and not recruited) in order to respawn
 	queue<WorldChange> respawnchanges; //what changes when this guy respawns (repeats, like it does the same changes on every respawn)

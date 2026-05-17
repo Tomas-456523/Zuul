@@ -574,9 +574,10 @@ namespace Helper {
 			changes.unLightOrb.pop();
 		}
 		if (changes.hjLink) { //do stuff for Henry Jerry after beating the game
-			changes.hjLink->first->setFifth(false); //he is only a fifth teammate pre-postgame
-			changes.hjLink->first->setTalkOnRecruit(false); //he only had this so the segway can work when recruiting but the segway isn't in the postgame
-			changes.hjLink->first->addRecruitmentDialogue(changes.hjLink->second); //give him the new recruitment dialogue, normal links only add regular conversations
+			get<0>(*changes.hjLink)->setFifth(false); //he is only a fifth teammate pre-postgame
+			get<0>(*changes.hjLink)->setTalkOnRecruit(false); //he only had this so the segway can work when recruiting but the segway isn't in the postgame
+			get<0>(*changes.hjLink)->addRecruitmentDialogue(get<1>(*changes.hjLink)); //give him the new recruitment dialogue, normal links only add regular conversations
+			get<0>(*changes.hjLink)->addDismissalDialogue(get<2>(*changes.hjLink)); //same thing as above but with dismissal dialogue
 		}
 		if (Item* orb = changes.linkedOrb) { //petrify the linked escape/entry orb
 			((EscapeOrb*)orb)->petrify();

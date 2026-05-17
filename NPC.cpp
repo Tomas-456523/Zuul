@@ -78,7 +78,7 @@ void NPC::printRecruitmentDialogue(bool actuallyprint) {
 		printDialogue(true);
 		speakOnRecruit = false; //only do this once
 	}
-	//don't print outdated recruitment dialogue (the other types of dialogue don't become outdated as far as I know)
+	//don't print outdated recruitment dialogue (the other types of dialogue apart from dismissal don't become outdated as far as I know)
 	while (!recruitmentDialogue.empty() && recruitmentDialogue.front().getOutdated()) recruitmentDialogue.pop();
 	if (recruitmentDialogue.empty()) return;
 	printDialogue(true, &recruitmentDialogue.front(), actuallyprint);
@@ -86,6 +86,7 @@ void NPC::printRecruitmentDialogue(bool actuallyprint) {
 	trackConv(this, ".r"); //track that we said this since we used up a conversation
 }
 void NPC::printDismissalDialogue(bool actuallyprint) {
+	while (!dismissalDialogue.empty() && dismissalDialogue.front().getOutdated()) dismissalDialogue.pop(); //don't print outdated dismissal dialogue, pretty much only happens for Henry Jerry
 	if (dismissalDialogue.empty()) return;
 	printDialogue(true, &dismissalDialogue.front(), actuallyprint);
 	dismissalDialogue.pop();
@@ -245,6 +246,31 @@ bool NPC::getTrackRage() { //get if this is the volcano temple boss that tracks 
 Item* NPC::getInternalBlender() { //get the blender item that this npc has
 	return internalblender;
 }
+Effect* NPC::getBeneficialBlocker() { //get effect blocking use of beneficial moves and items
+	for (Effec* effect : effects) {
+		if (effect->nobeneficial) { //no beneficial is due to this effect, return it
+			return effect;
+		}
+	}
+}
+bool NPC::popProposition(bool force) { //pop if this is the forest temple boss which has a proposition to join him
+	if (!force && health > stats.hpmax*prophealth) return false; //don't do the proposition yet, health is too high
+	bool hasprop = gotproposition;
+	gotproposition = false;
+	return hasprop;
+}
+const Conversation& NPC::getPropConv() {
+	return proptext;
+}
+Effect* NPC::getPropEffect() {
+	return yeseffect;
+}
+Attack* NPC::getPropAttack() {
+	return propattack;
+}
+Attack* NPC::getBetrayal() {
+	return betrayalattack;
+}
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
 	pos.first = Clamp(pos.first, 0, pursueRooms.size()-1);
@@ -311,6 +337,9 @@ vector<Effect*> NPC::getEffects() {
 }
 int NPC::getHypnotized() {
 	return hypnosis;
+}
+bool NPC::getInControl() {
+	return incontrol;
 }
 int NPC::getFrozen() {
 	return freeze;
@@ -397,6 +426,9 @@ bool NPC::popKO() { //pop the KO check
 }
 Effect* NPC::getAttackEffect() {
 	return attackeffect;
+}
+map<Effect*, Effect*> NPC::getResponseEffects() {
+	return responseEffects;
 }
 bool NPC::getMasked() {
 	return masked;
@@ -776,6 +808,9 @@ void NPC::addExtraLives(int howmany) {
 }
 void NPC::setAttackEffect(Effect* effect) {
 	attackeffect = effect;
+}
+void NPC::setResponseEffect(Effect* effect, Effect* response) {
+	responseEffects[effect] = response;
 }
 void NPC::setRespawnReq(NPC* req) {
 	respawnreq = req;
@@ -1201,6 +1236,16 @@ bool NPC::blendItems(vector<Item*>* inventory) { //try to blend items from the i
 	internalblender = NULL; //we can't make anything else now so make the internal blender null so we don't check the whole inventory on proceeding conversations with this character
 	return true; //return true because we successfully blended the items!
 }
+void NPC::setProposition(double hp, Attack* attack,  Effect* effect, const Conversation& text) { //sets the business proposition for the forest temple boss
+	gotproposition = true;
+	prophealth = hp;
+	proptext = text;
+	propattack = attack;
+	yeseffect = effect;
+}
+void NPC::setBetrayal(Attack* attack) {
+	betrayalattack = attack;
+}
 void NPC::addLinkedGift(NPC* npc, Item* item) {
 	getBackChange().linkedGifts.push({npc, item});
 }
@@ -1219,8 +1264,8 @@ void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
 void NPC::addDismissLink(vector<NPC*>* party, NPC* npc) {
 	getBackChange().dismissLinks.push({party, npc});
 }
-void NPC::addHJLink(NPC* npc, const Conversation& newrecruitment) { //set the very specific linked changes for Henry Jerry
-	getBackChange().hjLink = make_shared<pair<NPC*, Conversation>>(npc, newrecruitment);
+void NPC::addHJLink(NPC* npc, const Conversation& newrecruitment, const Conversation& newdismissal) { //set the very specific linked changes for Henry Jerry
+	getBackChange().hjLink = make_shared<tuple<NPC*, Conversation, Conversation>>(tuple<NPC*, Conversation, Conversation>(npc, newrecruitment, newdismissal));
 }
 WorldChange& NPC::getBackChange() {
 	if (changes.empty()) changes.push(WorldChange()); //make sure we have a changes object available to edit
@@ -1234,7 +1279,7 @@ void NPC::setForceBattle(bool force, bool uponarrival) { //set if the npc forces
 	fightwhenarrive = uponarrival;
 }
 //sets an effect on the npc, affected by the given affector. Affector is also treated as the way to know if it's in battle or not MARK: set effect
-NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
+NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { //we can set a manual duration, used by response effects, -1 by default
 	if (find(immunities.begin(), immunities.end(), effect) != immunities.end()) {
 		Conversation& convo = immuneText[effect];
 		if (!convo.empty()) printConversation(&convo, true); //print the dialogue for this immunity
@@ -1253,15 +1298,16 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 		if (effect == _effect) { //if we have the effect, assume we have the corresponding npceffect
 			//add the npc as one of the affectors if they weren't in the affectors vector already (heh affector vector)
 			NPCEffect& npceffect = npceffects[effect];
-			if (npceffect.duration >= effect->duration && !effect->stacks) { //it does nothing if it's already here and with an equal or greater duration
-				cout << "\n" << name << " already has " << effect->name << "!";
+			int duration = (manualduration >= 0 ? manualduration : effect->duration); //use the manual duration if one was given but the defult effect duration if not
+			if (npceffect.duration >= duration && !effect->stacks) { //it does nothing if it's already here and with an equal or greater duration
+				//cout << "\n" << name << " already has " << effect->name << "!";
 				return &npceffects[effect];
 			} //extends the duration otherwise
-			if (effect->duration < 1000) { //only print this if it isn't something infinite
+			if (duration < 1000) { //only print this if it isn't something infinite
 				cout << "\n" << name << "'s " << effect->name << " was extended!";
 				CinPause();
 			}
-			npceffect.duration = effect->duration;
+			npceffect.duration = duration;
 			if (npceffect.affectors.find(affector) == npceffect.affectors.end()) {
 				npceffect.affectors.insert(affector);
 				if (effect->stacks) npceffect.stacks++;
@@ -1296,6 +1342,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (effect->hypnotize && affector) { //adds hypnosis to the npc
 		if (!hypnosis) cout << "\n" << name << " is now fighting for the enemy!"; //if the npc wasn't already hynotized
 		hypnosis++;
+		incontrol = effect->hypnocontrol;
 	}
 	if (effect->wrath) {
 		if (!wrath && affector) cout << "\n" << name << " is very angry at " << affector->getName() << "!"; //if the npc wasn't already wrathful
@@ -1316,6 +1363,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector) {
 	if (effect->guardset) { //the attacks are supposed to print if they do this so don't print anything here
 		setGuard(effect->guardset, false);
 	}
+	if (Effect* immunity = effect->immunity) immunities.push_back(immunity); //set any immunities the effect may give us
 
 	//edit stat multipliers MARK: multiplier effects
 	attackMultiplier *= effect->attackbuff;
@@ -1404,6 +1452,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 			}
 			if (effect->hypnotize && affector) { //adds hypnosis to the npc
 				hypnosis -= stacks;
+				incontrol = true; //only one effect is hypnosis without control so we can do this
 				if (!hypnosis) cout << "\n" << name << " snapped out of it!"; //if the npc was hynotized
 			}
 			if (effect->wrath) { //removes wrath from the npc
@@ -1422,6 +1471,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 				if (affector) cout << "\n" << name << "'s attacks no longer inflict " << effect->attackeffect << "!";
 				attackeffect = NULL;
 			}
+			if (Effect* immunity = effect->immunity) immunities.erase(remove(immunities.begin(), immunities.end(), immunity), immunities.end()); //remove any immunities the effect may have given us
 
 			//edit stat multipliers MARK: multiplier effects
 			attackMultiplier /= pow(effect->attackbuff, stacks);

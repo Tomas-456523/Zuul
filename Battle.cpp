@@ -158,11 +158,12 @@ void Battle::checkEffects(NPC* npc) {
 		}
 	}
 }
-//add the effect to the alleffects vector while handling duplicates MARK: attach effect
+//handle stuff that happens when adding an effect MARK: attach effect
 void Battle::attachEffect(NPCEffect* effect) {
 	if (!effect) return; //if the effect was not able to be applied we don't do anything, can fail due to immunity or trying to remove or hypnotize boss
 	if (effect->effect->hypnotize) { //when changing hypnosis status, untake anyone they may be taking
 		effect->affected->setTaking(NULL);
+		beenhypno = true; //also, track that somebody has been hypnotized
 	}
 	if (effect->effect->speedbuff != 1) { //if the speed has changes
 		speedSort(effect->affected); //reconfigure the npc's speed and turn stuff to account for the new speed
@@ -183,14 +184,8 @@ void Battle::attachEffect(NPCEffect* effect) {
 			}
 		}
 	}
-	for (NPCEffect* neffect : alleffects) { //if there's a duplicate just return cause it's already there
-		if (neffect->effect == effect->effect && neffect->affected == effect->affected) {
-			return;
-		}
-	} //push the new effect
-	alleffects.push_back(effect);
 }
-//handle effect removal, including removing the effect from the alleffects vector MARK: detatch effect
+//handle stuff that happens during effect removal MARK: detatch effect
 void Battle::detatchEffect(NPCEffect* effect) {
 	if (!effect) return; //removeEffect on NPCs may return NULL for the effect not being there so we check for that
 	if (effect->stacks) return; //if the effect is still affecting the npc, we don't do the removal stuff
@@ -201,8 +196,6 @@ void Battle::detatchEffect(NPCEffect* effect) {
 	if (effect->effect->speedbuff != 1) { //if the speed has changes
 		speedSort(effect->affected); //reconfigure the npc's speed and turn stuff to account for the new speed
 	}
-	//stop tracking the effect
-	alleffects.erase(remove(alleffects.begin(), alleffects.end(), effect), alleffects.end());
 
 	if (effect->affected->popKO()) handleKnockout(effect->affected); //handle ko stuff if the npc was just incapacitated due to effect fall damage
 }
@@ -213,10 +206,18 @@ void Battle::handleKnockout(NPC* npc) {
 		CinPause();
 		npc->directDamage(-npc->getHealthMax());
 		return;
-	} else { //make sure the player understands this npc is incapacitated
-		cout << "\n" << npc->getName() << " is incapacitated!";
-		CinPause();
 	}
+	if (npc->getPlayerness()) { //if the player just fainted, check if the forest temple boss is here and needing to do a business proposition
+		for (NPC* sospot : enemyTeam) { //check potential sense of selves
+			if (sospot->popProposition(true)) { //if they had the proposition, dew it
+				if (doBusinessProposition(sospot, npc, true)) return; //if the player accepted the offer, stop the incapacitation process because the boss is keeping them alive
+				else break; //stop checking because we found it already, also proceed to the normal incapacitation process because the player rejected the offer
+			}
+		}
+	} 
+	//make sure the player understands this npc is incapacitated
+	cout << "\n" << npc->getName() << " is incapacitated!";
+	CinPause();
 	
 	npc->setTaking(NULL); //untake taken npcs
 
@@ -233,6 +234,20 @@ void Battle::handleKnockout(NPC* npc) {
 	}
 
 	if (trackNPC(npc)) incapacitations[npc->getParent()]++; //track that the npc got ko'd if we track them
+
+	if (!npc->getEnemy() && aliveCount(playerTeam) == 1) { //handle the betrayal attack if this is the forest temple boss fight, and now only one npc is left in the player team
+		NPC* sos = NULL; //try to find the boss in the enemy team
+		for (NPC* npc : enemyTeam) {
+			if (npc->getBetrayal()) {
+				sos = npc;
+				break;
+			}
+		} //we know it's the forest temple boss based on if it has the betrayal attack
+		if (!sos) return;
+		for (NPC* npc : playerTeam) { //find the player, and do the betrayal attack on them (if they're hypnotized but still in control, which is how we can tell they're on the boss's team)
+			if (npc->getHealth() && npc->getHypnotized() && npc->getInControl()) carryOutAttack(sos->getBetrayal(), sos, npc);
+		}
+	}
 }
 //does the hitting stuff for only one of the targets MARK: hit target
 void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry) {
@@ -242,6 +257,9 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		attackProcessing = attack->power;
 	} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
 		attackProcessing = pierceProcessing = 9999999; //just send a lot of damage to make it print the cool 999 
+	} else if (attack->percentagebased) { //if it's percentage based, set the damage to attack->power% of the reciever's health, and we direct damage later
+		attackProcessing = reciever->getHealth()*attack->power/100.0;
+		if (parry) attackProcessing /= 10.0; //if you parry it, it shouldn't deal half of the attacker's health, but you still get rewarded for parrying the attack so we just reduce the power by a factor of 10
 	} else { //normal attacks, we multiply the attack power/pierce and attack/pierce stat together so they both matter equally, and divide by 10 just cause I don't want the numbers to be too big
 		attackProcessing = attack->power * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0;
 		pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
@@ -260,7 +278,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if (hits > 1) cout << "\nHit " << j+1 << "!"; //announce which hit it was if it's multi-hit
 
 		//parry the hit if parrying the attacker
-		if (reciever->getParrying() == attacker && !attack->getBeneficial()) {
+		if (reciever->getParrying() == attacker && !attack->getBeneficial() && attack != attacker->getBetrayal()) { //you can't parry the betrayal because you're just exploding
 			cout << "\n" << reciever->getName() << " parried it!";
 			CinPause();
 			reciever->setParrying(NULL); //don't parry other attacks or hits
@@ -271,14 +289,14 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		}
 
 		attackProcessing *= (0.9 + ((double)rand()/RAND_MAX) * 0.2); //randomly vary attack power of every hit by 10%
-		bool crit = !(rand()%20); //5% chance to crit
+		bool crit = !attack->percentagebased && !(rand()%20); //5% chance to crit (unless it's a percentage based attack, then it shouldn't crit)
 		if (crit) attackProcessing *= 1.75; //75% extra attack seems to be a good sweet spot for crit multipliers
 
 		int effectiveAttack = Round(attackProcessing); //convert the processing doubles to ints
 		int effectivePierce = Round(pierceProcessing);
 
 		if ((reciever->getInvincible() && attack->power < 0) || (!reciever->getInvincible() && attack->power != 0)) { //hit normally if healing or (damaging and not invincible), never apply damage for 0 power attacks since their point isn't to affect health if that's the case
-			int damage = reciever->damage(effectiveAttack, effectivePierce);
+			int damage = (!attack->percentagebased ? reciever->damage(effectiveAttack, effectivePierce) : reciever->directDamage(effectiveAttack)); //direct damage for percentage based sice defense should not affect it
 			if (attack->lifesteal) attacker->damage(damage * -attack->lifesteal, 0); //heal the attacker based on the lifesteal
 			if (trackNPC(attacker)) {
 				if (attack->power > 0) damagedealt[attacker->getParent()] += damage;
@@ -306,15 +324,27 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if (trackNPC(attacker)) knockouts[attacker->getParent()]++; //increase ko count of the attacker if we track them
 	}
 	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
-	if (attack->appliedeffect != NULL) { //adds an effect if the attack had one
-		NPCEffect* neffect = reciever->setEffect(attack->appliedeffect, attacker);
+	if (Effect* effect = (attack->specifictarget && attack->specifictarget != reciever ? attack->nonspecificeffect : attack->appliedeffect)) { //adds an effect if the attack had one, might be different for the specific target of a multi-target attack
+		NPCEffect* neffect = reciever->setEffect(effect, attacker, (reciever->getPlayerness() ? effect->playerduration : effect->duration)); //might have a different duration for the player, but the effects applied in other ways don't have this
 		if (!neffect) { //don't target this npc type with this attack again because they were immune to the effect
-			donttarget[attack].insert(reciever->getParent());
+			donteffect[effect].insert(reciever->getParent());
 		}
 		attachEffect(neffect);
 	}
-	if (attack->cancel != NULL) { //removes the effect this attack cancels out
-		if (NPCEffect* canceled = reciever->getEffect(attack->cancel, true)) {
+	//apply any extra attack effects that the attacker might have
+	if (!attack->getBeneficial() && attacker->getAttackEffect()) { //don't do attack effects for beneficial attacks because attack effects are negative
+		attachEffect(reciever->setEffect(attacker->getAttackEffect(), attacker));
+	}
+	//check the reciever's response effects and check if any of the attacker's effects might give the reciever that effect
+	map<Effect*, Effect*> responses = reciever->getResponseEffects();
+	for (Effect* effect : attacker->getEffects()) {
+		if (Effect* response = responses[effect]) { //the effetc has a response so affect the reciever with the response
+			attachEffect(reciever->setEffect(response, attacker, (attacker->getPlayerness() ? 5 : 3))); //more duration if done by the player since they can control themselves
+			cout << "\n" << attacker->getName() << "'s " << effect->name << " game a foothold to " << reciever->getName() << "!"; //this is specific text but it works for the only effect responses in the game anyway so that's fine
+		}
+	}
+	for (Effect* cancel : attack->cancels) { //removes the effects this attack cancels out
+		if (NPCEffect* canceled = reciever->getEffect(cancel, true)) {
 			detatchEffect(reciever->removeEffect(canceled->effect, NULL)); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
 		}
 		if (reciever->popKO()) handleKnockout(reciever); //handle ko stuff if the reciever was just incapacitated due to effect fall damage
@@ -368,6 +398,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	if (attack->spbomb) { //if it's this one move, we have to do stuff related to its unique functionality
 		attack->power = 0; //starts at 0 damage
 		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
+			if (npc->getHypnotized() != attacker->getHypnotized()) continue; //hypnotized npcs don't contribute to the sp bomb (or if you're hypnotized, non-hypnotized npcs don't contribute)
 			attack->power += npc->getSP();
 			int contribution = npc->alterSp(-npc->getSP());
 			if (trackNPC(npc)) spusedup[npc->getParent()] -= contribution; //I mean we kinda used it for them but it's still their sp being used so track as sp usage
@@ -440,6 +471,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		cout << "\n" << target->getName() << "'s surrounding teammates were also affected!";
 	}
 	CinPause();
+	if (attack->nonspecificeffect) attack->specifictarget = target; //track the target so we can compare it later if the attack has a non-specific effect (non-specific instead of specific so you can't parry the attack with this which "benefits" the player)
 	if (attack->focushits) { //normal moves which focus damage on one target
 		//gets the position of the target in the team vector
 		int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
@@ -447,12 +479,16 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	} else { //unfocused moves which hit a random target for every hit
 		int hits = rand() % (attack->maxhits + 1 - attack->minhits);
 		for (size_t i = 0; i < hits + attack->minhits; i++) {
-			if (hits > 1) {
-				cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
-				CinPause();
-			}
+			if (hits > 1) cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
 			int tarPos = rand() % tarparty.size();
 			hitTargets(attacker, attack, tarparty, tarPos);
+		}
+	}
+	if (attack->trashsummons) { //if this attack trashes the attacker's summons, we do that via sending a lot of damage
+		for (NPC* npc : (attacker->getEnemy() ? enemyTeam : playerTeam)) { //check the attacker's team for its summons
+			if (npc->getSummoner() == attacker) { //if the summoner was the attacker, we trash the npc
+				npc->damage(9999999, 9999999);
+			}
 		}
 	}
 	if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
@@ -478,6 +514,10 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		bool forenemy = attack->enemysummon; //enemy and team summons are reversed when hypnotized
 		addNPC(attack->summon, attacker, (attacker->getHypnotized() ? !forenemy : forenemy));
 		if (trackNPC(attacker)) specialstat[attacker->getParent()]++; //summons are Richie's (and the player and Graham can technically summon as well but they don't have a conflicting special stat) special stat so we increment it here
+	}
+	if (attack->summonamount) { //make the player understand how these guys just appeared
+		cout << "\n" << attack->summonamount << " " << attack->summon->getName() << (attack->summonamount != 1 ? "s" : "") << " appeared!";
+		CinPause();
 	}
 	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
 	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
@@ -505,6 +545,30 @@ void Battle::checkFightEffects() {
 	if (!teameffect) return; //don't apply NULL effects
 	for (NPC* npc : playerTeam) { //give the team effect to all the non-leaders
 		if (!npc->getLeader()) attachEffect(npc->setEffect(teameffect, NULL));
+	}
+}
+//do the business proposition, which is a very specific choice sequence for the forest temple boss MARK: business proposition, and return what the player chose
+bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
+	carryOutAttack(sos->getPropAttack(), sos, plr); //do the set-up for the business proposition (remove effects)
+	if (faint) cout << sos->getName() << " catches you as you fall.";
+	else cout << sos->getName() << " shrinks down to your height.";
+	CinPause();
+	if (beenhypno) WorldState[GAMEEND] = true; //just use this as a quick cheaty skip condition for the conversation, I think it would be a waste to have a whole state for one tiny moment in one battle
+	printConversation(&sos->getPropConv(), false);
+	WorldState[GAMEEND] = false; //reset game end state, doesn't matter what faint was (if the game was ended, we wouldn't be in this battle so yeah)
+	if (AOrB(NULL, "YES", "NO")) { //if the player chooses yes, give them the effect
+		attachEffect(plr->setEffect(sos->getPropEffect()));
+		if (faint) plr->directDamage(-1); //keep the player alive if this was the "player got defeated early" fallback path
+		cout << sos->getName() << " - \"Well well, welcome to the better side!\"";
+		CinPause();
+		return true;
+	} else { //if the player rejected the business proposition
+		cout << "\n" << plr->getName() << " - \"No >:|\"";
+		CinPause();
+		if (faint) cout << sos->getName() << " - \"Ok bye, die.\"";
+		else cout << sos->getName() << " - \"Have it your way, then. I can just be amazing on my own!\"";
+		CinPause();
+		return false;
 	}
 }
 //uses the specified item from the inventory, and returns if the player's turn is over based on if we successfully used an item MARK: use item
@@ -568,9 +632,9 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 			npc = playerTeam[0]; //set the target to the only possible one
 		}
 	}
-
-	if (plr->getWrath()) { //can't use items if the player has wrath
-		cout << "\nYou're too wrathful to use items!";
+	
+	if (Effect* effect = plr->getBeneficialBlocker()) { //can't use items if the player has wrath
+		cout << "\nYou can't use items because of your " << effect->name << "!"; //say the issue
 		return false;
 	}
 
@@ -768,7 +832,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 			if (attack && attack->minLevel > plr->getLevel()) attack = NULL; //you're not supposed to use (or know about) attacks you're underleveled for, so we treat that case the same as not finding an attack
 		}
 
-		if (attack) tarteam = (attack->targetAlly ? playerTeam : enemyTeam); //see which team this attack should target
+		if (attack) tarteam = (attack->targetAlly ^ plr->getHypnotized() ? playerTeam : enemyTeam); //see which team this attack should target
 
 		//finds the target using what is currently thought to be the name
 		NPC* target = getNPCInVector(tarteam, commandExtensionP);
@@ -794,11 +858,20 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 					}
 				} //if there's no one else to target, then just let the player try to hit the away npc because there's nothing better to do while waiting for them to come back
 			}
-			if (plr->getWrath() && attack->getBeneficial() && !(attack->cancel && attack->cancel->wrath)) { //can't use beneficial attacks if self has wrath, unless it's to cure wrath
-				cout << "\nYou're too wrathful to use beneficial attacks!";
-				return false;
+			if (plr->getBeneficialBlocker() && attack->getBeneficial()) { //can't use beneficial attacks if self has a beneficial-blocking effect, unless it's to remove it
+				bool virtue = false; //try to find if the attack is for being patient and removing wrath, because it'd be counterintuitive to block a beneficial that's beneficial due to removing the thing stopping you from using beneficial attacks
+				for (Effect* cancel : attack->cancels) {
+					if (cancel->nobeneficial) { //if the canceled effect is to remove the beneficial blocker, we can use it
+						virtue = true;
+						break;
+					}
+				}
+				if (!virtue) { //if the beneficial attack wasn't for removing wrath we can't use it
+					cout << "\nYou're can't use beneficial attacks due to your " << plr->getBeneficialBlocker()->name << "!"; //say the issue
+					return false;
+				}
 			}
-			if (!attack->targets && target) { //clarify to the player how the 0-target move works
+			if ((!attack->targets || !attack->focushits) && target) { //clarify to the player how the 0-target move works
 				cout << attack->name << " doesn't need a target!";
 				return false;
 			}
@@ -913,8 +986,10 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->targetshark && !target->getShark()) continue; //shark-targeting attacks must have a shark to target
 		if (!attack->redundanteffect && target->getEffect(attack->appliedeffect, true)) continue; //if the attack shouldn't target npcs who already have the applied effect but the guy does have it
 		if (attack->donotplayer && target->getPlayerness()) continue; //don't hit the player if the attack says so
+		if (attack->onlyplayer && !target->getPlayerness()) continue; //don't hit non-players if the attack says so
 		if (attack->donotself && target == npc) continue; //don't target yourself if you shouldn't do that with this attack
-		if (donttarget[attack].count(target->getParent())) continue; //don't target this target with this attack if we've marked it to do so
+		if (attack->appliedeffect && donteffect[attack->appliedeffect].count(target->getParent())) continue; //don't target this target with this affecting attack if we've marked it to not affect this npc with this effect
+		if (attack->ignoreeffect && target->getEffect(attack->ignoreeffect)) continue; //the attack doesn't target npcs with this effect
 		if (attack->protect) { //protect attacks have various conditions
 			if (target == npc) continue; //don't protect yourself because that would be wasting SP to do literally nothing (you're already taking your hits for yourself)
 			if (npc->getGuarding() && npc->getGuarding()->getHealth() > 0) continue; //no guarding moves if we're already guarding someone still capacitated (don't switch person being guarded, that would be like "oh lol nope yeah I'm actually not defending you anymore have fun")
@@ -930,6 +1005,12 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 			if (!target->getAway()) _targets.push_back(target); //add the target if they are not away
 		}
 		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
+	}
+	if (npc->getHypnotized()) { //hypnotized npcs should prioritize not hitting fellow hypnotized npcs, because they're "on the same side", unless everyone is hypnotized, then it would be more efficient for the hypnotizer to make them beat each other up
+		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
+		for (NPC* target : targets) {
+			if (!target->getHypnotized()) _targets.push_back(target); //add the target if they are not also hypnotized
+		}
 	}
 	if (!attack->targetAlly && targets.size() > 1) { //filter out fifth npcs if the attacker attacking the opposite team and there's other non-fifth npcs, so that the fifth npcs don't affect enemy targeting too much
 		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
@@ -974,6 +1055,16 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		//if removing the leader wouldn't make it an empty list, we try to filter it out
 		if (targets.size() != 1) targets.erase(remove(targets.begin(), targets.end(), leader), targets.end());
 	}
+	if (attack->nottoohypno) { //if we shouldn't launch the attack if there's too many hypnotized npcs, check for that
+		int hypnocount = 0;
+		for (NPC* npc : targets) {
+			if (npc->getHypnotized()) hypnocount++;
+			if (hypnocount > 1) { //more than 1 is too much (works best for the one move that uses this field)
+				targets.clear();
+				break; //break because the amount isn't going to get any lower
+			}
+		}
+	}
 
 	return targets; //return the targets!
 }
@@ -994,7 +1085,7 @@ Attack* Battle::chooseAttack(NPC* npc) {
 		if (_attack->hpthreshold * npc->getHealthMax() > npc->getHealth()) { //if the npc isn't damaged enough to use the attack, we don't use it
 			continue;
 		}
-		if (npc->getWrath() && attack->getBeneficial()) { //npcs don't use beneficial attacks if they're wrathful
+		if (npc->getBeneficialBlocker() && _attack->getBeneficial()) { //npcs don't use beneficial attacks if they're being blocked from that (non-players don't have beneficial unblocking moves)
 			continue;
 		}
 		//we add the weight of the attack to the limit
@@ -1011,6 +1102,9 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 	if (!opener) { //don't print that it's their turn if it's just an opening attack
 		cout << "\n" << npc->getName() << "'s turn!"; //prints whose turn it is
 		CinPause();
+	} if (npc->popProposition()) { //if we need to do the business proposition for the forest temple boss
+		doBusinessProposition(npc, playerTeam[0], false);
+		return; //don't do the regular npc turn process
 	}
 
 	//get the attack to do! defaults to opener if this is an opening turn
@@ -1103,7 +1197,7 @@ int Battle::FIGHT() {
 		} else if (!current->getBasicAttack() && current->getSpecialAttacks().empty()) { //say idle text when there are no attacks
 			cout << current->getName() << " is " << idleText[rand()%5];
 			CinPause();
-		} else if (current->getPlayerness() && !current->getHypnotized()) { //starts the player turn!
+		} else if (current->getPlayerness() && current->getInControl()) { //starts the player turn!
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn(current);
 		} else { //does the npc's turn
