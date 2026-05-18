@@ -563,7 +563,7 @@ void Game::SetupWorld() {
 	TimeMachineDirection.emplace_back(TO_THE_ABYSS, abyss);
 
 	//Create NPCs and items MARK: make npcs, items, etc.
-	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 0, 1, 0), true, true);
+	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 1, 1, 0), true, true);
 	npcChar[self] = 'a'; //self's character representation is a because I name him A so it's easier to type his name
 	self->addRecruitedDialogue("Huh?"); //player is always recruited because he's in his own team
 	self->Recruit();
@@ -3934,8 +3934,8 @@ void Game::SetupWorld() {
 	jimmyshimmy->setBasicAttack(shrimpleshimmy);
 
 	NPC* flowerfiend = new NPC("", "FLOWER FIEND", "Really big carnivorous flower, probably the FLOWER FRIEND your sister talks about.", limbo, 0, Stats(20, 0, 7, 0, 0, 12, 9));
-	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -5, 10, 0, 1, 1, 1);
-	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 6, 16, 7, 1, 1, 1);
+	Attack* vinewhip = new Attack("VINE WHIP", "used its vines to whip", true, -5, 8, 0, 1, 1, 1);
+	Attack* crunch = new Attack("CRUNCH", "used its flowery fangs to crunch", true, 6, 12, 7, 1, 1, 1);
 	Effect* flowerpower = new Effect("FLOWER POWER", 3, 0, 0, 2.0);
 	Attack* flowerempower = new Attack("FLOWER EMPOWER", "used its flower power to buff", false, 15, 10, 5, 1, 1, 1, true, 10);
 	Attack* nutrientabsorb = new Attack("NUTRIENT ABSORB", "sucked the nutrients out of", false, 10, 10, 5, 1, 1, 1, true, 10, 0, 0.5);
@@ -3954,16 +3954,17 @@ void Game::SetupWorld() {
 	egadbot->addSpecialAttack(timber);
 
 	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 10, 10, 6, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
-	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 5, 6, 1, 1, 1);
+	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 4, 4, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 999);
 	Effect* intimidated = new Effect("INTIMIDATED", 2, 0, 0, 0.5);
 	savageroar->redundanteffect = false; //he was spamming this way too much
 	savageroar->addEffect(intimidated);
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 3, 999);
+	Attack* mprickles = new Attack("PRICKLES", "poked", false, 0, 3, 1, 1, 1, 1); //the attack is lower than normal prickles but it balances out due to the boss' attack stat
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 2, 999);
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
-	savagehog->setRecoilAttack(prickles);
+	savagehog->setRecoilAttack(mprickles);
 	savagehog->setBoss(true);
 
 	NPC* mimic = new NPC("", "MIMIC", "Big carnivorous treasure chest full of treasure and bones.", limbo, 0, Stats(50, 30, 15, 20, 20, 30, 9));
@@ -3975,7 +3976,7 @@ void Game::SetupWorld() {
 	mimic->addSpecialAttack(monymeteor);
 	mimic->setBoss(true); //of the mini variety
 
-	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 5, 8, 0, 0, 10, 9));
+	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 0, 10, 0, 0, 10, 9));
 	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, -5, 10, 0, 1, 1, 1);
 	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, 12, 5, 0, 1, 1, 1);
 	Effect* sanded = new Effect("SAND IN THE EYES", 1, 0, 0, .5, .5);
@@ -4004,34 +4005,30 @@ void Game::SetupWorld() {
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
-	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(15, 30, 5, 20, 0, 2, 9));
-	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 20, 0, 1, 1, 1);
-	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 2.5, 1.5, 1.5, 1, 50.0);
+	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(15, 20, 5, 10, 0, 2, 9));
+	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 15, 0, 1, 1, 1);
+	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 1.5, 1.5, 1.5, 1, 50.0);
 	rocknroll->selfeffect = jamming;
-	Attack* saltcure = new Attack("SALT CURE", "vomited crystals of curing salt onto", false, 15, 5, 0, 1, 1, 1);
+	Attack* saltcure = new Attack("SALT CURE", "vomited crystals of curing salt onto", false, 12, 5, 0, 1, 1, 1);
 	Effect* saltcured = new Effect("SALT CURED", 2147483647);
+	saltcure->redundanteffect = false; //would be redundant to reuse an infinte duration effect
 	saltcured->spusage = 2.0; //salt cured means you take double damage and use double sp
 	saltcured->damagebuff = 2.0;
 	saltcure->addEffect(saltcured);
 	rockbug->setBasicAttack(rocknroll);
 	rockbug->addSpecialAttack(saltcure);
 
-	/*NPC* rascal = new NPC("", "MINE RASCAL", "Little thingy who lives in the mines.", limbo, 0, Stats());
-	rascal->setBasicAttack(genericattack);
-	rascal->addSpecialAttack(genericspecial);
-	rascal->addSpecialAttack(genericcc);*/
-
 	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 13, 9));
-	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe spinning at the team", false, -5, 10, 15, 1, 1, 999);
+	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe spinning at the team", false, -5, 5, 5, 1, 1, 999);
 	pickaxerang->focushits = false;
-	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 3, 20, 20, 1, 1, 1);
-	Attack* pickstrike = new Attack("MINE", "struck", true, 6, 25, 40, 1, 1, 1);
+	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 3, 10, 10, 1, 1, 1);
+	Attack* pickstrike = new Attack("MINE", "struck", true, 6, 15, 15, 1, 1, 1);
 	pickstrike->afterdesc = " with his pickaxe";
 	skeleminer->setBasicAttack(pickaxerang);
 	skeleminer->addSpecialAttack(sdynamite);
 	skeleminer->addSpecialAttack(pickstrike);
 
-	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(100, 30, 20, 30, 20, 5, 9));
+	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(50, 15, 20, 15, 20, 5, 9));
 	Attack* dpincer = new Attack("PINCER", "pinced", true, -5, 10, 10, 1, 1, 1);
 	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", false, 5, 1, 100, 15, 15, 1);
 	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", false, 10, 30, 20, 1, 1, 3);
@@ -4809,7 +4806,7 @@ void Game::SetupWorld() {
 						  {senseofself, "Help me finish them off, and we can defeat BURGER together!"},
 						  {NULL, "Join SENSE OF SELF? (YES or NO)"}}));
 	prop1.alt = prop2;
-	prop1.skipcondition = GAMEEND; //we use game ended as a convenient skip condition which we modify from Battle during the business proposition, since it's supposed to be false during gameplay anyway
+	prop1.skipcondition = {GAMEEND}; //we use game ended as a convenient skip condition which we modify from Battle during the business proposition, since it's supposed to be false during gameplay anyway
 	Attack* getout = new Attack("BUSINESS PROPOSITION", "is making a business proposition to you", false, 0, 0, 0, 1, 1, 999);
 	getout->cancels = {inthespotlight, outthespotlight, pride}; //get rid of everyone's effects because this is a new part of the fight
 	getout->transformation = senseofsel2; //turns into phase 2, stronger and cooler attacks and doesn't do any other temptations anymore
@@ -5015,8 +5012,7 @@ void Game::SetupWorld() {
 	calmdown->addDescription("Take a breather in order to calm down and make your WRATH wear off.");
 	calmdown->selfcancel = wrath;
 	calmdown->focushits = false;
-	wrath->playerresponse = calmdown;
-	wrath->respondifplayer = true; //the player can only calm themselves down so we only give the attack if the player is affected
+	wrath->playerresponse = calmdown; //the player can only calm themselves down so we only give the attack if the player is affected
 	firewithfire->setTrackRage({{0.1, firewithfir2}, {0.2, firewithfir3}}); //phase 2 after 10% rage and phase 3 after 20%, relative to total health
 	NPC* viola; //we need viola here for fire with fire to recognize her
 	Conversation selfrb = {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate. ^^D"}, {self, "SHUT UP >:|"}};
@@ -6787,6 +6783,8 @@ void Game::SetupWorld() {
 	desert->blockExit(EAST, SAND, "blocked by scorching sands.");
 	desertplain->blockExit(WEST, SAND, "blocked by scorching sands.");
 	deserttempleentrance->blockExit(EAST, SAND, "blocked by scorching sands.");
+	deserttempleentrance->blockExit(NORTHEAST, CHASM, "blocked by a steep ravine.");
+	deserthill->blockExit(SOUTHWEST, CHASM, "blocked by a steep ravine.");
 	desertdune->blockExit(WEST, SAND, "blocked by scorching sands.");
 	mineshaft->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	minespring->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
@@ -7385,7 +7383,6 @@ void Game::dropItem(Room* currentRoom, const char* itemname) {
 		Attack* attack = weapon->getAttack();
 		self->removeSpecialAttack(attack);
 		cout << self->getName() << " can no longer use " << attack->name << ".";
-		CinPause();
 	} else if (!strcmp(item->getType(), "escapeorb")) { //escape orbs reset their temples and teleport you out
 		CinPause();
 		EscapeOrb* orb = (EscapeOrb*)item;
@@ -7716,7 +7713,10 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 			mimic->setRoom(currentRoom);
 			cout << "\nYou were met with a " << mimic->getName() << "!";
 			CinPause();
+			trackItemUse(item, currentRoom); //do the final item stuff before fighting, because otherwise fight()'s PrintRoom prints "there is [treasure item] here" even though you just used it and it isn't there anymore
+			deleteItem(currentRoom, &inventory, item);
 			fight(currentRoom, mimic->getName());
+			return; //return early so we don't redelete and relog the item
 		} else {
 			if (int monies = treasure->getMony()) { //if the treasure has monies
 				mony += monies; //adds the mony to the player's mony balance
@@ -8263,6 +8263,7 @@ void Game::play() {
 	sessions++; //we have one more session since we're playing!
 
 	PrintRoomData(self->getRoom()); //prints the data of the starting room
+	self->getRoom()->undefeatEnemies(); //make enemies be respawned when you load a save
 
 	time_t savetime = time(NULL); //the last time this session was saved, to get total save file time and how much progress will be lost when quitting without saving
 

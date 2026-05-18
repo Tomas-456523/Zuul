@@ -44,7 +44,7 @@ struct Save {
 	*  Section U: Only exists while pursuer is pursuing, tracks their room
 	*  Section R: Stuff related to the player team
 	*  - First, the teammate this chunk is tracking:
-	*    a - Bernard	l - Jilly	h - Henry Jerry
+	*    a - Player 	l - Jilly	h - Henry Jerry
 	*    f - Floria		m - Mike	j - Michelin	g - Graham
 	*    e - Egadwick	v - Viola	x - Carlos		r - Richie
 	*    k - Absolom	c - Cacty	p - Plum		b - Ratman

@@ -51,7 +51,7 @@ struct Attack {
 	bool redundanteffect = true; //allow doing effect attack if the target has the effect already
 	Effect* selfeffect = NULL; //attacker gets affected by this effect after using
 	vector<Effect*> synergies; //if the target has these effects effect, the attack power goes up by 1.5x each
-	vector<Effect*> cancels = NULL; //attack removes these effects
+	vector<Effect*> cancels; //attack removes these effects
 	Effect* ignoreeffect = NULL; //don't target npcs who have this effect
 	Effect* selfcancel = NULL; //attack removes this effect from self
 

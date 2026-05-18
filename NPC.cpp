@@ -247,11 +247,12 @@ Item* NPC::getInternalBlender() { //get the blender item that this npc has
 	return internalblender;
 }
 Effect* NPC::getBeneficialBlocker() { //get effect blocking use of beneficial moves and items
-	for (Effec* effect : effects) {
+	for (Effect* effect : effects) {
 		if (effect->nobeneficial) { //no beneficial is due to this effect, return it
 			return effect;
 		}
 	}
+	return NULL; //return null because we found nothing
 }
 bool NPC::popProposition(bool force) { //pop if this is the forest temple boss which has a proposition to join him
 	if (!force && health > stats.hpmax*prophealth) return false; //don't do the proposition yet, health is too high
@@ -1559,6 +1560,7 @@ void NPC::tickEffect(Effect* effect) {
 					if (!health) knockouts[affector->getParent()]++; //increase ko count of the attacker if we just got ko'd, just share the credit because it's basically all their faults
 				}
 			}
+			CinPause();
 		}
 		if (effect->spleak) { //applies sp alterations
 			int spchange = alterSp(-effect->spleak, effect->name);
@@ -1569,6 +1571,8 @@ void NPC::tickEffect(Effect* effect) {
 			}
 		}
 		if (effect->guardset) { //applies the guard
+			if (!guard) cout << "\n" << name << "'s guard went back up!";
+			CinPause();
 			setGuard(effect->guardset, false);
 		}
 	}

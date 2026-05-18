@@ -53,6 +53,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 		NPC* npc = new NPC(*_npc);
 		npc->setEnemy(worldleader->getEnemy()); //make eneminess match the leader
 		team.push_back(npc);
+		numberNPC(npc, team); //de-duplicate the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
 		encountered.insert(getBase(_npc)); //we have encountered the npc so we track it as one that was encountered
 		if (trackNPC(_npc)) Rnpcs.insert(_npc->getParent()); //start tracking the trackable npc's stats in section R now because they've been encountered in battle
 		vector<NPC*> guards = npc->getGuardians();
@@ -68,11 +69,6 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 
 	//add everyone to a list of everyone for convenience
 	everyone.insert(everyone.begin(), team.begin(), team.end());
-
-	//de-duplicate the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
-	for (NPC* npc : team) {
-		numberNPC(npc, team);
-	}
 
 	if (!scaleteam) return; //don't scale the team if we're told not to (also skips reward adding, but that doesn't matter in every context scaleteam is set to false anyway)
 
@@ -93,12 +89,12 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 		team = &playerTeam;
 	}
 	NPC* newguy = new NPC(*npc);
+	team->push_back(newguy); //set the teams before setting the name since numberNPC assumes the npc is in the team
+	everyone.push_back(newguy);
 	numberNPC(newguy, *team); //number the npc so that the player can specify which one to target
 	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
 	buildReward(newguy, true); //add to the fight reward based on the new guy
 	newguy->setSummoner(summoner);
-	team->push_back(newguy);
-	everyone.push_back(newguy);
 	if (newguy->getOpener()) { //do the opening attack if they have one
 		checkOpeners({newguy});
 	}
@@ -107,7 +103,7 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 }
 //adds a number to the end of an npc's name if we need to, to account for duplicates
 void Battle::numberNPC(NPC* npc, const vector<NPC*>& team) {
-	int count = 1; //we include the given npc so the name count starts at 1
+	int count = 0; //the npc is in the team so the name count starts at 0
 	for (int i = 0; i < team.size(); i++) { //renames the enemy according to the amount of the same named enemy present. (eg. there is a BOB here already and we add a new BOB. BOB sees there's another BOB and renames himself BOB 2)
 		const char* name = strstr(team[i]->getName(), npc->getName());
 		if (name == NULL || name != &team[i]->getName()[0]) { //if we didn't find the name or it the name was found after the beginning, the npc has a different name so we continue
@@ -169,8 +165,8 @@ void Battle::attachEffect(NPCEffect* effect) {
 		speedSort(effect->affected); //reconfigure the npc's speed and turn stuff to account for the new speed
 	}
 	//if the player gets some response to this effect, give them that so they can use it
-	if (effect->effect->response && (!effect->effect->respondifplayer || effect->affected->getPlayerness())) { //some effects only give the response if the player is affected
-		Attack* response = effect->effect->response;
+	Attack* response = (effect->affected->getPlayerness() ? effect->effect->playerresponse : effect->effect->teamresponse);
+	if (response) {
 		bool pfound = false; //we only want to print it once but technically there might be more than one player so we have this check
 		set<NPC*> players; //we have this check specifically because the SUPERSMOOTHIE might make duplicate positions for the exact same npc instance
 		for (NPC* npc : playerTeam) { //the player might've gotten duplicated due to kosmic katana so we check for playerness in a for loop
@@ -494,6 +490,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	if (attack->recoil) { //apply recoil with 0 pierce, because pierce is something intentional
 		attacker->damage(attack->recoil * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0, 0);
 		CinPause();
+		if (attacker->popKO()) handleKnockout(attacker); //if the guy just ko'd themselves due to recoil
 	}
 	if (attack->guardset) attacker->setGuard(attack->guardset, true); //set the guard if the attack does that, add it to the current guard unless it's negative, then it goes from 0 because getGuard returns that for values < 0
 	if (attack->protect) { //handle guarding here and not in hitTargets because we it only guards one person anyway
@@ -989,7 +986,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->onlyplayer && !target->getPlayerness()) continue; //don't hit non-players if the attack says so
 		if (attack->donotself && target == npc) continue; //don't target yourself if you shouldn't do that with this attack
 		if (attack->appliedeffect && donteffect[attack->appliedeffect].count(target->getParent())) continue; //don't target this target with this affecting attack if we've marked it to not affect this npc with this effect
-		if (attack->ignoreeffect && target->getEffect(attack->ignoreeffect)) continue; //the attack doesn't target npcs with this effect
+		if (attack->ignoreeffect && target->getEffect(attack->ignoreeffect, true)) continue; //the attack doesn't target npcs with this effect
 		if (attack->protect) { //protect attacks have various conditions
 			if (target == npc) continue; //don't protect yourself because that would be wasting SP to do literally nothing (you're already taking your hits for yourself)
 			if (npc->getGuarding() && npc->getGuarding()->getHealth() > 0) continue; //no guarding moves if we're already guarding someone still capacitated (don't switch person being guarded, that would be like "oh lol nope yeah I'm actually not defending you anymore have fun")
