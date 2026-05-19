@@ -749,9 +749,9 @@ void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantl
 	for (Attack* attack : special_attacks) { //checks if we got a new attack
 		if (attack->minLevel <= level && attack->minLevel > oldlevel) {
 			if (trackLevelUp) newAttacks.push_back(attack); //save the new attack so we can print that we got it later
-			calculateWeights(); //recalculate weights to account for the new attack
 		}
 	}
+	calculateWeights(); //recalculate weights to account for any new attacks
 }
 //makes this npc a leader npc
 void NPC::setLeader(bool _leader, int _level, Room* room, bool respawn) {
@@ -1000,6 +1000,8 @@ void NPC::setBaseStats(Stats _stats) { //reset base stats and calculate new curr
 	stats -= basestats; //remove current base from stats
 	basestats = _stats; //reset base
 	stats += basestats; //add new base to the total stats
+	health = stats.hpmax; //make sure hp and sp are adjusted accordingly
+	sp = stats.spmax / 3;
 }
 void NPC::setBasicAttack(Attack* attack) {
 	standard_attack = attack;
@@ -1327,38 +1329,64 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { /
 		}
 	}
 
+	bool pause = false; //if we print something and should pause at the end
+
 	//MARK: non-multiplier effects
 	if (effect->invincible) {
-		if (!invincibility && affector) cout << "\n" << name << " is invincible!"; //if we weren't already invincible
+		if (!invincibility && affector) { //if we weren't already invincible
+			cout << "\n" << name << " is invincible!";
+			pause = true;
+		}
 		invincibility++;
 	}
 	if (effect->evasive) {
-		if (!evasion && affector) cout << "\n" << name << "'s dodging abilities were heightened!"; //if we weren't already evasive
+		if (!evasion && affector) { //if we weren't already evasive
+			cout << "\n" << name << "'s dodging abilities were heightened!";
+			pause = true;
+		}
 		evasion++;
 	}
 	if (effect->freeze) { //adds freeze to the npc
-		if (!freeze && affector) cout << "\n" << name << " was frozen in place!"; //if we weren't already frozen
+		if (!freeze && affector) { //if we weren't already frozen
+			cout << "\n" << name << " was frozen in place!";
+			pause = true;
+		}
 		freeze++;
 	}
 	if (effect->hypnotize && affector) { //adds hypnosis to the npc
-		if (!hypnosis) cout << "\n" << name << " is now fighting for the enemy!"; //if the npc wasn't already hynotized
+		if (!hypnosis) { //if the npc wasn't already hynotized
+			cout << "\n" << name << " is now fighting for the enemy!";
+			pause = true;
+		}
 		hypnosis++;
 		incontrol = effect->hypnocontrol;
 	}
 	if (effect->wrath) {
-		if (!wrath && affector) cout << "\n" << name << " is very angry at " << affector->getName() << "!"; //if the npc wasn't already wrathful
+		if (!wrath && affector) { //if the npc wasn't already wrathful
+			cout << "\n" << name << " is very angry at " << affector->getName() << "!";
+			pause = true;
+		}
 		wrath++;
 	}
 	if (effect->tiring) { //adds recovering to the npc
-		if (!recovering && affector) cout << "\n" << name << " is recovering from the attack!";//print it if the npc wasn't already recovering
+		if (!recovering && affector) { //print it if the npc wasn't already recovering
+			cout << "\n" << name << " is recovering from the attack!";
+			pause = true;
+		}
 		recovering++;
 	}
 	if (effect->remove) {
-		if (affector) cout << "\n" << name << " left the battlefield!";
+		if (affector) {
+			cout << "\n" << name << " left the battlefield!";
+			pause = true;
+		}
 		away = true;
 	}
 	if (effect->attackeffect) { //only one effect in the game uses this so we don't need to worry about multiple effects handling
-		if (!attackeffect) cout << "\n" << name << "'s attacks will now inflict " << effect->attackeffect << "!";
+		if (!attackeffect && affector) {
+			cout << "\n" << name << "'s attacks will now inflict " << effect->attackeffect << "!";
+			pause = true;
+		}
 		attackeffect = effect->attackeffect;
 	}
 	if (effect->guardset) { //the attacks are supposed to print if they do this so don't print anything here
@@ -1377,45 +1405,44 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { /
 	if (effect->spusage != 1) calculateWeights(); //recalculate weights to account for new sp costs
 
 	if (affector) { //print stat changes if in battle
-		bool pause = false;
 		if (effect->defensebuff != 1) {
 			cout << "\n" << name << "'s DEFENSE went ";
-			if (defenseMultiplier == 1) cout << (effect->defensebuff > 1 ? "up" : "down") << " to " << defenseMultiplier << "x!";
+			if (defenseMultiplier != 1) cout << (effect->defensebuff > 1 ? "up" : "down") << " to " << defenseMultiplier << "x!";
 			else cout << "back to normal!";
 			pause = true;
 		} if (effect->attackbuff != 1) {
 			cout << "\n" << name << "'s ATTACK went ";
-			if (attackMultiplier == 1) cout << (effect->attackbuff > 1 ? "up" : "down") << " to " << attackMultiplier << "x!";
+			if (attackMultiplier != 1) cout << (effect->attackbuff > 1 ? "up" : "down") << " to " << attackMultiplier << "x!";
 			else cout << "back to normal!";
 			pause = true;
 		} if (effect->toughbuff != 1) {
 			cout << "\n" << name << "'s TOUGHNESS went ";
-			if (toughMultiplier == 1) cout << (effect->toughbuff > 1 ? "up" : "down") << " to " << toughMultiplier << "x!";
+			if (toughMultiplier != 1) cout << (effect->toughbuff > 1 ? "up" : "down") << " to " << toughMultiplier << "x!";
 			else cout << "back to normal!";
 			pause = true;
 		} if (effect->piercebuff != 1) {
 			cout << "\n" << name << "'s PIERCE went ";
-			if (pierceMultiplier == 1) cout << (effect->piercebuff > 1 ? "up" : "down") << " to " << pierceMultiplier << "x!";
+			if (pierceMultiplier != 1) cout << (effect->piercebuff > 1 ? "up" : "down") << " to " << pierceMultiplier << "x!";
 			else cout << "back to normal!";
 			pause = true;
 		} if (effect->speedbuff != 1) {
 			cout << "\n" << name << "'s SPEED went ";
-			if (speedMultiplier == 1) cout << (effect->speedbuff > 1 ? "up" : "down") << " to " << speedMultiplier << "x!";
+			if (speedMultiplier != 1) cout << (effect->speedbuff > 1 ? "up" : "down") << " to " << speedMultiplier << "x!";
 			else cout << "back to normal!";
 			pause = true;
 		} if (effect->damagebuff != 1) {
 			cout << "\n" << name << " now takes ";
-			if (damageMultiplier == 1) cout << damageMultiplier << "x damage!";
+			if (damageMultiplier != 1) cout << damageMultiplier << "x damage!";
 			else cout << "normal damage!";
 			pause = true;
 		} if (effect->spusage != 1) {
 			cout << "\n" << name << "'s moves now use ";
-			if (defenseMultiplier == 1) cout << spUseMultiplier << "x SP!";
+			if (spUseMultiplier != 1) cout << spUseMultiplier << "x SP!";
 			else cout << "a normal amount of SP!";
 			pause = true;
 		}
-		if (pause) CinPause();
 	}
+	if (pause) CinPause();
 	
 	return &npceffects[effect]; //return a reference to the npc's manager of this effect
 }
@@ -1438,38 +1465,64 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 				CinPause();
 			}
 
+			bool pause = false;
+
 			//MARK: non-multiplier effects
 			if (effect->invincible) {
 				invincibility -= stacks;
-				if (!invincibility && affector) cout << "\n" << name << " is no longer invincible!"; //if we were invincible
+				if (!invincibility && affector) { //if we were invincible
+					cout << "\n" << name << " is no longer invincible!";
+					pause = true;
+				}
 			}
 			if (effect->evasive) {
 				evasion -= stacks;
-				if (!evasion && affector) cout << "\n" << name << "'s dodging abilities returned to normal!"; //if we were evasive
+				if (!evasion && affector) { //if we were evasive
+					cout << "\n" << name << "'s dodging abilities returned to normal!";
+					pause = true;
+				}
 			}
 			if (effect->freeze) { //removes freeze from the npc
 				freeze -= stacks;
-				if (!freeze && affector) cout << "\n" << name << " broke free!"; //if we were frozen
+				if (!freeze && affector) { //if we were frozen
+					cout << "\n" << name << " broke free!";
+					pause = true;
+				}
 			}
 			if (effect->hypnotize && affector) { //adds hypnosis to the npc
 				hypnosis -= stacks;
-				incontrol = true; //only one effect is hypnosis without control so we can do this
-				if (!hypnosis) cout << "\n" << name << " snapped out of it!"; //if the npc was hynotized
+				incontrol = true; //only one effect is hypnosis without control so we can do this without affecting other hypnotizing effects
+				if (!hypnosis) { //if the npc was hynotized
+					cout << "\n" << name << " snapped out of it!";
+					pause = true;
+				}
 			}
 			if (effect->wrath) { //removes wrath from the npc
 				wrath -= stacks;
-				if (!wrath && affector) cout << "\n" << name << " calmed down!";
+				if (!wrath && affector) {
+					cout << "\n" << name << " calmed down!";
+					pause = true;
+				}
 			}
 			if (effect->tiring) { //removes recovering from the npc
 				recovering -= stacks;
-				if (!recovering && affector) cout << "\n" << name << " has finished recovering!";//print it if the npc was recovering
+				if (!recovering && affector) { //print it if the npc was recovering
+					cout << "\n" << name << " has finished recovering!";
+					pause = true;
+				}
 			}
 			if (effect->remove) {
-				if (affector) cout << "\n" << name << " is back!";
+				if (affector) {
+					cout << "\n" << name << " is back!";
+					pause = true;
+				}
 				away = false;
 			}
 			if (effect->attackeffect) { //only one effect in the game uses this so we don't need to worry about multiple effects handling
-				if (affector) cout << "\n" << name << "'s attacks no longer inflict " << effect->attackeffect << "!";
+				if (affector) {
+					cout << "\n" << name << "'s attacks no longer inflict " << effect->attackeffect << "!";
+					pause = true;
+				}
 				attackeffect = NULL;
 			}
 			if (Effect* immunity = effect->immunity) immunities.erase(remove(immunities.begin(), immunities.end(), immunity), immunities.end()); //remove any immunities the effect may have given us
@@ -1485,45 +1538,45 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 			if (effect->spusage != 1) calculateWeights(); //recalculate weights to account for new sp costs
 
 			if (affector) { //print stat changes if in battle
-				bool pause = false;
 				if (effect->defensebuff != 1) {
 					cout << "\n" << name << "'s DEFENSE went ";
-					if (defenseMultiplier == 1) cout << (effect->defensebuff < 1 ? "up" : "down") << " to " << defenseMultiplier << "x!";
+					if (defenseMultiplier != 1) cout << (effect->defensebuff < 1 ? "up" : "down") << " to " << defenseMultiplier << "x!";
 					else cout << "back to normal!";
 					pause = true;
 				} if (effect->attackbuff != 1) {
 					cout << "\n" << name << "'s ATTACK went ";
-					if (attackMultiplier == 1) cout << (effect->attackbuff < 1 ? "up" : "down") << " to " << attackMultiplier << "x!";
+					if (attackMultiplier != 1) cout << (effect->attackbuff < 1 ? "up" : "down") << " to " << attackMultiplier << "x!";
 					else cout << "back to normal!";
 					pause = true;
 				} if (effect->toughbuff != 1) {
 					cout << "\n" << name << "'s TOUGHNESS went ";
-					if (toughMultiplier == 1) cout << (effect->toughbuff < 1 ? "up" : "down") << " to " << toughMultiplier << "x!";
+					if (toughMultiplier != 1) cout << (effect->toughbuff < 1 ? "up" : "down") << " to " << toughMultiplier << "x!";
 					else cout << "back to normal!";
 					pause = true;
 				} if (effect->piercebuff != 1) {
 					cout << "\n" << name << "'s PIERCE went ";
-					if (pierceMultiplier == 1) cout << (effect->piercebuff < 1 ? "up" : "down") << " to " << pierceMultiplier << "x!";
+					if (pierceMultiplier != 1) cout << (effect->piercebuff < 1 ? "up" : "down") << " to " << pierceMultiplier << "x!";
 					else cout << "back to normal!";
 					pause = true;
 				} if (effect->speedbuff != 1) {
 					cout << "\n" << name << "'s SPEED went ";
-					if (speedMultiplier == 1) cout << (effect->speedbuff < 1 ? "up" : "down") << " to " << speedMultiplier << "x!";
+					if (speedMultiplier != 1) cout << (effect->speedbuff < 1 ? "up" : "down") << " to " << speedMultiplier << "x!";
 					else cout << "back to normal!";
 					pause = true;
 				} if (effect->damagebuff != 1) {
 					cout << "\n" << name << " now takes ";
-					if (damageMultiplier == 1) cout << damageMultiplier << "x damage!";
+					if (damageMultiplier != 1) cout << damageMultiplier << "x damage!";
 					else cout << "normal damage!";
 					pause = true;
 				} if (effect->spusage != 1) {
 					cout << "\n" << name << "'s moves now use ";
-					if (defenseMultiplier == 1) cout << spUseMultiplier << "x SP!";
+					if (spUseMultiplier != 1) cout << spUseMultiplier << "x SP!";
 					else cout << "a normal amount of SP!";
 					pause = true;
 				}
-				if (pause) CinPause();
 			}
+
+			if (pause) CinPause();
 
 			//apply fall damage (effect removal damage) if the npc isn't invincible (or the fall damage heals for some reason)
 			if (effect->falldamage && !(effect->falldamage > 0 && invincibility)) {

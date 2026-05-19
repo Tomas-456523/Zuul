@@ -173,7 +173,7 @@ namespace Helper {
 		for (Attack* attack : npc->getSpecialAttacks()) {
 			//we only print attacks if the npc is leveled up enough to use them
 			if (attack->minLevel <= npc->getLevel()) {
-				cout << "\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
+				cout << "\n" << attack->name << " - " << attack->trueDesc << " - Costs " << Round(attack->cost * npc->getSPUseMultiplier()) << " SP";
 			}
 		}
 		commandcount[9]++; //increment successful attacksing
@@ -320,7 +320,7 @@ namespace Helper {
 		}
 	}
 	//print the level up data tracked by this npc
-	void printLvlUpData(NPC* npc) {
+	void printLvlUpData(NPC* npc, bool finalattackpause) {
 		if (npc->getLevelUp()) {
 			cout << "\n" << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
 			npc->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
@@ -341,9 +341,11 @@ namespace Helper {
 			cout << "\n  MAX SP - " << npc->getSPMax();
 			if (statChanges[6]) cout << " (+" << statChanges[6] << ")";
 			CinPause();
-			for (Attack* att : npc->popNewAttacks()) { //print any new attacks learned and what they do
+			vector<Attack*> atts = npc->popNewAttacks();
+			for (size_t i = 0; i < atts.size(); i++) { //print any new attacks learned and what they do
+				Attack* att = atts[i];
 				cout << "\n" << npc->getName() << " learned " << att->name << "!\n" << att->name << " - " << att->trueDesc;
-				CinPause();
+				if (finalattackpause || i != atts.size()-1) CinPause();
 			}
 		}
 	}

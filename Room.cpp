@@ -84,13 +84,15 @@ const char* Room::getBlockType(const char* direction) { //get why it's blocked
 const char* Room::getSpecialExit() { //gets the special exit which is different for different room types but we basically just use it for the time machine's OUT
 	return specialExit;
 }
-Item* Room::popBackup() {
+Item* Room::popBackup(int force) { //we can force it to do one or the other options as well (for loading saves)
 	Item* _backup;
-	if (onebackup) { //if there is only one backup
+	if (force == 1 || onebackup) { //if there is only one backup
 		_backup = backup;
 		backup = NULL; //make gift NULL because we only give one gift
-	} else if (!getItemInVector(items, backup->getName())) { //if there is endless backups (and there isn't one just lying on the floor), give a copy of the backup
+		logW("c", id); //log the popping
+	} else if (force == 2 || !getItemInVector(items, backup->getName())) { //if there is endless backups (and there isn't one just lying on the floor), give a copy of the backup
 		_backup = backup->Duplicate();
+		logW("k", id); //log the duplicating of the item
 	}
 	return _backup;
 }

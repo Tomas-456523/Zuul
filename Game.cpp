@@ -584,16 +584,16 @@ void Game::SetupWorld() {
 	headbutt->recoil = 10;
 	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
 	self->addSpecialAttack(headbutt);
-	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 20, 10, 1, 1, 1, false, 8);
-	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (20 ATTACK, 10 PIERCE)");
+	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 15, 10, 1, 1, 3, false, 8);
+	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (15 ATTACK, 10 PIERCE)");
 	Attack* punchflurry = new Attack("PUNCH FLURRY", "unleashed a flurry of punches upon", true, 7, 5, 0, 6, 7, 1, false, 15);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
 	self->addSpecialAttack(punchflurry);
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
 	shurikenthrow->addDescription("Throw a spread of shurikens at the target, with varying success since you're just chucking them. (7 ATTACK, 5 PIERCE, 0-2 hits)");
 	Item* shurikens = new WeaponItem("SHURIKENS", "A bundle of ninja shurikens with a note attached:\n\"Congratulations on defeating our ninja scout. Take these shurikens and train in the ninja ways,\nand maybe one day you'll become a true ninja.\"", ninjaland, shurikenthrow);
-	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", false, 10, 8, 5, 5, 6, 1);
-	bonedrill->addDescription("Spin the conic bone, drilling into the target. (8 ATTACK, 5 PIERCE, 5-6 hits)");
+	Attack* bonedrill = new Attack("BONE CONE", "launched a drill of bone at", false, 10, 5, 3, 5, 6, 1);
+	bonedrill->addDescription("Spin the conic bone, drilling into the target. (5 ATTACK, 3 PIERCE, 5-6 hits)");
 	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
 	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", false, 15, 25, 0, 2, 2, 1); //no contact because the scarf stretches far from Bernard
 	scarfsmack->afterdesc = "with his scarf";
@@ -620,10 +620,10 @@ void Game::SetupWorld() {
 	Effect* onfire = new Effect("ON FIRE", 3, 5, 0, 1, 0.8);
 	pdeadlyspinferno->addEffect(onfire);
 	pdeadlyspinferno->addDescription("Fly at the target and their surroundings in a deadly flaming tornado, also leaving them on fire. (10 ATTACK, 20 PIERCE, 5 hits)");
-	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", false, 12, 35, 15, 1, 1, 1, false, 12);
-	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (35 ATTACK, 15 PIERCE)");
-	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", false, 19, 50, 25, 1, 1, 1, false, 18);
-	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (50 ATTACK, 25 PIERCE)");
+	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", false, 15, 20, 15, 1, 1, 1, false, 12);
+	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (20 ATTACK, 15 PIERCE)");
+	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", false, 22, 35, 25, 1, 1, 1, false, 18);
+	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (35 ATTACK, 25 PIERCE)");
 	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", false, 0, 0, 0, 1, 1, 9, false, 25);
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
@@ -670,25 +670,25 @@ void Game::SetupWorld() {
 	floria->setTalkOnRecruit(true);
 	floria->setRecruitable(true);
 
-	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", false, -5, -5, 20, 1, 1, 1, true);
+	Attack* heal = new Attack("PHOTOSYNTHESIS", "sent a healing beam towards", false, -5, -5, 0, 1, 1, 1, true);
 	floria->setBasicAttack(heal);
 	Attack* rosethorn = new Attack("ROSE THORN", "called upon a rose friend to poke", false, 6, 10, 15, 1, 1, 1, false);
 	rosethorn->addDescription("Call a rose friend to poke the target with its thorns. (10 ATTACK, 15 PIERCE)");
 	floria->addSpecialAttack(rosethorn);
-	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -13, 20, 1, 1, 1, true, 6);
+	Attack* turboheal = new Attack("TURBOSYNTHESIS", "sent a big healing beam towards", false, 4, -13, 0, 1, 1, 1, true, 6);
 	turboheal->addDescription("Use flower power to greatly heal a teammate. (20 POWER)");
 	floria->addSpecialAttack(turboheal);
-	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", false, 5, 0, 0, 0, 0, 0, true, 8);
+	Attack* enroot = new Attack("ENROOT", "started drawing power from the soil", false, 3, 0, 0, 0, 0, 0, true, 8);
 	enroot->addDescription("Draw power from the soil, building SP.");
 	Effect* rooted = new Effect("ROOTED", 5, 0, -5);
 	enroot->selfeffect = rooted;
 	enroot->focushits = false;
 	floria->addSpecialAttack(enroot);
-	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", false, 20, -20, 20, 1, 1, 1, true, 10);
+	Attack* recapacitate = new Attack("RECAPACITATE", "used flower power to recapacitate", false, 17, -10, 0, 1, 1, 1, true, 10);
 	recapacitate->targetFainted = true;
 	recapacitate->addDescription("Use flower power to recapacitate a teammate. (20 POWER)");
 	floria->addSpecialAttack(recapacitate);
-	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 1, 1, 999, true, 8);
+	Attack* aprilshower = new Attack("APRIL SHOWERS", "called an SP shower from the clouds", false, 25, 0, 0, 1, 1, 999, true, 16);
 	aprilshower->addDescription("Call upon the clouds to rain SP upon the team.");
 	Effect* spshower = new Effect("SP SHOWER", 6, 0, -6);
 	aprilshower->addEffect(spshower);
@@ -697,11 +697,11 @@ void Game::SetupWorld() {
 	nitroheal->afterdesc = " to peak health";
 	nitroheal->addDescription("Use flower power to heal a teammate to peak health.");
 	floria->addSpecialAttack(nitroheal);
-	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 25, -999, 20, 1, 1, 1, true, 15);
+	Attack* hypercapacitate = new Attack("HYPERCAPACITATE", "used flower power to recapacitate", false, 25, -999, 0, 1, 1, 1, true, 16);
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
-	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", false, 20, 100, 100, 1, 1, 1, false, 17);
+	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", false, 22, 100, 100, 1, 1, 1, false, 17);
 	superpower->instakill = true;
 	superpower->addDescription("Unleash the power of the earth's core.");
 	floria->addSpecialAttack(superpower);
@@ -764,10 +764,10 @@ void Game::SetupWorld() {
 	egadwick->addSpecialAttack(overclock);
 	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", false, 4, 0, 0, 1, 1, 1, false, 8);
 	shieldacid->addDescription("Throw a beaker of shield-melting acid at the target.");
-	Effect* acidified = new Effect("ACIDIFIED", 3, 10, 0, 1, 0.5, 0.5);
+	Effect* acidified = new Effect("ACIDIFIED", 3, 8, 0, 1, 0.5, 0.5);
 	shieldacid->addEffect(acidified);
 	egadwick->addSpecialAttack(shieldacid);
-	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 20, 20, 1, 1, 3, false, 10, 20);
+	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 10, 10, 1, 1, 3, false, 10, 20);
 	emp->addDescription("Throw an EMP, frying some of the target's and surrounding enemies' SP.");
 	egadwick->addSpecialAttack(emp);
 	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 1, 1, 1, true, 12);
@@ -775,7 +775,7 @@ void Game::SetupWorld() {
 	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0, 1, 1, 1, 2.0);
 	hyperclock->addEffect(hyperclocked);
 	egadwick->addSpecialAttack(hyperclock);
-	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", false, 20, 10, 20, 4, 8, 3, false, 15);
+	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", false, 20, 8, 20, 4, 4, 3, false, 15);
 	rocketscience->addDescription("Launch a volley of rockets at the enemy team.");
 	rocketscience->focushits = false;
 	egadwick->addSpecialAttack(rocketscience);
@@ -864,11 +864,11 @@ void Game::SetupWorld() {
 	forestknight->addSpecialAttack(splinter);
 	Attack* blitz = new Attack("BLITZ", "rushed at", true, 25, 5, 15, 10, 10, 1, false, 31);
 	blitz->afterdesc = " with a rapid flurry of sword strikes";
-	orbitalstrike->addDescription("Rush at the target with a rapid flurry of strikes.");
+	blitz->addDescription("Rush at the target with a rapid flurry of strikes.");
 	forestknight->addSpecialAttack(blitz);
 
 	//Miner Maniac Mike is a good damage teammate with the risk of friendly fire MARK: Mike
-	NPC* mike = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a reckless mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
+	NPC* mike = new NPC("MINER MANIAC", "MIKE", "Maniacal miner with a reckless mania for blowing things up.\nA frequent customer of the subterranean dynamite store.", kaboomroom, 6, Stats(22, 5, 15, 0, 10, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
 	npcChar[mike] = 'm'; //Mike's character representation is m for Mike and miner and maniac to a lesser extent
 	mike->addConversation({{NULL, "MIKE is throwing dynamite at the rocky wall."},
 						   {self, "That doesn't look very safe."},
@@ -888,33 +888,34 @@ void Game::SetupWorld() {
 	mike->setTalkOnRecruit(true);
 	mike->setRecruitable(true);
 
-	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", false, -5, 20, 20, 2, 2, 1);
+	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", false, -5, 10, 10, 2, 2, 1);
 	mdynamite->focushits = false;
-	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", false, 0, 10, 20, 1, 1, 1);
+	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", false, 0, 5, 10, 1, 1, 1);
 	mdynamite->recoilatt = drecoil;
 	mdynamite->recoilchance = 1.0/3;
 	mike->setBasicAttack(mdynamite);
-	Attack* flashbang = new Attack("FLASHBANG", "threw a flashbang at", false, 8, 10, 20, 1, 1, 1);
+	Attack* flashbang = new Attack("FLASHBANG", "threw a flashbang at", false, 8, 10, 10, 1, 1, 1);
 	Effect* stunned = new Effect("STUNNED", 3);
 	stunned->freeze = true;
 	flashbang->addEffect(stunned);
-	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", false, 0, 10, 20, 1, 1, 1);
+	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", false, 0, 5, 10, 1, 1, 1);
 	frecoil->afterdesc = " as well";
 	frecoil->addEffect(stunned);
 	flashbang->recoilatt = frecoil;
 	flashbang->recoilchance = 1.0/3;
 	mike->addSpecialAttack(flashbang);
-	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", false, 13, 40, 20, 1, 1, 3);
-	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", false, 0, 20, 20, 1, 1, 1);
+	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", false, 13, 12, 10, 1, 1, 3);
+	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", false, 0, 10, 5, 1, 1, 1);
 	brecoil->afterdesc = " in the process";
 	bigbundle->recoilatt = brecoil;
 	bigbundle->recoilchance = 1.0/3;
 	mike->addSpecialAttack(bigbundle);
-	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", false, 11, 30, 100, 1, 1, 1, false, 8);
-	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", false, 0, 30, 100, 1, 1, 1);
+	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", false, 11, 15, 100, 1, 1, 1, false, 8);
+	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", false, 0, 8, 100, 1, 1, 1);
 	bunkerbuster->recoilatt = bbrecoil;
 	bunkerbuster->recoilchance = 1.0/3;
 	mike->addSpecialAttack(bunkerbuster);
+	bunkerbuster->addDescription("Throw a bunker-busting explosive at the target with immense pierce. (15 ATTACK, 100 PIERCE)");
 	Attack* dedefenser = new Attack("DEDEFENSER", "threw a heavy charge at", false, 15, 10, 20, 1, 1, 1, false, 12);
 	Effect* dedefensed = new Effect("DEDEFENSED", 10, 0, 0, 1, 0.5, 0.25, 1, 0.5);
 	dedefenser->addEffect(dedefensed);
@@ -923,18 +924,21 @@ void Game::SetupWorld() {
 	dedefenser->recoilatt = ddrecoil;
 	dedefenser->recoilchance = 1.0/3;
 	mike->addSpecialAttack(dedefenser);
-	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", false, 20, 60, 35, 1, 1, 5, false, 17);
-	Attack* dcrecoil = new Attack("MISINPUT", "accidentally included", false, 0, 30, 25, 1, 1, 1);
+	dedefenser->addDescription("Throw a heavy explosive that will leave the target off with permanently reduced defense. (10 ATTACK, 20 PIERCE)");
+	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", false, 20, 20, 40, 1, 1, 5, false, 17);
+	Attack* dcrecoil = new Attack("MISINPUT", "accidentally included", false, 0, 10, 20, 1, 1, 1);
 	dcrecoil->afterdesc = " in the charge's radius";
 	depthcharge->recoilatt = dcrecoil;
 	depthcharge->recoilchance = 2.0/3;
 	mike->addSpecialAttack(depthcharge);
+	depthcharge->addDescription("Throw a an explosive of the depths with an enormous blast radius. (20 ATTACK, 40 PIERCE)");
 	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 29, 10, 20, 12, 12, 1, false, 20);
 	minesweeper->focushits = false;
 	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", false, 0, 10, 20, 3, 3, 1);
 	minesweeper->recoilatt = mrecoil;
 	minesweeper->recoilchance = 1;
 	mike->addSpecialAttack(minesweeper);
+	minesweeper->addDescription("Unleash a mine-sweeping series of explosions... (10 ATTACK, 20 PIERCE, 12 hits)");
 
 	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
 	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 12, Stats(25, 20, 23, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
@@ -966,6 +970,7 @@ void Game::SetupWorld() {
 	cactcarpet->addEffect(spinyfloor);
 	cactcarpet->lifesteal = 0.34;
 	cacty->addSpecialAttack(cactcarpet);
+	cactcarpet->addDescription("Plant a carpet of cactus under the target, absorbing their nutrients for four turns. (15 ATTACK, 15 PIERCE, 34% lifesteal)");
 	Attack* acupuncture = new Attack("ACUPUNCTURE", "expertly healed", false, 7, -8, 15, 3, 3, 1, true);
 	acupuncture->afterdesc = " with spines";
 	cacty->addSpecialAttack(acupuncture);
@@ -975,8 +980,10 @@ void Game::SetupWorld() {
 	cacty->addSpecialAttack(prespoints);
 	Attack* dualcacti = new Attack("DUAL CACTI", "threw two cactus bombs at", false, 12, 4, 15, 3, 4, 3, false, 16);
 	cacty->addSpecialAttack(dualcacti);
-	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 40, 100, 1, 1, 1, false, 18);
+	dualcacti->addDescription("Throw not just one, but TWO cactus bombs at the target, affecting their surroundings. (4 ATTACK, 15 PIERCE, 3-4 hits)");
+	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 30, 100, 1, 1, 1, false, 18);
 	cacty->addSpecialAttack(superspine);
+	superspine->addDescription("Fire one enormous spine at the target. (30 ATTACK, 100 PIERCE)");
 
 	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
 	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", factorykitchen, 10, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
@@ -1001,7 +1008,7 @@ void Game::SetupWorld() {
 							   {michelin, "Ah no worries I got this guide to being a ninja."},
 							   {michelin, "I couldn't understand it myself, but you can try if you want."},
 							   {self, "Yeah sure I'll take it thanks."},
-							   {michelin, "Well when you get all three berries just USE blender over there."},
+							   {michelin, "Well when you get all three berries just USE that blender over there."},
 							   {self, "Sounds good."}});
 	Item* ninjaguide = new KeyItem("GUIDE TO BEING A NINJA", "A book detailing the ninja techniques that will help you get into the ninja village.", {{NULL, "You open the guide."}, {self, "Chapter 1: The Ninja Way"}, {self, "Ninjahood was invented by..."}, {self, "..."}, {self, "I ain't reading allat."}, {self, "Ok... Table of Contents..."}, {self, "Aha!"}, {self, "Chapter 84: Ninja Movement"}, {NULL, "The next day..."}, {self, "Alright! Now I can do ninja mevement!"}, {NULL, "You have mastered the ninja abilities and can now enter the ninja village!"}}, limbo, NINJA);
 	((KeyItem*)ninjaguide)->setTarget(ninjaland);
@@ -1024,7 +1031,7 @@ void Game::SetupWorld() {
 
 	Item* cactiberry = new MaterialItem("CACTIBERRY", "Special berry that is pale green and prickly, adorned with a pink flower.", berryroom);
 	Item* radiberry = new MaterialItem("RADIBERRY", "Special radioactive berry that glows neon green. Might wanna handle this one quickly.", factorygarden);
-	Item* ninjaberry = new MaterialItem("NINJABERRY", "Special black berry pertaining to the ninjas, complete with a natural belt.", berryroom);
+	Item* ninjaberry = new MaterialItem("NINJABERRY", "Special black berry pertaining to the ninjas, complete with a natural belt.", ninjapantry);
 
 	Effect* multiposition = new Effect("MULTIPOSITION", 2147483647, 0, 0, 2.0, 0.5, 0.5, 2.0, 7.0);
 	multiposition->multipositioning = 3;
@@ -1163,11 +1170,12 @@ void Game::SetupWorld() {
 	cascadingfailure->addDescription("Trigger a cascading failure in the enemy team, with the attack's effectiveness multiplied for every one of Carlos's statuses present. (20 ATTACK, 40 PIERCE)");
 
 	//Princess Plum is support MARK: Plum
-	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", limbo, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 0));
+	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", castlethrone, 18, Stats(13, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 0));
 	npcChar[plum] = 'p'; //Plum's character representation is p for Plum
 	plum->addDismissalDialogue({{plum, "Well, I'll be heading back to my kingdom!"}, {plum, "Bye bye!"}});
 	plum->addRecruitedDialogue({{plum, "Ahh, sure beats a diet of pure fungus!"}});
 	plum->addRecruitmentDialogue({{self, "Hey before you head back to your kingdom, wanna join my team?"}, {plum, "It would be my pleasure!"}});
+	plum->addRejectionDialogue({{plum, "Ummmmm..."}, {plum, "I'm a little kidnapped here..."}});
 	plum->addGymDialogue({{plum, "This is a very nice gym!"}, {plum, "I love playing tennis!"}});
 	plum->setTalkOnRecruit(true);
 	//some of plum's dialogue logic is tied to Browser below in the enemies section
@@ -1207,6 +1215,7 @@ void Game::SetupWorld() {
 	Attack* lifemushroom = new Attack("LIFE MUSHROOM", "gave a green life mushroom to", false, 30, 0, 0, 1, 1, 1, true, 20);
 	lifemushroom->extralives = 1;
 	plum->addSpecialAttack(lifemushroom);
+	lifemushroom->addDescription("Give a teammate a green life mushroom, granting an extra chance after being incapacitated.");
 
 	//Gambler Graham is the rng guy MARK: Graham
 	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(24, 12, 12, 12, 12, 12, 9), Stats(1, 1, 1, 0, 0, 0, 0));
@@ -1653,19 +1662,6 @@ void Game::SetupWorld() {
 
 	Item* cake = new HpItem("HEALTHY CAKE", "A cake your mom made to commemorate your BURGER QUEST. (heals 100 HP)", limbo, 100);
 	mango->setGift(cake);
-	
-	NPC* florian; //declare florian here so the callers can reference him here so that once world change can set the backup as backupcaller5
-	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE"}}, limbo, florian);
-	desertstation->setBackup(lobstercaller);
-	Item* backupcaller1 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE"}}, limbo, florian);
-	volcanostation->setBackup(backupcaller1);
-	Item* backupcaller2 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE"}}, limbo, florian);
-	burgstation->setBackup(backupcaller2);
-	Item* backupcaller3 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE"}}, limbo, florian);
-	burgplats->setBackup(backupcaller3); //this one is for the escape sequence if they never got a whistle
-	Item* backupcaller4 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE"}}, limbo, florian);
-	basestation->setBackup(backupcaller4, false); //this one is endless because it's the only way to leave the basement after beating the game
-	Item* backupcaller5 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.\nYou have this because I have to account for players such as yourself,\nwho've ignored all the train stations, and even the whistle before the prison.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE"}}, limbo, florian);
 
 	NPC* burgcustomer = new NPC("BURGER CUSTOMER", "CHARLY", "A frequent customer of the BURGER RESTAURANT, wearing BURGER merchandise.", elevatorentrance, 5);
 	burgcustomer->addConversation({{burgcustomer, "Man I just love BURGERs!"},
@@ -1814,8 +1810,6 @@ void Game::SetupWorld() {
 
 	Item* jillydrawing = new MaterialItem("JILLY'S DRAWING", "A masterfully crafted crayon drawing depicting when you found Jilly.", limbo);
 
-	NPC* theratman;
-
 	shared_ptr<WorldChange> jillyreunion = make_shared<WorldChange>(); //when Jilly and Matilda are reunited!
 	jillyreunion->linkedTitles.push({matilda, ""}); //she is no longer worried
 	jillyreunion->linkedDescriptions.push({matilda, "A frequent churchgoer filled with joy after you saved her Jilly."});
@@ -1828,7 +1822,6 @@ void Game::SetupWorld() {
 	jillyreunion->linkedAttacks.push({self, uppercut});
 	jillyreunion->conditionalDecruits.push({forestknight, TEMPLEQUEST});
 	jillyreunion->conditionalDecruits.push({richie, TEMPLEQUEST});
-	jillyreunion->conditionalDecruits.push({theratman, TEMPLEQUEST});
 
 	WorldChange jillylockin; //lock in because you now HAVE to save Jilly to progress cause you've decided to do that
 	jillylockin.clingyLinks.push({child, NEVER});
@@ -1999,40 +1992,6 @@ void Game::SetupWorld() {
 	prisrej2->alt = prisrej3;
 	burgerprisoner->addRejectionDialogue(prisrej);
 
-	//set up catching stuff which is used later in the basement part
-	WorldChange burgcatchanges;
-	burgcatchanges.defeatRooms.push({self, BURGERPRISON});
-	Conversation escapehint = {{burgerprisoner, "You're finally awake."}, {burgerprisoner, "You had me worried for a moment, there."},
-							   {self, "Dang."}, {self, "Guess we gotta wait for a new protagonist :|"},
-							   {burgerprisoner, "Don't give up yet!"}, {burgerprisoner, "You've gotten this far!"},
-							   {self, "No sorry I was joking mostly."},
-							   {burgerprisoner, "Yeah. Well..."},
-							   {burgerprisoner, "..."},
-							   {burgerprisoner, "I know there's tunnels near this room."},
-							   {burgerprisoner, "I got here long ago when they were still finishing the restaurant,"},
-							   {burgerprisoner, "and I remember trains arriving here with materials."},
-							   {burgerprisoner, "Though, it was covered up by your wall, there, long ago..."},
-							   {burgerprisoner, "Probably something to do with security,"},
-							   {burgerprisoner, "and also a lobster infestation that occured around that time."},
-							   {burgerprisoner, "Maybe if we could somehow access those tunnels..."},
-							   {self, "..."},
-							   {self, "Train tunnels and lobsters, you say?"}};
-	escapehint.skipcondition = {ESCAPEDBASE};
-	burgcatchanges.linkedConversations.push({burgerprisoner, escapehint});
-	burgcatchanges.linkedDialogue.push({burgerprisoner, {{burgerprisoner, "..."}, {burgerprisoner, "So what is it you had to say about train tunnels and lobsters?"}}});
-	burgcatchanges.linkedBackups.push(make_tuple(BURGERPRISON, backupcaller5, &inventory)); //if the player never got any lobster caller we do have to make sure they can get one (less cool moment if they need this one, but oh well such is life)
-	burgcatchanges.linkedStations.push(BURGERPRISON);
-	burgcatchanges.worldcon = IMPRISONED;
-	burgerman->setCatchText(burgcatch);
-	burgerman->setPursueStuff({{burgbasenw, burgbasew, burgbasesw}, {burgerbasement, burgbasec, burgbases}, {burgbasene, burgbasee, burgbasese}}, burgcatchanges);
-	burgerman->setPursueSpecial(elevatorbottom, OUT, {{NULL, "You press the button to go up."},
-													  {NULL, "The elevator doors start closing."},
-													  {NULL, "..."},
-													  {NULL, "The BURGER MAN puts his foot in the door."},
-													  {NULL, "The elevator door catches on the BURGER MAN's foot."},
-													  {NULL, "The doors open again."},
-													  {self, ":|"}});
-
 	Conversation priscon = {{burgerprisoner, "Hm?"},
 							{self, "Hi what are you doing in prison?"},
 							{burgerprisoner, "I haven't seen anybody in ages..."},
@@ -2169,8 +2128,6 @@ void Game::SetupWorld() {
 	templequest->linkedDescriptions.push({burgerman, "The manager and mascot of BURGER. He has a BURGER for a head and an uncanny stature."});
 	templequest->recruitLinks.push(forestknight);
 	templequest->recruitLinks.push(richie);
-	templequest->conditionalRecruits.push(make_tuple(theratman, BEATRATMAN, NEVER)); //make Ratman recruitable only if the player did his little battle sidequest I guess you could call it that
-	templequest->conditionalRecruits.push(make_tuple(theratman, BEATMARGE, NEVER));
 	templequest->clingyLinks.push({child, NEVER});
 	templequest->defeatRooms.push({burgerman, burgbasene});
 	Conversation forgorending = {{burgerman, "YOU ARE REALLY STUPID."},
@@ -2686,8 +2643,7 @@ void Game::SetupWorld() {
 
 	Item* switch1 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom, {conveyor1, conveyor2, conveyor3, conveyor4, conveyor5});
 	Item* switch2 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", switchroom2, {conveyor1, conveyor2, conveyor3, conveyor4, conveyor5});
-	ConveyorSwitch* switchhelper1 = (ConveyorSwitch*)switch1;
-	ConveyorSwitch* switchhelper2 = (ConveyorSwitch*)switch2;
+	Item* switch3 = new ConveyorSwitch("SWITCH", "A metal switch sticking out of the ground, meant for controlling the factory assembly lines.", controlroom2, {conveyor1, conveyor2, conveyor3, conveyor4, conveyor5});
 
 	NPC* merchant = new NPC("MERCHANT", "MERRO", "Merchant and owner of the desert store. He really wants your monies.", limbo, 12);
 	merchant->setDialogue("Welcome, my friend, to my store.");
@@ -2907,7 +2863,7 @@ void Game::SetupWorld() {
 	cooldown->addEffect(cooled);
 	Attack* polevault = new Attack("POLE VAULT", "pole vaulted into the air", false, 0, 0, 0, 0, 0, 0); //dodge move!
 	polevault->focushits = false;
-	Effect* polevaulting = new Effect("POLE VAULTING", 1); //functionally a 0 duration effect but since it checks the attacks after the player's turn it gets ticked immediately after using the attack so it has to be 1 tick long to have the same effect
+	Effect* polevaulting = new Effect("POLE VAULTING", 0); //dodge until the next turn
 	polevaulting->remove = true;
 	polevault->selfeffect = polevaulting;
 	Attack* mineram = new Attack("MINECART RAM", "rammed", true, 0, 20, 0, 1, 1, 1); //decent attack but doesn't gain any sp
@@ -2915,16 +2871,14 @@ void Game::SetupWorld() {
 
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", {{NULL, "You poured some sand coolant onto the scorching sands."}, {NULL, "The sands cooled down!"}}, deserttempleentrance, SAND, false, cooldown);
 	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", {{NULL, "You used the pole to go over the chasm!"}}, desertpole, CHASM, true, polevault);
-	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", {{NULL, "You hopped into the SPARE MINECART and went to the other side of the track."}}, mineshaftside, TRACK, false, mineram);
+	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", {{NULL, "You hopped into the SPARE MINECART and went to the other side of the track."}}, mineshaftside, TRACK, true, mineram);
 
 	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the WEST MINECART and went to the other side of the track."}}, mineshaft3, TRACK, false);
 	Item* minecart2 = new MovementItem("EAST MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the EAST MINECART and went to the other side of the track."}}, mineshaftside, TRACK, false);
 	Item* minecart3 = new MovementItem("NORTH MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the NORTH MINECART and went to the other side of the track."}}, mineshaft2, TRACK, false);
 	Item* minecart4 = new MovementItem("SOUTH MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the SOUTH MINECART and went to the other side of the track."}}, mineshaft3, TRACK, false);
-	minecart1->setTakable(false);
-	minecart2->setTakable(false);
-	minecart3->setTakable(false);
-	minecart4->setTakable(false);
+	((MovementItem*)minecart1)->setTarget(mineshaftside); //since they're in the same room with different blocked directions we make sure they go exactly where they need to
+	((MovementItem*)minecart4)->setTarget(mineshaft2);
 	minecart1->setDenial("This minecart is clamped onto the minecart tracks!");
 	minecart2->setDenial("This minecart is clamped onto the minecart tracks!");
 	minecart3->setDenial("This minecart is clamped onto the minecart tracks!");
@@ -2945,25 +2899,20 @@ void Game::SetupWorld() {
 	Effect* forklifted = new Effect("FORKLIFTED", 1);
 	forklifted->remove = true;
 	forkliftup->addEffect(forklifted);
-
-	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", {{NULL, "You used the FORKLIFT to move the collapsed ceiling material out of the way."}}, heavymachineryroom, STUFF, false, forkliftup);
-	Item* scissorlift = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, heavymachineryroom, HIGH, false);
-	scissorlift->setDropToUse(true);
-
 	Attack* scissorup = new Attack("SCISSOR LIFT", "scissor lifted into the air", false, 0, 0, 0, 0, 0, 0); //dodge move! (with slightly longer duration than pole vault)
-	Effect* scissorlifted = new Effect("SCISSOR LIFTED", 1);
+	Effect* scissorlifted = new Effect("SCISSOR LIFTED", 2);
 	scissorlifted->remove = true;
 	scissorup->selfeffect = scissorlifted;
 	scissorup->focushits = false;
 
-	Item* scissorliftsw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofsw, HIGH, false);
-	Item* scissorliftnw = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofnw, HIGH, false);
-	Item* scissorliftse = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofse, HIGH, false);
-	Item* scissorliftne = new KeyItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofne, HIGH, false);
-	scissorliftsw->setTakable(false);
-	scissorliftnw->setTakable(false);
-	scissorliftse->setTakable(false);
-	scissorliftne->setTakable(false);
+	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", {{NULL, "You used the FORKLIFT to move the collapsed ceiling material out of the way."}}, heavymachineryroom, STUFF, false, forkliftup);
+	Item* scissorlift = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, heavymachineryroom, HIGH, true, scissorup);
+	scissorlift->setDropToUse(true);
+
+	Item* scissorliftsw = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofsw, HIGH, false);
+	Item* scissorliftnw = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofnw, HIGH, false);
+	Item* scissorliftse = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofse, HIGH, false);
+	Item* scissorliftne = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofne, HIGH, false);
 	scissorliftsw->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
 	scissorliftnw->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
 	scissorliftse->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
@@ -3084,7 +3033,6 @@ void Game::SetupWorld() {
 	ninjasmith->setDialogue({{ninjasmith, "If you ever see unihorn, please ask for unihorn corn."}, {ninjasmith, "I very much hope to make Kosmic Katana."}});
 	ninjasmith->setTalkOnDefeat();
 	ninjasmith->addRejectionDialogue("I no abandon ninja way.");
-	ninjasmith->guardItem(ninjaberry);
 
 	NPC* unihorn = new NPC("", "UNIHORN", "A mythical and majestic unihorn, dark bluish with pale hair, restrained by quantumn chains.", burglab, 24, Stats(100, 30, 30, 40, 40, 50, 9));
 	unihorn->setDialogue({{NULL, "UNIHORN - *pained neighs*"}});
@@ -3317,6 +3265,7 @@ void Game::SetupWorld() {
 	minespring->setExit(NORTH, mineshaft);
 	mineshaft2->setExit(SOUTH, deserttunnel);
 	mineshaft2->setExit(NORTH, mineshaft3);
+	mineshaft2->setExit(EAST, mineshaft);
 	deserttunnel->setExit(SOUTHWEST, desertstation);
 	deserttunnel->setExit(NORTH, mineshaft2);
 	desertstation->setExit(NORTHEAST, deserttunnel);
@@ -3864,7 +3813,7 @@ void Game::SetupWorld() {
 
 	NPC* grassman = new NPC("", "GRASSMAN", "A really grassy humanoid who hates real humans.", limbo, 0, Stats(16, 0, 5, 0, 2, 5, 9));
 	Attack* grassstrike = new Attack("GRASS STRIKE", "grassily striked", true, -5, 10, 0, 1, 1, 1);
-	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", false, 10, 50, 50, 1, 1, 1, false, 2);
+	Attack* lawnmower = new Attack("LAWNMOWER", "threw a lawnmower at", false, 10, 20, 0, 1, 1, 1, false, 2);
 	grassman->setBasicAttack(grassstrike);
 	grassman->addSpecialAttack(lawnmower);
 
@@ -3947,20 +3896,20 @@ void Game::SetupWorld() {
 	flowerfiend->addSpecialAttack(flowerempower);
 	flowerfiend->addSpecialAttack(solarbeam);
 
-	NPC* egadbot= new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener,\nbefore going rogue and trimming everything else as well.", limbo, 0, Stats(20, 30, 5, 5, 10, 20, 9));
+	NPC* egadbot= new NPC("ROGUE ROBOT", "EGARDENBOT", "Short trapezoidal copper robot designed to be an expert gardener,\nbefore going rogue and trimming everything else as well.", limbo, 0, Stats(20, 30, 5, 5, 0, 20, 9));
 	Attack* snip = new Attack("SNIP", "snipped scissors at", true, -5, 7, 5, 1, 1, 1);
 	egadbot->setBasicAttack(snip);
 	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", false, 10, 20, 0, 1, 1, 1);
 	egadbot->addSpecialAttack(timber);
 
 	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 10, 10, 6, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
-	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 4, 4, 1, 1, 1);
-	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 5, 0, 0, 1, 1, 999);
+	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 5, 4, 1, 1, 1);
+	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 2, 0, 0, 1, 1, 3);
 	Effect* intimidated = new Effect("INTIMIDATED", 2, 0, 0, 0.5);
 	savageroar->redundanteffect = false; //he was spamming this way too much
 	savageroar->addEffect(intimidated);
 	Attack* mprickles = new Attack("PRICKLES", "poked", false, 0, 3, 1, 1, 1, 1); //the attack is lower than normal prickles but it balances out due to the boss' attack stat
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at", false, 10, 1, 5, 1, 2, 999);
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles", false, 10, 2, 5, 1, 3, 999);
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
@@ -4005,7 +3954,7 @@ void Game::SetupWorld() {
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
-	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(15, 20, 5, 10, 0, 2, 9));
+	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(10, 20, 5, 10, 0, 2, 9));
 	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 15, 0, 1, 1, 1);
 	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 1.5, 1.5, 1.5, 1, 50.0);
 	rocknroll->selfeffect = jamming;
@@ -4021,30 +3970,30 @@ void Game::SetupWorld() {
 	NPC* skeleminer = new NPC("", "SKELEMINER", "Miner of a previous generation (with those lamped mining hats!), ceaselessly mining away at the walls.", limbo, 0, Stats(20, 10, 15, 5, 5, 13, 9));
 	Attack* pickaxerang = new Attack("PICKAXERANG", "threw his pickaxe spinning at the team", false, -5, 5, 5, 1, 1, 999);
 	pickaxerang->focushits = false;
-	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 3, 10, 10, 1, 1, 1);
-	Attack* pickstrike = new Attack("MINE", "struck", true, 6, 15, 15, 1, 1, 1);
+	Attack* sdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 3, 7, 8, 1, 1, 1);
+	Attack* pickstrike = new Attack("MINE", "struck", true, 6, 8, 10, 1, 1, 1);
 	pickstrike->afterdesc = " with his pickaxe";
 	skeleminer->setBasicAttack(pickaxerang);
 	skeleminer->addSpecialAttack(sdynamite);
 	skeleminer->addSpecialAttack(pickstrike);
 
-	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(50, 15, 20, 15, 20, 5, 9));
-	Attack* dpincer = new Attack("PINCER", "pinced", true, -5, 10, 10, 1, 1, 1);
-	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", false, 5, 1, 100, 15, 15, 1);
-	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", false, 10, 30, 20, 1, 1, 3);
+	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(50, 15, 8, 15, 20, 5, 9));
+	Attack* dpincer = new Attack("PINCER", "pinced", true, -5, 5, 10, 1, 1, 1);
+	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", false, 5, 1, 100, 10, 10, 1);
+	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", false, 10, 10, 20, 1, 1, 3);
 	dreadnaut->setBasicAttack(dpincer);
 	dreadnaut->addSpecialAttack(rapidfire);
 	dreadnaut->addSpecialAttack(tankshell);
 	dreadnaut->setBoss(true); //more of a miniboss
 
 	//the lobster is your pet and fast travel MARK: Tunnel Lobster (enemy)
-	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", limbo, 0, Stats(200, 20, 15, 20, 15, 50, 9));
-	Attack* lpincer = new Attack("PINCER", "pinced", true, -5, 10, 10, 1, 1, 1);
-	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", true, 6, 25, 0, 1, 1, 3);
+	NPC* tunnellobster = new NPC("", "TUNNEL LOBSTER", "An immense, savage crustacean who inhabits the tunnels below.", limbo, 0, Stats(200, 20, 10, 5, 6, 50, 9));
+	Attack* lpincer = new Attack("PINCER", "pinced", true, -5, 5, 5, 1, 1, 1);
+	Attack* tailsmack = new Attack("TAIL SMACK", "smacked", true, 5, 10, 0, 1, 1, 3);
 	tailsmack->afterdesc = " with its tail";
-	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking chunks of the ceiling loose", false, 8, 20, 0, 5, 5, 1);
+	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking chunks of the ceiling loose", false, 10, 8, 0, 4, 5, 1);
 	lobroar->focushits = false;
-	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", true, 13, 40, 0, 1, 1, 1);
+	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", true, 15, 22, 0, 1, 1, 1);
 	trainrush->afterdesc = "like a train";
 	tunnellobster->setBasicAttack(lpincer);
 	tunnellobster->addSpecialAttack(tailsmack);
@@ -4053,11 +4002,11 @@ void Game::SetupWorld() {
 	tunnellobster->setBoss(true);
 
 	//Gravity Girl Viola is mostly attack with some support but a boss fight first MARK: Viola (enemy)
-	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(100, 0, 10, 0, 20, 20, 19), Stats(1, 0, 1, 0, 2, 0, 0));
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(400, 15, 10, 0, 20, 20, 19), Stats(1, 0, 1, 0, 2, 0, 0));
 	tkviola->setBoss(true);
-	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", false, -5, 10, 20, 1, 1, 1);
+	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", false, -5, 5, 20, 1, 1, 1);
 	tkviola->setBasicAttack(wave);
-	Attack* smackdown = new Attack("SMACKDOWN", "lifted", false, 5, 20, 0, 1, 1, 1);
+	Attack* smackdown = new Attack("SMACKDOWN", "lifted", false, 5, 10, 0, 1, 1, 1);
 	smackdown->afterdesc = " into the air and smacked them back down";
 	Effect* suspended = new Effect("SUSPENDED", 3, 0, 0);
 	smackdown->synergies.push_back(suspended); //because Viola is already holding the npc in the air so it's easier to do more damage
@@ -4068,9 +4017,9 @@ void Game::SetupWorld() {
 	tkviola->addSpecialAttack(tkguard);
 	Attack* fling = new Attack("FLING", "flung", false, 5, 0, 0, 1, 1, 1);
 	fling->afterdesc = " into the stratosphere";
-	Effect* flung = new Effect("FLUNG", 1);
+	Effect* flung = new Effect("FLUNG", 3);
 	flung->remove = true;
-	flung->falldamage = 30;
+	flung->falldamage = 15;
 	fling->cancels = {suspended}; //throwing someone into the air makes them no longer frozen in place
 	fling->addEffect(flung);
 	tkviola->addSpecialAttack(fling);
@@ -4079,12 +4028,12 @@ void Game::SetupWorld() {
 	suspended->freeze = true;
 	suspend->addEffect(suspended);
 	tkviola->addSpecialAttack(suspend);
-	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to",false,  12, 25, 50, 1, 1, 1, false, 11);
+	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to",false,  12, 8, 20, 1, 1, 1, false, 11);
 	gutpunch->afterdesc = "'s gut";
-	gutpunch->addDescription("Deliver a telekinetic punch to the target's gut. (25 ATTACK, 50 PIERCE)");
+	gutpunch->addDescription("Deliver a telekinetic punch to the target's gut. (8 ATTACK, 20 PIERCE)");
 	tkviola->addSpecialAttack(gutpunch);
-	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", false, 10, 20, 30, 1, 1, 3, false, 12);
-	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (20 DAMAGE, 30 PIERCE)");
+	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", false, 10, 10, 15, 1, 1, 3, false, 12);
+	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (10 ATTACK, 15 PIERCE)");
 	tkviola->addSpecialAttack(spatialpop);
 	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 1, 1, 999, true, 15);
 	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
@@ -4096,25 +4045,25 @@ void Game::SetupWorld() {
 	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5);
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
-	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 35, 100, 1, 1, 21, false, 20);
-	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (35 DAMAGE, 100 PIERCE)");
+	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 17, 30, 1, 1, 21, false, 20);
+	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (17 ATTACK, 30 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
-	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", minespring, 0, Stats(100, 40, 20, 0, 0, 20, 9), Stats(1, 2, 1, 0, 1, 0, 0));
+	NPC* greer = new NPC("BURGER EXECUTIVE", "GREER", "Greedy, high-ranking BURGER official sent to manage all the desert's remaining water.", limbo, 0, Stats(100, 20, 10, 0, 0, 20, 9), Stats(1, 2, 1, 0, 1, 0, 0));
 	greer->setBoss(true);
-	Attack* gun = new Attack("GUN", "shot", false, -5, 30, 50, 1, 1, 1);
+	Attack* gun = new Attack("GUN", "shot", false, -5, 10, 50, 1, 1, 1);
 	greer->setBasicAttack(gun);
-	Attack* pressurevalve = new Attack("PRESSURIZED VALVE", "opened a pressurized valve, shooting a huge burst of water at", false, 5, 20, 0, 1, 1, 1);
+	Attack* pressurevalve = new Attack("PRESSURIZED VALVE", "opened a pressurized valve, shooting a huge burst of water at", false, 5, 10, 0, 1, 1, 1);
 	Effect* runningback = new Effect("RUNNING BACK", 2);
 	runningback->remove = true;
 	pressurevalve->addEffect(runningback);
 	greer->addSpecialAttack(pressurevalve);
 	Attack* gasleak = new Attack("GAS LEAK", "shot a gas main near", false, 5, 0, 0, 1, 1, 3);
 	Effect* gassed = new Effect("GASSED", 3, 10, 0);
-	gassed->spusage = 2;
+	gassed->spusage = 1.5;
 	gasleak->addEffect(gassed);
 	greer->addSpecialAttack(gasleak);
-	Attack* scaldingsteam = new Attack("SCALDING STEAM", "shot a valve full of hot steam near", false, 5, 25, 50, 1, 1, 3);
+	Attack* scaldingsteam = new Attack("SCALDING STEAM", "shot a valve full of hot steam near", false, 5, 5, 10, 1, 1, 3);
 	Effect* scalded = new Effect("SCALDED", 3);
 	scalded->damagebuff = 2;
 	scaldingsteam->addEffect(scalded);
@@ -4126,86 +4075,86 @@ void Game::SetupWorld() {
 	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 1, 1, 1);
 	reallyburn->addEffect(extrafire);
 
-	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats(20, 0, 25, 0, 25, 10, 9)); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
+	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats(20, 0, 14, 0, 25, 10, 9)); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
 	magman->setRecoilAttack(burn);
-	Attack* lavawhack = new Attack("LAVA WHACK", "lavally whacked", true, -5, 15, 5, 1, 1, 1);
+	Attack* lavawhack = new Attack("LAVA WHACK", "lavally whacked", true, -5, 5, 5, 1, 1, 1);
 	lavawhack->addEffect(onfire);
-	Attack* meteor = new Attack("METEOR", "shot a superheated boulder at", false, -5, 25, 0, 1, 1, 3);
+	Attack* meteor = new Attack("METEOR", "shot a superheated boulder at", false, -5, 5, 0, 1, 1, 3);
 	meteor->afterdesc = " from inside itself"; //I was thinking something like when iron man shoots a laser from his arc reactor except it's the lavaman using the rock inside itself
 	magman->setBasicAttack(lavawhack);
 	magman->addSpecialAttack(meteor);
 
-	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrows and spear from the depths of the lava sea.", limbo, 0, Stats(25, 15, 25, 15, 30, 5, 9));
-	Attack* lavaspear = new Attack("LAVA SPEAR", "speared", false, -5, 20, 5, 1, 1, 1);
+	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrows and spear from the depths of the lava sea.", limbo, 0, Stats(25, 15, 16, 15, 30, 5, 9));
+	Attack* lavaspear = new Attack("LAVA SPEAR", "speared", false, -5, 6, 5, 1, 1, 1);
 	lavaspear->afterdesc = " with a lava spear";
 	lavaspear->addEffect(onfire);
-	Attack* lavarrows = new Attack("LAVARROWS", "shot explosive arrows", false, 8, 10, 20, 3, 3, 3); //no fire because they just explode
+	Attack* lavarrows = new Attack("LAVARROWS", "shot explosive arrows", false, 8, 5, 15, 3, 3, 3); //no fire because they just explode
 	lavarrows->focushits = false;
-	Attack* closecombat = new Attack("CLOSE COMBAT", "engaged in close combat with", true, 8, 15, 20, 1, 1, 3);
+	Attack* closecombat = new Attack("CLOSE COMBAT", "engaged in close combat with", true, 8, 3, 10, 2, 2, 1);
 	lavasoldier->setBasicAttack(lavaspear);
 	lavasoldier->addSpecialAttack(lavarrows);
 	lavasoldier->addSpecialAttack(closecombat);
 
-	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "A really big laval humanoid who towers over his peers.\nThey have no finesse, preferring brutal strikes.", limbo, 0, Stats(60, 0, 35, 0, 25, 0, 9));
+	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "A really big laval humanoid who towers over his peers.\nThey have no finesse, preferring brutal strikes.", limbo, 0, Stats(60, 0, 18, 0, 25, 0, 9));
 	largelavaman->setRecoilAttack(burn);
-	Attack* lavaslam = new Attack("LAVA SLAM", "lavally slammed down on", true, -5, 20, 5, 1, 1, 1);
+	Attack* lavaslam = new Attack("LAVA SLAM", "lavally slammed down on", true, -5, 10, 5, 1, 1, 1);
 	lavaslam->addEffect(onfire);
-	Attack* haymaker = new Attack("HAYMAKER", "threw a haymaker at", true, 8, 45, 5, 1, 1, 1);
+	Attack* haymaker = new Attack("HAYMAKER", "threw a haymaker at", true, 8, 20, 5, 1, 1, 1);
 	haymaker->addEffect(onfire);
 	largelavaman->setBasicAttack(lavaslam);
 	largelavaman->addSpecialAttack(haymaker);
 
-	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 30, 5, 10, 30, 9));
-	Attack* scurry = new Attack("SCURRY", "scurried all around the team", true, -5, 10, 0, 4, 5, 1);
+	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 12, 5, 10, 30, 9));
+	Attack* scurry = new Attack("SCURRY", "scurried all around the team", true, -5, 5, 0, 4, 5, 1);
 	scurry->focushits = false;
-	Attack* lavomit = new Attack("LAVOMIT", "coughed up a ball of lava at", false, 1, 20, 20, 1, 1, 1);
+	Attack* lavomit = new Attack("LAVOMIT", "coughed up a ball of lava at", false, 9, 5, 10, 1, 1, 1);
 	lavomit->addEffect(onfire);
 	lavizard->setBasicAttack(scurry);
 	lavizard->addSpecialAttack(lavomit);
 
-	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats(15, 10, 30, 10, 10, 20, 9));
-	Attack* poiscurry = new Attack("SCURRY", "poisonously scurried all around the team", true, -5, 10, 0, 2, 3, 1);
+	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats(15, 10, 12, 10, 10, 20, 9));
+	Attack* poiscurry = new Attack("SCURRY", "poisonously scurried all around the team", true, -5, 5, 0, 2, 3, 1);
 	Effect* poisoned = new Effect("POISONED", 5, 10, 0, 1, 0.75);
 	poiscurry->addEffect(poisoned);
 	poiscurry->focushits = false;
-	Attack* poisomit = new Attack("POISOMIT", "coughed up a ball of sticky corrosive sludge at", false, 2, 15, 30, 1, 1, 1);
+	Attack* poisomit = new Attack("POISOMIT", "coughed up a ball of sticky corrosive sludge at", false, 9, 10, 15, 1, 1, 1);
 	Effect* sludged = new Effect("SLUDGED", 10, 5, 0, 1, 0.75, 0.5, 1, 0.25);
 	poisomit->addEffect(sludged);
 	poizard->setBasicAttack(poiscurry);
 	poizard->addSpecialAttack(poisomit);
 
-	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(30, 20, 35, 20, 10, 15, 9));
+	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(30, 20, 15, 20, 10, 15, 9));
 	slagman->setRecoilAttack(reallyburn);
-	Attack* slagjab = new Attack("SLAG JAB", "slaggily jabbed at", true, -5, 20, 10, 1, 1, 1);
+	Attack* slagjab = new Attack("SLAG JAB", "slaggily jabbed at", true, -5, 4, 10, 1, 1, 1);
 	slagjab->addEffect(extrafire);
-	Attack* metalmeteor = new Attack("METAL METEOR", "shot a solid metal sphere at", false, 10, 40, 0, 1, 1, 1);
+	Attack* metalmeteor = new Attack("METAL METEOR", "shot a solid metal sphere at", false, 10, 10, 0, 1, 1, 1);
 	metalmeteor->afterdesc = " from inside itself"; //same commentary comment as lavamen
-	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 20, 10, 1, 1, 999);
+	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 10, 10, 1, 1, 999);
 	slagvomit->focushits = false;
 	slagvomit->addEffect(extrafire);
 	slagman->setBasicAttack(slagjab);
 	slagman->addSpecialAttack(metalmeteor);
 	slagman->addSpecialAttack(slagvomit);
 
-	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats(50, 25, 40, 15, 15, 50, 9));
+	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats(50, 25, 18, 15, 15, 50, 9));
 	superslagman->setRecoilAttack(reallyburn);
-	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 10, 10, 4, 4, 1);
+	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 3, 10, 4, 4, 1);
 	slagjchu->addEffect(extrafire);
-	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 40, 0, 1, 1, 3);
-	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 30, 10, 1, 1, 999);
+	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 8, 0, 1, 1, 3);
+	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 11, 10, 1, 1, 999);
 	slagblast->addEffect(extrafire);
 	superslagman->setBasicAttack(slagjchu);
 	superslagman->addSpecialAttack(metalbeam);
 	superslagman->addSpecialAttack(slagblast);
 
-	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats(140, 30, 30, 40, 10, 3, 9)); //mini mini boss?
-	Attack* swing = new Attack("HEAVY HAYMAKER", "swung a heavy haymaker at", true, -5, 40, 0, 1, 1, 1);
-	Attack* fistcannon = new Attack("FIST CANNON", "fired its fists like missiles", false, 3, 30, 0, 2, 2, 1); //I was gonna say heat-seeking fists but that doens't really make sense given the area it's in
+	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats(140, 30, 15, 40, 10, 3, 9)); //mini mini boss?
+	Attack* swing = new Attack("HEAVY HAYMAKER", "swung a heavy haymaker at", true, -5, 10, 0, 1, 1, 1);
+	Attack* fistcannon = new Attack("FIST CANNON", "fired its fists like missiles", false, 3, 15, 0, 2, 2, 1); //I was gonna say heat-seeking fists but that doens't really make sense given the area it's in
 	fistcannon->focushits = false;
-	Attack* furnaceblast = new Attack("FURNACE BLAST", "blasted flames at", false, 6, 40, 20, 1, 1, 3);
+	Attack* furnaceblast = new Attack("FURNACE BLAST", "blasted flames at", false, 6, 10, 15, 1, 1, 3);
 	furnaceblast->afterdesc = " from its furnace core";
 	furnaceblast->addEffect(onfire);
-	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 30, 30, 1, 1, 999);
+	Attack* exhaust = new Attack("EXHAUST", "exhausted heavy fumes", false, 6, 5, 15, 1, 1, 999);
 	exhaust->focushits = false;
 	Effect* smogged = new Effect("SMOGGED", 5, 8, 0, 0.75, 0.75);
 	exhaust->addEffect(smogged);
@@ -4214,25 +4163,25 @@ void Game::SetupWorld() {
 	factgolem->addSpecialAttack(furnaceblast);
 	factgolem->addSpecialAttack(exhaust);
 
-	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, big from a healthy diet of ores.", limbo, 0, Stats(40, 20, 25, 30, 25, 15, 9));
+	NPC* lavadile = new NPC("", "LAVADILE", "Juvenile lavagator, big from a healthy diet of ores.", limbo, 0, Stats(40, 20, 12, 30, 15, 15, 9));
 	Effect* ouchie = new Effect("OUCHIE", 2, 0, 0, 1, 0.8);
-	Attack* cbite = new Attack("BITE", "bit down on", true, -5, 15, 15, 1, 1, 1);
+	Attack* cbite = new Attack("BITE", "bit down on", true, -5, 10, 10, 1, 1, 1);
 	cbite->addEffect(ouchie);
 	lavadile->setBasicAttack(cbite);
-	Attack* clavomit = new Attack("LAVOMIT", "coughed up lava at", false, 5, 30, 20, 1, 1, 1);
+	Attack* clavomit = new Attack("LAVOMIT", "coughed up lava at", false, 5, 15, 10, 1, 1, 1);
 	clavomit->addEffect(onfire);
 	lavadile->addSpecialAttack(clavomit);
 
-	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats(150, 25, 35, 35, 35, 20, 9));
+	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats(150, 25, 17, 35, 25, 20, 9));
 	lavagator->setBoss(true); //miniboss
 	Effect* gcrunched = new Effect("CRUNCHED", 3, 0, 0, 1, 0.6);
-	Attack* gcrunch = new Attack("CRUNCH", "crunched down on", true, -5, 20, 20, 1, 1, 1);
+	Attack* gcrunch = new Attack("CRUNCH", "crunched down on", true, -5, 10, 10, 1, 1, 1);
 	gcrunch->addEffect(gcrunched);
 	lavagator->setBasicAttack(gcrunch);
-	Attack* deathroll = new Attack("DEATH ROLL", "rotated", true, 5, 8, 20, 4, 4, 1);
+	Attack* deathroll = new Attack("DEATH ROLL", "rotated", true, 5, 2, 20, 4, 4, 1);
 	deathroll->synergies.push_back(gcrunched);
 	lavagator->addSpecialAttack(deathroll);
-	Attack* gatorgun = new Attack("GATOR GUN", "fired a flaming beam at", true, 15, 30, 40, 1, 1, 3);
+	Attack* gatorgun = new Attack("GATOR GUN", "fired a flaming beam at", true, 15, 15, 10, 1, 1, 3);
 	gatorgun->afterdesc = " from its gatory core";
 	gatorgun->addEffect(extrafire);
 	lavagator->addSpecialAttack(gatorgun);
@@ -4275,9 +4224,9 @@ void Game::SetupWorld() {
 	adblock->prioritizeleader = true;
 	newtab->addSpecialAttack(adblock);
 
-	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(210, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 0));
+	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(410, 20, 20, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 0));
 	browser->setBoss(true);
-	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 10, 20, 1, 1, 1); //made of fine chromium
+	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 4, 10, 1, 1, 1); //made of fine chromium
 	medge->afterdesc = " with his MICROSOFT EDGE";
 	browser->setBasicAttack(medge);
 	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
@@ -4286,15 +4235,16 @@ void Game::SetupWorld() {
 	gsearch->addEffect(searched);
 	browser->addSpecialAttack(gsearch);
 	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
+	opennewtab->focushits = false;
 	opennewtab->summon = newtab;
 	opennewtab->summonamount = 3;
 	browser->addSpecialAttack(opennewtab);
-	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 10, 15, 6, 6, 1);
+	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 3, 10, 6, 6, 1);
 	yahoo->focushits = false;
 	browser->addSpecialAttack(yahoo);
 	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
 	Effect* buffering = new Effect("BUFFERING", 2);
-	buffering->falldamage = 80;
+	buffering->falldamage = 40;
 	iexplorer->addEffect(buffering);
 	browser->addSpecialAttack(iexplorer);
 	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
@@ -5014,17 +4964,10 @@ void Game::SetupWorld() {
 	calmdown->focushits = false;
 	wrath->playerresponse = calmdown; //the player can only calm themselves down so we only give the attack if the player is affected
 	firewithfire->setTrackRage({{0.1, firewithfir2}, {0.2, firewithfir3}}); //phase 2 after 10% rage and phase 3 after 20%, relative to total health
-	NPC* viola; //we need viola here for fire with fire to recognize her
-	Conversation selfrb = {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate. ^^D"}, {self, "SHUT UP >:|"}};
-	shared_ptr<Conversation> selfrb2 = make_shared<Conversation>(Conversation({{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}));
-	selfrb.alt = selfrb2;
-	selfrb.skipcondition = {VIOLAREC};
-	ragebait->setTargetConv(self, selfrb);
 	ragebait->setTargetConv(floria, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Floria your hat looks stupid. ^^D\""}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}});
 	ragebait->setTargetConv(egadwick, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Who let this fossil into the team?\""}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd! ^^D"}, {egadwick, "You don't understand the marvelousness of science!"}});
 	ragebait->setTargetConv(forestknight, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the mighty forest knight...\""}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA! ^^D"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me into wrath!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
 	forestknight->setImmunity(wrath, {}); //he doesn't say anything here cause he says everything up there ^^^
-	ragebait->setTargetConv(viola, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Viola? Why are you here?\""}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {firewithfire, "BAHAHAHAHANULL! ^FIRE WITH FIRE - \"^D"}, {viola, "ALRIGHT I GET IT!"}});
 	ragebait->setTargetConv(mike, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh I just realized,\""}, {firewithfire, "you're carrying around dynamite!"}, {firewithfire, "I thought those were candles,"}, {firewithfire, "since that's about as hard as your dynamite hits! BAHAHAHA! ^^D"}, {mike, "Oh yeah?"}, {mike, "I'm gonna make you eat those words! HAHAHAHA!"}});
 	ragebait->setTargetConv(cacty, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - *insults Cacty's mother in cactus language*\""}, {NULL, "CACTY - *furious cactus noises*"}});
 	ragebait->setTargetConv(michelin, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Michelin, Mr. Purposeless!\""}, {michelin, "Bro what the heck."}, {firewithfire, "Well it's true!"}, {firewithfire, "Your whole job is to make food,"}, {firewithfire, "yet it tastes like what it turns into when you're done! ^^D"}, {michelin, "Hmmmm >:/"}, {michelin, "I'm gonna..."}, {firewithfire, "You're gonna what?"}, {firewithfire, "Give me food poisoning? ^^D"}, {firewithfire, "BAHAHAHAHA!"}, {michelin, "I'M GONNA MAKE YOU SHUT UP!"}});
@@ -5319,10 +5262,10 @@ void Game::SetupWorld() {
 	boomguard->addRejectionDialogue({{NULL, "DREADNOUGHT - *mechanical rejection*"}});
 	
 	//MARK: Lobster
-	florian = new NPC(*tunnellobster);
+	NPC* florian = new NPC(*tunnellobster);
 	npcChar[florian] = 't'; //Florian's character representation is t for tunnel lobster
 	florian->setLobster(tunnels);
-	florian->setLeader(true, 10, desertstation, false);
+	florian->setLeader(true, 10, desertstation);
 	florian->setTunnelDirection(tentstation, TO_THE_VILLAGE);
 	florian->setTunnelDirection(desertstation, TO_THE_DESERT);
 	florian->setTunnelDirection(deserttunnel, TO_THE_DESERT);
@@ -5334,10 +5277,57 @@ void Game::SetupWorld() {
 	florian->addRejectionDialogue("HhhHhHhHhhhhHHhHHh (lobster noises probably meaning no)");
 	florian->addLinkedDesc(florian, "Your big pet crustacean who inhabits the tunnels below.");
 	florian->addLinkedDialogue(florian, {{NULL, "You pet your lobster."}, {self, ":D"}, {florian, "HHhhHhHHhHhHhHHHhHHhhHhh (happy lobster noises)"}});
+	florian->addDeleaderLink(florian); //make him not a leader after beating him so you can't fight him and so you can use him
 	florian->setWorldCondition(TAMEDLOBSTER);
 
+	Item* lobstercaller = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE."}}, limbo, florian);
+	desertstation->setBackup(lobstercaller);
+	Item* backupcaller1 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE."}}, limbo, florian);
+	volcanostation->setBackup(backupcaller1);
+	Item* backupcaller2 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE."}}, limbo, florian);
+	burgstation->setBackup(backupcaller2);
+	Item* backupcaller3 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE."}}, limbo, florian);
+	burgplats->setBackup(backupcaller3); //this one is for the escape sequence if they never got a whistle
+	Item* backupcaller4 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE."}}, limbo, florian);
+	basestation->setBackup(backupcaller4, false); //this one is endless because it's the only way to leave the basement after beating the game
+	Item* backupcaller5 = new CallerItem("LOBSTER WHISTLE", "Used for summoning lobsters by playing a lobstery melody.\nYou have this because I have to account for players such as yourself,\nwho've ignored all the train stations, and even the whistle before the prison.", {{NULL, "You played a lobstery melody with the LOBSTER WHISTLE"}}, limbo, florian);
+
+	//set up catching stuff which is used in the basement part, and we define it here because it affects one of those lobster callers
+	WorldChange burgcatchanges;
+	burgcatchanges.defeatRooms.push({self, BURGERPRISON});
+	Conversation escapehint = {{burgerprisoner, "You're finally awake."}, {burgerprisoner, "You had me worried for a moment, there."},
+							   {self, "Dang."}, {self, "Guess we gotta wait for a new protagonist :|"},
+							   {burgerprisoner, "Don't give up yet!"}, {burgerprisoner, "You've gotten this far!"},
+							   {self, "No sorry I was joking mostly."},
+							   {burgerprisoner, "Yeah. Well..."},
+							   {burgerprisoner, "..."},
+							   {burgerprisoner, "I know there's tunnels near this room."},
+							   {burgerprisoner, "I got here long ago when they were still finishing the restaurant,"},
+							   {burgerprisoner, "and I remember trains arriving here with materials."},
+							   {burgerprisoner, "Though, it was covered up by your wall, there, long ago..."},
+							   {burgerprisoner, "Probably something to do with security,"},
+							   {burgerprisoner, "and also a lobster infestation that occured around that time."},
+							   {burgerprisoner, "Maybe if we could somehow access those tunnels..."},
+							   {self, "..."},
+							   {self, "Train tunnels and lobsters, you say?"}};
+	escapehint.skipcondition = {ESCAPEDBASE};
+	burgcatchanges.linkedConversations.push({burgerprisoner, escapehint});
+	burgcatchanges.linkedDialogue.push({burgerprisoner, {{burgerprisoner, "..."}, {burgerprisoner, "So what is it you had to say about train tunnels and lobsters?"}}});
+	burgcatchanges.linkedBackups.push(make_tuple(BURGERPRISON, backupcaller5, &inventory)); //if the player never got any lobster caller we do have to make sure they can get one (less cool moment if they need this one, but oh well such is life)
+	burgcatchanges.linkedStations.push(BURGERPRISON);
+	burgcatchanges.worldcon = IMPRISONED;
+	burgerman->setCatchText(burgcatch);
+	burgerman->setPursueStuff({{burgbasenw, burgbasew, burgbasesw}, {burgerbasement, burgbasec, burgbases}, {burgbasene, burgbasee, burgbasese}}, burgcatchanges);
+	burgerman->setPursueSpecial(elevatorbottom, OUT, {{NULL, "You press the button to go up."},
+													  {NULL, "The elevator doors start closing."},
+													  {NULL, "..."},
+													  {NULL, "The BURGER MAN puts his foot in the door."},
+													  {NULL, "The elevator door catches on the BURGER MAN's foot."},
+													  {NULL, "The doors open again."},
+													  {self, ":|"}});
+
 	//set up teammate viola MARK: Viola
-	viola = new NPC(*tkviola);
+	NPC* viola = new NPC(*tkviola);
 	npcChar[viola] = 'v'; //Viola's character representation is v for Viola
 	viola->setLeader(true, 10, cliff2);
 	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
@@ -5385,10 +5375,17 @@ void Game::SetupWorld() {
 	viola->setForceBattle();
 	viola->setEscapable(false);
 	viola->setTalkOnRecruit(true);
-	child->setRecruitCondition(VIOLAREC);
+	viola->setRecruitCondition(VIOLAREC);
+	//some stuff for the volcano temple boss fight
+	ragebait->setTargetConv(viola, {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Viola? Why are you here?\""}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {firewithfire, "BAHAHAHAHANULL! ^FIRE WITH FIRE - \"^D"}, {viola, "ALRIGHT I GET IT!"}});
+	Conversation selfrb = {{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate. ^^D"}, {self, "SHUT UP >:|"}};
+	shared_ptr<Conversation> selfrb2 = make_shared<Conversation>(Conversation({{NULL, "\nFIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}));
+	selfrb.alt = selfrb2;
+	selfrb.skipcondition = {VIOLAREC};
+	ragebait->setTargetConv(self, selfrb);
 
 	NPC* springguard = new NPC(*greer);
-	springguard->setLeader(true, 20, NULL, false);
+	springguard->setLeader(true, 18, minespring, false);
 	springguard->alterSp(-100); //so greer has to start by using gun so it's funnier
 	springguard->addConversation({{greer, "Oi kid!"},
 								  {greer, "Whaddaya doin' down here, huh?"},
@@ -5415,6 +5412,7 @@ void Game::SetupWorld() {
 
 	NPC* volcanoguard = new NPC(*magman);
 	volcanoguard->setLeader(true, 10, volcano1);
+	volcanoguard->setParty({magman, magman, magman});
 	volcanoguard->blockExit(NORTHWEST, ENEMY, "guarded by the LAVAMAN.");
 	volcanoguard->setDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
 	volcanoguard->addRejectionDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
@@ -5477,7 +5475,7 @@ void Game::SetupWorld() {
 	NPC* fact3guard2 = new NPC(*poizard);
 	fact3guard2->setLeader(true, 14, factoryse);
 	fact3guard2->setParty({lavizard, lavizard});
-	fact3guard2->blockExit(EAST, ENEMY, "guarded by the LAVA SOLDIER.");
+	fact3guard2->blockExit(EAST, ENEMY, "guarded by the POIZARD.");
 	fact3guard2->setDialogue({{NULL, "POIZARD - *squeakily threatens you*"}});
 	fact3guard2->addRejectionDialogue({{NULL, "POIZARD - *squeakily rejects you*"}});
 
@@ -5499,16 +5497,16 @@ void Game::SetupWorld() {
 	carlosguard->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
 	carlosguard->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
 
-	NPC* fact3guard3 = new NPC(*poizard);
+	NPC* fact3guard3 = new NPC(*superslagman);
 	fact3guard3->setLeader(true, 15, factoryroofnw);
 	fact3guard3->setParty({slagman, poizard, poizard});
 	fact3guard3->blockExit(NORTH, ENEMY, "guarded by the SUPER SLAGMAN.");
 	fact3guard3->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
 	fact3guard3->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
 
-	NPC* shortcutguard = new NPC(*skeleminer); //skeleminer duo!
-	shortcutguard->setLeader(true, 15, sewer);
-	shortcutguard->setParty({skeleminer});
+	NPC* shortcutguard = new NPC(*skeleminer); //skeleminer trio!
+	shortcutguard->setLeader(true, 20, sewer);
+	shortcutguard->setParty({skeleminer, skeleminer});
 	shortcutguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEMINER.");
 	shortcutguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	shortcutguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
@@ -5527,15 +5525,16 @@ void Game::SetupWorld() {
 	sewerguardn->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 
 	NPC* crocguards = new NPC(*lavadile);
-	crocguards->setLeader(true, 15, sewercenter1);
+	crocguards->setLeader(true, 18, sewercenter1);
+	crocguards->setParty({lavadile});
 	crocguards->blockExit(NORTH, ENEMY, "guarded by the LAVADILE.", true);
 	crocguards->setDialogue({{NULL, "LAVADILE - *growllll*"}});
 	crocguards->addRejectionDialogue({{NULL, "LAVADILE - *growllllll*"}});
 
 	NPC* crocguardn = new NPC(*lavadile);
-	crocguardn->setLeader(true, 15, sewercenter1);
-	crocguardn->setParty({lavadile});
-	crocguardn->blockExit(NORTH, ENEMY, "guarded by the LAVADILE.", true);
+	crocguardn->setLeader(true, 18, sewercenter2);
+	crocguardn->setParty({lavadile, lavadile});
+	crocguardn->blockExit(SOUTH, ENEMY, "guarded by the LAVADILE.", true);
 	crocguardn->setDialogue({{NULL, "LAVADILE - *growllll*"}});
 	crocguardn->addRejectionDialogue({{NULL, "LAVADILE - *growllllll*"}});
 
@@ -5565,29 +5564,27 @@ void Game::SetupWorld() {
 	realchest2->setDenial("The treasure chest is really heavy! You need to USE it to open it, instead.");
 
 	NPC* drainguard = new NPC(*lavagator);
-	drainguard->setLeader(true, 15, sewerplant);
+	drainguard->setLeader(true, 17, sewerplant);
 	drainguard->setDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
 	drainguard->addRejectionDialogue({{NULL, "LAVAGATOR - *GATORY ROAR*"}});
 	drainguard->guardItem(masterswitch);
 	
-	//put a treasure chest in the mines (just monies), and guard the room to it with a rockbug or something (or put the skeleminer duo here? and make a molten miner where the duo is right now?)
-
 	NPC* lavaguard = new NPC(*lavaguardian);
-	lavaguard->setLeader(true, 16, bridge3, false);
+	lavaguard->setLeader(true, 20, bridge3, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN.");
 	lavaguard->setDialogue("*ethereal breathing*");
 	lavaguard->addRejectionDialogue({{self, "Hey you wanna join me on my BURGER QUEST?"}, {lavaguardian, "*ethereal breathing*"}, {self, "..."}});
 	lavaguard->setEscapable(false);
 
 	NPC* tabguard = new NPC(*newtab);
-	tabguard->setLeader(true, 12, castlehall, false);
+	tabguard->setLeader(true, 18, castlehall, false);
 	tabguard->setParty({newtab, newtab});
 	tabguard->blockExit(SOUTH, ENEMY, "blocked by the NEW TAB");
 	tabguard->setDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
 	tabguard->addRejectionDialogue({{NULL, "NEW TAB - *angry internet argument noises*"}});
 	
 	NPC* kingbrowser = new NPC(*browser);
-	kingbrowser->setLeader(true, 18, castlethrone, true);
+	kingbrowser->setLeader(true, 20, castlethrone, true);
 	kingbrowser->setRespawnReq(plum); //respawns only when plum is there and not recruited
 	kingbrowser->setDialogue("GWAHAHAHAHAHA!");
 	kingbrowser->addRejectionDialogue({{browser, "You think I wanna join you?"}, {browser, "GWAHAHAHAHAHA!"}});
@@ -5816,7 +5813,7 @@ void Game::SetupWorld() {
 										  {ratman, "Because I'm Ratman."},
 										  {NULL, "RATMAN grappling hooks away carrying a tied up MARGE."}}); //he leaves here because roamLinks make them roam immediately after
 	
-	theratman = new NPC(*ratman); //MARK: Ratman
+	NPC* theratman = new NPC(*ratman); //MARK: Ratman
 	npcChar[theratman] = 'b'; //Ratman's character representation is b for Batman
 	theratman->setLeader(true, 22, rightstreet3);
 	theratman->setDialogue("I'm Ratman.");
@@ -5885,6 +5882,9 @@ void Game::SetupWorld() {
 							{ratman, "I could probably fit in some adventuring."},
 							{ratman, "So I will join your team."},
 							{ratman, "Because I'm Ratman."}}));
+	jillyreunion->conditionalDecruits.push({theratman, TEMPLEQUEST});
+	templequest->conditionalRecruits.push(make_tuple(theratman, BEATRATMAN, NEVER)); //make Ratman recruitable only if the player did his little battle sidequest I guess you could call it that
+	templequest->conditionalRecruits.push(make_tuple(theratman, BEATMARGE, NEVER));
 	batrec1.alt = batrec2;
 	batrec2->alt = batrec3;
 	theratman->addDismissalDialogue({{ratman, "I shall continue to protect the city."}, {ratman, "Because I'm Ratman."}, {NULL, "RATMAN grappling hooks away."}});
@@ -6140,7 +6140,7 @@ void Game::SetupWorld() {
 	ftrguard3->setTalkOnDefeat();
 	ftrguard3->addOpeningDialogue({{NULL, "You have SUPER SWAGGY!"}, {NULL, "Your stats rose to 300%!"}});
 	ftrguard3->setXPReward(0);
-	
+
 	//the boss!
 	NPC* ftboss = new NPC(*senseofself);
 	ftboss->setMask("", "SENSE OF SELF", "A slowly swirling mass of thin purple smog.");
@@ -6164,7 +6164,95 @@ void Game::SetupWorld() {
 	ftboss->setTalkOnDefeat();
 	ftboss->setForceBattle();
 	ftboss->addLinkedItem(outputantenna, foresttempleboss);
-	Item* feorb; //we implement this last after the rest of the forest temple stuff
+	//to show you the power of Flex Tape, I sawed this boss definition in half! (we keep editing the boss after the choice orbs)
+
+	WorldChange choicea1;
+	choicea1.exitPavings.push(make_tuple(foresttemple, forestbranchw, SOUTHWEST, NORTHEAST));
+	choicea1.exitPavings.push(make_tuple(foresttemple2, forestbranchw, NORTHWEST, SOUTHEAST));
+	choicea1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
+	choicea1.linkedAttacks.push({ftboss, recruit1}); //the selfish choices give the boss more attacks to tempt your teammates away
+	WorldChange choiceb1;
+	choiceb1.exitPavings.push(make_tuple(foresttemple, forestbranche, SOUTH, NORTH));
+	choiceb1.exitPavings.push(make_tuple(foresttemple2, forestbranche, NORTH, SOUTH));
+	choiceb1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
+	Item* choice1 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple, limbo, choicea1, choiceb1,
+								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								 {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE BUFF.\""},
+								 {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE BUFF.\""},
+								 {NULL, "Which choice will you choose? (A or B)"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your TEMPLE BUFF.\""},
+								 {NULL, "An exit opened to the SOUTHWEST!"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, your teammates shall have their TEMPLE BUFF.\""},
+								 {NULL, "An exit opened to the SOUTH!"}});
+	choice1->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
+
+	WorldChange choicea2;
+	choicea2.exitPavings.push(make_tuple(foresttemple2, forestbranchw2, SOUTH, NORTH));
+	choicea2.exitPavings.push(make_tuple(foresttemple3, forestbranchw2, NORTH, SOUTH));
+	choicea2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
+	WorldChange choiceb2;
+	choiceb2.exitPavings.push(make_tuple(foresttemple2, forestbranche2, SOUTHEAST, NORTHWEST));
+	choiceb2.exitPavings.push(make_tuple(foresttemple3, forestbranche2, NORTHEAST, SOUTHWEST));
+	choiceb2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
+	choiceb2.linkedAttacks.push({ftboss, recruit2}); //the selfish choices give the boss more attacks to tempt your teammates away
+	Item* choice2 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple2, limbo, choicea2, choiceb2,
+								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								 {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE DEBUFF.\""},
+								 {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE DEBUFF.\""},
+								 {NULL, "Which choice will you choose? (A or B)"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your TEMPLE DEBUFF.\""},
+								 {NULL, "An exit opened to the SOUTH!"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, your teammates shall have their TEMPLE DEBUFF.\""},
+								 {NULL, "An exit opened to the SOUTHEAST!"}});
+	choice2->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
+	
+	WorldChange choicea3;
+	choicea3.exitPavings.push(make_tuple(foresttemple3, forestbranchw3, SOUTH, NORTH));
+	choicea3.exitPavings.push(make_tuple(foresttemple4, forestbranchw3, WEST, EAST));
+	choicea3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
+	WorldChange choiceb3;
+	choiceb3.exitPavings.push(make_tuple(foresttemple3, forestbranche3, SOUTHEAST, NORTHWEST));
+	choiceb3.exitPavings.push(make_tuple(foresttemple4, forestbranche3, NORTHEAST, SOUTHWEST));
+	choiceb3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
+	choiceb3.linkedAttacks.push({ftboss, recruit3}); //the selfish choices give the boss more attacks to tempt your teammates away
+	Item* choice3 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple3, limbo, choicea3, choiceb3,
+								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
+								 {NULL, "CHOICE ORB - \"A - Share a buff with your team.\""},
+								 {NULL, "CHOICE ORB - \"B - Keep the buff to yourself, hugely increasing your power.\""},
+								 {NULL, "Which choice will you choose? (A or B)"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, your team shall share the SWAGGY effect.\""},
+								 {NULL, "An exit opened to the SOUTH!"}},
+								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your SUPER SWAGGY effect.\""},
+								 {NULL, "An exit opened to the SOUTHWEST!"}});
+	choice3->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
+
+	WorldChange ftodropchanges; //the changes that happen when dropping the forest temple escape orb in order to reset it
+	ftodropchanges.exitDepavings.push({foresttemple, SOUTH}); //reset the choice exit pavings
+	ftodropchanges.exitDepavings.push({foresttemple, SOUTHWEST});
+	ftodropchanges.exitDepavings.push({foresttemple2, NORTH});
+	ftodropchanges.exitDepavings.push({foresttemple2, NORTHWEST});
+	ftodropchanges.exitDepavings.push({foresttemple2, SOUTH});
+	ftodropchanges.exitDepavings.push({foresttemple2, SOUTHEAST});
+	ftodropchanges.exitDepavings.push({foresttemple3, NORTH});
+	ftodropchanges.exitDepavings.push({foresttemple3, NORTHEAST});
+	ftodropchanges.exitDepavings.push({foresttemple3, SOUTH});
+	ftodropchanges.exitDepavings.push({foresttemple3, SOUTHEAST});
+	ftodropchanges.exitDepavings.push({foresttemple4, WEST});
+	ftodropchanges.exitDepavings.push({foresttemple4, NORTHWEST});
+	ftodropchanges.roomChanges.push({foresttemple, "in the forest temple.\nYou are presented with a CHOICE ORB."}); //reset the descriptions
+	ftodropchanges.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB."});
+	ftodropchanges.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here.\nYou are presented with a CHOICE ORB."});
+	ftodropchanges.linkedItems.push({choice1, foresttemple});
+	ftodropchanges.linkedItems.push({choice2, foresttemple2});
+	ftodropchanges.linkedItems.push({choice3, foresttemple3});
+	ftodropchanges.removeAttacks.push({ftboss, recruit1}); //remove the teammate-facing temptation attacks because the player might choose differently the next time
+	ftodropchanges.removeAttacks.push({ftboss, recruit2});
+	ftodropchanges.removeAttacks.push({ftboss, recruit3});
+	Item* feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB", //feorb = f(orest temple) e(ntry/escape) orb
+								"A shiny purple orb which you must TAKE in order to enter the forest temple.",
+								"A fragile purple orb which you must DROP in order to exit the forest temple.",
+								"A hard stone orb, the petrified version of the forest temple's entry/escape orb.",
+								forestbuffer1, forestbuffer2, ftboss, {ftlguard1, ftlguard2, ftlguard3, ftrguard1, ftrguard2, ftrguard3}, ftodropchanges);
 	ftboss->setLinkedOrb(feorb);
 	ftboss->addPaveLink(forestbuffer2, foresttemplestairs, NORTH, SOUTH); //make it so you can just walk out of the temple now
 	ftboss->addRedirect(forestbuffer1, forestbuffer2); //cause they're the same room
@@ -6203,105 +6291,6 @@ void Game::SetupWorld() {
 		{NULL, "The ground closes up above the temple!"},
 		{NULL, "A dirt plain lies where the forest temple once stood."}});
 	
-	Item* choice1; //forwards reference the orb so it can move itself with the world changes
-	WorldChange choicea1;
-	choicea1.exitPavings.push(make_tuple(foresttemple, forestbranchw, SOUTHWEST, NORTHEAST));
-	choicea1.exitPavings.push(make_tuple(foresttemple2, forestbranchw, NORTHWEST, SOUTHEAST));
-	choicea1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
-	choicea1.linkedItems.push({choice1, limbo});
-	choicea1.linkedAttacks.push({ftboss, recruit1}); //the selfish choices give the boss more attacks to tempt your teammates away
-	WorldChange choiceb1;
-	choiceb1.exitPavings.push(make_tuple(foresttemple, forestbranche, SOUTH, NORTH));
-	choiceb1.exitPavings.push(make_tuple(foresttemple2, forestbranche, NORTH, SOUTH));
-	choiceb1.roomChanges.push({foresttemple, "in the forest temple where you were presented with your first choice."});
-	choiceb1.linkedItems.push({choice1, limbo});
-	choice1 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple, choicea1, choiceb1,
-								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
-								 {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE BUFF.\""},
-								 {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE BUFF.\""},
-								 {NULL, "Which choice will you choose? (A or B)"}},
-								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your TEMPLE BUFF.\""},
-								 {NULL, "An exit opened to the SOUTHWEST!"}},
-								{{NULL, "CHOICE ORB - \"In your next battle, your teammates shall have their TEMPLE BUFF.\""},
-								 {NULL, "An exit opened to the SOUTH!"}});
-	choice1->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
-
-	Item* choice2;
-	WorldChange choicea2;
-	choicea2.exitPavings.push(make_tuple(foresttemple2, forestbranchw2, SOUTH, NORTH));
-	choicea2.exitPavings.push(make_tuple(foresttemple3, forestbranchw2, NORTH, SOUTH));
-	choicea2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
-	choicea2.linkedItems.push({choice2, limbo});
-	WorldChange choiceb2;
-	choiceb2.exitPavings.push(make_tuple(foresttemple2, forestbranche2, SOUTHEAST, NORTHWEST));
-	choiceb2.exitPavings.push(make_tuple(foresttemple3, forestbranche2, NORTHEAST, SOUTHWEST));
-	choiceb2.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake."});
-	choiceb2.linkedItems.push({choice2, limbo});
-	choiceb2.linkedAttacks.push({ftboss, recruit2}); //the selfish choices give the boss more attacks to tempt your teammates away
-	choice2 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple2, choicea2, choiceb2,
-								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
-								 {NULL, "CHOICE ORB - \"A - Give yourself a TEMPLE DEBUFF.\""},
-								 {NULL, "CHOICE ORB - \"B - Let your teammates have the TEMPLE DEBUFF.\""},
-								 {NULL, "Which choice will you choose? (A or B)"}},
-								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your TEMPLE DEBUFF.\""},
-								 {NULL, "An exit opened to the SOUTH!"}},
-								{{NULL, "CHOICE ORB - \"In your next battle, your teammates shall have their TEMPLE DEBUFF.\""},
-								 {NULL, "An exit opened to the SOUTHEAST!"}});
-	choice2->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
-	
-	Item* choice3;
-	WorldChange choicea3;
-	choicea3.exitPavings.push(make_tuple(foresttemple3, forestbranchw3, SOUTH, NORTH));
-	choicea3.exitPavings.push(make_tuple(foresttemple4, forestbranchw3, WEST, EAST));
-	choicea3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
-	choicea3.linkedItems.push({choice3, limbo});
-	WorldChange choiceb3;
-	choiceb3.exitPavings.push(make_tuple(foresttemple3, forestbranche3, SOUTHEAST, NORTHWEST));
-	choiceb3.exitPavings.push(make_tuple(foresttemple4, forestbranche3, NORTHEAST, SOUTHWEST));
-	choiceb3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
-	choiceb3.linkedItems.push({choice3, limbo});
-	choiceb3.linkedAttacks.push({ftboss, recruit3}); //the selfish choices give the boss more attacks to tempt your teammates away
-	choice3 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple3, choicea3, choiceb3,
-								{{NULL, "CHOICE ORB - \"I present you with a choice:\""},
-								 {NULL, "CHOICE ORB - \"A - Share a buff with your team.\""},
-								 {NULL, "CHOICE ORB - \"B - Keep the buff to yourself, hugely increasing your power.\""},
-								 {NULL, "Which choice will you choose? (A or B)"}},
-								{{NULL, "CHOICE ORB - \"In your next battle, your team shall share the SWAGGY effect.\""},
-								 {NULL, "An exit opened to the SOUTH!"}},
-								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your SUPER SWAGGY effect.\""},
-								 {NULL, "An exit opened to the SOUTHWEST!"}});
-	choice3->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
-
-	WorldChange ftodropchanges; //the changes that happen when dropping the forest temple escape orb in order to reset it
-	ftodropchanges.exitDepavings.push({foresttemple, SOUTH}); //reset the choice exit pavings
-	ftodropchanges.exitDepavings.push({foresttemple, SOUTHWEST});
-	ftodropchanges.exitDepavings.push({foresttemple2, NORTH});
-	ftodropchanges.exitDepavings.push({foresttemple2, NORTHWEST});
-	ftodropchanges.exitDepavings.push({foresttemple2, SOUTH});
-	ftodropchanges.exitDepavings.push({foresttemple2, SOUTHEAST});
-	ftodropchanges.exitDepavings.push({foresttemple3, NORTH});
-	ftodropchanges.exitDepavings.push({foresttemple3, NORTHEAST});
-	ftodropchanges.exitDepavings.push({foresttemple3, SOUTH});
-	ftodropchanges.exitDepavings.push({foresttemple3, SOUTHEAST});
-	ftodropchanges.exitDepavings.push({foresttemple4, WEST});
-	ftodropchanges.exitDepavings.push({foresttemple4, NORTHWEST});
-	ftodropchanges.roomChanges.push({foresttemple, "in the forest temple.\nYou are presented with a CHOICE ORB."}); //reset the descriptions
-	ftodropchanges.roomChanges.push({foresttemple2, "in the forest temple, at a purple lake.\nYou are presented with a CHOICE ORB."});
-	ftodropchanges.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here.\nYou are presented with a CHOICE ORB."});
-	ftodropchanges.linkedItems.push({choice1, foresttemple});
-	ftodropchanges.linkedItems.push({choice2, foresttemple2});
-	ftodropchanges.linkedItems.push({choice3, foresttemple3});
-	ftodropchanges.removeAttacks.push({ftboss, recruit1}); //remove the teammate-facing temptation attacks because the player might choose differently the next time
-	ftodropchanges.removeAttacks.push({ftboss, recruit2});
-	ftodropchanges.removeAttacks.push({ftboss, recruit3});
-
-	//f(orest temple) e(ntry/escape) orb
-	feorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
-								"A shiny purple orb which you must TAKE in order to enter the forest temple.",
-								"A fragile purple orb which you must DROP in order to exit the forest temple.",
-								"A hard stone orb, the petrified version of the forest temple's entry/escape orb.",
-								forestbuffer1, forestbuffer2, ftboss, {ftlguard1, ftlguard2, ftlguard3, ftrguard1, ftrguard2, ftrguard3}, ftodropchanges);
-
 	//MARK: desert temple stuff
 	NPC* dtguard11 = new NPC(*shadowcreature);
 	dtguard11->setLeader(true, 0, deserttemplese, false);
@@ -6366,6 +6355,30 @@ void Game::SetupWorld() {
 	dtguard32->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
 	dtguard32->setXPReward(0);
 
+	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
+
+	shared_ptr<WorldChange> dtdisappear = make_shared<WorldChange>(); //change to make the teammates disappear after reaching the end of the dark hallway
+	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb1});
+	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb2});
+	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb3});
+	deserthallway7->setEnterChanges(*dtdisappear); //make the teammates disappear at the end of the hallway
+
+	WorldChange dtodropchanges;
+	dtodropchanges.unLightOrb.push({self->getParty(), lightorb1});
+	dtodropchanges.unLightOrb.push({self->getParty(), lightorb2});
+	dtodropchanges.unLightOrb.push({self->getParty(), lightorb3});
+	dtodropchanges.deinventoryLinks.push({&inventory, lightorb1}); //remove light orbs from inventory
+	dtodropchanges.deinventoryLinks.push({&inventory, lightorb2});
+	dtodropchanges.deinventoryLinks.push({&inventory, lightorb3});
+	dtodropchanges.linkedItems.push({lightorb1, deserttemples});
+	dtodropchanges.linkedItems.push({lightorb2, deserttemplenw});
+	dtodropchanges.linkedItems.push({lightorb3, deserttemplene});
+	dtodropchanges.linkedEnterChanges.push({deserthallway7, dtdisappear}); //make the next entering of the temple make this happen again (if the player doesn't get there the first time, the original just gets overwritten so no problemo)
+	dtodropchanges.exitDepavings.push({deserttemplec, DOWN}); //get rid of the light orb exit
+	dtodropchanges.roomChanges.push({deserttemplec, "in the center of the desert temple. There are three slots to drop LIGHT ORBs into."});
+
 	//the boss!
 	NPC* dtboss = new NPC(*thedark);
 	dtboss->setMask("", "THE DARK", "There is nobody here, only darkness.");
@@ -6387,8 +6400,6 @@ void Game::SetupWorld() {
 	dtboss->setTalkOnDefeat();
 	dtboss->setForceBattle();
 	dtboss->addLinkedItem(bigredbutton, deserttempleboss);
-	Item* deorb; //we implement this last after the rest of the desert temple stuff
-	dtboss->setLinkedOrb(deorb);
 	dtboss->addPaveLink(desertbuffer2, deserttemplestairs, EAST, WEST); //make it so you can just walk out of the temple now
 	dtboss->addRedirect(desertbuffer1, desertbuffer2); //cause they're the same room
 	dtboss->addPaveLink(deserttemple, deserthallway7, EAST, WEST); //remove the infinite loop
@@ -6406,10 +6417,12 @@ void Game::SetupWorld() {
 	dtboss->setEscapable(false);
 	dtboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
 	dtboss->setXPReward(0);
-
-	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo, DOWN, deserttemple2);
-	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
-	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* deorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
+						  "A shiny black orb which you must TAKE in order to enter the desert temple.",
+						  "A fragile black orb which you must DROP in order to exit the desert temple.",
+						  "A hard stone orb, the petrified version of the desert temple's entry/escape orb.",
+						  desertbuffer1, desertbuffer2, dtboss, {dtguard11, dtguard12, dtguard13, dtguard21, dtguard22, dtguard31, dtguard32}, dtodropchanges);
+	dtboss->setLinkedOrb(deorb);
 
 	shared_ptr<WorldChange> dtsink = make_shared<WorldChange>(); //when the desert temple sinks into the ground
 	dtsink->exitDepavings.push({deserttempleentrance, IN_TEMPLE}); //can't go in the temple anymore
@@ -6444,32 +6457,6 @@ void Game::SetupWorld() {
 		{NULL, "The desert temple starts sinking into the sand!"},
 		{NULL, "The sands beneath your feet are shaking..."},
 		{NULL, "The sand has completely enveloped the temple!"}});
-
-	shared_ptr<WorldChange> dtdisappear = make_shared<WorldChange>(); //change to make the teammates disappear after reaching the end of the dark hallway
-	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb1});
-	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb2});
-	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb3});
-	deserthallway7->setEnterChanges(*dtdisappear); //make the teammates disappear at the end of the hallway
-
-	WorldChange dtodropchanges;
-	dtodropchanges.unLightOrb.push({self->getParty(), lightorb1});
-	dtodropchanges.unLightOrb.push({self->getParty(), lightorb2});
-	dtodropchanges.unLightOrb.push({self->getParty(), lightorb3});
-	dtodropchanges.deinventoryLinks.push({&inventory, lightorb1}); //remove light orbs from inventory
-	dtodropchanges.deinventoryLinks.push({&inventory, lightorb2});
-	dtodropchanges.deinventoryLinks.push({&inventory, lightorb3});
-	dtodropchanges.linkedItems.push({lightorb1, deserttemples});
-	dtodropchanges.linkedItems.push({lightorb2, deserttemplenw});
-	dtodropchanges.linkedItems.push({lightorb3, deserttemplene});
-	dtodropchanges.linkedEnterChanges.push({deserthallway7, dtdisappear}); //make the next entering of the temple make this happen again (if the player doesn't get there the first time, the original just gets overwritten so no problemo)
-	dtodropchanges.exitDepavings.push({deserttemplec, DOWN}); //get rid of the light orb exit
-	dtodropchanges.roomChanges.push({deserttemplec, "in the center of the desert temple. There are three slots to drop LIGHT ORBs into."});
-
-	deorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
-						  "A shiny black orb which you must TAKE in order to enter the desert temple.",
-						  "A fragile black orb which you must DROP in order to exit the desert temple.",
-						  "A hard stone orb, the petrified version of the desert temple's entry/escape orb.",
-						  desertbuffer1, desertbuffer2, dtboss, {dtguard11, dtguard12, dtguard13, dtguard21, dtguard22, dtguard31, dtguard32}, dtodropchanges);
 
 	//MARK: volcano temple stuff
 	NPC* vtguardl = new NPC(*bolide);
@@ -6552,6 +6539,16 @@ void Game::SetupWorld() {
 	Item* coldorb2 = new ColdOrb("COLD ORB", "An icy blue orb, good for cooling down hot fires like the one at the beginning of the temple.", volcanotemple2o, volcanotemple, NORTHEAST);
 	Item* coldorb3 = new ColdOrb("COLD ORB", "An icy blue orb, good for cooling down hot fires like the one at the beginning of the temple.", volcanotemple3o, volcanotemple, NORTHEAST);
 
+	WorldChange vtodropchanges;
+	vtodropchanges.deinventoryLinks.push({&inventory, coldorb1}); //remove cold orbs from inventory
+	vtodropchanges.deinventoryLinks.push({&inventory, coldorb2});
+	vtodropchanges.deinventoryLinks.push({&inventory, coldorb3});
+	vtodropchanges.linkedItems.push({coldorb1, volcanotemple1o});
+	vtodropchanges.linkedItems.push({coldorb2, volcanotemple2o});
+	vtodropchanges.linkedItems.push({coldorb3, volcanotemple3o});
+	vtodropchanges.roomChanges.push({volcanotemple, "in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into."});
+	vtodropchanges.exitBlocks.push(make_tuple(volcanotemple, NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."));
+
 	NPC* vtboss = new NPC(*firewithfire);
 	vtboss->setMask("", "FIRE WITH FIRE", "A humanoid of flowing fire tapping his foot on the floor.");
 	vtboss->setLeader(true, 0, volcanotempleboss, false);
@@ -6572,8 +6569,6 @@ void Game::SetupWorld() {
 	vtboss->setTalkOnDefeat();
 	vtboss->setForceBattle();
 	vtboss->addLinkedItem(plotometer, volcanotempleboss);
-	Item* veorb; //we implement this last after the rest of the volcano temple stuff
-	vtboss->setLinkedOrb(veorb);
 	vtboss->addPaveLink(volcanobuffer2, volcanotemplestairs, SOUTHWEST, NORTHEAST); //make it so you can just walk out of the temple now
 	vtboss->addRedirect(volcanobuffer1, volcanobuffer2); //cause they're the same room
 	vtboss->addLinkedRoom(volcanotempleboss, "in an arena cleared of its fire. It looks a little gray now.");
@@ -6583,6 +6578,12 @@ void Game::SetupWorld() {
 	vtboss->setEscapable(false);
 	vtboss->setWorldCondition(CANDISMISS); //cause you just finished the temple so you can dismiss teammates again
 	vtboss->setXPReward(0);
+	Item* veorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
+						  "A shiny orange orb which you must TAKE in order to enter the volcano temple.",
+						  "A fragile orange orb which you must DROP in order to exit the volcano temple.",
+						  "A hard stone orb, the petrified version of the volcano temple's entry/escape orb.",
+						  volcanobuffer1, volcanobuffer2, vtboss, {vtguardl, vtguardr, vtguard1, vttrap1, vtguard2, vttrap2, vtguard3, vttrap3}, vtodropchanges);
+	vtboss->setLinkedOrb(veorb);
 
 	shared_ptr<WorldChange> vtsink = make_shared<WorldChange>(); //when the volcano temple sinks into the ground
 	vtsink->exitDepavings.push({volcanotempleentrance, IN_TEMPLE}); //can't go in the temple anymore
@@ -6615,22 +6616,6 @@ void Game::SetupWorld() {
 		{NULL, "The volcano temple starts receding into the wall!"},
 		{NULL, "More magma is pressured into the cavern from the cracks..."},
 		{NULL, "Falling rocks have fully covered the temple!"}});
-
-	WorldChange vtodropchanges;
-	vtodropchanges.deinventoryLinks.push({&inventory, coldorb1}); //remove cold orbs from inventory
-	vtodropchanges.deinventoryLinks.push({&inventory, coldorb2});
-	vtodropchanges.deinventoryLinks.push({&inventory, coldorb3});
-	vtodropchanges.linkedItems.push({coldorb1, volcanotemple1o});
-	vtodropchanges.linkedItems.push({coldorb2, volcanotemple2o});
-	vtodropchanges.linkedItems.push({coldorb3, volcanotemple3o});
-	vtodropchanges.roomChanges.push({volcanotemple, "in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into."});
-	vtodropchanges.exitBlocks.push(make_tuple(volcanotemple, NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."));
-
-	veorb = new EscapeOrb("ENTRY ORB", "ESCAPE ORB", "STONE ORB",
-						  "A shiny orange orb which you must TAKE in order to enter the volcano temple.",
-						  "A fragile orange orb which you must DROP in order to exit the volcano temple.",
-						  "A hard stone orb, the petrified version of the volcano temple's entry/escape orb.",
-						  volcanobuffer1, volcanobuffer2, vtboss, {vtguardl, vtguardr, vtguard1, vttrap1, vtguard2, vttrap2, vtguard3, vttrap3}, vtodropchanges);
 
 	//we have this so that logically you couldn't possibly have a chance of beating the BURGER MAN before getting THE PLOT DEVICE while still having the final boss who is controlling him be beatable MARK: finale stuff
 	Effect* powerofplot = new Effect("POWER OF PLOT", 2147483647, 0, 0, 1000, 1000, 1000, 1000, 1000);
@@ -6801,7 +6786,7 @@ void Game::SetupWorld() {
 	kaboomroom->blockExit(NORTHWEST, RUBBLE, "blocked by rocky rubble.");
 	minelight->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	volcanoentrance->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
-	volcanoentrance->blockExit(NORTH, HEAT, "too hot! You'd probably melt from the radiation unless you got some SUNSCREEN!");
+	volcanoentrance->blockExit(ABOVEGROUND, HEAT, "too hot! You'd probably melt from the radiation unless you got some SUNSCREEN!");
 	sewercenter3->blockExit(DOWN, RUBBLE, "blocked by rocky rubble.");
 	sewercenter4->blockExit(WEST, LOCK, "locked with a GREEN LOCK.");
 	volcano2->blockExit(NORTH, LAVA, "covered by a sea of lava. Looks like it's THE END OF THE ROAD!");
@@ -7027,7 +7012,7 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 			}
 		}
 	}
-	Item* roomgift = roomCanidate->popBackup(); //check if the item has a gift
+	Item* roomgift = roomCanidate->popBackup(); //check if the room has a backup gift
 	if (roomgift && !getItemInVector(inventory, roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
 		roomCanidate->setItem(roomgift); //put the item in the room
 	} //do any changes the room might have to make
@@ -7137,7 +7122,7 @@ void Game::fight(Room* currentRoom, const char* name, bool track) {
 			CinPause();
 			//prints if any teammates leveled up and prints if so
 			for (NPC* teammate : *party) {
-				printLvlUpData(teammate);
+				printLvlUpData(teammate, true);
 			}
 		}
 		//sets the npc as defeated
@@ -7218,7 +7203,6 @@ void Game::fight(Room* currentRoom, const char* name, bool track) {
 			CinIgnoreAll(); //clear extra text and potential error flags
 
 			npc->undefeat(); //make sure the lobster isn't defeated after the battle so you can try using it
-			npc->setLeader(false); //make it not a leader so you can't fight it and so you can use it
 		} else if (npc->getThief()) {
 			mony = 0; //if you were fighting someone marked "thief" you lose all your monies (doesn't necessarily mean they were the thief, just means you lose all your monies)
 		} else if (npc->getBoss(true)) { //if this is the final boss, do final stuff!
@@ -7278,7 +7262,7 @@ void Game::takeItem(Room* currentRoom, const char* itemname) {
 		return;
 	} //you're not allowed to take items if they're being guarded
 	if (NPC* guard = item->getGuard()) {
-		cout << "The " << itemname << " is being guarded by " << guard->getName() << ".";
+		cout << "\nThe " << itemname << " is being guarded by " << guard->getName() << ".";
 		return;
 	}
 	if (!strcmp(item->getType(), "escapeorb") && party->size() < 4) { //escape orbs must be taken with 4 people so that the temples can actually use their themes and stuff 
@@ -7677,13 +7661,25 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 	//movement items are used to go through a blocked exit despite the fact that it's blocked, for example a boat over a river
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
-		for (const char* exit : currentRoom->getBlocks()) { //tries to find a blocked exit that matches the movement item's block type
-			if (currentRoom->getBlockType(exit) == mover->getUnlockType()) {
-				printConversation(&mover->getUseText(), true); //prints what exactly the movement item did
-				travel(currentRoom, exit, true); //force travels to the found room
-				commandcount[3]++; //increment successful item usings, but we don't have to track it because it only does moving changes which are tracked elsewhere
-				return; //returns so we don't teleport to another room (and movement items don't get used up anyway, so no need for the deletion check)
+		if (mover->getTakable() && !item->getDropToUse() && !getItemInVector(inventory, itemname)) { //if you can take it before using it you should
+			cout << "\nYou need to be carrying the " << itemname << " to use it!";
+			return;
+		}
+		Room* dest = NULL;
+		if (Room* target = mover->getTarget()) dest = target; //teleport to the designated room target if there is one
+		else { //otherwise, tries to find a blocked exit that matches the movement item's block type
+			for (const char* exit : currentRoom->getBlocks()) {
+				if (currentRoom->getBlockType(exit) == mover->getUnlockType()) {
+					dest = currentRoom->getExit(exit); //track the exit and break
+					break;
+				}
 			}
+		}
+		if (dest) { //we found a destination so go to it!
+			printConversation(&mover->getUseText(), true); //prints what exactly the movement item did
+			travel(currentRoom, NULL, true, dest); //force travels to the found room
+			commandcount[3]++; //increment successful item usings, but we don't have to track it because it only does moving changes which are tracked elsewhere
+			return; //returns so we don't teleport to another room (and movement items don't get used up anyway, so no need for the deletion check)
 		} //prints error message if no matching blocked exit was found
 		cout << "\nYou can't use the " << itemname << " here.";
 	//paver items create a new exit
@@ -7893,7 +7889,7 @@ void Game::recruitNPC(Room* currentRoom, const char* npcname) {
 	if (!npc->getFifth()) cout << " (Party size: " << newpartysize << "/" << 4 << ")";
 	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
 		scaleNPC(npc, self->getLevel()-1); //update the npc level capped at the given cap
-		printLvlUpData(npc);
+		printLvlUpData(npc, false);
 		npc->setGymStart(0); //no longer training so we reset training time
 	} else {
 		npc->popStatChanges();
@@ -8262,8 +8258,8 @@ void Game::play() {
 
 	sessions++; //we have one more session since we're playing!
 
-	PrintRoomData(self->getRoom()); //prints the data of the starting room
 	self->getRoom()->undefeatEnemies(); //make enemies be respawned when you load a save
+	PrintRoomData(self->getRoom()); //prints the data of the starting room
 
 	time_t savetime = time(NULL); //the last time this session was saved, to get total save file time and how much progress will be lost when quitting without saving
 

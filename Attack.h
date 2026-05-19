@@ -42,7 +42,7 @@ struct Attack {
 	bool parry = false; //if this is the parry move and we have to tell the attacker to start parrying the target
 
 	int minLevel; //must be at least this level to use the attack
-	double hpthreshold = 1; //attacker must be at <= max hp * this in order to use the attack
+	double hpthreshold = 0; //attacker must be at <= max hp * this in order to use the attack
 
 	double lifesteal; //what % of damage dealt is stolen and added to the npc's health
 	int spleak; //how much sp the attack removes from the target

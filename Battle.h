@@ -40,7 +40,7 @@ public:
 	void hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry = false); //hit one of the targets from hitTargets
 	void hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos); //hit the target, and surroundings if needed
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil = false); //affects the given target based on the given attack
-	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 2); //interpret and carry out an attack command given by the player
+	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 3); //interpret and carry out an attack command given by the player
 	vector<NPC*>& getTarTeam(NPC* npc, Attack* attack); //find which team the attack is supposed to target based on the given npc
 	vector<NPC*> getTargets(NPC* npc, Attack* attack); //get a vector of valid targets that we can target with the attack
 	bool playerTurn(NPC* plr); //the player chooses what to do here

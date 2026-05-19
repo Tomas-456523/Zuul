@@ -41,6 +41,7 @@ struct Save {
 	*  - Room welcomes that were triggered, denoted by w[room]
 	*  - If the player was caught by a pursuer, denoted by p[npc]
 	*  - Opening a temple in a temple entrance room, denoted by t[room]
+	*  - Backup items that were popped from a room, denoted by c[room] for non-repeating and k[room] for repeating backups
 	*  Section U: Only exists while pursuer is pursuing, tracks their room
 	*  Section R: Stuff related to the player team
 	*  - First, the teammate this chunk is tracking:
@@ -153,7 +154,7 @@ struct Save {
 			} else if (*p == 'W') {
 				if (sections.count('U') || sections.count('R') || sections.count('I') || sections.count('S') || sections.count('Q')) return false; //section W must precede these sections because otherwise it could overwrite stuff they set, or they could be missing data
 				for (p++;; p++) {
-					if (strchr("bxdrewpt", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
+					if (strchr("bxdrewptck", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
 						if (!verifyNum(++p)) return false; //check item/npc/room id
 					} else if (*p == 'u') {
 						if (!verifyNum(++p)) return false; //check item id
@@ -519,9 +520,9 @@ struct Save {
 	
 	//section W is pretty big and has its own subsections so I split the loading into this function MARK: load W
 	static void loadW(const char*& data, NPC* player, set<int>& discontinuity) {
-		while(*data != '|') {
+		while(*data != '|' && *data != '=') {
 			if (*(++data) == 'b') { //duplicate item because it was bought
-				itemsH[ParseNum(++data)]->loadBuy(); //dupe the item and its position will be handled later, logs in W automatically, don't adjust because we only buy (dupe) items that are in limbo and can't be interacted with
+				itemsH[adjustItemID(ParseNum(++data), discontinuity)]->loadBuy(); //dupe the item and its position will be handled later, logs in W automatically, don't adjust because we only buy (dupe) items that are in limbo and can't be interacted with
 			} else if (*data == 'u') { //use item in world
 				int id = ParseNum(++data); //get the id unadjusted so we can update discontinuities more conveniently later if we delete the item
 				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
@@ -555,7 +556,6 @@ struct Save {
 							}
 						}
 					}
-					
 				} else if (!strcmp(item->getType(), "paver")) {
 					PaverItem* paver = (PaverItem*)item; //converts to the corresponding subclass
 					room->setExit(paver->getDirection(), paver->getDestination()); //sets the exit to the room in the given direction
@@ -660,13 +660,13 @@ struct Save {
 					npc->printOpeningDialogue(false);
 				} else if (*data == 'g') { //gym dialogue
 					npc->popGymDialogue();
-				} else if (*data == 'a' || 'b') { //branching dialogue (there is only ever a max branching depth of 1)
+				} else if (*data == 'a' || *data == 'b') { //branching dialogue (there is only ever a max branching depth of 1)
 					bool branch = *data == 'b'; //b means branch 2 and passing true means branch 2
 					npc->printDialogue(false, NULL, false, &branch); //pass the conversation while forcing the branch, very nice system
 					//branching conversations don't give gifts, cause that's how it's set up
 				} //logging is done by npc automatically, and so are any conversation changes by printConversation
 
-				if (*data != ',') data++; //skip the dividing comma if we didn't skip it due to checking the suboption from the optional .
+				if (*data != ',' && *data != '|' && *data != '=') data++; //skip the dividing comma if we didn't skip it due to checking the suboption from the optional .
 			} else if (*data == 'e') { //room enter changes
 				roomsH[ParseNum(++data)]->doEnterChanges(); //this function also logs the thing automatically
 			} else if (*data == 'w') { //do room welcomes
@@ -675,6 +675,10 @@ struct Save {
 				npcsH[ParseNum(++data)]->doCatchChanges();
 			} else if (*data == 't') { //open temples
 				roomsH[ParseNum(++data)]->openTemple(false); //openTemple logs that the temple was opened automatically
+			} else if (*data == 'c') { //pop backup item in room
+				roomsH[ParseNum(++data)]->popBackup(1); //don't need to set the location, just pop it, item location is set in section I
+			} else if (*data == 'k') { //pop repeating backup item in room
+				roomsH[ParseNum(++data)]->popBackup(2);
 			}
 		}
 	}
@@ -716,7 +720,7 @@ struct Save {
 					Rnpcs.insert(npc);
 				}
 			} else if (*data == 'P') { //p for party
-				while (*(++data) != '|') { //add the teammates until we reach the end
+				while (*(++data) != '|' && *data != '=') { //add the teammates until we reach the end
 					NPC* teammate = charNPC[*data];
 					player->setParty({teammate});
 					teammate->Recruit();
@@ -749,8 +753,10 @@ struct Save {
 				}
 			} else if (*data == 'L') { //l for lobster
 				NPC* lobster = charNPC['t'];
-				if (*(++data) != ',') ParseName(charNPC['t'], data);
-				else charNPC['t']->setTitle("TUNNEL LOBSTER"); //tunnel lobster only has the title if they have were named
+				if (*(++data) != ',') { //only edit the name and title if we actually named the lobster
+					ParseName(charNPC['t'], data);
+					charNPC['t']->setTitle("TUNNEL LOBSTER"); //tunnel lobster only has the title if they have were named
+				}
 				lobster->setRoom(roomsH[ParseNum(++data)]); //place the lobster in its room
 			} else if (*data == 'T') { //t for tunnels, set tunnel directions
 				NPC* lobster = charNPC['t'];

@@ -130,14 +130,15 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 	Item* dupe = Duplicate();
 	dupe->unRoom();
 	inventory->push_back(dupe); //copies the item and adds it to the inventory
+	//if the item says something after being bought (like the shopkeeper saying "thank you for your purchase!" or something)
+	if (!buyDescription.empty()) {
+		printConversation(&buyDescription, true); //prints the buying description
+	}
 	cout << "\nYou bought the " << name << "! You now have " << mony << " mon"; //success text + how many monies you now have
 	if (mony == 1) { //proper grammar yay
 		cout << "y.";
 	} else {
 		cout << "ies.";
-	} //if the item says something after being bought (like the shopkeeper saying "thank you for your purchase!" or something)
-	if (!buyDescription.empty()) {
-		printConversation(&buyDescription, false); //prints the buying description
 	}
 	pity = false; //don't give freebie in the future if we could clearly afford it like 6 or 7 days ago max in world time
 	logW("b", id); //log the buying in section W since we duplicated an item which is pretty notable
@@ -398,12 +399,18 @@ const char* MovementItem::getUnlockType() {
 const Conversation& MovementItem::getUseText() const {
 	return useText;
 }
+Room* MovementItem::getTarget() { //get the teleport destination of the movement item if if has one
+	return target;
+}
+void MovementItem::setTarget(Room* room) { //set a teleport target for this movement item for precision
+	target = room;
+}
 Item* MovementItem::Duplicate() { //returns a new movement item as an Item*
 	return new MovementItem(*this);
 }
 
 //paver exits, for paving new exits in a room
-PaverItem::PaverItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, Room* _usableRoom, const char* _direction, Room* _destination) : Item(_name, _description, _room, false, true, true) {
+PaverItem::PaverItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, Room* _usableRoom, const char* _direction, Room* _destination) : Item(_name, _description, _room, false, true) {
 	destination = _destination;
 	direction = _direction;
 	usableRoom = _usableRoom;
@@ -596,13 +603,15 @@ Room* EscapeOrb::getEntrance() {
 }
 
 //choice orbs for making choices
-ChoiceOrb::ChoiceOrb(const char* _name, const char* desc, Room* _room, const WorldChange& a, const WorldChange& b, const Conversation& _useText, const Conversation& _atext, const Conversation& _btext) : Item(_name, desc, _room, false, false) {
+ChoiceOrb::ChoiceOrb(const char* _name, const char* desc, Room* _room, Room* hideroom, const WorldChange& a, const WorldChange& b, const Conversation& _useText, const Conversation& _atext, const Conversation& _btext) : Item(_name, desc, _room, false, false) {
 	type = "choiceorb";
 	achanges = a;
 	bchanges = b;
 	useText = _useText;
 	atext = _atext;
 	btext = _btext;
+	achanges.linkedItems.push({this, hideroom}); //hide in the given hiding room (limbo) after giving the choice
+	bchanges.linkedItems.push({this, hideroom});
 }
 //make the choice
 void ChoiceOrb::CHOICE() {

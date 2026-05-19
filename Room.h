@@ -41,7 +41,7 @@ public:
 	bool getBlocked(const char* direction); //gets if the given exit is blocked
 	const char* getBlockType(const char* direction); //gets the type of the exit's block
 	const char* getSpecialExit(); //gets the special exit which is different for different room types but we basically just use it for the time machine's OUT
-	Item* popBackup(); //take the backup from the room to check if we should put it there
+	Item* popBackup(int force = 0); //take the backup from the room to check if we should put it there
 
 	void doEnterChanges();
 

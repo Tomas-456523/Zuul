@@ -245,12 +245,15 @@ public:
 	Attack* getAttack(); //gets the attack it does in battle
 	const char* getUnlockType(); //gets the block type the thing moves through
 	const Conversation& getUseText() const; //gets the text printed by using it
+	Room* getTarget(); //get the teleport destination of the movement item if if has one
+
+	void setTarget(Room* room); //set a teleport target for this movement item for precision
 
 	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	const char* unlockType; //what block type the thing moves through
 	Attack* attack; //the attack by using it in battle
-
+	Room* target = NULL; //some movement items just teleport you to this room
 	Conversation useText; //the text printed by using it
 };
 
@@ -388,7 +391,7 @@ private:
 //choice orbs, for deciding between two different world changes
 class ChoiceOrb : public Item {
 public:
-	ChoiceOrb(const char* _name, const char* desc, Room* _room, const WorldChange& a, const WorldChange& b, const Conversation& _useText, const Conversation& _atext, const Conversation& _btext);
+	ChoiceOrb(const char* _name, const char* desc, Room* _room, Room* hideroom, const WorldChange& a, const WorldChange& b, const Conversation& _useText, const Conversation& _atext, const Conversation& _btext);
 
 	void CHOICE(); //make the choice orb choice
 	void makeChoice(char choice); //make the choice from the loading system
