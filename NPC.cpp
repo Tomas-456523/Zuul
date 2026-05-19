@@ -286,7 +286,7 @@ bool NPC::getEscapable() { //if you can escape battle with this npc
 }
 int NPC::getXpReward() {
 	if (xpReward) return  xpReward;
-	return level*level+5; //arbitrary formula to reward xp
+	return level*3+3; //arbitrary formula to reward xp
 }
 int NPC::getMonyReward() {
 	if (monyReward) return monyReward;
@@ -735,6 +735,7 @@ void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantl
 	Stats statsup; //how much each stat just went up
 	if (instant) { //instantly go to the given level if one was given that wasn't the default 0
 		statsup = Stats::avgLvLUp(instant-level) + scale*(instant-oldlevel); //get the average random stat changes for how much we leveled up plus the guaranteed scale for each level up
+		if (statsup.spmax + stats.spmax > 30) statsup.spmax = 30-stats.spmax; //the max sp is 30 because otherwise they have too much sp in high-level fights
 		level = instant; //set the level
 	} else { //normally go up one single level
 		statsup = Stats::makeLvlStats(level, id) + scale; //deterministically determine the stats we just got from the level up, plus the baseline stat scale
@@ -1000,6 +1001,7 @@ void NPC::setBaseStats(Stats _stats) { //reset base stats and calculate new curr
 	stats -= basestats; //remove current base from stats
 	basestats = _stats; //reset base
 	stats += basestats; //add new base to the total stats
+	if (stats.spmax > 30) stats.spmax = 30; //make sure the sp max is clamped at 30 for balance and gameplay feel
 	health = stats.hpmax; //make sure hp and sp are adjusted accordingly
 	sp = stats.spmax / 3;
 }

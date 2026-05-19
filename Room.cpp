@@ -84,6 +84,9 @@ const char* Room::getBlockType(const char* direction) { //get why it's blocked
 const char* Room::getSpecialExit() { //gets the special exit which is different for different room types but we basically just use it for the time machine's OUT
 	return specialExit;
 }
+bool Room::gotBackup() { //get if there is a backup item to get, so that we don't make a pointless duplicate if we have repeating backups
+	return backup;
+}
 Item* Room::popBackup(int force) { //we can force it to do one or the other options as well (for loading saves)
 	Item* _backup;
 	if (force == 1 || onebackup) { //if there is only one backup

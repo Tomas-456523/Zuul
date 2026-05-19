@@ -884,7 +884,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 				cout << attack->name << " doesn't need a target!";
 				return false;
 			}
-			if (plr->getSP() < attack->cost) { //we don't launch the attack if we don't have enough sp
+			if (plr->getSP() < Round(attack->cost*plr->getSPUseMultiplier())) { //we don't launch the attack if we don't have enough sp
 				cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << Round(attack->cost * plr->getSPUseMultiplier()) << ")";
 				return false; //could not launch attack
 			}

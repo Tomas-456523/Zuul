@@ -3819,7 +3819,10 @@ void Game::SetupWorld() {
 
 	NPC* buffgrassman = new NPC("", "BUFF GRASSMAN", "A really grassy humanoid who has been hitting the gym.", limbo, 0, Stats(32, 0, 8, 0, 2, 4, 9));
 	Effect* theburn = new Effect("THE BURN", 3, 0, 0, 2.0, 2.0, 2.0);
-	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", false, 10, 0, 0, 1, 1, 5, true);
+	Attack* benchpress = new Attack("BENCH PRESS", "worked out with", false, 10, 0, 0, 1, 1, 1, true);
+	benchpress->donotself = true;
+	benchpress->addEffect(theburn);
+	benchpress->selfeffect = theburn;
 	buffgrassman->setBasicAttack(grassstrike);
 	buffgrassman->addSpecialAttack(benchpress);
 
@@ -3902,14 +3905,14 @@ void Game::SetupWorld() {
 	Attack* timber = new Attack("TIMBER", "snipped down a tree, directed at", false, 10, 20, 0, 1, 1, 1);
 	egadbot->addSpecialAttack(timber);
 
-	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 10, 10, 6, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
+	NPC* savagehog = new NPC("", "MAMMOTH HOG", "Savage, mammoth elder hog with very sharp prickles.", limbo, 0, Stats(90, 10, 8, 6, 10, 10, 9), Stats(0, 0, 1, 1, 1, 0, 0));
 	Attack* charge = new Attack("CHARGE", "charged at", true, -5, 5, 4, 1, 1, 1);
 	Attack* savageroar = new Attack("SAVAGE ROAR", "roared savagely at", false, 2, 0, 0, 1, 1, 3);
 	Effect* intimidated = new Effect("INTIMIDATED", 2, 0, 0, 0.5);
 	savageroar->redundanteffect = false; //he was spamming this way too much
 	savageroar->addEffect(intimidated);
-	Attack* mprickles = new Attack("PRICKLES", "poked", false, 0, 3, 1, 1, 1, 1); //the attack is lower than normal prickles but it balances out due to the boss' attack stat
-	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles", false, 10, 2, 5, 1, 3, 999);
+	Attack* mprickles = new Attack("PRICKLES", "poked", false, 0, 3, 1, 1, 1, 1); //the attack is lower than normal prickles but it balances out due to the boss' stats
+	Attack* pricklestorm = new Attack("PRICKLE STORM", "launched a storm of prickles at ", false, 10, 2, 5, 1, 3, 999);
 	savagehog->setBasicAttack(charge);
 	savagehog->addSpecialAttack(savageroar);
 	savagehog->addSpecialAttack(pricklestorm);
@@ -3925,9 +3928,9 @@ void Game::SetupWorld() {
 	mimic->addSpecialAttack(monymeteor);
 	mimic->setBoss(true); //of the mini variety
 
-	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(20, 0, 10, 0, 0, 10, 9));
-	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, -5, 10, 0, 1, 1, 1);
-	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, 12, 5, 0, 1, 1, 1);
+	NPC* sandman = new NPC("", "SANDMAN", "A really sandy humanoid continuously flowing with sand.", limbo, 0, Stats(18, 0, 10, 0, 0, 10, 9));
+	Attack* sandpunch = new Attack("SAND PUNCH", "threw a sandy punch at", true, -5, 5, 0, 1, 1, 1);
+	Attack* sandthrow = new Attack("POCKET SAND", "threw sand at", false, 10, 5, 0, 1, 1, 1);
 	Effect* sanded = new Effect("SAND IN THE EYES", 1, 0, 0, .5, .5);
 	sandthrow->afterdesc = "'s eyes";
 	sandthrow->addEffect(sanded);
@@ -3946,7 +3949,7 @@ void Game::SetupWorld() {
 	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", true, 10, 8, 0, 3, 4, 3);
 	skeleviking->addSpecialAttack(vtornado);
 
-	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(10, 2, 15, 1, 15, 30, 9));
+	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(9, 0, 15, 0, 15, 30, 9));
 	Attack* tumble = new Attack("TUMBLE", "rolled into", true, -5, 1, 10, 1, 1, 1);
 	Effect* brambled = new Effect("BRAMBLED", 3, 3);
 	tumble->addEffect(brambled);
@@ -3954,15 +3957,15 @@ void Game::SetupWorld() {
 	rumbleweed->setBasicAttack(tumble);
 	rumbleweed->addSpecialAttack(rumble);
 
-	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(10, 20, 5, 10, 0, 2, 9));
+	NPC* rockbug = new NPC("", "ROCKBUG", "Sizable geometric bug who normally lives in the rock, but becomes very aggressive when disturbed.", limbo, 0, Stats(8, 18, 5, 8, 0, 2, 9));
 	Attack* rocknroll = new Attack("ROCK AND ROLL", "rolled up into a boulder, speeding at", true, -5, 15, 0, 1, 1, 1);
 	Effect* jamming = new Effect("JAMMING OUT", 10, 0, 0, 1.5, 1.5, 1.5, 1, 50.0);
 	rocknroll->selfeffect = jamming;
-	Attack* saltcure = new Attack("SALT CURE", "vomited crystals of curing salt onto", false, 12, 5, 0, 1, 1, 1);
-	Effect* saltcured = new Effect("SALT CURED", 2147483647);
-	saltcure->redundanteffect = false; //would be redundant to reuse an infinte duration effect
-	saltcured->spusage = 2.0; //salt cured means you take double damage and use double sp
-	saltcured->damagebuff = 2.0;
+	Attack* saltcure = new Attack("SALT CURE", "vomited crystals of curing salt onto", false, 16, 5, 0, 1, 1, 1);
+	Effect* saltcured = new Effect("SALT CURED", 3);
+	saltcure->redundanteffect = false;
+	saltcured->spusage = 1.5; //salt cured means you take 1.5x damage and use 1.5x sp
+	saltcured->damagebuff = 1.5;
 	saltcure->addEffect(saltcured);
 	rockbug->setBasicAttack(rocknroll);
 	rockbug->addSpecialAttack(saltcure);
@@ -3980,7 +3983,7 @@ void Game::SetupWorld() {
 	NPC* dreadnaut = new NPC("", "DREADNOUGHT", "Hefty armored bug complete with a tank cannon. A true wonder of nature.", limbo, 0, Stats(50, 15, 8, 15, 20, 5, 9));
 	Attack* dpincer = new Attack("PINCER", "pinced", true, -5, 5, 10, 1, 1, 1);
 	Attack* rapidfire = new Attack("RAPID FIRE", "fired upon", false, 5, 1, 100, 10, 10, 1);
-	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", false, 10, 10, 20, 1, 1, 3);
+	Attack* tankshell = new Attack("TANK SHELL", "fired its cannon at", false, 10, 8, 10, 1, 1, 3);
 	dreadnaut->setBasicAttack(dpincer);
 	dreadnaut->addSpecialAttack(rapidfire);
 	dreadnaut->addSpecialAttack(tankshell);
@@ -3994,7 +3997,7 @@ void Game::SetupWorld() {
 	Attack* lobroar = new Attack("LOBSTERY ROAR", "unleashed a lobstery roar, shaking chunks of the ceiling loose", false, 10, 8, 0, 4, 5, 1);
 	lobroar->focushits = false;
 	Attack* trainrush = new Attack("TRAIN RUSH", "rushed at", true, 15, 22, 0, 1, 1, 1);
-	trainrush->afterdesc = "like a train";
+	trainrush->afterdesc = " like a train";
 	tunnellobster->setBasicAttack(lpincer);
 	tunnellobster->addSpecialAttack(tailsmack);
 	tunnellobster->addSpecialAttack(lobroar);
@@ -4002,7 +4005,7 @@ void Game::SetupWorld() {
 	tunnellobster->setBoss(true);
 
 	//Gravity Girl Viola is mostly attack with some support but a boss fight first MARK: Viola (enemy)
-	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(400, 15, 10, 0, 20, 20, 19), Stats(1, 0, 1, 0, 2, 0, 0));
+	NPC* tkviola = new NPC("TELEKINETIC KIDNAPPER", "VIOLA", "Telekinetic teenager responsible for the disappearence of the desert town.\nHer hair floats upwards and she hovers a few feet above the ground.", limbo, 0, Stats(300, 15, 10, 0, 20, 20, 9), Stats(1, 0, 1, 0, 2, 0, 0));
 	tkviola->setBoss(true);
 	Attack* wave = new Attack("WAVE", "flung a gravitational wave at", false, -5, 5, 20, 1, 1, 1);
 	tkviola->setBasicAttack(wave);
@@ -4028,24 +4031,24 @@ void Game::SetupWorld() {
 	suspended->freeze = true;
 	suspend->addEffect(suspended);
 	tkviola->addSpecialAttack(suspend);
-	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to",false,  12, 8, 20, 1, 1, 1, false, 11);
+	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to",false,  12, 8, 20, 1, 1, 1, false, 13);
 	gutpunch->afterdesc = "'s gut";
 	gutpunch->addDescription("Deliver a telekinetic punch to the target's gut. (8 ATTACK, 20 PIERCE)");
 	tkviola->addSpecialAttack(gutpunch);
-	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", false, 10, 10, 15, 1, 1, 3, false, 12);
+	Attack* spatialpop = new Attack("SPATIAL POP", "popped a spacetime bubble at", false, 15, 10, 15, 1, 1, 3, false, 15);
 	spatialpop->addDescription("Form and pop a spacetime bubble damaging three adjacent enemies. (10 ATTACK, 15 PIERCE)");
 	tkviola->addSpecialAttack(spatialpop);
-	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 1, 1, 999, true, 15);
+	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 1, 1, 999, true, 17);
 	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
 	Effect* forcefielded = new Effect("FORCE FIELD", 3, 0, 0, 1, 2);
 	forcefield->addEffect(forcefielded);
 	tkviola->addSpecialAttack(forcefield);
-	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", false, 15, 0, 0, 1, 1, 21, false, 17);
+	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", false, 15, 0, 0, 1, 1, 21, false, 20);
 	intensegravity->addDescription("Intensify gravity around the enemy team, halving their defense.");
 	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5);
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
-	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 17, 30, 1, 1, 21, false, 20);
+	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 17, 30, 1, 1, 21, false, 25);
 	blackhole->addDescription("Form a black hole encompassing the enemies for heavy damage. (17 ATTACK, 30 PIERCE)");
 	tkviola->addSpecialAttack(blackhole);
 
@@ -4186,29 +4189,29 @@ void Game::SetupWorld() {
 	gatorgun->addEffect(extrafire);
 	lavagator->addSpecialAttack(gatorgun);
 
-	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(200, 50, 30, 20, 20, 10, 9), Stats(2, 1, 1, 0, 0, 0, 0));
+	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(600, 30, 11, 20, 11, 10, 9), Stats(2, 1, 1, 0, 0, 0, 0));
 	lavaguardian->setBoss(true);
-	Attack* contactexplosion = new Attack("EXPLOSION", "blew up in", false, 0, 15, 20, 1, 1, 1);
+	Attack* contactexplosion = new Attack("EXPLOSION", "blew up in", false, 0, 5, 15, 1, 1, 1);
 	contactexplosion->afterdesc = "'s face";
 	lavaguardian->setRecoilAttack(contactexplosion);
-	Attack* firesword = new Attack("FIRE SWORD", "slashed", true, -5, 20, 20, 1, 1, 1);
+	Attack* firesword = new Attack("FIRE SWORD", "slashed", true, -5, 5, 20, 1, 1, 1);
 	firesword->afterdesc = " with its flaming sword";
 	firesword->addEffect(onfire);
 	lavaguardian->setBasicAttack(firesword);
-	Attack* uplash = new Attack("UPSLASH", "slashed", true, 5, 20, 20, 1, 1, 1);
+	Attack* uplash = new Attack("UPSLASH", "slashed", true, 5, 5, 20, 1, 1, 1);
 	uplash->afterdesc = " upwards into the air";
 	Effect* uplashed = new Effect("UPSLASHED", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
 	uplashed->remove = true;
-	uplashed->falldamage = 30;
+	uplashed->falldamage = 15;
 	uplash->addEffect(uplashed);
 	lavaguardian->addSpecialAttack(uplash);
-	Attack* eruption = new Attack("ERUPTION", "explosively crashed its sword down on", true, 8, 30, 20, 1, 1, 3);
+	Attack* eruption = new Attack("ERUPTION", "explosively crashed its sword down on", true, 8, 10, 20, 1, 1, 3);
 	lavaguardian->addSpecialAttack(eruption);
-	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 10, 20, 1, 1, 999);
+	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 1, 20, 1, 1, 999);
 	solarflare->focushits = false;
 	solarflare->addEffect(blinded); //defined in graham's nat 3
 	lavaguardian->addSpecialAttack(solarflare);
-	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation upon", false, 20, 40, 100, 1, 1, 3);
+	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation upon", false, 20, 20, 100, 1, 1, 3);
 	lavaguardian->addSpecialAttack(gammarayburst);
 
 	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
@@ -5023,11 +5026,8 @@ void Game::SetupWorld() {
 	levitating->freeze = true;
 	levitation->addEffect(levitating);
 	adversary->addSpecialAttack(levitation);
-	//the boss has three temptation attacks of low sp, which add up to 9 sp, making it pretty likely that one will be used. We make new effects here because they have slightly different mechanics
-	//temptation (pride)
-	Attack* temptationp = new Attack("TEMPTATION", "tempted", false, 3, 0, 0, 1, 1, 1);
-	temptationp->afterdesc = " into PRIDE";
-	adversary->addSpecialAttack(temptationp);
+	//the boss has two temptation attacks of low sp, which add up to 6 sp, making it decently likely that one will be used. We make new effects here because they have slightly different mechanics
+	//(no pride temptation because I couldn't think of anything)
 	//pretty much the same as the dark's terror, except not permanent so if the player gets incapacitated the teammates can still fight even if they're all despaired (this is fine in the dark fight because it's focused around the mechanic whereas here it's the culmination of your whole quest, including resisting the other temples' vices)
 	Attack* temptationd = new Attack("TEMPTATION", "tempted", false, 3, 0, 0, 1, 1, 1);
 	temptationd->afterdesc = " into DESPAIR";
@@ -5141,7 +5141,7 @@ void Game::SetupWorld() {
 	hogguard->addRejectionDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
 
 	NPC* hogguard2 = new NPC(*greaterhog);
-	hogguard2->setLeader(true, 3, forestspork);
+	hogguard2->setLeader(true, 5, forestspork);
 	hogguard2->setParty({pricklyhog, pricklyhog});
 	hogguard2->blockExit(NORTHWEST, ENEMY, "guarded by the GREATER HOG.");
 	hogguard2->setDialogue({{NULL, "GREATER HOG - *angry squeal*"}});
@@ -5233,14 +5233,14 @@ void Game::SetupWorld() {
 	jimshady2->addRejectionDialogue("No. Begone.");
 
 	NPC* canyonguard = new NPC(*skeleminer);
-	canyonguard->setLeader(true, 6, canyon3);
+	canyonguard->setLeader(true, 7, canyon3);
 	canyonguard->setParty({rockbug});
 	canyonguard->blockExit(UNDERGROUND, ENEMY, "blocked by the SKELEMINER.");
 	canyonguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 	canyonguard->addRejectionDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
 
 	NPC* mineguard = new NPC(*skeleminer);
-	mineguard->setLeader(true, 6, deserttunnel);
+	mineguard->setLeader(true, 7, deserttunnel);
 	mineguard->setParty({rockbug, rockbug});
 	mineguard->blockExit(SOUTHWEST, ENEMY, "blocked by the SKELEMINER.", true);
 	mineguard->setDialogue({{NULL, "SKELEMINER - *angry rattling*"}});
@@ -5329,7 +5329,7 @@ void Game::SetupWorld() {
 	//set up teammate viola MARK: Viola
 	NPC* viola = new NPC(*tkviola);
 	npcChar[viola] = 'v'; //Viola's character representation is v for Viola
-	viola->setLeader(true, 10, cliff2);
+	viola->setLeader(true, 12, cliff2);
 	viola->addConversation({{self, "Hey did you kidnap everyone in that town over there?"},
 							{viola, "So what if I did?"},
 							{self, "Lady you can't just go kidnapping people."},
@@ -5354,7 +5354,7 @@ void Game::SetupWorld() {
 	viola->addLinkedRoom(deserttown, "in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
 	viola->addLinkedRoom(deserthouse, "in some house which still has zero purpose.");
 	viola->addRecruitLink(viola);
-	viola->addLinkedStats(viola, Stats(20, 0, 10, 0, 10, 20, 19));
+	viola->addLinkedStats(viola, Stats(20, 0, 10, 0, 10, 20, 9));
 	viola->addLinkedConvo(viola, {{viola, "I'm sorry I'll free everyone..."},
 								  {viola, "It's just that I'm shy and I have a hard time making friends that's why I kidnapped them..."},
 								  {self, "That's not a very good reason."},
@@ -7011,10 +7011,12 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 				if (trackNPC(npc, false)) Rnpcs.insert(npc->getParent()); //track this npc because they moved so we should just start tracking them now
 			}
 		}
-	}
-	Item* roomgift = roomCanidate->popBackup(); //check if the room has a backup gift
-	if (roomgift && !getItemInVector(inventory, roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
-		roomCanidate->setItem(roomgift); //put the item in the room
+	} //check if the room has a backup before popping it, so we don't make pointless duplicates every time we go to a room with repeating backup items
+	if (roomCanidate->gotBackup()) {
+		Item* roomgift = roomCanidate->popBackup(); //get the backup
+		if (roomgift && !getItemInVector(inventory, roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
+			roomgift->setRoom(roomCanidate); //put the item in the room
+		}
 	} //do any changes the room might have to make
 	roomCanidate->doEnterChanges();
 
