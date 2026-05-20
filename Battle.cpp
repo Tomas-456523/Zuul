@@ -551,7 +551,7 @@ void Battle::checkFightEffects() {
 		if (!npc->getLeader()) attachEffect(npc->setEffect(teameffect, NULL));
 	}
 }
-//do the business proposition, which is a very specific choice sequence for the forest temple boss MARK: business proposition, and return what the player chose
+//do the business proposition, which is a very specific choice sequence for the forest temple boss, and return what the player chose MARK: business proposition
 bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
 	carryOutAttack(sos->getPropAttack(), sos, plr); //do the set-up for the business proposition (remove effects)
 	if (faint) cout << sos->getName() << " catches you as you fall.";
@@ -561,10 +561,10 @@ bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
 	printConversation(&sos->getPropConv(), false);
 	WorldState[GAMEEND] = false; //reset game end state, doesn't matter what faint was (if the game was ended, we wouldn't be in this battle so yeah)
 	if (AOrB(NULL, "YES", "NO")) { //if the player chooses yes, give them the effect
-		attachEffect(plr->setEffect(sos->getPropEffect(), sos));
-		if (faint) plr->directDamage(-1); //keep the player alive if this was the "player got defeated early" fallback path
 		cout << sos->getName() << " - \"Well well, welcome to the better side!\"";
 		CinPause();
+		attachEffect(plr->setEffect(sos->getPropEffect(), sos));
+		if (faint) plr->directDamage(-1); //keep the player alive if this was the "player got defeated early" fallback path
 		return true;
 	} else { //if the player rejected the business proposition
 		cout << "\n" << plr->getName() << " - \"No >:|\"";

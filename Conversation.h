@@ -18,7 +18,6 @@ struct Conversation {
 	std::shared_ptr<Conversation> alt; //alternate dialogue if the skipcondition is true
 
 	std::vector<size_t> skipcondition; //if we should skip this, based on WorldConditions in Helper
-	bool altdialogue; //if skipcondition is true, if we should use alternate dialogue instead of just skipping the conversation
 
 	std::pair<const char*, std::shared_ptr<Conversation>> branch1{NULL, NULL}; //we can have branching dialogue based on if the player responds one or the other const char* in the branches
 	std::pair<const char*, std::shared_ptr<Conversation>> branch2{NULL, NULL};
@@ -38,16 +37,16 @@ struct Conversation {
 	}
 
 	bool getOutdated() const {
-		return (goToAlt() && !altdialogue);
+		return (goToAlt() && !alt);
 	}
 
 	bool empty() const {
 		return (goToAlt() ? (alt && alt->empty()) : lines.empty());
 	}
 
-	Conversation() : skipcondition(Helper::NEVER), altdialogue(false), alt(0) {}
+	Conversation() : skipcondition(Helper::NEVER), alt(0) {}
 
-	Conversation(std::initializer_list<std::pair<NPC*, const char*>> _lines) : lines(_lines), skipcondition(Helper::NEVER), altdialogue(false), alt(0) {}
+	Conversation(std::initializer_list<std::pair<NPC*, const char*>> _lines) : lines(_lines), skipcondition(Helper::NEVER), alt(0) {}
 };
 
 #endif

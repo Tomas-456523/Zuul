@@ -584,7 +584,7 @@ void Game::SetupWorld() {
 	headbutt->recoil = 10;
 	headbutt->addDescription("Deal a strong hit with your head, but it kind of hurts. (25 ATTACK)");
 	self->addSpecialAttack(headbutt);
-	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 10, 15, 10, 1, 1, 3, false, 8);
+	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 15, 15, 10, 1, 1, 3, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (15 ATTACK, 10 PIERCE)");
 	Attack* punchflurry = new Attack("PUNCH FLURRY", "unleashed a flurry of punches upon", true, 7, 5, 0, 6, 7, 1, false, 15);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
@@ -1010,7 +1010,7 @@ void Game::SetupWorld() {
 							   {self, "Yeah sure I'll take it thanks."},
 							   {michelin, "Well when you get all three berries just USE that blender over there."},
 							   {self, "Sounds good."}});
-	Item* ninjaguide = new KeyItem("GUIDE TO BEING A NINJA", "A book detailing the ninja techniques that will help you get into the ninja village.", {{NULL, "You open the guide."}, {self, "Chapter 1: The Ninja Way"}, {self, "Ninjahood was invented by..."}, {self, "..."}, {self, "I ain't reading allat."}, {self, "Ok... Table of Contents..."}, {self, "Aha!"}, {self, "Chapter 84: Ninja Movement"}, {NULL, "The next day..."}, {self, "Alright! Now I can do ninja mevement!"}, {NULL, "You have mastered the ninja abilities and can now enter the ninja village!"}}, limbo, NINJA);
+	Item* ninjaguide = new KeyItem("GUIDE TO BEING A NINJA", "A book detailing the ninja techniques that will help you get into the ninja village.", {{NULL, "You open the guide."}, {self, "Chapter 1: The Ninja Way"}, {self, "Ninjahood was invented by..."}, {self, "..."}, {self, "I ain't reading allat."}, {self, "Ok... Table of Contents..."}, {self, "Aha!"}, {self, "Chapter 84: Ninja Movement"}, {NULL, "The next day..."}, {self, "Alright! Now I can do ninja movement!"}, {NULL, "You have mastered the ninja abilities and can now enter the ninja village!"}}, limbo, NINJA);
 	((KeyItem*)ninjaguide)->setTarget(ninjaland);
 	michelin->setGift(ninjaguide);
 	michelin->setDialogue({{michelin, "When you get all three berries just USE that blender over there."}, {michelin, "You got this!"}, {NULL, "MICHELIN - *two thumbs up* :D"}});
@@ -4126,20 +4126,20 @@ void Game::SetupWorld() {
 	poizard->setBasicAttack(poiscurry);
 	poizard->addSpecialAttack(poisomit);
 
-	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(30, 20, 15, 20, 10, 15, 9));
+	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(25, 17, 15, 20, 10, 15, 9));
 	slagman->setRecoilAttack(reallyburn);
-	Attack* slagjab = new Attack("SLAG JAB", "slaggily jabbed at", true, -5, 4, 10, 1, 1, 1);
+	Attack* slagjab = new Attack("SLAG JAB", "slaggily jabbed at", true, -5, 5, 10, 1, 1, 1);
 	slagjab->addEffect(extrafire);
 	Attack* metalmeteor = new Attack("METAL METEOR", "shot a solid metal sphere at", false, 10, 10, 0, 1, 1, 1);
 	metalmeteor->afterdesc = " from inside itself"; //same commentary comment as lavamen
-	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 10, 10, 1, 1, 999);
+	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 5, 10, 1, 1, 999);
 	slagvomit->focushits = false;
 	slagvomit->addEffect(extrafire);
 	slagman->setBasicAttack(slagjab);
 	slagman->addSpecialAttack(metalmeteor);
 	slagman->addSpecialAttack(slagvomit);
 
-	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats(50, 25, 18, 15, 15, 50, 9));
+	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats(50, 20, 18, 15, 15, 50, 9));
 	superslagman->setRecoilAttack(reallyburn);
 	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 3, 10, 4, 4, 1);
 	slagjchu->addEffect(extrafire);
@@ -6873,14 +6873,14 @@ void Game::PrintRoomData(Room* currentRoom, bool track) {
 
 //move the player and co. to a new room based on direction, or also just teleopring to forceDest if given MARK: travel
 void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Room* forceDest) {
-	Room* roomCanidate = NULL; //the room we're trying to go to
+	Room* roomCandidate = NULL; //the room we're trying to go to
 	if (forceDest != NULL) { //we just teleport to this room if given
-		roomCanidate = forceDest;
+		roomCandidate = forceDest;
 	} else { //if no teleport destination is given, we try to get the room in the given direction
-		roomCanidate = currentRoom->getExit(direction);
+		roomCandidate = currentRoom->getExit(direction);
 	}
-	//we print an error message based on the reason roomCanidate is NULL
-	if (roomCanidate == NULL) {
+	//we print an error message based on the reason roomCandidate is NULL
+	if (roomCandidate == NULL) {
 		if (!strcmp(direction, "")) { //give a better-looking error message than Invalid direction ""
 			cout << "\nGo where?";
 			actionwhat++; //didn't specify so we increment the didn't specify stat
@@ -6933,7 +6933,7 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 			logW("p", pursuer->getID()); //log that the player got caught
 			return;
 		//catch the player if they're in the same room and trying to leave BUT let them go into the elevator for false hope or something
-		} if (pursuer->getRoom() == currentRoom && roomCanidate != special.first) {
+		} if (pursuer->getRoom() == currentRoom && roomCandidate != special.first) {
 			pursuer->printCatchDialogue();
 			pursuer->doCatchChanges();
 			logW("p", pursuer->getID()); //log that the player got caught
@@ -6952,7 +6952,7 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 			if (bcoords.first == 0) pursuer->setRoom(pursuer->getRoom()->getExit("EAST")); //go to center column if not there
 			else if (bcoords.first == 2) pursuer->setRoom(pursuer->getRoom()->getExit("WEST"));
 			else if (bcoords.second != 0) pursuer->setRoom(pursuer->getRoom()->getExit("NORTH")); //go north if not at elevator entrance
-		} else if (pursuer->getRoom() != roomCanidate) { //move towards the player they aren't moving to the pursuer's room (for some reason), just let them get there if so
+		} else if (pursuer->getRoom() != roomCandidate) { //move towards the player they aren't moving to the pursuer's room (for some reason), just let them get there if so
 			pair<int, int> dcoords = pursuer->getPurPos(pdat.first); //get last know player pos as coordinates
 			if (bcoords.first < dcoords.first) pursuer->setRoom(pursuer->getRoom()->getExit("EAST")); //these are all mutually exclusive due to how this is set up
 			if (bcoords.first > dcoords.first) pursuer->setRoom(pursuer->getRoom()->getExit("WEST"));
@@ -6961,19 +6961,19 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 		}
 	}
 	//set the time machine exits if we're going to the time machine, depending on if we're in the time machine or entering it (and we're not in one of the time machine's branching rooms)
-	if (roomCanidate->getTimeMachine() && (!strcmp(direction, "INSIDE") || currentRoom->getTimeMachine())) {
+	if (roomCandidate->getTimeMachine() && (!strcmp(direction, "INSIDE") || currentRoom->getTimeMachine())) {
 		map<const char*, Room*> tmdir(TimeMachineDirection.begin(), TimeMachineDirection.end()); //copy the "map" as an actual map so it's easier to use
 		Room* destination = (currentRoom->getTimeMachine() ? tmdir[direction] : currentRoom); //find the room which is going to be outside the time machine when the exits are fully updated
 
 		//update all the time machine's space-travel-related exits
-		updateTimeMachine(roomCanidate, destination, currentRoom);
+		updateTimeMachine(roomCandidate, destination, currentRoom);
 
 		if (currentRoom->getTimeMachine()) { //print clarifying text so it's clear how we just space travelled
 			cout << "\nThe time machine space travelled " << direction << "!";
 			CinPause();
 		}
 	//if we're walking down the infinite hallway in Henry Jerry's house
-	} else if (currentRoom == roomCanidate) {
+	} else if (currentRoom == roomCandidate) {
 		if (!strcmp(direction, "WEST")) { //we're going east which decrements the universe number
 			if (currentUniverse) currentUniverse--; //decrement the universe unless we're at the 0th universe, because there is no west direction there but you think there is
 			else { //otherwise you run into the wall
@@ -6986,48 +6986,47 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 	}
 
 	//rooms may redirect you to go somewhere else
-	if (roomCanidate->getRedirect() != NULL) {
-		roomCanidate = roomCanidate->getRedirect();
+	if (roomCandidate->getRedirect() != NULL) {
+		roomCandidate = roomCandidate->getRedirect();
 	}
 	//we recapacitate all the defeated enemies in the room, so the rooms don't become all desolate after defeating them all
-	roomCanidate->undefeatEnemies();
+	roomCandidate->undefeatEnemies();
 
 	//we move our party to the room, including the player
 	for (NPC* npc : (*party)) {
-		npc->setRoom(roomCanidate);
+		npc->setRoom(roomCandidate);
 	}
 	//if we're moving between stations, we also move our lobster if it's there, because you're riding the lobster so it makes sense
-	//a side effect is that the lobster also moves between the two desert station rooms, but it's like a pet so that makes sense, no need to fix it
-	if (currentRoom->getStation() && roomCanidate->getStation()) {
+	if (currentRoom->getStation() && roomCandidate->getStation()) {
 		//tries to find the lobster in the station
 		for (NPC* npc : currentRoom->getNpcs()) {
 			//if it's the lobster AND it isn't in enemy form still
 			if (npc->getLobster() && !npc->getLeader()) {
-				npc->setRoom(roomCanidate); //move the lobster
+				if (roomCandidate == npc->getHome()) npc->setRoom(roomCandidate); //move the lobster only if it's to go to its home (tunnels) so it doesn't move between the two pairs of adjacent station rooms (desert and basement)
 				break; //break because there's only one lobster
-			} //also make roaming npcs roam
+			} //also make roaming npcs roam, roamers and lobsters don't go in the same rooms
 			if (npc->getRoaming() && !npc->getRecruited() && !npc->getLeader()) {
 				npc->roam();
 				if (trackNPC(npc, false)) Rnpcs.insert(npc->getParent()); //track this npc because they moved so we should just start tracking them now
 			}
 		}
 	} //check if the room has a backup before popping it, so we don't make pointless duplicates every time we go to a room with repeating backup items
-	if (roomCanidate->gotBackup()) {
-		Item* roomgift = roomCanidate->popBackup(); //get the backup
+	if (roomCandidate->gotBackup()) {
+		Item* roomgift = roomCandidate->popBackup(); //get the backup
 		if (roomgift && !getItemInVector(inventory, roomgift->getName())) { //if gift exists and we don't already have the item from elsewhere
-			roomgift->setRoom(roomCanidate); //put the item in the room
+			roomgift->setRoom(roomCandidate); //put the item in the room
 		}
 	} //do any changes the room might have to make
-	roomCanidate->doEnterChanges();
+	roomCandidate->doEnterChanges();
 
 	bool forcedbattle = false; //if one of the npcs in the room forced a battle, so we don't print room data after that since it gets printed in fight() after the battle anyway
-	for (NPC* npc : roomCanidate->getNpcs()) {
+	for (NPC* npc : roomCandidate->getNpcs()) {
 		if (npc->getForceBattle(true)) { //if one of the npcs in the room forces a battle, start the battle with them
 			fight(currentRoom, npc->getName(), false);
 			forcedbattle = true;
 		}
 	}
-	if (!forcedbattle) PrintRoomData(roomCanidate, self); //prints the data of the new current room
+	if (!forcedbattle) PrintRoomData(roomCandidate, self); //prints the data of the new current room
 	if (!forceTravel) commandcount[0]++; //increment go counter because successful going if this was from the main command getting area
 }
 
