@@ -1,4 +1,14 @@
-//header file for world chnages, since both npcs and world change items do this
+/* Tomas Carranza Echaniz
+*  5/16/26
+*  This is the header file for world changes
+*  
+*  World changes are a generalized data container used by things like NPCs when they are defeated,
+*  different types of items, etc. Most fields are queues of things to change, though some more
+*  specific functionalities might stand on their own. Changes can be things like making NPCs
+*  recruitable, moving NPCs to different rooms, making rooms redirect to another one, etc.
+*  World changes are applied using the applyWorldChange function in the Helper namespace, since
+*  world changes can happen from a variety of different causes.
+*/
 
 #ifndef WORLDCHANGE
 #define WORLDCHANGE

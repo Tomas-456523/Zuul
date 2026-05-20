@@ -1,4 +1,16 @@
-//the header file for battles
+/* Tomas Carranza Echaniz
+*  5/20/26
+*  This is the header file for battles
+*  
+*  After constructing a Battle, the combat process is started by the FIGHT() function. It loops through
+*  all the npcs in order of speed, and from there branches out to either the NPC or player turn functions
+*  depending on the playerness of the currently going character. All attacks converge into carryOutAttack,
+*  which calls hitTargets (handles spread attacks), and finally ends up at hitTarget, for applying the
+*  attack's damage and further effects to the reciever. carryOutAttack also handles attack effects not
+*  directly affecting the target. The player's command, if not matching the preset ones, will then go
+*  through ParseAttack, which will check if the player is trying to launch an attck, and give an error if
+*  the command turned out to be uninterpretable.
+*/
 
 #ifndef BATTLE
 #define BATTLE
@@ -21,7 +33,7 @@ struct speedComparer {
 
 class Battle {
 public:
-	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable = true, bool scaleenemies = true);
+	Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, bool _escapable = true, bool scaleenemies = true);
 	~Battle();
 
 	int FIGHT(); //starts the battle process and returns an int based on the outcome

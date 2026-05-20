@@ -1,4 +1,14 @@
-//implementation file for rooms
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the implementation file for rooms
+*  
+*  Rooms are the places that NPCs and the player are physically located in. The player can only interact
+*  with things that are in their current room. Rooms have a variety of fields, but the main things that
+*  are shown to the player are the room description (starting with "You are "), exits to other rooms,
+*  NPCs that are in this room (that aren't in the player's party or defeated), items on the ground, items
+*  that are for sale, and exits that are blocked. There can also be effects that happen by entering a
+*  room, such as world changes or a welcome conversation.
+*/
 
 #include "Room.h"
 #include "NPC.h"

@@ -1,4 +1,28 @@
-//implementation file for npcs
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the implementation file for npcs
+*  
+*  NPCs are the characters who the player can interact with, and also include player character himself.
+*  There is only one NPC class, though it can be used in different ways. For example, we create enemy
+*  templates with attacks and stats, which are then copied into new NPCs and turned into a leader which
+*  you can interact with in the game world. Unlike items, all NPCs must be in a room. NPCs you shouldn't
+*  interact with such as templates are simply stored in an inaccessible room.
+*  
+*  All NPCs have stats so you are able to analyze them outside of Battle, though you can only fight
+*  NPCs marked as a leader (except for yourself!). To avoid manually setting stats for NPCs for whom it
+*  doesn't really matter, their stats are deterministically generated (deterministic to be consistent
+*  across runs). When NPCs level up, their stats increase deterministically by 1 or 0, plus a constant
+*  scale which is set on construction. If no scale is provided, it will generate one based on the base
+*  stats.
+*  
+*  NPCs without attacks are treated as "dummies" during
+*  battle, and only print flavor text on their turn. NPCs typically have a basic attack which generates
+*  SP, and special attacks which spend SP and are weighted according to cost to mimic saving up for
+*  bigger moves.
+*  
+*  There are miscellaneous NPC types and behaviors, which is why this class is so big. For example, there
+*  is a banker NPC for depositing monies (money), and a lobster for fast travel.
+*/
 
 #include <cstring>
 #include <algorithm>

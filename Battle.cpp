@@ -1,5 +1,19 @@
-//this is the implementation file for Battles, which controls combat with enemies
-//this is pretty much main.cpp 2: electric boogaloo
+/* Tomas Carranza Echaniz
+*  5/20/26
+*  This is the implementation file for battles, which controls combat with teammates against enemies
+*
+*  Battles are created using the constructor, where you must pass the enemy and player teams. All NPCs involved
+*  in the fight are duplicated, ensuring that they are unique (due to shared NPC templates) and that Battles have
+*  no effect on the game world. Going to towns to heal is not part of the intended gameplay loop, so the player
+*  and co. are always at full health outside of battle. An exception to this rule is the inventory, as using items
+*  during battle will remove them from the inventory, which we store a pointer to in the constructor.
+*  
+*  The types of functions in this class include targeting systems for NPCs and command functions for the player.
+*  NPCs cannot use items, because the inventory is the player's. Some unique functions such as adding npcs (summoning
+*  attacks) may have their own functions. XP and mony (money) rewards are handled outside of Battle, using the
+*  get[type]Reward functions. In order to start the combat process, the FIGHT() function must be called, which returns
+*  an integer representing three possible battle outcomes (lost, won, ran away).
+*/
 
 #include <cstring>
 #include <iostream>
@@ -18,7 +32,7 @@ using namespace std;
 using namespace Helper;
 
 //creates the battle instance MARK: initialize
-Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, int& mony, bool _escapable, bool scaleenemies) {
+Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*>* _inventory, bool _escapable, bool scaleenemies) {
 	player = (*_playerTeam)[0]; //get a reference to the team leaders from main in case we need them
 	enemy = (*_enemyTeam)[0];
 

@@ -1,4 +1,12 @@
-//header file for my Helper namespace
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the header file for my Helper namespace
+*  
+*  The header namespace contains functions for many different types of functionalities. Some groups
+*  include parsing-related functions, getting objects in vectors, math, applying world changes, logging
+*  save data information, printing information about a passed object, etc. There are also external
+*  variables which are tracked and/or across multiple files.
+*/
 
 #ifndef HELPER
 #define HELPER

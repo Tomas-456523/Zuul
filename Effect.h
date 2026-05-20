@@ -1,4 +1,14 @@
-//header file for effects
+/* Tomas Carranza Echaniz
+*  5/16/26
+*  This is the header file for effects
+*  
+*  The effect struct is primarily a data container to avoid circular inclusion, so most of the logic is
+*  handled by Battle and NPC. Effects have a variety of effects they can have on the affected NPC, such
+*  as damage over time, stat multipliers, freezing, hypnosis, etc. Effects have a function to calculate
+*  if they are beneficial, which is used by Attack as the last check for an affecting attack to see if
+*  the attack is beneficial. Like attacks, beneficialness is calculated rather than tracked as a field,
+*  for convenience.
+*/
 
 #ifndef EFFECT
 #define EFFECT

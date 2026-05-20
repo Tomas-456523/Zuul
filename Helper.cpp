@@ -1,4 +1,15 @@
-//the implementation file for my Helper namespace, has a bunch of helpful functions that I might use in multiple files
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the implementation file for my Helper namespace. It has a bunch of helpful functions that I might use in multiple files
+*  
+*  My Helper namespace has a wide range of functions that might be used anywhere. Some examples of utlities are parsing commands into
+*  a command word and command extension, ignoring faulty and extra input, and using cin to pause text printing, which is used everywhere
+*  lines of text are printed without any player prompt. Some other widely-used functions are the get[class/struct]InVector, for getting
+*  a pointer to the given type with the given name in the given vector. There are also some functions which are simply here because I
+*  felt it'd be better as a helper function rather than a method, such as printLvlUpData which is used in two locations in Game. The
+*  biggest function is applyWorldChange, which mutates the game world according to the given WorldChange struct. There are also some
+*  external variables in the namespace, for tracking objects, tracking statistics, etc., mostly related to the save system.
+*/
 
 #include "Helper.h"
 #include "Attack.h"

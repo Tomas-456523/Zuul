@@ -1,4 +1,15 @@
-//header file for rooms
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the header file for rooms
+*  
+*  Rooms are the locations of the game world which are linked up and the player can move between.
+*  They handle items outside the inventory and NPC locations. There are also unique room types
+*  such as conveyors, stations, temple entrances, etc., though those are mostly handled in the Game
+*  class. Room exits are stored as const char*s in a map, in a way where direction == direction
+*  (exits must be set by passing a variable as opposed to a raw string literal), which is useful
+*  for things like blocking exits. However, cstring comparison must still be used for player input,
+*  since that is not a string literal.
+*/
 
 #ifndef ROOM
 #define ROOM

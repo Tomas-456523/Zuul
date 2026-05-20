@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/20/26
 *  This is the implementation file for the game world and playing the game!
 *  
 *  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
@@ -7100,7 +7100,7 @@ void Game::fight(Room* currentRoom, const char* name, bool track) {
 	}
 	if (npc->getScaleFight()) npc->setLevel(self->getLevel()); //scale the fight to the player's level if marked as necessary
 	//creates the Battle!
-	Battle battle = Battle(party, npc->getParty(), &inventory, mony, npc->getEscapable());
+	Battle battle = Battle(party, npc->getParty(), &inventory, npc->getEscapable());
 	//initiates the battle and returns an int that represents the outcome of the battle
 	int battlestatus = battle.FIGHT();
 	if (battlestatus == 0) { //lose

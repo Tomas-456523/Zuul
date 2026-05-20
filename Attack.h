@@ -1,4 +1,16 @@
-//header file for attacks
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the header file for attacks
+*  
+*  The attack struct is primarily a data container to avoid circular inclusion, so most of the logic is
+*  handled by Battle. Attacks have many different possible things they can do, including applying an
+*  effects, summoning NPCs, etc. They also have different specifications for who they can or should target.
+*  Attacks have a cost which also determines NPC attack weights. Negative costs are used for basic attacks,
+*  and some attacks have 0 cost, due to not being called as normal special attacks, or other circumstances.
+*  Attacks are marked as beneficial or not, which is seperate from if they should target the attacker's
+*  team or not (for example, recoil attacks aren't beneficial but can affect the attacker's team).
+*  Beneficialness is calculated using a function, rather than being tracked as a field.
+*/
 
 #ifndef ATTACK
 #define ATTACK
@@ -98,8 +110,7 @@ struct Attack {
 	vector<pair<NPC*, Conversation>> specificconvo; //the attack conversation is this when using it on this specific npc
 
 	//constructs the attack
-	//default stats are for testing purposes
-	Attack(const char* _name, const char* _description, bool _contact, int _cost = 2, int _power = 20, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {
+	Attack(const char* _name, const char* _description, bool _contact, int _cost, int _power, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {
 		name = _name;
 		description = _description;
 		contact = _contact;
