@@ -1,4 +1,58 @@
-//header file for the world saves
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the header file for the world saves
+*  
+*  SAVE DATA FORMAT:
+*  
+*  Starts with "BQ2" and ends with "="
+*  Sections are seperated by | and individual things in each section are seperated by ,
+*  Items, NPCs, and Rooms are accessed by their ID in their corresponding Helper vector (e.g. roomsH)
+*  Each section starts with a denoting letter that shows what section it is
+*  Storing it in the exact order it was done in is extremely important so that we don't try to get not-yet-existant items, overwrite room descriptions with outdated text, etc.
+*  We do not care about attempted actions, only successful ones.
+*  
+*  Section V: A character representing the save system version (for futureproofing)
+*  Section N: Player name in plaintext, except if there is a | or = or , in the name we store it with a preceding \, same thing with \'s to account for this (e.g. B|O\B= would be stored as NB\|O\\B\=)
+*  Section M: Monies
+*  Section W: Everything that can cause world changes in the order they happened in.
+*  - Items that were bought and therefore duplicated, denoted by b[item]
+*  - Item usage in which room, denoted by u[item].[room] (including taking take to use world change items and taking manhole covers)
+*      - If it was a choice orb item, we also store which choice was chosen appended with a . (e.g. u[item].[room].b)
+*  - Items that were used up in battle, denoted by x[item]
+*  - NPCs that were defeated, denoted by d[npc]
+*  - NPCs that caused respawn changes, denoted by r[npc]
+*  - NPCs that were talked to, denoted by a[npc], with an optional modifier for different types of dialogue (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym), and also .a or .b for branching dialogue
+*  - Enter changes, denoted by e[room]
+*  - Room welcomes that were triggered, denoted by w[room]
+*  - If the player was caught by a pursuer, denoted by p[npc]
+*  - Opening a temple in a temple entrance room, denoted by t[room]
+*  - Backup items that were popped from a room, denoted by c[room] for non-repeating and k[room] for repeating backups
+*  Section U: Only exists while pursuer is pursuing, tracks their room
+*  Section R: Stuff related to the player team
+*  - First, the teammate this chunk is tracking:
+*    a - Player 	l - Jilly	h - Henry Jerry
+*    f - Floria		m - Mike	j - Michelin	g - Graham
+*    e - Egadwick	v - Viola	x - Carlos		r - Richie
+*    k - Absolom	c - Cacty	p - Plum		b - Ratman
+*  - Worth mentioning, these aren't teammates but have their own letter:
+*    t - Florian	n - Banker	u - Buford (buford's stats are tracked)
+*  - Then level, xp, room, stats (attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage), and finally, time left in gym (0 if not in gym)
+*  - Everything connected to the NPC is seperated by .
+*  - So, this section would look something like: R[level].[xp].[room].[attacks].[helps].[damage dealt].[health dealt].[damage taken].[health recovered].[kos].[ko'd].[special].[sp usage].[gym time]
+*  Section P: What the player's party actually is (apart from the player), using the above codes (e.g. jbhl) would mean a party of Self, Michelin, Ratman, Henry Jerry, and Jilly in that order
+*  Section E: Enemy types that have been encountered
+*  Section I: Every item's room, or -1 if it's in the inventory (saved in order, so the items in the rooms and in the inventory remain in the same order) (-1 instead of 0 because 0 is a valid room ID, being limbo, so -1 translates to NULL room here)
+*  - Denoted by [item].[room]
+*  Section L: Exists after taming lobster, stores its name in plaintext with the same exceptions as the player name, and also the lobster's room after that (L[lobster name],[room])
+*  Section T: The room that each tunnel direction leads to, in the order of their index in the tunnel lobster tunnel directions, -1 if the exit hasn't been discovered yet
+*  - The order of exit setting doesn't matter in this section because the exit maps in Room sorts the exits in alphabetical order anyway
+*  Section B: Exists after depositing money in the bank, stores current bank balance and last time used bank ([balance],[time])
+*  Section S: All the world states as 0 or 1 (27 states as of now, not including NEVER or GAMEEND), since some states are changed by things other than world changes
+*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries, universe number, and time machine location
+*  Section C: 18 integers representing how many times used each command (validly), so something like C[go],[take],[drop],[use],[recruit],[dismiss],[ask],[inventory],[party],[attacks],[room],[analyze],[fight],[buy],[help],[save],[enemies],[run]
+*  
+*  Example save: BQ2|V0|NBOB THE BUILDER|M10|Wu123.23,x3244,e300,a123.o|U156|Ra1.3.123.0|Pavk|E43,23,67,50|C1,2,3,4,5,6,7|I12.0,234.-1,324.0,53.2,13.0,4324.3,456.201|LCOOL LOBSTER,110|T1.123,2.12,0.112|B10,2|S01010101010101111010010101|Q2198139=
+*/
 
 #ifndef SAVE
 #define SAVE
@@ -17,58 +71,6 @@
 using namespace Helper; //I got tired of typing Helper::
 
 struct Save {
-	/* SAVE DATA FORMAT:
-	*  
-	*  Starts with "BQ2" and ends with "="
-	*  Sections are seperated by | and individual things in each section are seperated by ,
-	*  Items, NPCs, and Rooms are accessed by their ID in their corresponding Helper vector (e.g. roomsH)
-	*  Each section starts with a denoting letter that shows what section it is
-	*  Storing it in the exact order it was done in is extremely important so that we don't try to get not-yet-existant items, overwrite room descriptions with outdated text, etc.
-	*  We do not care about attempted actions, only successful ones.
-	*  
-	*  Section V: A character representing the save system version (for futureproofing)
-	*  Section N: Player name in plaintext, except if there is a | or = or , in the name we store it with a preceding \, same thing with \'s to account for this (e.g. B|O\B= would be stored as NB\|O\\B\=)
-	*  Section M: Monies
-	*  Section W: Everything that can cause world changes in the order they happened in.
-	*  - Items that were bought and therefore duplicated, denoted by b[item]
-	*  - Item usage in which room, denoted by u[item].[room] (including taking take to use world change items and taking manhole covers)
-	*      - If it was a choice orb item, we also store which choice was chosen appended with a . (e.g. u[item].[room].b)
-	*  - Items that were used up in battle, denoted by x[item]
-	*  - NPCs that were defeated, denoted by d[npc]
-	*  - NPCs that caused respawn changes, denoted by r[npc]
-	*  - NPCs that were talked to, denoted by a[npc], with an optional modifier for different types of dialogue (.r for recruitment dialogue, .e for recruited dialogue, .j for rejection dialogue, .d for dismissal dialogue, .i for dismissal rejection, .o for opening, .g for gym), and also .a or .b for branching dialogue
-	*  - Enter changes, denoted by e[room]
-	*  - Room welcomes that were triggered, denoted by w[room]
-	*  - If the player was caught by a pursuer, denoted by p[npc]
-	*  - Opening a temple in a temple entrance room, denoted by t[room]
-	*  - Backup items that were popped from a room, denoted by c[room] for non-repeating and k[room] for repeating backups
-	*  Section U: Only exists while pursuer is pursuing, tracks their room
-	*  Section R: Stuff related to the player team
-	*  - First, the teammate this chunk is tracking:
-	*    a - Player 	l - Jilly	h - Henry Jerry
-	*    f - Floria		m - Mike	j - Michelin	g - Graham
-	*    e - Egadwick	v - Viola	x - Carlos		r - Richie
-	*    k - Absolom	c - Cacty	p - Plum		b - Ratman
-	*  - Worth mentioning, these aren't teammates but have their own letter:
-	*    t - Florian	n - Banker	u - Buford (buford's stats are tracked)
-	*  - Then level, xp, room, stats (attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage), and finally, time left in gym (0 if not in gym)
-	*  - Everything connected to the NPC is seperated by .
-	*  - So, this section would look something like: R[level].[xp].[room].[attacks].[helps].[damage dealt].[health dealt].[damage taken].[health recovered].[kos].[ko'd].[special].[sp usage].[gym time]
-	*  Section P: What the player's party actually is (apart from the player), using the above codes (e.g. jbhl) would mean a party of Self, Michelin, Ratman, Henry Jerry, and Jilly in that order
-	*  Section E: Enemy types that have been encountered
-	*  Section I: Every item's room, or -1 if it's in the inventory (saved in order, so the items in the rooms and in the inventory remain in the same order) (-1 instead of 0 because 0 is a valid room ID, being limbo, so -1 translates to NULL room here)
-	*  - Denoted by [item].[room]
-	*  Section L: Exists after taming lobster, stores its name in plaintext with the same exceptions as the player name, and also the lobster's room after that (L[lobster name],[room])
-	*  Section T: The room that each tunnel direction leads to, in the order of their index in the tunnel lobster tunnel directions, -1 if the exit hasn't been discovered yet
-	*  - The order of exit setting doesn't matter in this section because the exit maps in Room sorts the exits in alphabetical order anyway
-	*  Section B: Exists after depositing money in the bank, stores current bank balance and last time used bank ([balance],[time])
-	*  Section S: All the world states as 0 or 1 (27 states as of now, not including NEVER or GAMEEND), since some states are changed by things other than world changes
-	*  Section Q: Misc data, like how long the player has played on this save file, stored in seconds, then how many sessions there have been in this save, then how many times the player typed an invalid command, times gone in an invalid direction, times interacting with invalid npc, times interacted with invalid item, times entered nothing, biggest sp bomb, successful parries, universe number, and time machine location
-	*  Section C: 18 integers representing how many times used each command (validly), so something like C[go],[take],[drop],[use],[recruit],[dismiss],[ask],[inventory],[party],[attacks],[room],[analyze],[fight],[buy],[help],[save],[enemies],[run]
-	*  
-	*  Example save: BQ2|V0|NBOB THE BUILDER|M10|Wu123.23,x3244,e300,a123.o|U156|Ra1.3.123.0|Pavk|E43,23,67,50|C1,2,3,4,5,6,7|I12.0,234.-1,324.0,53.2,13.0,4324.3,456.201|LCOOL LOBSTER,110|T1.123,2.12,0.112|B10,2|S01010101010101111010010101|Q2198139=
-	*/
-
 	size_t savesize = 1000; //we double the save size when we need to, starts with a reasonable length of 1000
 	char* data; //the save data
 

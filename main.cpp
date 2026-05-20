@@ -1,11 +1,15 @@
 /* Tomas Carranza Echaniz
-*  12/5/25
+*  5/14/26
 *  This program is an epic text-based RPG where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. There's a bunch of other commands as well.
+*
+*  This is the main file which you start the game process in after booting up the game.
 *  
-*  main.cpp handles the main menu for starting the game in Game!
-*  
-*  In case you missed the first BURGER QUEST, you can play it at https://codehs.com/sandbox/id/zuul-kb8vTu/run
+*  main.cpp handles the main menu for starting the game in Game! You start in the title screen and after pressing ENTER
+*  can LOAD an existing save file or start a NEW GAME, and also print a list of their SAVES along with data pertaining
+*  to the files in order to identify them. The player can also DELETE saves or EXPORT the save data of a file, printing
+*  the data so the player can copy it and IMPORT it into the program on another system. The saves are stored in a global
+*  vector which is stored in the Helper namespace, so that we can see the number of saves while saving the game.
 */
 
 #include <iostream>

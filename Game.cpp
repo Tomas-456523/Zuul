@@ -1,4 +1,20 @@
-//implementation file for the game world and playing the game!
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the implementation file for the game world and playing the game!
+*  
+*  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
+*  all the rooms, NPCs, items, their conversations, all attacks and effects, and the ways they affect each other with
+*  WorldChanges. The general structure of the function is that it sets up directions, then makes rooms, then most of
+*  the teammates, then the other non-enemy world NPCs, then connects all the rooms by setting exits, then creates
+*  enemy templates, then implements enemy encounters into the game world, and finally blocks all the exits that should
+*  start blocked. The world setup creates the world as if it was freshly created in a NEW GAME; loading saves is managed
+*  after world setup in play() by mutating the world if a non-null Save was passed into the constructor.
+*
+*  The middle section, until ~8200, handles functions corresponding for all the different actions the player can take
+*  during gameplay. The gameplay loop is handled in play(), which is called after creating a new save or loading an
+*  existing save. The loop contnues until the player manually quits or reaches an ending. The player can choose to
+*  QUIT without saving, and must SAVE manually, but the game automatically saves after reaching an ending.
+*/
 
 #include <iostream>
 #include <iomanip>
@@ -6840,7 +6856,7 @@ void Game::SetupWorld() {
 }
 
 //prints all the properties of the given room MARK: print room data
-void Game::PrintRoomData(Room* currentRoom, bool track) {
+void Game::PrintRoomData(Room* currentRoom, bool track) { //only track it if the player typed the ROOM command, not if this was called due to traveling
 	currentRoom->printWelcome(); //some rooms have messages they print on arrival
 	cout << "\nYou are " << currentRoom->getDescription();
 	currentRoom->printExits();
@@ -8075,7 +8091,7 @@ void Game::analyze(Room* currentRoom, const char* name) {
 	//can't track this with the fun statistics because idk if the player is trying to analyze an npc or item
 }
 
-//buys an item from the current room's catalogue //MARK: buy
+//buys an item from the current room's catalogue MARK: buy
 void Game::buy(Room* currentRoom, const char* name) {
 	Item* item = getItemInVector(currentRoom->getStock(), name); //finds the item in the current room's stock
 	if (item == NULL) { //gives error message based on other conditions
