@@ -1,5 +1,14 @@
-//header file for NPCs
-//this name is misleading because the yes player character also uses this class
+/* Tomas Carranza Echaniz
+*  5/16/26
+*  This is the header file for NPCs
+*  
+*  NPCs are all the characters in the game, including the player, despite what it stands for. They all have Battle stats
+*  whether they can fight or not, and can have different attacks, though the main types are the basic and special attacks.
+*  There are a lot of fields for tracking things in and out of battle, accounting for the many different things NPCs are
+*  capable of doing. Most fields have a corresponding getter and a setter, which is why the file is so long. The NPC
+*  class also handles some Battle processes, such as receiving damage or setting and removing effects, since it's easier
+*  due to it having access to the instance fields.
+*/
 
 #ifndef NPC_H
 #define NPC_H

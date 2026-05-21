@@ -3,7 +3,7 @@
 *  This program is an epic text-based RPG where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. There's a bunch of other commands as well.
 *
-*  This is the main file which you start the game process in after booting up the game.
+*  This is the main file in which you start the game process after booting up the game.
 *  
 *  main.cpp handles the main menu for starting the game in Game! You start in the title screen and after pressing ENTER
 *  can LOAD an existing save file or start a NEW GAME, and also print a list of their SAVES along with data pertaining

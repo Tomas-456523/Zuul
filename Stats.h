@@ -1,4 +1,12 @@
-//header file for stats
+/* Tomas Carranza Echaniz
+*  4/7/26
+*  This is the header file for stats
+*  
+*  The stats struct is a way to group NPCs' stats into one for convenience. This allows us to add two Stats objects together
+*  without doing it all one by one. Additionally, we have different functions for generating specific presets for stats,
+*  such as generating base stats for NPCs who don't need fine-tuning, and creating deterministic Stat changes for NPCs
+*  leveling up to a certain level.
+*/
 
 #ifndef STATS
 #define STATS

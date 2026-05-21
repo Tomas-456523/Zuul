@@ -1,4 +1,15 @@
-//implementation file for items
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the implementation file for items
+*  
+*  Items are all the things the player can interact with that are stored in rooms or the player inventory. Not every
+*  item is takable. Since items can have so many different purposes, they are split into many different item subclasses.
+*  For example, hp items can restore health in battle, and key items can unblock blocked exits of their corresponding
+*  block type. There are no default items in the game world, all items have a description, a room (NULL room means it's
+*  in the player's inventory), a name, and other standardized fields. Buying items is also handled through the item
+*  class, as opposed to the Room class for shop rooms. A major structural difference from the other main world objects
+*  is that duplicated items persist across saves, so the save system accounts for that.
+*/
 
 #include <cstring>
 #include <iostream>

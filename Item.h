@@ -1,4 +1,17 @@
-//header file for items
+/* Tomas Carranza Echaniz
+*  5/19/26
+*  This is the header file for items
+*  
+*  Items are all the things the player can interact with that are stored in rooms or the player inventory. The main Item
+*  class handles data and behavior every item should have, such as a room (can be NULL if it's in the inventory), a type
+*  which the subclasses all change, a name, etc., as well as functions to manage them. Since multiple item types can be
+*  bought, buying is also an Item function.
+*  
+*  After that, there are many different Item subclasses with their own unique behaviors. The main Item class's destructor
+*  handles removing its pointer from the vector of all items. All item subclasses that can be bought have a Duplicate()
+*  function that overrides Item's in order to be able to properly clone itself.
+*/
+
 
 #ifndef ITEM
 #define ITEM
