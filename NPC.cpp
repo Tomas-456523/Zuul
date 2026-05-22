@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/22/26
 *  This is the implementation file for npcs
 *  
 *  NPCs are the characters who the player can interact with, and also include player character himself.
@@ -921,12 +921,10 @@ void NPC::blockExit(const char* _exitBlocking, const char* type, const char* rea
 }
 void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
 	if (stats.hpmax <= 999) damage = (damage > 0 ? min(damage, 999) : max(damage, -999)); //cap damage printing at 999, unless we actually have reason to print that high
-	if (damage > 0) {
+	if (damage >= 0) {
 		cout << "\n" << name << " took " << damage << " damage";
 	} else if (damage < 0) {
 		cout << "\n" << name << " recovered " << -damage << " HP";
-	} else {
-		cout << "\n" << name << " barely felt the hit.";
 	}
 	if (damage && status != NULL) { //prints the status that caused it
 		cout << " due to " << status;
@@ -1629,7 +1627,10 @@ void NPC::tickEffect(Effect* effect) {
 			for (NPC* affector : npceffect.affectors) {
 				int lifestealdamage = 0;
 				if (effect->lifesteal) { //give life stealers the health they just took
-					if (affector->getHealth() > 0) lifestealdamage = affector->directDamage(-damag*effect->lifesteal, effect->name); //only if they have health left; lifesteal is not an insurance policy for when you're incapacitated
+					if (affector->getHealth() > 0) { //only if they have health left; lifesteal is not an insurance policy for when you're incapacitated
+						CinPause();
+						lifestealdamage = affector->directDamage(-damag*effect->lifesteal, effect->name);
+					}
 				}
 				if (trackNPC(affector)) {
 					if (damag > 0) damagedealt[affector->getParent()] += damag;

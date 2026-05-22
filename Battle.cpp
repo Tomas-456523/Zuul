@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/21/26
+*  5/22/26
 *  This is the implementation file for battles, which controls combat with teammates against enemies
 *
 *  Battles are created using the constructor, where you must pass the enemy and player teams. All NPCs involved
@@ -102,9 +102,9 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	team->push_back(newguy); //set the teams before setting the name since numberNPC assumes the npc is in the team
 	everyone.push_back(newguy);
 	numberNPC(newguy, *team); //number the npc so that the player can specify which one to target
-	newguy->setLevel((*team)[0]->getLevel()); //update the level to match the team
-	buildReward(newguy, true); //add to the fight reward based on the new guy
 	newguy->setSummoner(summoner);
+	newguy->setLevel((summoner ? summoner : (*team)[0])->getLevel()); //update the level to match the team, base it off the summoner if we can but default to the team leader's level
+	buildReward(newguy, true); //add to the fight reward based on the new guy
 	if (newguy->getOpener()) { //do the opening attack if they have one
 		checkOpeners({newguy});
 	}
@@ -304,7 +304,10 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 
 		if ((reciever->getInvincible() && attack->power < 0) || (!reciever->getInvincible() && attack->power != 0)) { //hit normally if healing or (damaging and not invincible), never apply damage for 0 power attacks since their point isn't to affect health if that's the case
 			int damage = (!attack->percentagebased ? reciever->damage(effectiveAttack, effectivePierce) : reciever->directDamage(effectiveAttack)); //direct damage for percentage based sice defense should not affect it
-			if (attack->lifesteal) attacker->damage(damage * -attack->lifesteal, 0); //heal the attacker based on the lifesteal
+			if (attack->lifesteal) { //heal the attacker based on the lifesteal
+				CinPause();
+				attacker->damage(damage * -attack->lifesteal, 0);
+			}
 			if (trackNPC(attacker)) {
 				if (attack->power > 0) damagedealt[attacker->getParent()] += damage;
 				else healthhealed[attacker->getParent()] += damage;
@@ -368,8 +371,9 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	}
 	if (attack->statchip) { //if this is a stat chipping attack we do that
 		reciever->chipStats(attack->statchip);
-	}
-	if (Attack* recoilatt = reciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
+	} //do not recoil against beneficial attacks because that would be silly, and only if it does damage
+	if (!attack->getBeneficial() && attack->power && reciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
+		Attack* recoilatt = reciever->getRecoilAttack(attack->contact);
 		if (!recoilatt->targetAlly) carryOutAttack(recoilatt, reciever, attacker, true);
 		else carryOutAttack(recoilatt, reciever, reciever, true); //if it was an ally targeting attack, we launch it from the reciever
 	}
@@ -534,7 +538,10 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		if (trackNPC(attacker)) specialstat[attacker->getParent()]++; //summons are Richie's (and the player and Graham can technically summon as well but they don't have a conflicting special stat) special stat so we increment it here
 	}
 	if (attack->summonamount) { //make the player understand how these guys just appeared
-		cout << "\n" << attack->summonamount << " " << attack->summon->getName() << (attack->summonamount != 1 ? "s" : "") << " appeared!";
+		cout << "\n";
+		if (attack->summonamount != 1) cout << attack->summonamount;
+		else cout << "A"; //better to say "A THINGY appeared" than "1 THINGY appeared" so we do this check
+		cout << " " << attack->summon->getName() << (attack->summonamount != 1 ? "s" : "") << " appeared!";
 		CinPause();
 	}
 	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
@@ -935,8 +942,7 @@ bool Battle::playerTurn(NPC* plr) {
 	bool promptline = true; //if the prompting > should be in a new line
 	bool keepFighting = true; //if the player wants to keep fighting (not run away)
 
-	bool continuing = true;
-	while (continuing) { //loops until a valid action is taken
+	for (bool continuing = true; continuing;) { //loops until a valid action is taken
 		char command[255] = ""; //the command that the player inputs into
 
 		char commandWord[255]; //the command word
@@ -1220,7 +1226,7 @@ int Battle::FIGHT() {
 			cout << "\n" << current->getName() << "'s turn!\n" << current->getName() << " is currently away!";
 			CinPause();
 		} else if (!current->getBasicAttack() && current->getSpecialAttacks().empty()) { //say idle text when there are no attacks
-			cout << current->getName() << " is " << idleText[rand()%5];
+			cout << "\n" << current->getName() << " is " << idleText[rand()%5];
 			CinPause();
 		} else if (current->getPlayerness() && current->getInControl()) { //starts the player turn!
 			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
@@ -1229,7 +1235,7 @@ int Battle::FIGHT() {
 			npcTurn(current);
 		}
 
-		for (Effect* effect : current->getEffects()) { //tick all the npc's effects AFTER their turn (this makes durations more intuitive)
+		if (continuing) for (Effect* effect : current->getEffects()) { //tick all the npc's effects AFTER their turn (this makes durations more intuitive), unless we're running away then effects don't matter so don't tick them then if that's the case
 			if (effect->duration) current->tickEffect(effect); //don't tick 0 duration effects because they're supposed to get ticked at the beginning of a turn
 			if (current->popKO()) handleKnockout(current); //handle ko if this just ko'd them
 		}

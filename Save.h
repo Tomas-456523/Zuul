@@ -538,6 +538,7 @@ struct Save {
 				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
 				Room* room = roomsH[ParseNum(++data)]; //get the room this item was used in, which is sometimes important
 				bool log = true; //if we should relog this change, don't log if it didn't actually do anything
+				bool candelete = true; //if we're allowed to delete the item after using it, might be false for things that are consumable in battle but using them in the world doesn't use them up, such as manhole items after taking them
 				if (!strcmp(item->getType(), "BURGER") || !strcmp(item->getType(), "info")) {
 					log = false;
 				} else if (!strcmp(item->getType(), "education")) {
@@ -620,6 +621,7 @@ struct Save {
 					room->setExit(cover->getDirection(), cover->getRoom());
 					cover->getRoom()->unblockExit(ReverseDirection[cover->getDirection()]); //also unblock the exit from below
 					cover->nullifyRoom();
+					candelete = false; //don't use the manhole item up because it's only consumable in battle
 				} else if (!strcmp(item->getType(), "PLOTDEVICE")) { //do the plot device's changes
 					((PLOTDEVICE*)item)->doChanges();
 				}
@@ -634,7 +636,7 @@ struct Save {
 					trackItemUse(item, room, false); //don't track the use variable because we manually set that later anyway
 				}
 
-				if (item->getConsumable()) { //delete the item if it was a consumable
+				if (candelete && item->getConsumable()) { //delete the item if it was a consumable
 					item->unRoom();
 					discontinuity.insert(id); //log the discontinuity because we're about to delete the item
 					delete item;
