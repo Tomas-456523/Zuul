@@ -1649,8 +1649,10 @@ void NPC::tickEffect(Effect* effect) {
 			}
 		}
 		if (effect->guardset) { //applies the guard
-			if (!guard) cout << "\n" << name << "'s guard went back up!";
-			CinPause();
+			if (!guard) {
+				cout << "\n" << name << "'s guard went back up!";
+				CinPause();
+			}
 			setGuard(effect->guardset, false);
 		}
 	}

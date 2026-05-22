@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/21/26
 *  This is the implementation file for my Helper namespace. It has a bunch of helpful functions that I might use in multiple files
 *  
 *  My Helper namespace has a wide range of functions that might be used anywhere. Some examples of utlities are parsing commands into
@@ -89,7 +89,7 @@ namespace Helper {
 		npcNameP[i - j] = '\0'; //null terminates the npc name
 	}
 	//finds an npc in the given vector who has the given name
-	NPC* getNPCInVector(vector<NPC*>& the_vector, const char* npcname) {
+	NPC* getNPCInVector(const vector<NPC*>& the_vector, const char* npcname) {
 		NPC* player = NULL; //store the player if we find them first, we prioritize non-players  in case the player's name matches some npc's
 		for (NPC* npc : the_vector) { //if the npc isn't defeated and the name matches, we return that
 			if (!npc->getDefeated() && !strcmp(npc->getName(), npcname)) {
@@ -100,7 +100,7 @@ namespace Helper {
 		return player; //return the player if we found them or probably just null because we found no matching npc
 	}
 	//finds an item in the given vector that has the given name
-	Item* getItemInVector(vector<Item*>& the_vector, const char* itemname) {
+	Item* getItemInVector(const vector<Item*>& the_vector, const char* itemname) {
 		for (Item* item : the_vector) { //if the item's name matches, we return that
 			if (!strcmp(item->getName(), itemname)) {
 				return item;
@@ -109,7 +109,7 @@ namespace Helper {
 		return NULL; //no valid item was found so return null
 	}
 	//finds an item in the given vector that has the given type
-	Item* getItemTypeInVector(vector<Item*>& the_vector, const char* itemtype) {
+	Item* getItemTypeInVector(const vector<Item*>& the_vector, const char* itemtype) {
 		for (Item* item : the_vector) { //if the item's type matches, we return that
 			if (!strcmp(item->getType(), itemtype)) {
 				return item;

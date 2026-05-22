@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/20/26
+*  5/21/26
 *  This is the implementation file for battles, which controls combat with teammates against enemies
 *
 *  Battles are created using the constructor, where you must pass the enemy and player teams. All NPCs involved
@@ -986,9 +986,11 @@ vector<NPC*>& Battle::getTarTeam(NPC* npc, Attack* attack) {
 }
 //get a vector of all the targets that we could target with the attack MARK: get targets
 vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
+	if (!attack) return {}; //we can occasionally end up with no attack in here so we just return no targets for that
 	if (attack->targetself) return {npc}; //just target self if the attack targets self (no filtering because self-targeting attacks are something that should really just always launch)
 	
-	vector<NPC*> choices = getTarTeam(npc, attack); //get the options of targets that we have depending on who the attacker is and what the attack does
+	vector<NPC*> tarteam = getTarTeam(npc, attack); //get the options of targets that we have depending on who the attacker is and what the attack does
+	vector<NPC*> choices = tarteam; //start narrowing down the target choices starting from the full list of the target team
 	//check team-wide attack validity rules, just return early if it wouldn't work
 	if (attack->take) {
 		if (aliveCount(choices) <= 1) return {}; //can't take the last npc on a team or that would be an endless fight of doing nothing
@@ -1003,7 +1005,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->targetFainted && target->getHealth() > 0) continue; //can't target fainted if bro isn't fainted
 		if (attack->power < 0 && target->getHealth() >= target->getHealthMax()) continue; //can't (shouldn't) heal if bro is at full health
 		if (attack->take && (target->getBoss() || target->getPlayerness() || target == npc)) continue; //taking attacks can't target bosses, the player (not player otherwise it would be boring gameplay waiting for your teammates to beat the guy), or the attacker (taking yourself would be some real cartoon stuff)
-		if (attack->appliedeffect && attack->appliedeffect->remove && target->getBoss()) continue; //can't remove bosses cause that's just messing up everyone else's groove during the fight
+		if (attack->appliedeffect && attack->appliedeffect->remove && (target->getBoss() || aliveCount(tarteam) == 1)) continue; //can't remove bosses cause that's just messing up everyone else's groove during the fight, and removing an enemy when there's only one left is just annoying and breaks the flow of the fight
 		if (attack->appliedeffect && attack->appliedeffect->hypnotize && target->getBoss()) continue; //can't hypnotize bosses because that would be weird for some fights
 		if (attack->risky && target->getHealth() < target->getHealthMax()/2) continue; //can't use risky moves if they have below half health because that would be risky
 		if (attack->targetshark && !target->getShark()) continue; //shark-targeting attacks must have a shark to target

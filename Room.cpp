@@ -45,7 +45,7 @@ vector<Item*>& Room::getItems() { //used in this same room's functions in case t
 vector<Item*>& Room::getStock() {
 	return stock;
 }
-vector<NPC*>& Room::getNpcs(bool alt) {
+vector<NPC*> Room::getNpcs(bool alt) {
 	if (!alt) {
 		return npcs;
 	} else {

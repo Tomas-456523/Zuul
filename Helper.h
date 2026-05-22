@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/21/26
 *  This is the header file for my Helper namespace
 *  
 *  The header namespace contains functions for many different types of functionalities. Some groups
@@ -32,9 +32,9 @@ namespace Helper {
 	void AllCaps(char* text); //capitalizes the given text
 	void ParseCommand(char* commandP, char* commandWordP, char* commandExtensionP, int skipSpaces = 0); //takes commandP, puts the first word in commandWordP, and the rest in commandExtensionP
 	void ParseWithON(const char* commandExtensionP, char* itemNameP, char* npcNameP); //takes commandExtensionP, puts everything before " ON " in itemNameP, and everything after in npcNameP
-	NPC* getNPCInVector(std::vector<NPC*>& the_vector, const char* npcname); //returns the npc in the given vector that has the given name
-	Item* getItemInVector(std::vector<Item*>& the_vector, const char* itemname); //returns the item in the given vector that has the given name
-	Item* getItemTypeInVector(std::vector<Item*>& the_vector, const char* itemtype); //returns the item in the given vector that has the given type
+	NPC* getNPCInVector(const std::vector<NPC*>& the_vector, const char* npcname); //returns the npc in the given vector that has the given name
+	Item* getItemInVector(const std::vector<Item*>& the_vector, const char* itemname); //returns the item in the given vector that has the given name
+	Item* getItemTypeInVector(const std::vector<Item*>& the_vector, const char* itemtype); //returns the item in the given vector that has the given type
 	Attack* getAttackInVector(const std::vector<Attack*>& the_vector, const char* attackname); //returns the attack in the given vector that has the given name
 	void scaleNPC(NPC* npc, int cap); //update the npc level at the gym capped at the given cap based on the time
 	void printNPCData(NPC* npc, bool battle = false); //prints the data of the npc

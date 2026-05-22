@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/21/26
 *  This is the header file for rooms
 *  
 *  Rooms are the locations of the game world which are linked up and the player can move between.
@@ -41,7 +41,7 @@ public:
 	int getID(); //get the id of the room
 	vector<Item*>& getItems(); //gets the room's items
 	vector<Item*>& getStock(); //gets the items for sale in this room
-	vector<NPC*>& getNpcs(bool alt = false); //gets the npcs in this room
+	vector<NPC*> getNpcs(bool alt = false); //gets the npcs in this room
 	vector<const char*>& getBlocks(); //gets the blocked exits in this room
 	Room* getExit(const char* direction); //get the room in the given direction from this room
 	Room* getRedirect(); //get if the room redirects to another one

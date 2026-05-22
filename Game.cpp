@@ -462,6 +462,7 @@ void Game::SetupWorld() {
 	Room* burgplatno = new Room("on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories endlessly churning, though they cannot produce anything anymore.");
 	Room* burgplate = new Room("next to the BURGER assembly line. There's some BURGER cultists cursing BURGERs as they pass by.");
 	Room* burgplatedry = new Room("next to the BURGER assembly line, ground to a halt. There's some BURGER cultists having a discussion.");
+	Room* burgplateash = new Room("next to the BURGER assembly line, carrying along any remaining ashes.");
 	Room* burgplats = new Room("on the platform. There's some diagrams describing BURGERs here and a room to the side.");
 	Room* BURGERPRISON = new Room("in the BURGER PRISON, full of cells and torture devices.");
 	Room* basestation = new Room("in a deep train tunnel near the BURGER PRISON. The rock is very hot here.");
@@ -602,7 +603,7 @@ void Game::SetupWorld() {
 	self->addSpecialAttack(headbutt);
 	Attack* bigenergyball = new Attack("BIG ENERGY BALL", "threw a big ball of energy at", false, 15, 15, 10, 1, 1, 3, false, 8);
 	bigenergyball->addDescription("Throw a large mass of energy at the target and their surrounding allies. (15 ATTACK, 10 PIERCE)");
-	Attack* punchflurry = new Attack("PUNCH FLURRY", "unleashed a flurry of punches upon", true, 7, 5, 0, 6, 7, 1, false, 15);
+	Attack* punchflurry = new Attack("PUNCH FLURRY", "unleashed a flurry of punches upon", true, 12, 5, 0, 6, 7, 1, false, 15);
 	punchflurry->addDescription("Unleash a barrage of 6 to 7 punches. (5 ATTACK, 6-7 hits)");
 	self->addSpecialAttack(punchflurry);
 	Attack* shurikenthrow = new Attack("SHURIKEN THROW", "threw a spread of shurikens at", false, 2, 7, 5, 0, 2, 3);
@@ -631,15 +632,15 @@ void Game::SetupWorld() {
 	pinned->freeze = true;
 	pacupunctuken->addEffect(pinned);
 	pacupunctuken->addDescription("Throw precise shurikens at the target's pressure points, rendering them immobile for three turns. (2 ATTACK, 15 PIERCE, 4 hits)");
-	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 15, 10, 20, 5, 5, 3);
+	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 15, 3, 20, 5, 5, 3);
 	pdeadlyspinferno->afterdesc = " in a flaming inferno";
 	Effect* onfire = new Effect("ON FIRE", 3, 5, 0, 1, 0.8);
 	pdeadlyspinferno->addEffect(onfire);
-	pdeadlyspinferno->addDescription("Fly at the target and their surroundings in a deadly flaming tornado, also leaving them on fire. (10 ATTACK, 20 PIERCE, 5 hits)");
+	pdeadlyspinferno->addDescription("Fly at the target and their surroundings in a deadly flaming tornado, also leaving them on fire. (3 ATTACK, 20 PIERCE, 5 hits)");
 	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", false, 15, 20, 15, 1, 1, 1, false, 12);
 	precisionstrike->addDescription("Throw a heavy mass of energy speedily towards the target. (20 ATTACK, 15 PIERCE)");
-	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", false, 22, 35, 25, 1, 1, 1, false, 18);
-	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (35 ATTACK, 25 PIERCE)");
+	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", false, 22, 33, 25, 1, 1, 1, false, 18);
+	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (33 ATTACK, 25 PIERCE)");
 	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", false, 0, 0, 0, 1, 1, 9, false, 25);
 	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, 0 PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
@@ -655,9 +656,9 @@ void Game::SetupWorld() {
 	uppercutted->falldamage = 10;
 	uppercut->addEffect(uppercutted);
 	uppercut->addDescription("Uppercut the target into the air, interrupting non-bosses' turn if it hits them before they move. (15 ATTACK)");
-	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 25, 100, 100, 1, 1, 1);
+	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 30, 40, 40, 1, 1, 1);
 	pshrimplebeam->instakill = true;
-	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (100 ATTACK, 100 PIERCE)");
+	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (40 ATTACK, 40 PIERCE)");
 	Item* shrimplegun = new WeaponItem("SHRIMPLE GUN", "An advanced red water gun granting non-shrimp wielders the ability to use the SHRIMPLE BEAM.", mountainlake, pshrimplebeam);
 	Attack* parry = new Attack("PARRY", "is preparing to parry", false, 7, 0, 0, 1, 1, 1);
 	parry->parry = true;
@@ -717,7 +718,7 @@ void Game::SetupWorld() {
 	hypercapacitate->targetFainted = true;
 	hypercapacitate->addDescription("Use flower power to recapacitate a teammate to full health.");
 	floria->addSpecialAttack(hypercapacitate);
-	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", false, 22, 100, 100, 1, 1, 1, false, 17);
+	Attack* superpower = new Attack("SUPERPOWER", "unleashed the power of the earth upon", false, 22, 40, 40, 1, 1, 1, false, 17);
 	superpower->instakill = true;
 	superpower->addDescription("Unleash the power of the earth's core.");
 	floria->addSpecialAttack(superpower);
@@ -1114,7 +1115,7 @@ void Game::SetupWorld() {
 	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 12, -55, 0, 1, 1, 1, true, 15);
 	michmeal->addDescription("Prepare a teammate a super high-quality meal, for much healing. (55 POWER)");
 	michelin->addSpecialAttack(michmeal);
-	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 40, 100, 100, 1, 1, 1, false, 20);
+	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 30, 40, 40, 1, 1, 1, false, 20);
 	congratulation->afterdesc = " congratulation";
 	congratulation->instakill = true;
 	congratulation->addDescription("Cook the target not just well done, but CONGRATULATION.");
@@ -1286,7 +1287,7 @@ void Game::SetupWorld() {
 	icosahedrongus->addSpecialAttack(bonk);
 	icosahedrongus->addSpecialAttack(hypnotize);
 	
-	Attack* nat1 = new Attack("DICE ROLL", "rolled a NAT 1!", false, 0, 30, 50, 1, 1, 3, true); //1 - Graham explodes also damages nearby teammates
+	Attack* nat1 = new Attack("DICE ROLL", "rolled a NAT 1!", false, 0, 25, 50, 1, 1, 3, true); //1 - Graham explodes also damages nearby teammates
 	nat1->afterdesc = " blew up!";
 	nat1->targetself = true;
 	nat1->instakill = true;
@@ -1361,7 +1362,7 @@ void Game::SetupWorld() {
 	nat19->afterdesc = " is invincible";
 	nat19->addEffect(invincible); //from plum's move, also buffs attack cause there's no teammate buff roll anyway
 	graham->addSpecialAttack(nat19);
-	Attack* nat20 = new Attack("DICE ROLL", "rolled a NAT 20!", false, 0, 100, 100, 1, 1, 1); //20 - target explodes
+	Attack* nat20 = new Attack("DICE ROLL", "rolled a NAT 20!", false, 0, 40, 40, 1, 1, 1); //20 - target explodes
 	nat20->afterdesc = " blew up!";
 	nat20->instakill = true;
 	graham->addSpecialAttack(nat20);
@@ -2872,6 +2873,7 @@ void Game::SetupWorld() {
 	valvechanges.recruitLinks.push(cacty);
 	valvechanges.roomChanges.push({burgplatn, "on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories, though their BURGER production has ceased."});
 	valvechanges.roomChanges.push({burgplatno, "on the BURGER production platform, suspended inside an enormous cavern.\nYou see hanging factories, now obsolete and inoperational."});
+	valvechanges.roomChanges.push({burgplateash, "next to the BURGER assembly line, ground to a halt."});
 	valvechanges.redirectRooms.push({burgplate, burgplatedry});
 
 	Attack* cooldown = new Attack("COOL DOWN", "poured sand coolant on", false, 0, 0, 0, 1, 1, 1);
@@ -3047,7 +3049,6 @@ void Game::SetupWorld() {
 	smithconv2->skipcondition = {MADEKATANA};
 	ninjasmith->addConversation(smithconv);
 	ninjasmith->setDialogue({{ninjasmith, "If you ever see unihorn, please ask for unihorn corn."}, {ninjasmith, "I very much hope to make Kosmic Katana."}});
-	ninjasmith->setTalkOnDefeat();
 	ninjasmith->addRejectionDialogue("I no abandon ninja way.");
 
 	NPC* unihorn = new NPC("", "UNIHORN", "A mythical and majestic unihorn, dark bluish with pale hair, restrained by quantumn chains.", burglab, 24, Stats(100, 30, 30, 40, 40, 50, 9));
@@ -3846,26 +3847,27 @@ void Game::SetupWorld() {
 	Attack* deercombo = new Attack("DEER COMBO", "beat up", true, 0, 2, 0, 4, 4, 1);
 	enemydeer->setBasicAttack(deercombo);
 
-	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 8, 0, 5, 20, 9));
+	NPC* ninjascout = new NPC("", "NINJA SCOUT", "A junior member of the ninja village, often sent on easy missions.", limbo, 0, Stats(20, 2, 8, 0, 5, 20, 9), Stats(0, 0, 0, 0, 0, 0, 1));
 	Attack* shurikenninja = new Attack("SHURIKEN", "expertly threw shurikens at", false, 0, 8, 5, 1, 2, 3);
 	ninjascout->setBasicAttack(shurikenninja);
 
-	NPC* ninja = new NPC("", "NINJA", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.", limbo, 0, Stats(40, 10, 25, 0, 25, 30, 9));
-	Attack* shurikenninja2 = new Attack("SHURIKEN", "expertly threw shurikens at", false, -5, 10, 15, 1, 2, 3);
+	NPC* ninja = new NPC("", "NINJA", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.", limbo, 0, Stats(40, 10, 10, 0, 15, 30, 9));
+	Attack* shurikenninja2 = new Attack("SHURIKEN", "expertly threw shurikens at", false, -5, 5, 15, 1, 2, 3);
 	ninja->setBasicAttack(shurikenninja2);
-	Attack* katana = new Attack("KATANA", "sliced", true, 5, 25, 30, 1, 1, 1);
+	Attack* katana = new Attack("KATANA", "sliced", true, 5, 15, 30, 1, 1, 1);
 
-	NPC* ninjachef = new NPC("", "NINJA CHEF", "An expert ninja who is also an expert in cooking. He guards the ninja pantry.", limbo, 0, Stats(80, 20, 20, 20, 20, 25, 9));
-	Attack* shuripan = new Attack("SHURIPAN", "threw spinning pans at", false, -5, 15, 0, 1, 2, 3);
+	NPC* ninjachef = new NPC("", "NINJA CHEF", "An expert ninja who is also an expert in cooking. He guards the ninja pantry.", limbo, 0, Stats(120, 10, 15, 0, 10, 25, 9));
+	Attack* shuripan = new Attack("SHURIPAN", "threw spinning pans at", false, -5, 5, 0, 1, 2, 3);
 	shuripan->afterdesc = " like shurikens";
+	ninjachef->setBasicAttack(shuripan);
 	Attack* spatula = new Attack("SPATULA", "flipped", true, 6, 10, 0, 1, 1, 1);
 	spatula->afterdesc = " into the air with a spatula";
 	Effect* spatulad = new Effect("SPATULA'D", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
 	spatulad->remove = true;
-	spatulad->falldamage = 20;
+	spatulad->falldamage = 10;
 	spatula->addEffect(spatulad);
 	ninjachef->addSpecialAttack(spatula);
-	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -30, 0, 1, 1, 999, true);
+	Attack* ninjafeast = new Attack("NINJA FEAST", "prepared a ninja feast for his team", false, 8, -20, 0, 1, 1, 999, true);
 	ninjachef->addSpecialAttack(ninjafeast);
 	Attack* ninjasmoothie = new Attack("NINJA SMOOTHIE", "prepared a ninja smoothie for", false, 3, 20, 5, 1, 1, 1, true, 11);
 	Effect* smoothied = new Effect("SMOOTHIED", 3, 0, 0, 1.5, 1, 1, 1.5);
@@ -3873,24 +3875,25 @@ void Game::SetupWorld() {
 	ninjachef->addSpecialAttack(ninjasmoothie);
 
 	//a true ninja doesn't reveal his name despite being a unique character
-	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief ninja of the ninja village, with the most experience and the highest rank of diamond belt.", limbo, 0, Stats(120, 40, 35, 20, 25, 60, 9));
+	NPC* ninjachief = new NPC("", "NINJA CHIEF", "The chief ninja of the ninja village, with the most experience and the highest rank of diamond belt.", limbo, 0, Stats(350, 10, 20, 10, 25, 60, 9));
 	ninjachief->setBoss(true);
-	Attack* ninjakick = new Attack("NINJA KICK", "jumped at", true, -5, 20, 0, 1, 1, 1);
+	Attack* ninjakick = new Attack("NINJA KICK", "jumped at", true, -5, 8, 0, 1, 1, 1);
 	ninjakick->afterdesc = " with a flying side kick";
 	ninjachief->setBasicAttack(ninjakick);
-	Attack* kiloshuriken = new Attack("KILOSHURIKEN", "threw dual helicopter rotors at the team", false, 6, 30, 20, 2, 2, 3);
+	Attack* kiloshuriken = new Attack("KILOSHURIKEN", "threw dual helicopter rotors at the team", false, 6, 3, 20, 2, 2, 3);
+	kiloshuriken->focushits = false;
 	ninjachief->addSpecialAttack(kiloshuriken);
-	Attack* acupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 8, 2, 15, 4, 4, 1);
+	Attack* acupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 8, 1, 15, 4, 4, 1);
 	acupunctuken->afterdesc = " with precise shurikens";
 	acupunctuken->addEffect(pinned);
 	ninjachief->addSpecialAttack(acupunctuken);
-	Attack* deadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", false, 15, 10, 20, 5, 5, 3);
+	Attack* deadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", false, 15, 1, 20, 5, 5, 3);
 	deadlyspinferno->afterdesc = " in a flaming inferno";
 	deadlyspinferno->addEffect(onfire);
 	ninjachief->addSpecialAttack(deadlyspinferno);
 
 	NPC* jimshady = new NPC("", "JIM SHADY", "An envious and spiky shrimp. This Jim Shady is just imitating.", limbo, 0, Stats(50, 10, 10, 35, 15, 10, 9));
-	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 0, 100, 100, 1, 1, 1);
+	Attack* shrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 0, 40, 40, 1, 1, 1);
 	shrimplebeam->instakill = true;
 	jimshady->setBasicAttack(shrimplebeam);
 	Effect* engarde = new Effect("EN GARDE!", 2147483647);
@@ -4088,7 +4091,7 @@ void Game::SetupWorld() {
 	scaldingsteam->addEffect(scalded);
 	greer->addSpecialAttack(scaldingsteam);
 
-	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 10, 0, 1, 0.65);
+	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 8, 0, 1, 0.65);
 	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 1, 1, 1); //contact attacks for the lavamen
 	burn->addEffect(onfire);
 	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 1, 1, 1);
@@ -4122,26 +4125,30 @@ void Game::SetupWorld() {
 	largelavaman->setBasicAttack(lavaslam);
 	largelavaman->addSpecialAttack(haymaker);
 
-	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 12, 5, 10, 30, 9));
+	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 6, 5, 10, 30, 9), Stats(0, 0, 1, 0, 0, 1, 1));
 	Attack* scurry = new Attack("SCURRY", "scurried all around the team", true, -5, 3, 0, 4, 5, 1);
 	scurry->focushits = false;
-	Attack* lavomit = new Attack("LAVOMIT", "coughed up a ball of lava at", false, 9, 5, 10, 1, 1, 1);
+	Attack* lavomit = new Attack("LAVOMIT", "coughed up a ball of lava at", false, 9, 8, 10, 1, 1, 1);
 	lavomit->addEffect(onfire);
 	lavizard->setBasicAttack(scurry);
 	lavizard->addSpecialAttack(lavomit);
 
-	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats(15, 10, 12, 10, 10, 20, 9));
-	Attack* poiscurry = new Attack("SCURRY", "poisonously scurried all around the team", true, -5, 5, 0, 2, 3, 1);
-	Effect* poisoned = new Effect("POISONED", 5, 10, 0, 1, 0.75);
+	NPC* poizard = new NPC("", "POIZARD", "Poisonous counterpart to the lavizard, painted a bright purple.", limbo, 0, Stats(11, 5, 6, 5, 10, 20, 9), Stats(0, 0, 1, 0, 0, 1, 1));
+	Attack* poiscurry = new Attack("SCURRY", "poisonously scurried all around the team", true, -5, 5, 0, 2, 2, 1);
+	Effect* poisoned = new Effect("POISONED", 3, 3, 0, 1, 0.75);
 	poiscurry->addEffect(poisoned);
 	poiscurry->focushits = false;
-	Attack* poisomit = new Attack("POISOMIT", "coughed up a ball of sticky corrosive sludge at", false, 9, 10, 15, 1, 1, 1);
-	Effect* sludged = new Effect("SLUDGED", 10, 5, 0, 1, 0.75, 0.5, 1, 0.25);
+	Attack* poisomit = new Attack("POISOMIT", "coughed up a ball of sticky corrosive sludge at", false, 9, 10, 8, 1, 1, 1);
+	Effect* sludged = new Effect("SLUDGED", 3, 0, 0, 1, 0.75, 0.5, 1, 0.25);
+	Attack* toxins = new Attack("TOXINS", "poisoned", false, 0, 0, 0, 1, 1, 1);
+	toxins->addEffect(poisoned);
+	toxins->afterdesc = " with its skin";
 	poisomit->addEffect(sludged);
 	poizard->setBasicAttack(poiscurry);
+	poizard->setRecoilAttack(toxins);
 	poizard->addSpecialAttack(poisomit);
 
-	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(25, 14, 15, 20, 10, 15, 9));
+	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(25, 14, 15, 15, 10, 15, 9));
 	slagman->setRecoilAttack(reallyburn);
 	Attack* slagjab = new Attack("SLAG JAB", "slaggily jabbed at", true, -5, 5, 10, 1, 1, 1);
 	slagjab->addEffect(extrafire);
@@ -4154,12 +4161,12 @@ void Game::SetupWorld() {
 	slagman->addSpecialAttack(metalmeteor);
 	slagman->addSpecialAttack(slagvomit);
 
-	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats(50, 20, 18, 15, 15, 50, 9));
+	NPC* superslagman = new NPC("", "SUPER SLAGMAN", "A really slaggy humanoid burning white-hot. Their slurry composure gives them a sick cape!", limbo, 0, Stats(40, 20, 16, 16, 16, 50, 9));
 	superslagman->setRecoilAttack(reallyburn);
-	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 3, 10, 4, 4, 1);
+	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 2, 10, 4, 4, 1);
 	slagjchu->addEffect(extrafire);
-	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 8, 0, 1, 1, 3);
-	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 6, 10, 1, 1, 999);
+	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 6, 0, 1, 1, 3);
+	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 2, 10, 1, 1, 999);
 	slagblast->addEffect(extrafire);
 	superslagman->setBasicAttack(slagjchu);
 	superslagman->addSpecialAttack(metalbeam);
@@ -4507,7 +4514,7 @@ void Game::SetupWorld() {
 	taserfinger->addEffect(tased);
 	taserfinger->selfcancel = shrouded;
 	ratman->addSpecialAttack(taserfinger);
-	Attack* sharkrepellant = new Attack("SHARK REPELLANT", "sprayed shark repellant at", false, 5, 100, 100, 1, 1, 1); //use 5 sp cause I don't want it to affect weights in normal fights too much
+	Attack* sharkrepellant = new Attack("SHARK REPELLANT", "sprayed shark repellant at", false, 5, 40, 40, 1, 1, 1); //use 5 sp cause I don't want it to affect weights in normal fights too much
 	sharkrepellant->instakill = true;
 	sharkrepellant->targetshark = true;
 	sharkrepellant->selfcancel = shrouded;
@@ -5101,25 +5108,29 @@ void Game::SetupWorld() {
 	ninjaguard->addRejectionDialogue("No!!! I will always be a ninja!!!!!! >:D");
 
 	NPC* ninjaguard1 = new NPC(*ninja);
+	ninjaguard1->setMask("", "NINJA 1", "A complete ninja, trained in the ninja ways and living the ninja lifestyle."); //since they're all in the same room they need this identifying number so you can choose who to fight
 	ninjaguard1->setLeader(true, 15, ninjavillage, false);
-	ninjaguard1->blockExit(IN_HOUSE_1, ENEMY, "guarded by the NINJA.");
+	ninjaguard1->blockExit(IN_HOUSE_1, ENEMY, "guarded by NINJA 1.");
 	ninjaguard1->setDialogue("You won't get past me, outsider.");
 	ninjaguard1->addRejectionDialogue("I will never abandon the ninja way.");
 
 	NPC* ninjaguard2 = new NPC(*ninja);
+	ninjaguard2->setMask("", "NINJA 2", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.");
 	ninjaguard2->setLeader(true, 15, ninjavillage, false);
-	ninjaguard2->blockExit(IN_HOUSE_2, ENEMY, "guarded by the NINJA.");
+	ninjaguard2->blockExit(IN_HOUSE_2, ENEMY, "guarded by NINJA 2.");
 	ninjaguard2->setDialogue("Fight me if you wish to see the true power of the ninja way!");
 	ninjaguard2->addRejectionDialogue("I will never abandon the ninja way.");
 
 	NPC* ninjaguard3 = new NPC(*ninja);
+	ninjaguard3->setMask("", "NINJA 3", "A complete ninja, trained in the ninja ways and living the ninja lifestyle.");
 	ninjaguard3->setLeader(true, 15, ninjavillage, false);
-	ninjaguard3->blockExit(IN_HOUSE_3, ENEMY, "guarded by the NINJA.");
+	ninjaguard3->blockExit(IN_HOUSE_3, ENEMY, "guarded by NINJA 3.");
 	ninjaguard3->setDialogue("How could you stand before our ninja chief if you can't even beat me?");
 	ninjaguard3->addRejectionDialogue("I will never abandon the ninja way.");
 
 	NPC* pantryguard = new NPC(*ninjachef);
-	pantryguard->setLeader(true, 17, ninjapantry);
+	pantryguard->setLeader(true, 15, ninjapantry);
+	pantryguard->setParty({ninjascout}); //so the ninja chef has someone to heal and buff
 	pantryguard->addConversation({{self, "Hi ninja man can I have that ninjaberry?"}, {ninjachef, "Only if you prove yourself in combat."}, {self, "Sounds good."}});
 	pantryguard->setDialogue("Prove yourself in combat to prove yourself worthy of the ninjaberry.");
 	pantryguard->addLinkedDialogue(pantryguard, {{pantryguard, "Well done, young one."}, {pantryguard, "You have proven yourself worthy of the ninjaberry."}, {self, "Thanks."}});
@@ -5128,8 +5139,7 @@ void Game::SetupWorld() {
 	pantryguard->guardItem(ninjaberry);
 
 	NPC* govguard = new NPC(*ninjachief);
-	govguard->setLeader(true, 19, ninjacapitol);
-	govguard->setParty({ninja, ninja});
+	govguard->setLeader(true, 18, ninjacapitol);
 	govguard->setDialogue({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Now, fight me as your final test."}});
 	govguard->addConversation({{ninjachief, "You have improved your ninja abilities at an accelerated rate."}, {ninjachief, "Most impressive."}, {ninjachief, "Now, fight me as your final test."}}); //just so he says that before the fight
 	govguard->addRejectionDialogue("I must continue to govern the ninja village.");
@@ -5481,7 +5491,7 @@ void Game::SetupWorld() {
 	golemguard->addRejectionDialogue({{NULL, "FACTORY GOLEM - *DEEP SYNTH REJECTION*"}});
 
 	NPC* fact3guard = new NPC(*lavasoldier);
-	fact3guard->setLeader(true, 14, factorynw);
+	fact3guard->setLeader(true, 12, factorynw);
 	fact3guard->setParty({slagman, lavizard, lavizard});
 	fact3guard->blockExit(EAST, ENEMY, "guarded by the LAVA SOLDIER.");
 	fact3guard->setDialogue({{NULL, "LAVA SOLDIER - *lavally challenges you to a battle*"}});
@@ -5513,8 +5523,8 @@ void Game::SetupWorld() {
 	carlosguard->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
 
 	NPC* fact3guard3 = new NPC(*superslagman);
-	fact3guard3->setLeader(true, 15, factoryroofnw);
-	fact3guard3->setParty({slagman, poizard, poizard});
+	fact3guard3->setLeader(true, 13, factoryroofnw);
+	fact3guard3->setParty({slagman, poizard});
 	fact3guard3->blockExit(NORTH, ENEMY, "guarded by the SUPER SLAGMAN.");
 	fact3guard3->setDialogue({{NULL, "SUPER SLAGMAN - *HHIIIIIIIISSSSSSSSSSSSSSSSSSSS*"}});
 	fact3guard3->addRejectionDialogue({{NULL, "SUPER SLAGMAN - *HHHHIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSS*"}});
@@ -6770,9 +6780,8 @@ void Game::SetupWorld() {
 								   {hj, "Because everyone is skeletons now at my old job."}});
 	finalboss->addLinkedDialogue(hj, {{hj, "I wonder how you find employment."}});
 	finalboss->addPaveLink(timemachine, timemachine, TO_THE_VOID, NULL); //you can go to the void from the time machine after beating the game
-	finalboss->addDefeatRoom(burgercultists, limbo);
-	finalboss->addLinkedRoom(burgplate, "next to the BURGER assembly line, carrying along any remaining ashes.");
-	finalboss->addLinkedRoom(burgplatedry, "next to the BURGER assembly line, ground to a halt.");
+	finalboss->addRedirect(burgplate, burgplateash);
+	finalboss->addRedirect(burgplatedry, burgplateash);
 	finalboss->addRedirect(burgplatn, burgplatno); //we have the redirect to reflect the 4 states the room can possibly be in (able to run or not, and physically capable of producing BURGERS or not)
 
 	//block exits MARK: block exits
@@ -7017,13 +7026,15 @@ void Game::travel(Room* currentRoom, const char* direction, bool forceTravel, Ro
 		for (NPC* npc : currentRoom->getNpcs()) {
 			//if it's the lobster AND it isn't in enemy form still
 			if (npc->getLobster() && !npc->getLeader()) {
-				if (roomCandidate == npc->getHome()) npc->setRoom(roomCandidate); //move the lobster only if it's to go to its home (tunnels) so it doesn't move between the two pairs of adjacent station rooms (desert and basement)
+				if (currentRoom == npc->getHome() || roomCandidate == npc->getHome()) npc->setRoom(roomCandidate); //move the lobster only if it's to go to or from its home (tunnels) so it doesn't move between the two pairs of adjacent station rooms (desert and basement)
 				break; //break because there's only one lobster
-			} //also make roaming npcs roam, roamers and lobsters don't go in the same rooms
-			if (npc->getRoaming() && !npc->getRecruited() && !npc->getLeader()) {
-				npc->roam();
-				if (trackNPC(npc, false)) Rnpcs.insert(npc->getParent()); //track this npc because they moved so we should just start tracking them now
 			}
+		}
+	} //make roaming npcs roam when leaving their room
+	for (NPC* npc : currentRoom->getNpcs()) {
+		if (npc->getRoaming() && !npc->getRecruited() && !npc->getLeader()) {
+			npc->roam();
+			if (trackNPC(npc, false)) Rnpcs.insert(npc->getParent()); //track this npc because they moved so we should just start tracking them now
 		}
 	} //check if the room has a backup before popping it, so we don't make pointless duplicates every time we go to a room with repeating backup items
 	if (roomCandidate->gotBackup()) {
