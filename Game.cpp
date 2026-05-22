@@ -4094,7 +4094,7 @@ void Game::SetupWorld() {
 	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 1, 1, 1);
 	reallyburn->addEffect(extrafire);
 
-	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats(20, 0, 14, 0, 25, 10, 9)); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
+	NPC* magman = new NPC("", "LAVAMAN", "A really laval humanoid burning bright with radiation.", limbo, 0, Stats(12, 0, 14, 0, 25, 8, 9)); //laval is a real word but it's kind of hard to find on google, you have to clarify "laval in the context of lava"
 	magman->setRecoilAttack(burn);
 	Attack* lavawhack = new Attack("LAVA WHACK", "lavally whacked", true, -5, 5, 5, 1, 1, 1);
 	lavawhack->addEffect(onfire);
@@ -4103,15 +4103,14 @@ void Game::SetupWorld() {
 	magman->setBasicAttack(lavawhack);
 	magman->addSpecialAttack(meteor);
 
-	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrows and spear from the depths of the lava sea.", limbo, 0, Stats(25, 15, 16, 15, 30, 5, 9));
-	Attack* lavaspear = new Attack("LAVA SPEAR", "speared", false, -5, 6, 5, 1, 1, 1);
+	NPC* lavasoldier = new NPC("", "LAVA SOLDIER", "Lavaman rocking molten armor and a homemade bow and arrows and spear from the depths of the lava sea.", limbo, 0, Stats(20, 15, 16, 15, 30, 5, 9));
+	Attack* lavaspear = new Attack("LAVA SPEAR", "speared", false, -5, 3, 5, 1, 1, 1);
 	lavaspear->afterdesc = " with a lava spear";
 	lavaspear->addEffect(onfire);
-	Attack* lavarrows = new Attack("LAVARROWS", "shot explosive arrows", false, 8, 5, 15, 3, 3, 3); //no fire because they just explode
-	lavarrows->focushits = false;
-	Attack* closecombat = new Attack("CLOSE COMBAT", "engaged in close combat with", true, 8, 3, 10, 2, 2, 1);
+	Attack* lavarrow = new Attack("LAVARROW", "shot an explosive arrow at", false, 8, 4, 15, 1, 1, 3); //no fire because it just explodes
+	Attack* closecombat = new Attack("CLOSE COMBAT", "engaged in close combat with", true, 8, 2, 10, 2, 2, 1);
 	lavasoldier->setBasicAttack(lavaspear);
-	lavasoldier->addSpecialAttack(lavarrows);
+	lavasoldier->addSpecialAttack(lavarrow);
 	lavasoldier->addSpecialAttack(closecombat);
 
 	NPC* largelavaman = new NPC("", "LARGE LAVAMAN", "A really big laval humanoid who towers over his peers.\nThey have no finesse, preferring brutal strikes.", limbo, 0, Stats(60, 0, 18, 0, 25, 0, 9));
@@ -4124,7 +4123,7 @@ void Game::SetupWorld() {
 	largelavaman->addSpecialAttack(haymaker);
 
 	NPC* lavizard = new NPC("", "LAVIZARD", "Cute little lava gecko who frequently ingests lava to aid digestion.", limbo, 0, Stats(10, 5, 12, 5, 10, 30, 9));
-	Attack* scurry = new Attack("SCURRY", "scurried all around the team", true, -5, 5, 0, 4, 5, 1);
+	Attack* scurry = new Attack("SCURRY", "scurried all around the team", true, -5, 3, 0, 4, 5, 1);
 	scurry->focushits = false;
 	Attack* lavomit = new Attack("LAVOMIT", "coughed up a ball of lava at", false, 9, 5, 10, 1, 1, 1);
 	lavomit->addEffect(onfire);
@@ -4142,13 +4141,13 @@ void Game::SetupWorld() {
 	poizard->setBasicAttack(poiscurry);
 	poizard->addSpecialAttack(poisomit);
 
-	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(25, 17, 15, 20, 10, 15, 9));
+	NPC* slagman = new NPC("", "SLAGMAN", "A really slaggy humanoid formed from the factories' slag. They burn far brighter than their laval counterparts.", limbo, 0, Stats(25, 14, 15, 20, 10, 15, 9));
 	slagman->setRecoilAttack(reallyburn);
 	Attack* slagjab = new Attack("SLAG JAB", "slaggily jabbed at", true, -5, 5, 10, 1, 1, 1);
 	slagjab->addEffect(extrafire);
 	Attack* metalmeteor = new Attack("METAL METEOR", "shot a solid metal sphere at", false, 10, 10, 0, 1, 1, 1);
 	metalmeteor->afterdesc = " from inside itself"; //same commentary comment as lavamen
-	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 5, 10, 1, 1, 999);
+	Attack* slagvomit = new Attack("SLAG VOMIT", "puked slag all over the team", false, 15, 2, 10, 1, 1, 999);
 	slagvomit->focushits = false;
 	slagvomit->addEffect(extrafire);
 	slagman->setBasicAttack(slagjab);
@@ -4160,15 +4159,15 @@ void Game::SetupWorld() {
 	Attack* slagjchu = new Attack("JAB CROSS HOOK UPPERCUT", "jabbed, crossed, hooked, and uppercutted", true, -5, 3, 10, 4, 4, 1);
 	slagjchu->addEffect(extrafire);
 	Attack* metalbeam = new Attack("METAL BEAM", "chucked a beam perpendicularly at", false, 8, 8, 0, 1, 1, 3);
-	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 11, 10, 1, 1, 999);
+	Attack* slagblast = new Attack("SLAG BLAST", "blasted a blast of slag at", false, 14, 6, 10, 1, 1, 999);
 	slagblast->addEffect(extrafire);
 	superslagman->setBasicAttack(slagjchu);
 	superslagman->addSpecialAttack(metalbeam);
 	superslagman->addSpecialAttack(slagblast);
 
 	NPC* factgolem = new NPC("", "FACTORY GOLEM", "Hulking construct with a furnace core. They ceaslessly work even when submerged in lava, and double as security!", limbo, 0, Stats(140, 30, 15, 40, 10, 3, 9)); //mini mini boss?
-	Attack* swing = new Attack("HEAVY HAYMAKER", "swung a heavy haymaker at", true, -5, 10, 0, 1, 1, 1);
-	Attack* fistcannon = new Attack("FIST CANNON", "fired its fists like missiles", false, 3, 15, 0, 2, 2, 1); //I was gonna say heat-seeking fists but that doens't really make sense given the area it's in
+	Attack* swing = new Attack("HEAVY HAYMAKER", "swung a heavy haymaker at", true, -5, 11, 0, 1, 1, 1);
+	Attack* fistcannon = new Attack("FIST CANNON", "fired its fists like missiles", false, 3, 8, 0, 2, 2, 1); //I was gonna say heat-seeking fists but that doens't really make sense given the area it's in
 	fistcannon->focushits = false;
 	Attack* furnaceblast = new Attack("FURNACE BLAST", "blasted flames at", false, 6, 10, 15, 1, 1, 3);
 	furnaceblast->afterdesc = " from its furnace core";
@@ -5441,8 +5440,8 @@ void Game::SetupWorld() {
 	volcanoguard2->addRejectionDialogue({{NULL, "LAVAMAN - *angry flowing sizzling noises*"}});
 
 	NPC* volcanoguard3 = new NPC(*largelavaman);
-	volcanoguard3->setLeader(true, 14, volcano5);
-	volcanoguard3->setParty({magman, magman, lavizard});
+	volcanoguard3->setLeader(true, 13, volcano5);
+	volcanoguard3->setParty({magman, lavizard});
 	volcanoguard3->blockExit(NORTH, ENEMY, "guarded by the LARGE LAVAMAN.");
 	volcanoguard3->setDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});
 	volcanoguard3->addRejectionDialogue({{NULL, "LARGE LAVAMAN - *LAVAL ROAR*"}});

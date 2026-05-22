@@ -920,7 +920,7 @@ void NPC::blockExit(const char* _exitBlocking, const char* type, const char* rea
 	}
 }
 void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
-	if (stats.hpmax <= 999) damage = min(damage, 999); //cap damage printing at 999, unless we actually have reason to print that high
+	if (stats.hpmax <= 999) damage = (damage > 0 ? min(damage, 999) : max(damage, -999)); //cap damage printing at 999, unless we actually have reason to print that high
 	if (damage > 0) {
 		cout << "\n" << name << " took " << damage << " damage";
 	} else if (damage < 0) {

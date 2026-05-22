@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/21/26
 *  This is the implementation file for rooms
 *  
 *  Rooms are the places that NPCs and the player are physically located in. The player can only interact
@@ -102,10 +102,10 @@ Item* Room::popBackup(int force) { //we can force it to do one or the other opti
 	if (force == 1 || onebackup) { //if there is only one backup
 		_backup = backup;
 		backup = NULL; //make gift NULL because we only give one gift
-		logW("c", id); //log the popping
+		if (_backup) logW("c", id); //log the popping only if we actually popped anything
 	} else if (force == 2 || !getItemInVector(items, backup->getName())) { //if there is endless backups (and there isn't one just lying on the floor), give a copy of the backup
 		_backup = backup->Duplicate();
-		logW("k", id); //log the duplicating of the item
+		logW("k", id); //always log the duplicating of the item, onebackup wouldn't be false if we didn't have a backup
 	}
 	return _backup;
 }
