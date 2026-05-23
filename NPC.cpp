@@ -953,13 +953,13 @@ void NPC::printEffects() { //prints the effects this npc has
 int NPC::damage(double power, double pierce) {
 	double damagePierce = 10.0; //how much regular damage affects defense alongside pierce (inverse). Afterall, armor will defend you against a sword, but it will literally do nothing if you get hit by a semi truck
 	int oldguard = guard; //record what the guard was before
-	double defenseD = (power > 0 ? stats.defense : 0); //converts stats to doubles for easier damage calculation, also don't defend against heals!
-	double toughnessD = stats.toughness;
+	double defenseD = (power > 0 ? stats.defense*defenseMultiplier : 0); //converts stats to doubles for easier damage calculation, also don't defend against heals!
+	double toughnessD = stats.toughness*toughMultiplier;
 
 	bool capacitated = health > 0;
 
 	//calculates the damage
-	int damage = Round(power * (10.0/(10.0 + ClampD(defenseD - ((power/damagePierce + pierce)*10.0/(10.0 + toughnessD)),0,defenseD))));
+	int damage = Round(power * (10.0/(10.0 + ClampD(Round(defenseD) - ((power/damagePierce + pierce)*10.0/(10.0 + Round(toughnessD))),0,Round(defenseD)))));
 	damage = Round(damage*damageMultiplier); //multiplies damage by the effects' damage multiplier
 	if (damage > 0) guard--; //hits lower guard
 	int totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
@@ -1322,20 +1322,22 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { /
 		return NULL;
 	}
 	bool stacking = false;
+	//start calculating the duration outside the for loop so we can modify it in some situations if we don't have the effect yet
+	int duration = (manualduration >= 0 ? manualduration : effect->duration); //use the manual duration if one was given but the defult effect duration if not
+	if (isBoss && effect->freeze) duration = max(0, duration-1); //reduce duration of freeze by 1 for bosses for balance
 	for (Effect* _effect : effects) { //check if we already have the effect
 		if (effect == _effect) { //if we have the effect, assume we have the corresponding npceffect
 			//add the npc as one of the affectors if they weren't in the affectors vector already (heh affector vector)
 			NPCEffect& npceffect = npceffects[effect];
-			int duration = (manualduration >= 0 ? manualduration : effect->duration); //use the manual duration if one was given but the defult effect duration if not
 			if (npceffect.duration >= duration && !effect->stacks) { //it does nothing if it's already here and with an equal or greater duration
 				//cout << "\n" << name << " already has " << effect->name << "!";
 				return &npceffects[effect];
 			} //extends the duration otherwise
+			npceffect.duration = duration;
 			if (duration < 1000) { //only print this if it isn't something infinite
 				cout << "\n" << name << "'s " << effect->name << " was extended!";
 				CinPause();
 			}
-			npceffect.duration = duration;
 			if (npceffect.affectors.find(affector) == npceffect.affectors.end()) {
 				npceffect.affectors.insert(affector);
 				if (effect->stacks) npceffect.stacks++;
@@ -1344,10 +1346,11 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { /
 			else stacking = true;
 			break;
 		}
-	}
+	} //set whatever duration we ended up with if we didn't return already
 	if (!stacking) { //place the effect normally
 		effects.push_back(effect);
 		npceffects[effect] = NPCEffect(effect, this, affector);
+		npceffects[effect].duration = duration;
 		if (affector) {
 			cout << "\n" << name << " now has " << effect->name << "!";
 			CinPause();
@@ -1457,7 +1460,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { /
 			pause = true;
 		} if (effect->damagebuff != 1) {
 			cout << "\n" << name << " now takes ";
-			if (damageMultiplier != 1) cout << damageMultiplier << "x damage!";
+			if (damageMultiplier != 1) cout << damageMultiplier << "x damage from attacks!";
 			else cout << "normal damage!";
 			pause = true;
 		} if (effect->spusage != 1) {
@@ -1587,7 +1590,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 				pause = true;
 			} if (effect->damagebuff != 1) {
 				cout << "\n" << name << " now takes ";
-				if (damageMultiplier != 1) cout << damageMultiplier << "x damage!";
+				if (damageMultiplier != 1) cout << damageMultiplier << "x damage from attacks!";
 				else cout << "normal damage!";
 				pause = true;
 			} if (effect->spusage != 1) {

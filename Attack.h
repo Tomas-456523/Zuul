@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/22/26
 *  This is the header file for attacks
 *  
 *  The attack struct is primarily a data container to avoid circular inclusion, so most of the logic is
@@ -54,7 +54,8 @@ struct Attack {
 	bool parry = false; //if this is the parry move and we have to tell the attacker to start parrying the target
 
 	int minLevel; //must be at least this level to use the attack
-	double hpthreshold = 0; //attacker must be at <= max hp * this in order to use the attack
+	double hpmax = 1; //attacker health must be at below or equal to this * max hp in order to use the attack
+	double hpmin = 0; //attacker health must be above or equal to max hp * this to use the attack
 
 	double lifesteal; //what % of damage dealt is stolen and added to the npc's health
 	int spleak; //how much sp the attack removes from the target

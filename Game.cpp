@@ -621,20 +621,20 @@ void Game::SetupWorld() {
 	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 2.0, 0, 0, 0);
 	energize->addEffect(energized);
 	energize->addDescription("Imbue yourself or an teammate with energy, doubling attack for one turn.");
-	Attack* smokebomb = new Attack("SMOKE BOMB", "threw two smoke bombs, bringing SMOKEMEN into the battle", false, 13, 0, 0, 0, 0, 0);
+	Attack* smokebomb = new Attack("SMOKE BOMB", "threw two smoke bombs, bringing SMOKEMEN into the battle", false, 14, 0, 0, 0, 0, 0);
 	NPC* smokeman = new NPC("", "SMOKEMAN", "A really smoky humanoid who is just vibing.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0));
 	smokebomb->summon = smokeman;
 	smokebomb->summonamount = 2;
 	smokebomb->addDescription("Throw two smoke bombs containing smokemen, distracting the enemies.");
-	Attack* pacupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 12, 2, 15, 4, 4, 1);
+	Attack* pacupunctuken = new Attack("ACUPUNCTUKEN", "pinned", false, 22, 2, 15, 4, 4, 1);
 	pacupunctuken->afterdesc = " with precise shurikens";
 	Effect* pinned = new Effect("PINNED", 3);
 	pinned->freeze = true;
 	pacupunctuken->addEffect(pinned);
 	pacupunctuken->addDescription("Throw precise shurikens at the target's pressure points, rendering them immobile for three turns. (2 ATTACK, 15 PIERCE, 4 hits)");
-	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 15, 3, 20, 5, 5, 3);
+	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 18, 3, 20, 5, 5, 3);
 	pdeadlyspinferno->afterdesc = " in a flaming inferno";
-	Effect* onfire = new Effect("ON FIRE", 3, 5, 0, 1, 0.8);
+	Effect* onfire = new Effect("ON FIRE", 3, 5);
 	pdeadlyspinferno->addEffect(onfire);
 	pdeadlyspinferno->addDescription("Fly at the target and their surroundings in a deadly flaming tornado, also leaving them on fire. (3 ATTACK, 20 PIERCE, 5 hits)");
 	Attack* precisionstrike = new Attack("PRECISION STRIKE", "threw a precise energy ellipsoid at", false, 15, 20, 15, 1, 1, 1, false, 12);
@@ -656,9 +656,9 @@ void Game::SetupWorld() {
 	uppercutted->falldamage = 10;
 	uppercut->addEffect(uppercutted);
 	uppercut->addDescription("Uppercut the target into the air, interrupting non-bosses' turn if it hits them before they move. (15 ATTACK)");
-	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 30, 40, 40, 1, 1, 1);
+	Attack* pshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 30, 50, 50, 1, 1, 1);
 	pshrimplebeam->instakill = true;
-	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (40 ATTACK, 40 PIERCE)");
+	pshrimplebeam->addDescription("Fire a jet of pressurized water at the target, instantly destoying non-boss enemies. (50 ATTACK, 50 PIERCE)");
 	Item* shrimplegun = new WeaponItem("SHRIMPLE GUN", "An advanced red water gun granting non-shrimp wielders the ability to use the SHRIMPLE BEAM.", mountainlake, pshrimplebeam);
 	Attack* parry = new Attack("PARRY", "is preparing to parry", false, 7, 0, 0, 1, 1, 1);
 	parry->parry = true;
@@ -959,7 +959,7 @@ void Game::SetupWorld() {
 	minesweeper->addDescription("Unleash a mine-sweeping series of explosions... (10 ATTACK, 20 PIERCE, 12 hits)");
 
 	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
-	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 15, Stats(20, 15, 5, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
+	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 15, Stats(20, 10, 5, 10, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 0));
 	npcChar[cacty] = 'c'; //Cacty's character representation is c for cactus
 	cacty->setDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}});
 	cacty->addRejectionDialogue({{NULL, "CACTY - *raspy cactus plead for help*"}, {NULL, "CACTY is too dehydrated to join you."}});
@@ -976,10 +976,9 @@ void Game::SetupWorld() {
 	cacty->setBasicAttack(cactbomb);
 	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", false, 7, 0, 0, 0, 0, 0);
 	plantlifeplant->focushits = false;
-	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0), Stats(0, 0, 0, 0, 0, 0, 0));
-	Attack* lifeplantheal = new Attack("LIFE", "sent its nutrients to its team", false, 0, -7, 0, 1, 1, 999, true);
-	lifeplantheal->focushits = false;
-	lifeplantheal->skiptarget = false; //because it was hitting itself and making an infinite loop
+	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0), Stats(0, 0, 0, 0, 0, 0, 1));
+	Attack* lifeplantheal = new Attack("LIFE", "sent its nutrients to its team starting from", false, 0, -7, 0, 1, 1, 999, true);
+	lifeplantheal->skiptarget = true; //because it was hitting itself and making an infinite loop
 	lifeplant->setRecoilAttack(lifeplantheal, false);
 	plantlifeplant->summon = lifeplant;
 	plantlifeplant->summonamount = 1;
@@ -990,19 +989,20 @@ void Game::SetupWorld() {
 	Effect* spinyfloor = new Effect("SPINY FLOOR", 3, 6);
 	cactcarpet->addEffect(spinyfloor);
 	cactcarpet->lifesteal = 0.34;
+	spinyfloor->lifesteal = 0.34;
 	cacty->addSpecialAttack(cactcarpet);
 	cactcarpet->addDescription("Plant a carpet of cactus under the target, absorbing their nutrients for four turns. (15 ATTACK, 15 PIERCE, 34% lifesteal)");
 	Attack* acupuncture = new Attack("ACUPUNCTURE", "expertly healed", false, 7, -8, 15, 1, 1, 1, true);
 	acupuncture->afterdesc = " with spines";
 	cacty->addSpecialAttack(acupuncture);
-	Attack* prespoints = new Attack("PRESSURE POINTS", "fired precise needles at", false, 10, 1, 15, 3, 3, 1);
+	Attack* prespoints = new Attack("PRESSURE POINTS", "fired precise needles at", false, 15, 1, 15, 3, 3, 1);
 	prespoints->afterdesc = "'s pressure points";
 	prespoints->addEffect(pinned);
 	cacty->addSpecialAttack(prespoints);
 	Attack* dualcacti = new Attack("DUAL CACTI", "threw two cactus bombs at", false, 12, 4, 15, 4, 4, 3, false, 16);
 	cacty->addSpecialAttack(dualcacti);
 	dualcacti->addDescription("Throw not just one, but TWO cactus bombs at the target, affecting their surroundings. (4 ATTACK, 15 PIERCE, 4 hits)");
-	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 25, 100, 1, 1, 1, false, 18);
+	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 30, 100, 1, 1, 1, false, 18);
 	cacty->addSpecialAttack(superspine);
 	superspine->addDescription("Fire one enormous spine at the target. (30 ATTACK, 100 PIERCE)");
 
@@ -4095,7 +4095,7 @@ void Game::SetupWorld() {
 	scaldingsteam->addEffect(scalded);
 	greer->addSpecialAttack(scaldingsteam);
 
-	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 8, 0, 1, 0.65);
+	Effect* extrafire = new Effect("EXTRA ON FIRE", 3, 8);
 	Attack* burn = new Attack("BURN", "burned", false, 0, 0, 0, 1, 1, 1); //contact attacks for the lavamen
 	burn->addEffect(onfire);
 	Attack* reallyburn = new Attack("REALLY BURN", "really burned", false, 0, 0, 0, 1, 1, 1);
@@ -4215,7 +4215,7 @@ void Game::SetupWorld() {
 	gatorgun->addEffect(extrafire);
 	lavagator->addSpecialAttack(gatorgun);
 
-	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(300, 30, 11, 20, 11, 10, 9), Stats(2, 1, 1, 0, 0, 0, 0));
+	NPC* lavaguardian = new NPC("", "LAVA GUARDIAN", "Huge guardian with radiant molten armor and weapons.\nHe appears to have wandered onto the bridge while the lava level was high, and now guards the gate to BURGERSBURG.", limbo, 0, Stats(300, 30, 11, 20, 11, 10, 9), Stats(2, 1, 0, 0, 0, 0, 0));
 	lavaguardian->setBoss(true);
 	Attack* contactexplosion = new Attack("EXPLOSION", "blew up in", false, 0, 3, 10, 1, 1, 1);
 	contactexplosion->afterdesc = "'s face";
@@ -4224,11 +4224,11 @@ void Game::SetupWorld() {
 	firesword->afterdesc = " with its flaming sword";
 	firesword->addEffect(onfire);
 	lavaguardian->setBasicAttack(firesword);
-	Attack* uplash = new Attack("UPSLASH", "slashed", true, 5, 6, 10, 1, 1, 1);
+	Attack* uplash = new Attack("UPSLASH", "slashed", true, 6, 6, 10, 1, 1, 1);
 	uplash->afterdesc = " upwards into the air";
 	Effect* uplashed = new Effect("UPSLASHED", 0); //doesn't cancel their turn but may interrupt healers wanting to heal them
 	uplashed->remove = true;
-	uplashed->falldamage = 15;
+	uplashed->falldamage = 13;
 	uplash->addEffect(uplashed);
 	lavaguardian->addSpecialAttack(uplash);
 	Attack* eruption = new Attack("ERUPTION", "explosively crashed its sword down on", true, 8, 3, 15, 1, 1, 3);
@@ -4236,17 +4236,29 @@ void Game::SetupWorld() {
 	Attack* solarflare = new Attack("SOLAR FLARE", "heightened its radiance to a blinding extent", false, 18, 0, 0, 1, 1, 999);
 	solarflare->focushits = false;
 	solarflare->addEffect(blinded); //defined in graham's nat 3
+	solarflare->hpmin = 0.35;
 	lavaguardian->addSpecialAttack(solarflare);
-	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation upon", false, 25, 10, 100, 1, 1, 3);
-	lavaguardian->addSpecialAttack(gammarayburst);
+	Attack* heatwave = new Attack("HEAT WAVE", "washed intense heat over the team", false, 18, 0, 0, 1, 1, 999);
+	heatwave->focushits = false;
+	heatwave->addEffect(extrafire);
+	heatwave->hpmax = 0.35; //heat wave replaces solar flare because solar flare would be extra annoying at this point, whereas heat wave pressures you to finish the fight quickly since you're almost at the end (unlikely to be used at this point but like theoretically)
+	lavaguardian->addSpecialAttack(heatwave);
+	Attack* gammarayburst = new Attack("GAMMA RAY BURST", "unleashed a burst of gamma radiation", false, 0, 6, 100, 1, 1, 999);
+	gammarayburst->focushits = false;
+	Effect* burstopen = new Effect("BURST OPEN", 2147483647, 0, 0, 1, 0.25);
+	Effect* irradiated = new Effect("IRRADIATED", 2147483647);
+	irradiated->damagebuff = 2.0;
+	gammarayburst->addEffect(irradiated);
+	gammarayburst->selfeffect = burstopen;
+	lavaguardian->stageAttack(0.35, gammarayburst);
 
 	NPC* newtab = new NPC("", "NEW TAB", "Internet tabs who loyally serve their internet browser masters.", limbo, 0, Stats(10, 10, 10, 10, 10, 10, 9));
-	Attack* askew = new Attack("ASKEW", "hit", true, -5, 10, 0, 1, 1, 1);
+	Attack* askew = new Attack("ASKEW", "hit", true, -5, 4, 0, 1, 1, 1);
 	askew->afterdesc = " askew";
 	Effect* offbalance = new Effect("OFF BALANCE", 1, 0, 0, 0.8);
 	askew->addEffect(offbalance);
 	newtab->setBasicAttack(askew);
-	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 10, 0, 4, 5, 1);
+	Attack* doabarrelroll = new Attack("DO A BARREL ROLL", "did a barrel roll at", true, 5, 2, 0, 4, 5, 1);
 	newtab->addSpecialAttack(doabarrelroll);
 	Attack* adblock = new Attack("ADBLOCK", "is blocking attacks thrown at", false, 10, 0, 0, 1, 1, 1, true, 10);
 	adblock->protect = true;
@@ -4255,12 +4267,12 @@ void Game::SetupWorld() {
 
 	NPC* browser = new NPC("EVIL KING", "BROWSER", "Giant spiked internet browser with cool red hair and a penchant for kidnapping princesses.", limbo, 0, Stats(410, 20, 14, 30, 10, 20, 9), Stats(1, 0, 1, 1, 1, 0, 0));
 	browser->setBoss(true);
-	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 4, 10, 1, 1, 1); //made of fine chromium
+	Attack* medge = new Attack("MICROSOFT EDGE", "sliced", true, -5, 3, 10, 1, 1, 1); //made of fine chromium
 	medge->afterdesc = " with his MICROSOFT EDGE";
 	browser->setBasicAttack(medge);
 	Attack* gsearch = new Attack("GOOGLE SEARCH", "googled", false, 5, 0, 0, 1, 1, 1);
 	gsearch->afterdesc = "'s weaknesses";
-	Effect* searched = new Effect("SEARCHED", 5, 0, 0, 1, 0.5);
+	Effect* searched = new Effect("RESEARCHED", 5, 0, 0, 1, 0.5);
 	gsearch->addEffect(searched);
 	browser->addSpecialAttack(gsearch);
 	Attack* opennewtab = new Attack("OPEN NEW TABS", "opened some new tabs", false, 8, 0, 0, 0, 0, 0);
@@ -4268,24 +4280,25 @@ void Game::SetupWorld() {
 	opennewtab->summon = newtab;
 	opennewtab->summonamount = 2;
 	browser->addSpecialAttack(opennewtab);
-	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 3, 10, 6, 6, 1);
+	Attack* yahoo = new Attack("YAHOO!", "went crazy", true, 7, 2, 5, 6, 6, 1);
 	yahoo->focushits = false;
 	browser->addSpecialAttack(yahoo);
 	Attack* iexplorer = new Attack("INTERNET EXPLORER", "is buffering a powerful blast towards", false, 12, 0, 0, 1, 1, 1);
-	Effect* buffering = new Effect("BUFFERING", 2);
-	buffering->falldamage = 40;
+	Effect* buffering = new Effect("BUFFERING", 3);
+	buffering->falldamage = 30;
 	iexplorer->addEffect(buffering);
 	browser->addSpecialAttack(iexplorer);
-	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 20, 30, 3, 3, 3);
-	Effect* foxfire = new Effect("FOX FIRE", 5, 10, 0, 1, 0.5);
+	Attack* firefox = new Attack("FIREFOX", "breathed fire upon", false, 14, 5, 20, 1, 1, 3);
+	Effect* foxfire = new Effect("FOX FIRE", 3, 7);
 	firefox->addEffect(foxfire);
 	browser->addSpecialAttack(firefox);
 	plum->setDialogue({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 	castlethrone->setWelcome({{plum, "AHHHHHHHHHH HELP ME I'VE BEEN KIDNAPPED!"}, {browser, "GWAHAHAHAHAHA!"}});
 	
 	NPC* snowman = new NPC("", "SNOWMAN", "A really snowy humanoid who is very intent on beating you up.", limbo, 0, Stats(1, 1, 1, 1, 1, 1, 9), Stats(0, 0, 0, 0, 0, 0, 1));
-	Attack* oopsy = new Attack("SNOW BASH", "tripped", false, 50, 15, 0, 1, 1, 1, true);
+	Attack* oopsy = new Attack("SNOW BASH", "tripped", false, -5, 15, 0, 1, 1, 1, true);
 	oopsy->focushits = false;
+	oopsy->targetself = true;
 	Attack* snowbash = new Attack("SNOW BASH", "socked", true, 1, 300, 0, 1, 1, 1); //if he's high level enough he doesn't die instantly! so maybe he can be interesting in the simulator
 	snowbash->afterdesc = "snowily";
 	Effect* frozed = new Effect("FROZEN", 5);
@@ -4436,14 +4449,14 @@ void Game::SetupWorld() {
 	tailwind->addEffect(tailwinded);
 	Attack* thingfling = new Attack("THING FLING", "flung around random debris", false, -5, 20, 0, 3, 5, 1);
 	thingfling->focushits = false;
-	Attack* updraft = new Attack("UPDRAFT", "sucked", false, 6, 0, 0, 1, 1, 1);
+	Attack* updraft = new Attack("UPDRAFT", "sucked", false, 10, 0, 0, 1, 1, 1);
 	updraft->afterdesc = " into its updraft";
 	Effect* updrafted = new Effect("UPDRAFTED", 2);
 	updrafted->remove = true;
 	updrafted->falldamage = 40;
 	updraft->addEffect(updrafted);
-	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 4, 30, 0, 1, 1, 999);
-	Attack* supercell = new Attack("SUPERCELL", "called down another", false, 12, 0, 0, 0, 0, 0);
+	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 15, 30, 0, 1, 1, 999);
+	Attack* supercell = new Attack("SUPERCELL", "called down another", false, 30, 0, 0, 1, 1, 1);
 	supercell->afterdesc = " from a supercell";
 	supercell->copyamount = 1; //duplicates itself to match the health so you don't have to fight another natural disaster all over again
 	supercell->targetself = true;
@@ -4738,7 +4751,7 @@ void Game::SetupWorld() {
 	recruit1->donotplayer = true;
 	recruit1->ignoreeffect = outthespotlight; //don't tempt npcs out of the spotlight, because that might lead to situations where it's optimal to keep the spotlight which is counter-thematic
 	recruit1->redundanteffect = false; //reapplying this would be counterproductive since it lasts forever if ignored
-	recruit1->hpthreshold = 0.9; //he just shows off for the first few turns to have a basis to call himself "better" on
+	recruit1->hpmin = 0.9; //he just shows off for the first few turns to have a basis to call himself "better" on
 	recruit1->addEffect(pride);
 	recruit1->cancels = {outthespotlight}; //get rid of the spotlight debuff since they're on sense of self's team now
 	Attack* recruit2 = new Attack(*recruit1);
@@ -4870,7 +4883,7 @@ void Game::SetupWorld() {
 	ballofpain->addEffect(pain);
 	thedark->addSpecialAttack(ballofpain);
 	Attack* terror = new Attack("TERROR", "showed its face to", false, 7, 0, 0, 1, 1, 1); //the main mechanic of the fight; the player has to deal with unfreezing their teammates
-	terror->hpthreshold = 0.8; //the dark must be below 80% health to start inflicting despair, to introduce the normal attacks before the main mechanic
+	terror->hpmax = 0.8; //the dark must be below 80% health to start inflicting despair, to introduce the normal attacks before the main mechanic
 	Effect* despair = new Effect("DESPAIR", 2147483647);
 	despair->freeze = true;
 	terror->addEffect(despair);
@@ -4954,7 +4967,7 @@ void Game::SetupWorld() {
 	burnyburn->addEffect(onfire);
 	Attack* scorchyscorch = new Attack("SCORCHY SCORCH", "scorched", false, 0, 0, 0, 1, 1, 1);
 	scorchyscorch->addEffect(extrafire);
-	Effect* superfire = new Effect("SUPER ON FIRE", 3, 15, 0, 1, 0.4);
+	Effect* superfire = new Effect("SUPER ON FIRE", 3, 15);
 	Attack* incinerateyincinerate = new Attack("INCINERATEY INCINERATE", "incinerated", false, 0, 0, 0, 1, 1, 1);
 	incinerateyincinerate->addEffect(superfire);
 	Attack* firefight = new Attack("FIREFIGHT", "fought", true, -5, 3, 6, 3, 3, 1);
@@ -5600,7 +5613,7 @@ void Game::SetupWorld() {
 	drainguard->guardItem(masterswitch);
 	
 	NPC* lavaguard = new NPC(*lavaguardian);
-	lavaguard->setLeader(true, 16, bridge3, false);
+	lavaguard->setLeader(true, 15, bridge3, false);
 	lavaguard->blockExit(NORTH, ENEMY, "blocked by the LAVA GUARDIAN.");
 	lavaguard->setDialogue("*ethereal breathing*");
 	lavaguard->addRejectionDialogue({{self, "Hey you wanna join me on my BURGER QUEST?"}, {lavaguardian, "*ethereal breathing*"}, {self, "..."}});
@@ -5701,7 +5714,7 @@ void Game::SetupWorld() {
 	mainguard->addRejectionDialogue("Nah stealing's all I do! >:D");
 
 	NPC* mainguard2 = new NPC(*bagelfenagler);
-	mainguard2->setLeader(true, 16, mainstreet4);
+	mainguard2->setLeader(true, 15, mainstreet4);
 	mainguard2->setParty({axeman});
 	mainguard2->blockExit(NORTH, ENEMY, "guarded by the BAGEL FENAGLER.", true);
 	mainguard2->setDialogue("Uhhhhhhhh huhhh huh huuuuuhhhhhh... :)");
@@ -7576,11 +7589,11 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 		NPC* player = self;
 		vector<Attack*> attacks = edu->getAttacks(); //get all the item's attacks to add them to the player's vector of attacks
 		vector<Attack*> futureattacks;
-		for (Attack* attack : attacks) { //move all currently unusable attacks to the future attacks vector
-			if (attack->minLevel > player->getLevel()) {
-				futureattacks.push_back(attack);
-				attacks.erase(remove(attacks.begin(), attacks.end(), attack), attacks.end());
-			}
+		for (size_t i = 0; i < attacks.size();) { //move all currently unusable attacks to the future attacks vector
+			if (attacks[i]->minLevel > player->getLevel()) {
+				futureattacks.push_back(attacks[i]);
+				attacks.erase(attacks.begin() + i); //remove it because it was usable
+			} else i++; //only advance if we don't delete anything
 		}
 		size_t amount = attacks.size(); //get this so we can easily check if we shouldn't CinPause() at the end
 		for (size_t i = 0; i < amount; i++) { //add and describe all the new attacks we learned
@@ -7588,7 +7601,7 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 			player->addSpecialAttack(attack);
 			//print the description and name of any attacks we have just learned
 			cout << "\n" << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
-			if (i < amount) CinPause(); //do not print the final pause cause then the > looks bad
+			if (i < amount-1) CinPause(); //do not print the final pause cause then the > looks bad
 		}
 		for (Attack* attack : futureattacks) player->addSpecialAttack(attack); //add all the remaining attacks to the pool for use in the future but do not announce them
 		if (attacks.empty()) { //prints motivational message if none of these attacks are usable yet

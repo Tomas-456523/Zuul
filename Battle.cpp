@@ -97,7 +97,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 //creates a new npc and adds it to the battle MARK: add npc
 NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	NPC* newguy = new NPC(*npc);
-	newguy->setEnemy(npc->getEnemy()^altteam); //make sure it is on the right side
+	if (summoner) newguy->setEnemy(summoner->getEnemy()^altteam); //make sure it is on the right side
 	vector<NPC*>* team = (newguy->getEnemy() ? &enemyTeam : &playerTeam); //gets which side the enemy is on
 	team->push_back(newguy); //set the teams before setting the name since numberNPC assumes the npc is in the team
 	everyone.push_back(newguy);
@@ -371,6 +371,11 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	}
 	if (attack->statchip) { //if this is a stat chipping attack we do that
 		reciever->chipStats(attack->statchip);
+	}
+	if (attack->take) { //take away the reciever for taking attacks
+		attacker->setTaking(reciever);
+		cout << "\n" << reciever->getName() << " was taken from the battlefield!";
+		CinPause();
 	} //do not recoil against beneficial attacks because that would be silly, and only if it does damage
 	if (!attack->getBeneficial() && attack->power && reciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
 		Attack* recoilatt = reciever->getRecoilAttack(attack->contact);
@@ -864,7 +869,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 
 		//if no target was given in the string and there's only one possible target, we of course just target that guy
 		//target == NULL if this if statement runs, because I don't remember naming anybody ""
-		if (!strcmp(commandExtensionP, "") && aliveCount(tarteam) == 1) {
+		if ((!attack->targets || !attack->focushits) && !strcmp(commandExtensionP, "") && aliveCount(tarteam) == 1) { //don't find a target if the attack doesn't need targets
 			for (NPC* npc : tarteam) { //find the guy who still has health and isn't a dummy
 				if (npc->getHealth() && (npc->getBasicAttack() || npc->getSpecialAttacks().size())) {
 					target = npc;
@@ -902,7 +907,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 				}
 			}
 			if ((!attack->targets || !attack->focushits) && target) { //clarify to the player how the 0-target move works
-				cout << attack->name << " doesn't need a target!";
+				cout << "\n" << attack->name << " doesn't need a target!";
 				return false;
 			}
 			if (plr->getSP() < Round(attack->cost*plr->getSPUseMultiplier())) { //we don't launch the attack if we don't have enough sp
@@ -1021,6 +1026,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->donotself && target == npc) continue; //don't target yourself if you shouldn't do that with this attack
 		if (attack->appliedeffect && donteffect[attack->appliedeffect].count(target->getParent())) continue; //don't target this target with this affecting attack if we've marked it to not affect this npc with this effect
 		if (attack->ignoreeffect && target->getEffect(attack->ignoreeffect, true)) continue; //the attack doesn't target npcs with this effect
+		if (attack->getBeneficial() && !target->getBasicAttack() && target->getSpecialAttacks().empty()) continue; //don't help dummy npcs because it's wasting a turn
 		if (attack->protect) { //protect attacks have various conditions
 			if (target == npc) continue; //don't protect yourself because that would be wasting SP to do literally nothing (you're already taking your hits for yourself)
 			if (npc->getGuarding() && npc->getGuarding()->getHealth() > 0) continue; //no guarding moves if we're already guarding someone still capacitated (don't switch person being guarded, that would be like "oh lol nope yeah I'm actually not defending you anymore have fun")
@@ -1113,7 +1119,10 @@ Attack* Battle::chooseAttack(NPC* npc) {
 		if (_attack->minLevel > npc->getLevel()) { //if the npc isn't experienced enough to use the move, we don't count it
 			continue;
 		}
-		if (_attack->hpthreshold * npc->getHealthMax() > npc->getHealth()) { //if the npc isn't damaged enough to use the attack, we don't use it
+		if (_attack->hpmax * npc->getHealthMax() < npc->getHealth()) { //if the npc isn't damaged enough to use the attack, we don't use it
+			continue;
+		}
+		if (_attack->hpmin * npc->getHealthMax() > npc->getHealth()) { //if the npc is too damaged to use the attack, we don't use it
 			continue;
 		}
 		if (npc->getBeneficialBlocker() && _attack->getBeneficial()) { //npcs don't use beneficial attacks if they're being blocked from that (non-players don't have beneficial unblocking moves)
