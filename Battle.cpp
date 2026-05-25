@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/22/26
+*  5/23/26
 *  This is the implementation file for battles, which controls combat with teammates against enemies
 *
 *  Battles are created using the constructor, where you must pass the enemy and player teams. All NPCs involved
@@ -42,14 +42,8 @@ Battle::Battle(vector<NPC*>* _playerTeam, vector<NPC*>* _enemyTeam, vector<Item*
 	
 	setupWave(true, 0, false); //set up the player and enemy teams with the 0th (1st) wave, don't scale player team
 	setupWave(false, 0, scaleenemies); //we scale the enemies by default since the world fights do that
-
-	if (enemyTeam[0]->getMasked()) { //set to hidden values if the enemy leader was masked
-		enemyTeam[0]->setTitle(enemyTeam[0]->getHiddenTitle());
-		enemyTeam[0]->setName(enemyTeam[0]->getHiddenName());
-		enemyTeam[0]->setDescription(enemyTeam[0]->getHiddenDescription());
-	}
 }
-//resets or just sets the given party according to the given wave number the new wave npcs
+//resets or just sets the given party according to the given wave number the new wave npcs MARK: set up wave
 void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	vector<NPC*>& team = (pteam ? playerTeam : enemyTeam); //gets the affected team
 	NPC* worldleader = (pteam ? player : enemy); //gets the team leader (in the world)
@@ -65,6 +59,11 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	//we copy the npcs so I don't have to reset them later and also there's can be multiple of the same npc
 	for (NPC* _npc : *worldleader->getParty(wave)) { //copy all the npcs from the new wave to their corresponding party
 		NPC* npc = new NPC(*_npc);
+		if (npc->getMasked()) { //set to the hidden values if the npc was masked, because they're not masked in battle
+			npc->setTitle(npc->getHiddenTitle());
+			npc->setName(npc->getHiddenName());
+			npc->setDescription(npc->getHiddenDescription());
+		}
 		npc->setEnemy(worldleader->getEnemy()); //make eneminess match the leader
 		team.push_back(npc);
 		numberNPC(npc, team); //de-duplicate the npc names (for example, if there's three BOBs, it renames them to BOB, BOB 2, and BOB 3);
@@ -88,7 +87,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 
 	//give the enemies xp corresponding with the enemy's level, in order to scale them to that level
 	//sets the enemy level to the enemy leader, which should be the first one in the party since they put themselves in their own party when set to a leader
-	int teamlevel = team[0]->getLevel();
+	int teamlevel = worldleader->getLevel();
 	for (NPC* npc : team) { //sets every enemy to the found level and sets them to be an enemy
 		npc->setLevel(teamlevel);
 		buildReward(npc, false); //add their reward to the battle reward
@@ -229,14 +228,17 @@ void Battle::handleKnockout(NPC* npc) {
 
 	//also if there is only one npc left on this team we make sure they're not taken
 	if (aliveCount(npc->getEnemy() ? enemyTeam : playerTeam) == 1) {
-		for (NPC* enemy : (npc->getEnemy() ? playerTeam : enemyTeam)) npc->setTaking(NULL);
+		for (NPC* enemy : (npc->getEnemy() ? playerTeam : enemyTeam)) enemy->setTaking(NULL);
 	}
 
-	//remove bond effects from the parent
-	if (npc->getOpener() && npc->getOpener()->appliedeffect && npc->getOpener()->appliedeffect->bond) {
-		NPC* leader = (!npc->getSummoner() ? (npc->getEnemy() ? enemyTeam : playerTeam)[0] : npc->getSummoner());
-		detatchEffect(leader->removeEffect(npc->getOpener()->appliedeffect, npc));
-		if (leader->popKO()) handleKnockout(leader); //handle ko stuff if the leader was just incapacitated due to fall damage
+	for (NPC* one : everyone) { //remove bond effects from everyone since the npc was incapacited
+		for (Effect* effect : one->getEffects()) {
+			NPCEffect* neffect = one->getEffect(effect, true);
+			if (neffect && effect->bond && neffect->affectors.count(npc)) {
+				detatchEffect(one->removeEffect(effect, npc));
+				if (one->popKO()) handleKnockout(one); //handle ko stuff if the guy was just incapacitated due to fall damage
+			}
+		}
 	}
 
 	if (trackNPC(npc)) incapacitations[npc->getParent()]++; //track that the npc got ko'd if we track them
@@ -276,6 +278,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if (reciever->getEffect(effect, true)) {
 			attackProcessing *=  1.5;
 			cout << "\nThe attack synergized with " << reciever->getName() << "'s " << effect->name << "!";
+			synergized = true;
 		}
 		if (synergized) CinPause(); //final pause
 	}
@@ -320,7 +323,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			CinPause();
 		}
 		if (reciever->getInvincible() && attack->power > 0) {
-			cout << reciever->getName() << " brushed it off!"; //says they weren't affected cause they're invincible
+			cout << "\n" << reciever->getName() << " brushed it off due to their invincibility!"; //says they weren't affected cause they're invincible
 			CinPause();
 		}
 		if (reciever->getTrackRage() && attacker->getWrath()) { //track rage from the damage if this enemy tracks rage and the player is wrathful
@@ -476,6 +479,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	cout << "\n" << attacker->getName() << " " << attack->description;
 	if (attack->focushits) cout << " " << target->getName() << attack->afterdesc; //prints the target unless it's not focused on a specific target
 	cout << "!"; //punctuate the description!
+	CinPause();
+
 	vector<NPC*> tarparty; //gets which party is being targeted based on if the target is an enemy or not
 	if (target->getEnemy()) {
 		tarparty = enemyTeam;
@@ -492,10 +497,9 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	}
 	//says if we hit multiple targets
 	if (attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
-		CinPause();
 		cout << "\n" << target->getName() << "'s surrounding teammates were also affected!";
+		CinPause();
 	}
-	CinPause();
 	if (attack->nonspecificeffect) attack->specifictarget = target; //track the target so we can compare it later if the attack has a non-specific effect (non-specific instead of specific so you can't parry the attack with this which "benefits" the player)
 	if (attack->focushits) { //normal moves which focus damage on one target
 		//gets the position of the target in the team vector
@@ -561,7 +565,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 void Battle::checkOpeners(const vector<NPC*>& checks) {
 	for (NPC* npc : checks) {
 		if (npc->getOpener()) {
-			npcTurn(npc); //do the turn for the npc (who will choose the opener)
+			npcTurn(npc, true); //do the turn for the npc (who will choose the opener)
 			npc->setOpener(NULL); //only do opener once
 		}
 	}
@@ -770,6 +774,9 @@ void Battle::printTeam(vector<NPC*>& team, bool printLevel, bool printSP, bool p
 		} //prints the level of the npc
 		if (printLevel) {
 			cout << " - LEVEL " << npc->getLevel();
+		} //give a way to easily tell if they're away because I wasn't paying attention and it was annoying suddenly realizing I wasted like 1-2 whole seconds trying to hit someone who wasn't actually there
+		if (npc->getAway()) {
+			cout << " (away)";
 		}
 	}
 }
@@ -869,7 +876,7 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 
 		//if no target was given in the string and there's only one possible target, we of course just target that guy
 		//target == NULL if this if statement runs, because I don't remember naming anybody ""
-		if ((!attack->targets || !attack->focushits) && !strcmp(commandExtensionP, "") && aliveCount(tarteam) == 1) { //don't find a target if the attack doesn't need targets
+		if (attack && (attack->targets && attack->focushits) && !strcmp(commandExtensionP, "") && aliveCount(tarteam) == 1) { //don't find a target if the attack doesn't need targets
 			for (NPC* npc : tarteam) { //find the guy who still has health and isn't a dummy
 				if (npc->getHealth() && (npc->getBasicAttack() || npc->getSpecialAttacks().size())) {
 					target = npc;
@@ -878,7 +885,8 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 			}
 		}
 
-		if (attack && (target || !attack->targets)) { //if we found a valid attack and target for that attack (unless the attack doesn't use targets), we (try to) launch it!
+		if (attack && (target || (!attack->targets || !attack->focushits))) { //if we found a valid attack and target for that attack (unless the attack doesn't use targets), we (try to) launch it!
+			if (!target) target = plr; //assume the player is targeting themselves for no-target attacks
 			if (target->getHealth() <= 0 && !attack->targetFainted) { //if trying to hit incapacitated npc
 				cout << "\n" << commandExtensionP << " is incapacitated";
 				if (attack->getBeneficial()) cout << "! " << attack->name << " won't have any effect!"; //different text based on if trying to help or attack the incapacitated target
@@ -1147,9 +1155,10 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 		return; //don't do the regular npc turn process
 	}
 
-	//get the attack to do! defaults to opener if this is an opening turn
-	Attack* attack = (opener ? npc->getOpener() : NULL);
-	if (Attack* staged = npc->getStaged()) attack = staged; //if the npc has any attacks staged, use that one
+	//get the attack to do!
+	Attack* attack = NULL;
+	if (opener) attack = npc->getOpener(); //defaults to opener if this is an opening turn
+	else if (Attack* staged = npc->getStaged()) attack = staged; //if the npc has any attacks staged, use that one
 	else attack = chooseAttack(npc); //just choose an attack normally if we don't have any of those special conditions
 	
 	vector<NPC*> targets = getTargets(npc, attack); //try to find the targets for the attack
@@ -1188,7 +1197,7 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 		WorldState[RECOILED] = true;
 	}
 }
-//prints text for starting a new wave or the battle as a whole
+//prints text for starting a new wave or the battle as a whole MARK: print matchup
 void Battle::printVersus(size_t wave) { //shows everyone involved in the battle plus flavor text
 	if (!wave) cout << "\nBATTLE BEGIN!"; //first wave is just the starting text
 	else cout << "\nWAVE " << wave << "!"; //otherwise print which wave it is
@@ -1258,11 +1267,13 @@ int Battle::FIGHT() {
 			if (++pwave < player->getWaves()) { //also checks each team for if they have more waves
 				setupWave(true, pwave, false);
 				newwave = true;
+				printVersus(pwave+1); //print the new wave text
 			} else return 0; //lose
 		} else if (aliveCount(enemyTeam) <= 0) {
 			if (++ewave < enemy->getWaves()) {
 				setupWave(false, ewave, scaleEnemies);
 				newwave = true;
+				printVersus(ewave+1); //print the new wave text
 			} else return 1; //win
 		}
 

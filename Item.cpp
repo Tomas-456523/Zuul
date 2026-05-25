@@ -261,20 +261,16 @@ MaterialItem::MaterialItem(const char* _name, const char* _description, Room* _r
 }
 
 //BURGER items, for the bad/lame ending
-BURGERItem::BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, const Conversation& _confirmText, const Conversation& _hintText) : Item(_name, _description, _room, true, false) { //not consumable because it ends the game
+BURGERItem::BURGERItem(const char* _name, const char* _description, Room* _room, const Conversation& _useText, const Conversation& _confirmText) : Item(_name, _description, _room, true, false) { //not consumable because it ends the game
 	type = "BURGER"; //sets the type
 	useText = _useText;
 	confirmText = _confirmText;
-	hintText = _hintText;
 }
 const Conversation& BURGERItem::getUseText() const {
 	return useText;
 }
 const Conversation& BURGERItem::getConfirmText() const {
 	return confirmText;
-}
-const Conversation& BURGERItem::getHintText() const {
-	return hintText;
 }
 Item* BURGERItem::Duplicate() { //returns a new BURGER item as an Item*
 	return new BURGERItem(*this);
@@ -369,7 +365,7 @@ void HoseItem::setStationBlock(const char* message) {
 	stationblock = message;
 }
 void HoseItem::addDropBlock(Room* droproom, Room* blocked, const char* direction, const char* blocktype, const char* reason) { //block this exit when dropped in the first room
-	dropblocks.push_back(make_tuple(room, blocked, direction, blocktype, reason));
+	dropblocks.push_back(make_tuple(droproom, blocked, direction, blocktype, reason));
 }
 const char* HoseItem::getBlocked(Room* currentroom, const char* direction) { //check if this hose is blocking going in this direction from this room, return why if so
 	for (tuple<Room*, const char*, const char*, const char*>& blocker : blockers) {

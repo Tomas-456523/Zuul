@@ -764,6 +764,7 @@ void NPC::levelUp(bool trackLevelUp, int instant) { //we can optionally instantl
 		level = instant; //set the level
 	} else { //normally go up one single level
 		statsup = Stats::makeLvlStats(level, id) + scale; //deterministically determine the stats we just got from the level up, plus the baseline stat scale
+		if (statsup.spmax + stats.spmax > 30) statsup.spmax = 30-stats.spmax; //the max sp is 30 because otherwise they have too much sp in high-level fights
 		level++; //increments the level
 	}
 	if (trackLevelUp) statChangesSum += statsup; //track unprinted stat changes so we can print them later
@@ -849,6 +850,7 @@ void NPC::setTaking(NPC* npc) {
 	if (taking) { //untake the old taking
 		taking->setAway(false);
 		cout << "\n" << taking->getName() << " was freed!";
+		CinPause();
 	}
 	taking = npc; //set new taking
 	if (taking) taking->setAway(true); //make new taking be set to away
@@ -929,7 +931,7 @@ void NPC::printDamage(int damage, const char* status) { //prints the damage the 
 	if (damage && status != NULL) { //prints the status that caused it
 		cout << " due to " << status;
 	}
-	if (damage) cout << "!";
+	cout << "!";
 	cout << "\n" << name << " now has " << health << "/" << stats.hpmax << " HP."; //prints how much health it now has
 }
 void NPC::printEffects() { //prints the effects this npc has

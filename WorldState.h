@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/15/26
+*  5/23/26
 *  This header file is an extension of the Helper namespace, but it's in a seperate file due to 
 *  circular dependency with Conversation.h.
 *  
@@ -43,7 +43,6 @@ namespace Helper {
 		GOTPLOTDEVICE,
 		BURGERMANDEF,
 		BURGERMENDEF,
-		POSTGAME,
 		GAMEEND, //when the player reaches an ending, this is not carried over when loading saves
 		NEVER //this is a sentinel; never set never to true
 	};

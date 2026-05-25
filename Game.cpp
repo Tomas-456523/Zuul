@@ -114,7 +114,6 @@ void Game::SetupWorld() {
 	//set up blockage reaons MARK: blockage reasons
 	const char* ENEMY = "ENEMY";
 	const char* CHASM = "CHASM";
-	const char* RIVER = "RIVER";
 	const char* TEMPLE = "TEMPLE";
 	const char* RUBBLE = "RUBBLE";
 	const char* TUNNEL = "TUNNEL";
@@ -632,7 +631,7 @@ void Game::SetupWorld() {
 	pinned->freeze = true;
 	pacupunctuken->addEffect(pinned);
 	pacupunctuken->addDescription("Throw precise shurikens at the target's pressure points, rendering them immobile for three turns. (2 ATTACK, 15 PIERCE, 4 hits)");
-	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 18, 3, 20, 5, 5, 3);
+	Attack* pdeadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 18, 2, 20, 5, 5, 3);
 	pdeadlyspinferno->afterdesc = " in a flaming inferno";
 	Effect* onfire = new Effect("ON FIRE", 3, 5);
 	pdeadlyspinferno->addEffect(onfire);
@@ -1002,9 +1001,9 @@ void Game::SetupWorld() {
 	Attack* dualcacti = new Attack("DUAL CACTI", "threw two cactus bombs at", false, 12, 4, 15, 4, 4, 3, false, 16);
 	cacty->addSpecialAttack(dualcacti);
 	dualcacti->addDescription("Throw not just one, but TWO cactus bombs at the target, affecting their surroundings. (4 ATTACK, 15 PIERCE, 4 hits)");
-	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 30, 100, 1, 1, 1, false, 18);
+	Attack* superspine = new Attack("SUPER SPINE", "fired a huge spine at", false, 15, 25, 100, 1, 1, 1, false, 18);
 	cacty->addSpecialAttack(superspine);
-	superspine->addDescription("Fire one enormous spine at the target. (30 ATTACK, 100 PIERCE)");
+	superspine->addDescription("Fire one enormous spine at the target. (25 ATTACK, 100 PIERCE)");
 
 	//Master Chef Michelin is a healer/attacker hybrid MARK: Michelin
 	NPC* michelin = new NPC("MASTER CHEF", "MICHELIN", "Professional chef on a quest to discover new recipes.", factorykitchen, 15, Stats(22, 5, 20, 0, 20, 12, 9), Stats(0, 0, 1, 0, 1, 0, 0));
@@ -1694,6 +1693,10 @@ void Game::SetupWorld() {
 										{burgcustomer, "but I just got one."},
 										{burgcustomer, "I just kind of want to go home."}});
 
+	WorldChange charlygoeshome;
+	charlygoeshome.defeatRooms.push({burgcustomer, limbo});
+	BURGERRESTAURANT->setEnterChanges(charlygoeshome); //Charly goes home after you get to the restaurant, because he doesn't have anything else to do there
+
 	Item* cloakingdevice = new WorldChangeItem("CLOAKING DEVICE", "Specialized cloaking device for getting past advanced security systems.", limbo, {{NULL, "You equipped the CLOAKING DEVICE."}, {NULL, "No security system can spot you now!"}});
 	cloakingdevice->setTakable(true);
 	WorldChange& cloakingchange = ((WorldChangeItem*)cloakingdevice)->getChanges();
@@ -1828,6 +1831,7 @@ void Game::SetupWorld() {
 							{matilda, "Besides, I haven't any fighting ability like you."},
 							{matilda, "Safe travels!"}}));
 	matrej4->alt = matrej5;
+	matilda->addRejectionDialogue(matrej1);
 
 	Item* jillydrawing = new MaterialItem("JILLY'S DRAWING", "A masterfully crafted crayon drawing depicting when you found Jilly.", limbo);
 
@@ -1880,13 +1884,13 @@ void Game::SetupWorld() {
 
 	Conversation burgabtconv = {{NULL, "You finally have your BURGER!"},
 								{NULL, "This is what you came for."},
-								{NULL, "Do you want to eat the BURGER?"}};
+								{NULL, "Do you want to eat the BURGER? (YES or NO)"}};
 	shared_ptr<Conversation> burgabtconv2 = make_shared<Conversation>(Conversation({{NULL, "You could keep saving Jilly."},
 								{NULL, "But isn't this BURGER what you really came for?"},
-								{NULL, "Do you want to eat the BURGER?"}}));
+								{NULL, "Do you want to eat the BURGER? (YES or NO)"}}));
 	shared_ptr<Conversation> burgabtconv3 = make_shared<Conversation>(Conversation({{NULL, "Well, you saved Jilly."},
 								{NULL, "But wasn't this BURGER what you really came for?"},
-								{NULL, "Do you want to eat the BURGER?"}}));
+								{NULL, "Do you want to eat the BURGER? (YES or NO)"}}));
 	shared_ptr<Conversation> burgabtconv4 = make_shared<Conversation>(Conversation({{NULL, "This BURGER is what you originally came for."},
 								{NULL, "You've since come to understand what it truly is."},
 								{NULL, "Do you really want to eat the BURGER?"}}));
@@ -1897,7 +1901,7 @@ void Game::SetupWorld() {
 	burgabtconv2->alt = burgabtconv3;
 	burgabtconv3->alt = burgabtconv4;
 
-	Conversation burgerconvo = {{NULL, "\nYou take a bite of the BURGER..."},
+	Conversation burgerconvo = {{NULL, "You take a bite of the BURGER..."},
 								{NULL, "Your BURGER QUEST has finally come to an end."},
 								{NULL, "..."},
 								{NULL, "..."},
@@ -1909,26 +1913,10 @@ void Game::SetupWorld() {
 								{NULL, "and the BURGER has hardened your heart."},
 								{NULL, "\n\t<<< BURGER QUEST COMPLETE? >>>"
 									   "\n\t<<<    ENDING ACHIEVED:    >>>"
-									   "\n\t<<<    CONSUMER MINDSET    >>>"},
-								{NULL, "\nWow what a lame and unfulfilling ending..."},
-								{NULL, "Maybe there's another path you could take..."}};
-
-	Conversation burghint = {{NULL, "Wow what a lame and unfulfilling ending..."},
-							 {NULL, "Maybe there's another path you could take?"}};
-	shared_ptr<Conversation> burghint2 = make_shared<Conversation>(Conversation({{NULL, "\nWow what a lame and unfulfilling ending..."},
-																				 {NULL, "Maybe you should focus on the task at hand..."}}));
-	shared_ptr<Conversation> burghint3 = make_shared<Conversation>(Conversation({{NULL, "\nWow what a lame and unfulfilling ending..."},
-																				 {NULL, "Maybe there's still another path you could take?"}}));
-	shared_ptr<Conversation> burghint4 = make_shared<Conversation>(Conversation({{NULL, "\nWow what a lame and unfulfilling ending..."},
-																				 {NULL, "Maybe you should focus on the task at hand..."}}));
-	burghint.skipcondition = {JILLYQUEST, TEMPLEQUEST};
-	burghint2->skipcondition = {JILLYSAVED, TEMPLEQUEST};
-	burghint3->skipcondition = {TEMPLEQUEST};
-	burghint.alt = burghint2;
-	burghint2->alt = burghint3;
-	burghint3->alt = burghint4;
+									   "\n\t<<<    CONSUMER MINDSET    >>>\n"},
+								{NULL, "Wow what a lame and unfulfilling ending..."}}; //the rest of the hint continues in the BURGER using sequence
 	
-	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo, burgabtconv, burghint);
+	Item* BURGER = new BURGERItem("BURGER", "It's a BURGER.", limbo, burgerconvo, burgabtconv);
 	Item* freeboiga = new BURGERItem(*(BURGERItem*)(BURGER));
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager and mascot of BURGERs. He has a BURGER for a head and a stick figure body.", BURGERRESTAURANT, 1000, Stats(600000, 6000, 3000, 6000, 3000, 6000, 9), Stats(3, 2, 1, 2, 1, 2, 0));
@@ -2156,7 +2144,7 @@ void Game::SetupWorld() {
 								 {NULL, "\nThe BURGER MAN punches through your head."},
 								 {NULL, "\n\t<<< BURGER QUEST COMPLETE T_T >>>"
 								        "\n\t<<<      ENDING ACHIEVED:     >>>"
-								        "\n\t<<<   YOU FORGOR THE DEVICE   >>>"}};
+								        "\n\t<<<   YOU FORGOR THE DEVICE   >>>\n"}};
 	shared_ptr<WorldChange> forgorchanges = make_shared<WorldChange>(); //to mark the game as ended and move the player outside the restaurant so they're not softlocked
 	forgorchanges->worldcon = GAMEEND;
 	forgorchanges->defeatRooms.push({self, elevatortop});
@@ -2209,7 +2197,7 @@ void Game::SetupWorld() {
 		 {NULL, "\n\t<<< BURGER QUEST COMPLETE? >>>"
 				"\n\t<<<     ENDING ACHIEVED:   >>>"
 				"\n\t<<<     PASSING KING OF    >>>"
-				"\n\t<<<     A PASSING WORLD    >>>"}},
+				"\n\t<<<     A PASSING WORLD    >>>\n"}},
 		{{NULL, "You press down on THE PLOT DEVICE's BIG RED BUTTON!"}, //option b, use the device (go to abyss for good ending)
 		 {NULL, "A bolt of lightning flies at the BURGER MAN from THE PLOT DEVICE's OUTPUT ANTENNA!"},
 		 {burgerman, ",,,"}, //comma elipsis isn't proper english but I think it's best at capturing what I was going for, like dramatically staring something down, but not in a cool confident way, but rather a "oh shoot" kind of way but not in a panicky oh shoot, but still a scared oh shoot, you know?
@@ -2262,7 +2250,7 @@ void Game::SetupWorld() {
 		 {NULL, "and meticulously connects them together."},
 		 {NULL, "..."},
 		 {NULL, "The components have been linked up!"},
-		 {NULL, "<<< THE PLOT DEVICE IS READY!!!! >>>"},
+		 {NULL, "\n<<< THE PLOT DEVICE IS READY!!!! >>>\n"},
 		 {burgerprisoner, "Well."},
 		 {burgerprisoner, "That wasn't so bad."},
 		 {burgerprisoner, "Here you go."},
@@ -2746,7 +2734,7 @@ void Game::SetupWorld() {
 		 {fr, "Then, on the third day, He resurrected from the dead,"},
 		 {fr, "and in doing so He defeated death and sin."},
 		 {fr, "So now, through His sacrifice and resurrection,"},
-		 {fr, "all who believe in Him and follow Him through His grace get to share in His victory,"},
+		 {fr, "all who believe in Him and follow Him, through His grace, get to share in His victory,"},
 		 {fr, "and will have eternal life with Him in Heaven."},
 		 //{self, "I see."},
 		 {fr, "Well, thanks for hearing me out."},
@@ -3891,7 +3879,7 @@ void Game::SetupWorld() {
 	acupunctuken->afterdesc = " with precise shurikens";
 	acupunctuken->addEffect(pinned);
 	ninjachief->addSpecialAttack(acupunctuken);
-	Attack* deadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", false, 15, 1, 20, 5, 5, 3);
+	Attack* deadlyspinferno = new Attack("DEADLY SPINFERNO", "flew at", true, 15, 1, 20, 5, 5, 3);
 	deadlyspinferno->afterdesc = " in a flaming inferno";
 	deadlyspinferno->addEffect(onfire);
 	ninjachief->addSpecialAttack(deadlyspinferno);
@@ -4052,6 +4040,7 @@ void Game::SetupWorld() {
 	Attack* suspend = new Attack("SUSPEND", "suspended", false, 7, 0, 0, 1, 1, 1);
 	suspend->afterdesc = " in the air";
 	suspended->freeze = true;
+	suspended->bond = true;
 	suspend->addEffect(suspended);
 	tkviola->addSpecialAttack(suspend);
 	Attack* gutpunch = new Attack("GUT PUNCH", "delivered a telekinetic punch to",false,  12, 8, 20, 1, 1, 1, false, 13);
@@ -4064,11 +4053,13 @@ void Game::SetupWorld() {
 	Attack* forcefield = new Attack("FORCE FIELD", "created an outwards force around", false, 15, 0, 0, 1, 1, 999, true, 17);
 	forcefield->addDescription("Create an outwards force around the team, doubling defense.");
 	Effect* forcefielded = new Effect("FORCE FIELD", 3, 0, 0, 1, 2);
+	forcefielded->bond = true;
 	forcefield->addEffect(forcefielded);
 	tkviola->addSpecialAttack(forcefield);
 	Attack* intensegravity = new Attack("INTENSE GRAVITY", "intensified gravity around", false, 15, 0, 0, 1, 1, 21, false, 20);
 	intensegravity->addDescription("Intensify gravity around the enemy team, halving their defense.");
 	Effect* intensegravitied = new Effect("INTENSE GRAVITY", 3, 0, 0, 1, 0.5);
+	intensegravitied->bond = true;
 	intensegravity->addEffect(intensegravitied);
 	tkviola->addSpecialAttack(intensegravity);
 	Attack* blackhole = new Attack("BLACK HOLE", "formed a black hole at", false, 25, 17, 30, 1, 1, 21, false, 25);
@@ -4325,17 +4316,17 @@ void Game::SetupWorld() {
 	filialinstinct->prioritizeleader = true;
 	mcbond->stacks = true;
 	hatchling->setOpener(filialinstinct);
-	Attack* nip = new Attack("NIP", "tried its best to bite", true, 0, 7, 1, 1, 1, 1); //1 pierce cause tiny baby teeth
+	Attack* nip = new Attack("NIP", "tried its best to bite", true, 0, 5, 1, 1, 1, 1); //1 pierce cause tiny baby teeth
 	hatchling->setBasicAttack(nip);
 
-	NPC* bewlizard = new NPC("", "BLUE EYES WHITE LIZARD", "Legendary white lizard with blue eyes. It's known to multiply very quickly.", limbo, 0, Stats(400, 17, 24, 10, 14, 24, 24));
+	NPC* bewlizard = new NPC("", "BLUE EYES WHITE LIZARD", "Legendary white lizard with blue eyes. It's known to multiply very quickly.", limbo, 0, Stats(400, 17, 14, 10, 14, 24, 24));
 	bewlizard->setBoss(true);
-	Attack* popbomb = new Attack("POPULATION BOMB", "pooped some eggs at the team", false, -5, 20, 0, 2, 2, 1);
+	Attack* popbomb = new Attack("POPULATION BOMB", "pooped some eggs at the team", false, -5, 5, 0, 2, 2, 1);
 	popbomb->focushits = false;
 	popbomb->summon = hatchling;
 	popbomb->summonamount = 2;
 	bewlizard->setBasicAttack(popbomb);
-	Attack* bsod = new Attack("BURST STREAM OF DESTRUCTION", "fired a stream of destruction at", false, 25, 30, 50, 1, 1, 3);
+	Attack* bsod = new Attack("BURST STREAM OF DESTRUCTION", "fired a stream of destruction at", false, 25, 10, 50, 1, 1, 3);
 	bsod->afterdesc = " from its mouth";
 	bewlizard->addSpecialAttack(bsod);
 
@@ -4347,18 +4338,18 @@ void Game::SetupWorld() {
 	thief->setBasicAttack(steal);
 	thief->addSpecialAttack(stab);
 
-	NPC* axeman = new NPC("", "AXEMAN", "A really deranged human whose head was exchanged for the head of an axe.", limbo, 0, Stats(40, 15, 35, 18, 50, 30, 9));
-	Attack* chop = new Attack("CHOP", "swung his head at", true, -5, 15, 20, 1, 1, 1);
+	NPC* axeman = new NPC("", "AXEMAN", "A really deranged human whose head was exchanged for the head of an axe.", limbo, 0, Stats(25, 15, 16, 18, 30, 30, 9));
+	Attack* chop = new Attack("CHOP", "swung his head at", true, -5, 6, 15, 1, 1, 1);
 	Effect* chopped = new Effect("CHOPPED", 3, 0, 0, 1, 1, 0.5, 1, 0.5);
-	Attack* karatechop = new Attack("KARATE CHOP", "karate chopped", true, 2, 5, 0, 1, 1, 1);
+	Attack* karatechop = new Attack("KARATE CHOP", "karate chopped", true, 7, 3, 0, 1, 1, 1);
 	karatechop->afterdesc = "'s neck";
 	karatechop->addEffect(chopped);
-	Attack* axeflip = new Attack("AXEFLIP", "frontflipped at", true, 5, 30, 25, 1, 1, 1);
+	Attack* axeflip = new Attack("AXEFLIP", "frontflipped at", true, 10, 10, 15, 1, 1, 1);
 	axeman->setBasicAttack(chop);
 	axeman->addSpecialAttack(karatechop);
 	axeman->addSpecialAttack(axeflip);
 
-	NPC* disamalg = new NPC("", "DISEASE AMALGAMATION", "Writhing mass of pathogens featuring many colors.", limbo, 0, Stats(100, 40, 5, 5, 30, 0, 9));
+	NPC* disamalg = new NPC("", "DISEASE AMALGAMATION", "Writhing mass of pathogens featuring many colors.", limbo, 0, Stats(100, 20, 5, 0, 30, 0, 9));
 	Effect* tetanus = new Effect("TETANUS", 5, 8);
 	Effect* commoncold = new Effect("COMMON COLD", 3, 2, 0, 1, 0.8);
 	Effect* asthenia = new Effect("ASTHENIA", 5, 0, 0, 0.75, 0.5);
@@ -4381,14 +4372,15 @@ void Game::SetupWorld() {
 	disamalg->addSpecialAttack(cough);
 	disamalg->addSpecialAttack(superbug);
 
-	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats(50, 0, 25, 10, 20, 25, 9));
-	Attack* chuck = new Attack("CHUCKED", "telekinetically chucked some debris at", false, -5, 15, 0, 1, 1, 1);
-	Effect* stretched = new Effect("STRETCHED", 3, 15);
+	NPC* crimmind = new NPC("", "CRIMINAL MASTERMIND", "Psychic criminal genius with a huge brain and a body shriveled from floating everywhere.", limbo, 0, Stats(40, 0, 18, 10, 20, 25, 9));
+	Attack* chuck = new Attack("CHUCK", "telekinetically chucked some debris at", false, -5, 6, 0, 1, 1, 1);
+	Effect* stretched = new Effect("STRETCHED", 3, 10);
 	stretched->freeze = true;
-	Attack* stretch = new Attack("STRETCHED", "is stretching", false, 7, 20, 20, 1, 1, 1);
+	stretched->bond = true;
+	Attack* stretch = new Attack("STRETCHED", "is stretching", false, 12, 0, 20, 1, 1, 1);
 	stretch->afterdesc = " apart in the air";
 	stretch->addEffect(stretched);
-	Attack* tossaside = new Attack("TOSS ASIDE", "telekinetically tossed", false, 5, 30, 0, 1, 1, 1);
+	Attack* tossaside = new Attack("TOSS ASIDE", "telekinetically tossed", false, 6, 10, 0, 1, 1, 1);
 	tossaside->afterdesc = " into a wall";
 	Effect* tossed = new Effect("TOSSED ASIDE", 0);
 	tossed->remove = true;
@@ -4399,21 +4391,21 @@ void Game::SetupWorld() {
 	crimmind->addSpecialAttack(stretch);
 	crimmind->addSpecialAttack(tossaside);
 
-	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats(30, 100, 30, 50, 10, 10, 9));
-	Attack* shell = new Attack("SHELL", "fired a shell at", false, -5, 20, 20, 1, 1, 1);
-	Attack* rollover = new Attack("RUN OVER", "ran", true, 4, 50, 0, 1, 1, 1);
+	NPC* minipanzer = new NPC("", "MINIPANZER", "Vertically challenged criminal in possession of a tiny tank, very utile for robbing banks.", limbo, 0, Stats(10, 25, 15, 50, 10, 10, 9));
+	Attack* shell = new Attack("SHELL", "fired a shell at", false, -5, 5, 20, 1, 1, 1);
+	Attack* rollover = new Attack("RUN OVER", "ran", true, 4, 10, 0, 1, 1, 1);
 	rollover->afterdesc = " over";
-	Attack* flammpanzer = new Attack("FLAMMPANZER", "spewed a stream of napalm at", false, 8, 20, 10, 1, 1, 1);
+	Attack* flammpanzer = new Attack("FLAMMPANZER", "spewed a stream of napalm at", false, 8, 7, 10, 1, 1, 1);
 	flammpanzer->addEffect(extrafire);
-	Attack* supershell = new Attack("SUPERSHELL", "fired a supershell at", false, 10, 30, 20, 1, 1, 3);
+	Attack* supershell = new Attack("SUPERSHELL", "fired a supershell at", false, 10, 15, 20, 1, 1, 3);
 	minipanzer->setBasicAttack(shell);
 	minipanzer->addSpecialAttack(rollover);
 	minipanzer->addSpecialAttack(flammpanzer);
 	minipanzer->addSpecialAttack(supershell);
 
-	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Hulking brute franknsteined into existence who will fenagle your bagels.\nIt wears a suit, and a sack over its head with a painted smiley face.", limbo, 0, Stats(120, 20, 30, 0, 0, 5, 9));
-	Attack* slam = new Attack("SLAM", "slammed down its fists on", true, -5, 25, 0, 1, 1, 1);
-	Attack* smackaside = new Attack("SMACK ASIDE", "smacked", true, 5, 20, 0, 2, 2, 1);
+	NPC* bagelfenagler = new NPC("", "BAGEL FENAGLER", "Hulking brute franknsteined into existence who will fenagle your bagels.\nIt wears a suit, and a sack over its head with a painted smiley face.", limbo, 0, Stats(120, 20, 20, 0, 0, 5, 9), Stats(1, 0, 1, 0, 0, 0, 1));
+	Attack* slam = new Attack("SLAM", "slammed down its fists on", true, -5, 8, 0, 1, 1, 1);
+	Attack* smackaside = new Attack("SMACK ASIDE", "smacked", true, 5, 5, 0, 2, 2, 1);
 	smackaside->afterdesc = " into a wall";
 	Effect* smacked = new Effect("SMACKED ASIDE", 0);
 	smacked->remove = true;
@@ -4425,16 +4417,16 @@ void Game::SetupWorld() {
 	bagelfenagler->addSpecialAttack(smackaside);
 	bagelfenagler->addSpecialAttack(fenagle);
 
-	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough pavement-gray shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats(20, 15, 35, 25, 50, 30, 9));
+	NPC* paveshark = new NPC("", "PAVEMENT SHARK", "Tough pavement-gray shark who stalks its prey through the streets of BURGERSBURG.", limbo, 0, Stats(20, 15, 12, 25, 23, 30, 9));
 	paveshark->setShark(); //this is a shark
 	Effect* submerged = new Effect("SUBMERGED", 2147483647, 0, 0, 1, 4);
-	Attack* sharkbite = new Attack("SHARK BITE", "sharkily bit", true, -5, 20, 50, 1, 1, 1);
+	Attack* sharkbite = new Attack("SHARK BITE", "sharkily bit", true, -5, 5, 10, 1, 1, 1);
 	sharkbite->selfcancel = submerged;
 	sharkbite->affectselfbeforeattack = true;
-	Attack* submerge = new Attack("SUBMERGE", "submerged into the pavement", false, 3, 0, 0, 0, 0, 0);
+	Attack* submerge = new Attack("SUBMERGE", "submerged into the pavement", false, 5, 0, 0, 0, 0, 0);
 	submerge->selfeffect = submerged;
 	submerge->focushits = false;
-	Attack* breach = new Attack("BREACH", "jumped biting out of the pavement at", true, 5, 30, 50, 1, 1, 1);
+	Attack* breach = new Attack("BREACH", "jumped biting out of the pavement at", true, 10, 8, 10, 1, 1, 1);
 	breach->synergies.push_back(submerged);
 	breach->selfcancel = submerged;
 	breach->affectselfbeforeattack = true;
@@ -4442,20 +4434,21 @@ void Game::SetupWorld() {
 	paveshark->addSpecialAttack(submerge);
 	paveshark->addSpecialAttack(breach);
 
-	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Twister with an abnormally long lifespan and a collection of junk from all across BURGERSBURG.", limbo, 0, Stats(100, 30, 30, 0, 30, 50, 9));
-	Effect* tailwinded = new Effect("TAILWIND", 2147483647, 0, 0, 1, 1, 1, 1, 2.5);
+	NPC* naturaldisaster = new NPC("", "NATURAL DISASTER", "Twister with an abnormally long lifespan and a collection of junk from all across BURGERSBURG.", limbo, 0, Stats(100, 10, 15, 0, 30, 50, 9));
+	Effect* tailwinded = new Effect("TAILWIND", 2147483647, 0, 0, 1, 1, 1, 1, 2);
+	tailwinded->bond = true; //because the wind comes from the tornado
 	Attack* tailwind = new Attack("TAILWIND", "is boosting its team's speed", false, 0, 0, 0, 1, 1, 9, true);
 	tailwind->focushits = false;
 	tailwind->addEffect(tailwinded);
-	Attack* thingfling = new Attack("THING FLING", "flung around random debris", false, -5, 20, 0, 3, 5, 1);
+	Attack* thingfling = new Attack("THING FLING", "flung around random debris", false, -5, 6, 0, 3, 5, 1);
 	thingfling->focushits = false;
 	Attack* updraft = new Attack("UPDRAFT", "sucked", false, 10, 0, 0, 1, 1, 1);
 	updraft->afterdesc = " into its updraft";
 	Effect* updrafted = new Effect("UPDRAFTED", 2);
 	updrafted->remove = true;
-	updrafted->falldamage = 40;
+	updrafted->falldamage = 15;
 	updraft->addEffect(updrafted);
-	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 15, 30, 0, 1, 1, 999);
+	Attack* earthquake = new Attack("EARTHQUAKE", "shook the ground underneath", false, 15, 10, 0, 1, 1, 999);
 	Attack* supercell = new Attack("SUPERCELL", "called down another", false, 30, 0, 0, 1, 1, 1);
 	supercell->afterdesc = " from a supercell";
 	supercell->copyamount = 1; //duplicates itself to match the health so you don't have to fight another natural disaster all over again
@@ -4467,6 +4460,7 @@ void Game::SetupWorld() {
 
 	NPC* gamblemonster = new NPC("GAMBLE MONSTER", "GAMBLONGO", "He's Gamblongo the Gamble monster and he owns the casino. He looks like a floating blob of puree with eyes.", limbo, 0, Stats(100, 20, 30, 40, 50, 70, 90), Stats(2, 2, 2, 2, 2, 2, 1));
 	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -5, 0, 0, 0, 0, 0, 0);
+	gonna->focushits = false;
 	Attack* get = new Attack("DEATH", "got you", false, 90, 12345678, 12345678, 1, 1, 999);
 	get->focushits = false;
 	gamblemonster->setBasicAttack(gonna);
@@ -4537,35 +4531,38 @@ void Game::SetupWorld() {
 	sharkrepellant->selfcancel = shrouded;
 	ratman->addSpecialAttack(explosivegel);
 
-	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his monies.", limbo, 0, Stats(15, 1, 5, 0, 0, 9, 9));
-	Attack* brassknuckles = new Attack("BRASS KNUCKLES", "swung at", true, -5, 20, 0, 1, 1, 1);
+	NPC* richperson = new NPC("", "RICH PERSON", "A really rich BURGER shareholder who loves only his monies.", limbo, 0, Stats(5, 1, 5, 0, 0, 9, 9));
+	Attack* brassknuckles = new Attack("BRASS KNUCKLES", "swung at", true, -5, 3, 0, 1, 1, 1);
 	brassknuckles->afterdesc = " with brass knuckles";
-	Attack* chairthrow = new Attack("CHAIR", "threw a nearby chair at", false, 6, 40, 0, 1, 1, 1);
+	Attack* chairthrow = new Attack("CHAIR", "threw a nearby chair at", false, 6, 6, 0, 1, 1, 1);
 	Effect* ouchknees = new Effect("OUCH MY KNEES", 2, 0, 0, 1, 0.9);
-	Attack* canecrunch = new Attack("CANE CRUNCH", "hit", true, 15, 30, 0, 1, 1, 1);
+	Attack* canecrunch = new Attack("CANE CRUNCH", "hit", true, 15, 8, 0, 1, 1, 1);
 	canecrunch->afterdesc = "'s knees with his rich person cane";
+	canecrunch->addEffect(ouchknees);
 	richperson->setBasicAttack(brassknuckles);
 	richperson->addSpecialAttack(chairthrow);
 	richperson->addSpecialAttack(canecrunch);
 
-	NPC* richcyborg = new NPC("", "RICH CYBORG", "A really rich BURGER shareholder who has traded some of his weak human flesh for metal.", limbo, 0, Stats(30, 30, 20, 25, 15, 18, 9));
-	Attack* metalknuckles = new Attack("METAL KNUCKLES", "struck", true, -5, 20, 0, 1, 1, 1);
+	NPC* richcyborg = new NPC("", "RICH CYBORG", "A really rich BURGER shareholder who has traded some of his weak human flesh for metal.", limbo, 0, Stats(10, 12, 15, 25, 15, 18, 9));
+	Attack* metalknuckles = new Attack("METAL KNUCKLES", "struck", true, -5, 6, 0, 1, 1, 1);
 	metalknuckles->afterdesc = " with metallic fists";
-	Attack* fingergun = new Attack("FINGER GUN", "shot at", false, 5, 15, 40, 2, 2, 1);
-	fingergun->afterdesc = "with his integrated weaponry";
-	Attack* runover = new Attack("RUN OVER", "flew into", true, 12, 35, 0, 1, 1, 1);
+	Attack* fingergun = new Attack("FINGER GUN", "shot at", false, 5, 7, 40, 1, 1, 1);
+	fingergun->afterdesc = " with his integrated weaponry";
+	Attack* runover = new Attack("RUN OVER", "flew into", true, 12, 11, 0, 1, 1, 1);
 	runover->afterdesc = " with his integrated jet pack";
 	richcyborg->setBasicAttack(metalknuckles);
 	richcyborg->addSpecialAttack(fingergun);
 	richcyborg->addSpecialAttack(runover);
 
-	NPC* burgerlawyer = new NPC("", "BURGER LAWYER", "A really corrupt lawyer, rich from covering up the BURGER corporation's crimes.", limbo, 0, Stats(20, 15, 10, 5, 0, 5, 9));
-	Attack* briefcasebash = new Attack("BRIEFCASE BASH", "bashed", true, -5, 25, 0, 1, 1, 1);
+	NPC* burgerlawyer = new NPC("", "BURGER LAWYER", "A really corrupt lawyer, rich from covering up the BURGER corporation's crimes.", limbo, 0, Stats(15, 15, 10, 5, 0, 5, 9));
+	Attack* briefcasebash = new Attack("BRIEFCASE BASH", "bashed", true, -5, 5, 0, 1, 1, 1);
 	briefcasebash->afterdesc = " with his briefcase";
-	Effect* legalimmunity = new Effect("LEGAL IMMUNITY", 2);
+	Effect* legalimmunity = new Effect("LEGAL IMMUNITY", 3);
 	legalimmunity->invincible = true;
+	legalimmunity->bond = true;
 	Attack* legaldefense = new Attack("LEGAL DEFENSE", "legally defended", false, 7, 0, 0, 1, 1, 1, true);
 	legaldefense->addEffect(legalimmunity);
+	legaldefense->donotself = true; //this would be annoying and kind of overpowered
 	Effect* enjoined = new Effect("ENJOINED", 2);
 	enjoined->freeze = true;
 	Attack* injunction = new Attack("INJUNCTION", "injuncted", false, 7, 0, 0, 1, 1, 1);
@@ -4575,28 +4572,28 @@ void Game::SetupWorld() {
 	burgerlawyer->addSpecialAttack(legaldefense);
 	burgerlawyer->addSpecialAttack(injunction);
 	
-	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats(45, 25, 20, 20, 10, 18, 9));
-	Attack* nightstick = new Attack("NIGHTSTICK", "thwacked", true, -5, 20, 25, 1, 1, 1);
+	NPC* burgeragent = new NPC("", "BURGER AGENT", "Security guard of the BURGER corporation, dripped out in suit and sunglasses.", limbo, 0, Stats(20, 10, 10, 20, 10, 18, 9));
+	Attack* nightstick = new Attack("NIGHTSTICK", "thwacked", true, -5, 5, 25, 1, 1, 1);
 	nightstick->afterdesc = " with a nightstick";
-	Attack* beatdown = new Attack("BEATDOWN", "beat up", true, 4, 10, 0, 3, 3, 1); //funny cause up and down are opposites but here they mean the same thing
+	Attack* beatdown = new Attack("BEATDOWN", "beat up", true, 4, 5, 0, 3, 3, 1); //funny cause up and down are opposites but here they mean the same thing
 	Effect* tackled = new Effect("TACKLED", 0);
 	Effect* tackling = new Effect("TACKLING", 0);
 	tackled->remove = true;
 	tackling->remove = true;
-	Attack* tackle = new Attack("TACKLE", "tackled", true, 5, 24, 0, 1, 1, 1);
+	Attack* tackle = new Attack("TACKLE", "tackled", true, 5, 7, 0, 1, 1, 1);
 	tackle->addEffect(tackled);
 	tackle->selfeffect = tackling;
 	burgeragent->setBasicAttack(nightstick);
 	burgeragent->addSpecialAttack(beatdown);
 	burgeragent->addSpecialAttack(tackle);
 
-	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation. Looks like a big suited rice cooker on wheels.", limbo, 0, Stats(100, 50, 15, 30, 0, 0, 9));
+	NPC* burgerbutler = new NPC("", "BURGER BUTLER", "Robot butler of the BURGER corporation. Looks like a big suited rice cooker on wheels.", limbo, 0, Stats(80, 15, 15, 30, 0, 0, 9));
 	burgerbutler->setBoss(true); //miniboss
-	Attack* butlerhands = new Attack("BUTLER HANDS", "threw out two punches with its robotic extendable hands", true, -5, 15, 0, 2, 2, 1);
+	Attack* butlerhands = new Attack("BUTLER HANDS", "threw out two punches with its robotic extendable hands", true, -5, 5, 0, 2, 2, 1);
 	butlerhands->focushits = false;
-	Attack* tableflip = new Attack("TABLE FLIP", "flipped one of the fancy tables onto", false, 7, 23, 0, 1, 1, 3);
-	Attack* chandelier = new Attack("CHANDELIER", "ripped a chandelier from the ceiling and crashed it down onto", true, 20, 40, 0, 1, 1, 1);
-	Attack* vacuum = new Attack("VACUUM", "sucked up", true, 13, 20, 15, 1, 1, 1);
+	Attack* tableflip = new Attack("TABLE FLIP", "flipped one of the fancy tables onto", false, 7, 12, 0, 1, 1, 3);
+	Attack* chandelier = new Attack("CHANDELIER", "ripped a chandelier from the ceiling and crashed it down onto", true, 20, 15, 0, 1, 1, 1);
+	Attack* vacuum = new Attack("VACUUM", "sucked up", true, 13, 0, 0, 1, 1, 1);
 	vacuum->afterdesc = " with its vacuum";
 	vacuum->take = true;
 	burgerbutler->setBasicAttack(butlerhands);
@@ -4604,33 +4601,34 @@ void Game::SetupWorld() {
 	burgerbutler->addSpecialAttack(chandelier);
 	burgerbutler->addSpecialAttack(vacuum);
 	
-	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(1000, 25, 25, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 0));
+	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(991, 10, 10, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 0));
 	ceo->setBoss(true);
-	Effect* lockedon = new Effect("LOCKED ON", 4); //does nothing
-	Attack* lockon = new Attack("LOCK ON", "locked onto", false, -5, 0, 0, 1, 1, 1);
+	Effect* lockedon = new Effect("LOCKED ONTO", 4); //does nothing
+	Attack* lockon = new Attack("LOCK ON", "locked onto", false, -10, 0, 0, 1, 1, 1);
 	lockon->addEffect(lockedon);
-	Effect* defensemode = new Effect("DEFENSE MODE", 2147483647, 1, 2.0);
-	Effect* assaultmode = new Effect("ASSAULT MODE", 2147483647, 2.0, 1);
-	Attack* minigun = new Attack("MINIGUN", "gunned down", false, 4, 6, 15, 6, 6, 1);
+	lockon->redundanteffect = false;
+	Effect* defensemode = new Effect("DEFENSE MODE", 2147483647, 0, 0, 1, 2.0);
+	Effect* assaultmode = new Effect("ASSAULT MODE", 2147483647, 0, 0, 2.0, 1);
+	Attack* minigun = new Attack("MINIGUN", "gunned down", false, 7, 1, 15, 6, 6, 1);
 	minigun->afterdesc = " with his minigun";
 	minigun->synergies.push_back(lockedon);
 	minigun->selfeffect = defensemode;
 	minigun->selfcancel = assaultmode;
 	minigun->affectselfbeforeattack = true;
-	Attack* flamethrower = new Attack("FLAMETHROWER", "torched", false, 8, 20, 10, 2, 2, 1);
+	Attack* flamethrower = new Attack("FLAMETHROWER", "torched", false, 10, 2, 10, 1, 1, 1);
 	flamethrower->afterdesc = " with his flamethrower";
 	flamethrower->synergies.push_back(lockedon);
 	flamethrower->selfeffect = defensemode;
 	flamethrower->selfcancel = assaultmode;
 	flamethrower->affectselfbeforeattack = true;
 	flamethrower->addEffect(onfire);
-	Attack* bombard = new Attack("BOMBARD", "bombarded the team with his missile launchers", false, 13, 20, 20, 4, 4, 3);
+	Attack* bombard = new Attack("BOMBARD", "bombarded the team with his missile launchers", false, 15, 1, 10, 4, 4, 3);
 	bombard->focushits = false;
 	bombard->synergies.push_back(lockedon);
 	bombard->selfeffect = assaultmode;
 	bombard->selfcancel = defensemode;
 	bombard->affectselfbeforeattack = true;
-	Attack* megagun = new Attack("MEGAGUN", "gunned down", false, 15, 20, 0, 3, 3, 1);
+	Attack* megagun = new Attack("MEGAGUN", "gunned down", false, 15, 2, 0, 3, 3, 1);
 	megagun->afterdesc = " with big bullets";
 	megagun->synergies.push_back(lockedon);
 	megagun->selfeffect = assaultmode;
@@ -5680,7 +5678,7 @@ void Game::SetupWorld() {
 
 	NPC* leftguard2 = new NPC(*bagelfenagler);
 	leftguard2->setLeader(true, 17, leftstreet4);
-	leftguard2->setParty({crimmind, paveshark, paveshark});
+	leftguard2->setParty({crimmind, paveshark});
 	leftguard2->blockExit(NORTH, ENEMY, "guarded by the BAGEL FENAGLER.", true);
 	leftguard2->setDialogue("Uhhh huuhhhhhh huuhhhhhh  hhuuhhhhhhhhhhh... :)");
 	leftguard2->addRejectionDialogue("Uh uhhhhhh... :)");
@@ -5715,7 +5713,6 @@ void Game::SetupWorld() {
 
 	NPC* mainguard2 = new NPC(*bagelfenagler);
 	mainguard2->setLeader(true, 15, mainstreet4);
-	mainguard2->setParty({axeman});
 	mainguard2->blockExit(NORTH, ENEMY, "guarded by the BAGEL FENAGLER.", true);
 	mainguard2->setDialogue("Uhhhhhhhh huhhh huh huuuuuhhhhhh... :)");
 	mainguard2->addRejectionDialogue("Uh uh uhhhh... :)");
@@ -5786,7 +5783,7 @@ void Game::SetupWorld() {
 	NPC* fiveguard = new NPC(*crimmind);
 	fiveguard->setLeader(true, 20, newstreet5);
 	fiveguard->setParty({crimmind, minipanzer, axeman});
-	fiveguard->blockExit(EAST, ENEMY, "guarded by the CRIMINAL MASTERMIND.", true);
+	fiveguard->blockExit(WEST, ENEMY, "guarded by the CRIMINAL MASTERMIND.", true);
 	fiveguard->setDialogue("I am 4 parallel universes ahead of you.");
 	fiveguard->addRejectionDialogue("I will not stoop down to your level.");
 
@@ -5831,10 +5828,11 @@ void Game::SetupWorld() {
 	gamblongo->blockExit(DOWN, ENEMY, "blocked by GAMBLONGO.");
 	gamblongo->addConversation({{gamblongo, "ahahaha"}, {gamblongo, "i am gamblongo the gamble monster and i own this casino"}, {self, "??????????"}, {gamblongo, "if you wish to enter the basement you will have to defeat me in combat"}});
 	gamblongo->addConversation({{gamblongo, "i am inevitable"}});
+	gamblongo->addRejectionDialogue({{gamblongo, "i hate you"}});
 	gamblongo->setDialogue({{gamblongo, "ahahaha i am gamblongo the gamble monster"}});
 
 	NPC* evilgrandma = new NPC(*grandma);
-	evilgrandma->setLeader(true, 22, rightstreet3, false);
+	evilgrandma->setLeader(true, 20, rightstreet3, false);
 	evilgrandma->setMask("GRANDMA", "MARGE", "She looks like a poor grandma getting beat up and robbed by Ratman.");
 	evilgrandma->setTalkOnDefeat();
 	evilgrandma->setDialogue({{grandma, "AHHHHHHHH!"},
@@ -5858,7 +5856,7 @@ void Game::SetupWorld() {
 	
 	NPC* theratman = new NPC(*ratman); //MARK: Ratman
 	npcChar[theratman] = 'b'; //Ratman's character representation is b for Batman
-	theratman->setLeader(true, 22, rightstreet3);
+	theratman->setLeader(true, 20, rightstreet3);
 	theratman->setDialogue("I'm Ratman.");
 	theratman->addRecruitedDialogue("I'm Ratman.");
 	theratman->addGymDialogue("I'm Ratman.");
@@ -5940,13 +5938,13 @@ void Game::SetupWorld() {
 							  {ratman, "Because I'm Ratman."}});
 
 	NPC* burgerguards = new NPC(*burgeragent);
-	burgerguards->setLeader(true, 23, richneighborhood4, false);
+	burgerguards->setLeader(true, 20, richneighborhood4, false);
 	burgerguards->setMask("", "BURGER GUARDS", "Security guards of the BURGER corporation, dripped out in suit and sunglasses.");
-	burgerguards->setParty({crimmind, minipanzer, thief});
+	burgerguards->setParty({burgeragent}); //cause it's 2 guards in suits and sunglasses like in movies
 	burgerguards->blockExit(INSIDE, ENEMY, "guarded by the BURGER GUARDS.");
 	burgerguards->addConversation({{self, "Hey I'm trying to rescue this kid can you move please?"}, {burgeragent, "Kid, I'm not sure how you got here,"}, {burgeragent, "but I'm gonna give you the opportunity to leave."}, {self, "No."}, {NULL, "BURGER AGENT - *sigh*"}});
 	burgerguards->setDialogue({{burgeragent, "Kid, go home."}, {self, "No."}});
-	burgerguards->addRejectionDialogue({{self, "Hey you guys wanna join my team?"}, {burgeragent, "What?"}, {self, "I said 'You wanna join my team.' "}, {burgeragent, "No."}, {self, "What about you?"}, {NULL, "BURGER AGENT 2 - \"No.\""}, {self, "ok"}});
+	burgerguards->addRejectionDialogue({{self, "Hey you guys wanna join my team?"}, {burgeragent, "What?"}, {self, "I said 'You wanna join my team.'"}, {burgeragent, "No."}, {self, "What about you?"}, {NULL, "BURGER AGENT 2 - \"No.\""}, {self, "ok"}});
 	burgerguards->addRejectionDialogue({{burgerguards, "No."}});
 	
 	Item* keycard = new WorldChangeItem("EXECUTIVE KEYCARD", "Golden elevator keycard given to BURGER executives for going up to the CEO's office.", limbo,
@@ -5964,7 +5962,7 @@ void Game::SetupWorld() {
 	kcchanges.exitUnblocks.push({ceoelevator2, TO_THE_TOP});
 
 	NPC* richpeople = new NPC(*richperson); //RICH PEOPLE GAUNTLET!
-	richpeople->setLeader(true, 22, ballroom, false);
+	richpeople->setLeader(true, 15, ballroom, false);
 	richpeople->setMask("", "RICH PEOPLE", "A huge gathering of rich people, discussing rich people things while drinking expensive wine and eating expensive cheese.");
 	richpeople->setParty({richperson, richperson}); //rich person x3
 	richpeople->setParty({richperson, richperson, richcyborg}, true); //rich person x2 + rich cyborg
@@ -5997,7 +5995,7 @@ void Game::SetupWorld() {
 
 	NPC* enzo = new NPC(*ceo);
 	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
-	enzo->setLeader(true, 30, ceoroom, false);
+	enzo->setLeader(true, 20, ceoroom, false);
 	enzo->blockExit(IN_SAFE, ENEMY, "guarded by ENZO.");
 	enzo->addConversation({{self, "Why'd you guys kidnap that kid? >:|"},
 						   {ceo, "So that's what you busted into this joint for?"},
@@ -6053,10 +6051,12 @@ void Game::SetupWorld() {
 	enzo->setForceBattle();
 	enzo->setEscapable(false);
 	enzo->setWorldCondition(BEATCEO);
+	enzo->setXPReward(600);
+	enzo->setMonyReward(1000);
 
 	NPC* burgerscientist = new NPC("BURGER SCIENTIST", "IVOR", "Genius robotic husk responsible for the BURGER personnel's augmentations and himself's.\nSlowly swapping his organs for mechanical parts, his true self is long dead.", limbo, 0, Stats(150, 20, 30, 35, 45, 30, 9));
 	burgerscientist->setNoFight(); //FIGHT or ASK does the same thing and you can't actually fight him
-	burgerscientist->setLeader(true, 29, burglab);
+	burgerscientist->setLeader(true, 20, burglab);
 	burgerscientist->setTalkMakeChanges();
 	burgerscientist->addDefeatRoom(unihorn, limbo);
 	burgerscientist->addLinkedItem(unihorncorn, burglab);
@@ -6077,14 +6077,15 @@ void Game::SetupWorld() {
 	burgerscientist->addRejectionDialogue({{self, "Hey wanna join my team?"}, {burgerscientist, "..."}, {NULL, "IVOR is toiling away at some sort of quantumn machinery and does not care about your offer."}});
 
 	NPC* basementguard = new NPC(*burgerwarden);
-	basementguard->setLeader(true, 28, burgbasese);
+	basementguard->setLeader(true, 20, burgbasese);
 	basementguard->blockExit(DOWNSTAIRS, ENEMY, "guarded by the BURGER WARDEN.");
 	basementguard->setDialogue("...");
 	basementguard->addRejectionDialogue("...");
+	basementguard->setEscapable(false);
 
 	NPC* burgercultists = new NPC(*burgercultist);
 	burgercultists->setMask("", "BURGER CULTISTS", "A group of hooded figures in yellow robes in charge of cursing the BURGERs on the assembly line.");
-	burgercultists->setLeader(true, 25, burgplate, false);
+	burgercultists->setLeader(true, 21, burgplate, false);
 	burgercultists->setParty({burgercultist, burgercultist, burgercultist, burgercultist});
 	burgercultists->setDialogue("...");
 	burgercultists->addRejectionDialogue("...");
@@ -6708,8 +6709,8 @@ void Game::SetupWorld() {
 										  {NULL, "BURGER's grasp on the world has been completely dissolved."},
 										  {NULL, "\n\t<<< BURGER QUEST COMPLETE! >>>"
 												 "\n\t<<<    ENDING ACHIEVED:    >>>"
-												 "\n\t<<<      BURG NO MORE      >>>"},
-										  {NULL, "\nHENRY JERRY - \"Well, in the end, this has truly been a BURGER QUEST too.\""}, //I have to do the NULL "fake speaker" trick here so I can have an extra newline at the start
+												 "\n\t<<<      BURG NO MORE      >>>\n"},
+										  {hj, "Well, in the end, this has truly been a BURGER QUEST too."},
 										  {self, "Say that again?"},
 										  {NULL, "\nThank you so much for playing BURGER QUEST 2: ELECTRIC BOOGALOO all the way to the end!"},
 										  {NULL, "I hope this has been an enjoyable and meaningful experience."},
@@ -6797,10 +6798,26 @@ void Game::SetupWorld() {
 								   {hj, "And a new job."},
 								   {hj, "Because everyone is skeletons now at my old job."}});
 	finalboss->addLinkedDialogue(hj, {{hj, "I wonder how you find employment."}});
+	finalboss->addLinkedWelcome(aboss, {{hj, "Well I'm gonna go home I guess."}, //this will print as soon as you load the save again since it's the welcome for the last room
+										{self, "Alright cya."},
+										{NULL, "HENRY JERRY went back to his house."},
+										{self, "..."},
+										{self, "Wait how are we supposed to get back?"}});
 	finalboss->addPaveLink(timemachine, timemachine, TO_THE_VOID, NULL); //you can go to the void from the time machine after beating the game
 	finalboss->addRedirect(burgplate, burgplateash);
 	finalboss->addRedirect(burgplatedry, burgplateash);
 	finalboss->addRedirect(burgplatn, burgplatno); //we have the redirect to reflect the 4 states the room can possibly be in (able to run or not, and physically capable of producing BURGERS or not)
+	finalboss->addLinkedConvo(mrdeer, {{self, "Mr. Deer I did it!"},
+									   {self, "I've destroyed BURGERs from existance!"},
+									   {NULL, "MR DEER - *congratulatory deer noises*"},
+									   {NULL, "MR DEER - *happy deer noises*"},
+									   {NULL, "MR DEER - *explanatory deer noises*"},
+									   {self, "Oh really?"},
+									   {NULL, "MR DEER - *confirmatory deer noise*"},
+									   {self, "Wow."},
+									   {self, "That's very interesting."},
+									   {self, "Well nice seeing you Mr. Deer!"},
+									   {NULL, "MR DEER - *valedictory deer noises*"}});
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -6859,6 +6876,8 @@ void Game::SetupWorld() {
 	mountainmine->blockExit(EAST, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mainstreet2->blockExit(EAST, FIRE, "blocked by a blazing fire!");
 	coolstreet2->blockExit(WEST, FIRE, "blocked by a blazing fire!");
+	mainstreet2->blockExit(WEST, FIRE, "blocked by a blazing fire!");
+	newstreet2->blockExit(EAST, FIRE, "blocked by a blazing fire!");
 	coolstreet2->blockExit(INSIDE, FIRE, "blocked by a blazing fire!");
 	newstreet3->blockExit(EAST, FIRE, "blocked by a blazing fire!");
 	mainstreet3->blockExit(WEST, FIRE, "blocked by a blazing fire!");
@@ -6875,6 +6894,8 @@ void Game::SetupWorld() {
 	richneighborhood1->blockExit(NORTHEAST, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood2->blockExit(NORTH, TEMPLE, "guarded by high-tech security systems.");
 	richneighborhood3->blockExit(NORTHWEST, TEMPLE, "guarded by high-tech security systems.");
+	ceoelevator1->blockExit(TO_THE_TOP, TEMPLE, "restricted to executive-level BURGER employees.");
+	ceoelevator2->blockExit(TO_THE_TOP, TEMPLE, "restricted to executive-level BURGER employees.");
 	deserttemple->blockExit(NORTHEAST, FIRE, "blocked by a blazing fire! You can make out a figure distorted by the flames..."); //this can just be a regular fire exit since the hose is locked within BURGERSBURG
 
 	buildNPCData(); //build all the npc stuff in helper now that all the teammates and npcs have been set up
@@ -7109,7 +7130,6 @@ void Game::fight(Room* currentRoom, const char* name, bool track) {
 	}
 	if (npc->getConvoSize()) { //I want the player to hear all the dialogue instead of blindly fighting everyone, so we make sure if the npc has dialogue that it is said
 		npc->printDialogue(true);
-		cout << "\n";
 	}
 	if (npc->popNoFight()) { //fakeout fight, also removes leader status if marked as doing that
 		return;
@@ -7579,9 +7599,16 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 	} else if (!strcmp(item->getType(), "BURGER")) {
 		BURGERItem* boiga = (BURGERItem*)item; //get BURGER as BURGERItem
 		printConversation(&boiga->getConfirmText(), false); //confirm that you want to do this
-		if (!AOrB(NULL, "YES", "NO")) return;
+		if (!AOrB(NULL, "YES", "NO")) {
+			cout << "\nYou did not eat the " << item->getName() << ".";
+			return;
+		}
 		printConversation(&boiga->getUseText(), true); //print the ending text
-		printConversation(&boiga->getHintText(), true); //also print the hint text, seperate so I don't have to make identical 4 use texts just for a slightly different hint 
+		//also print the hint text, seperate so I don't have to make identical 4 use texts just for a slightly different hint
+		if (WorldState[JILLYQUEST] || WorldState[TEMPLEQUEST]) cout << "Maybe you should focus on the task at hand..."; //these aren't a conversation anymore just so I can get the ENDING ACHIEVED panel to be perfectly spaced at all times
+		else if (WorldState[JILLYSAVED]) cout << "Maybe there's still another path you could take?";
+		else cout << "Maybe there's another path you could take?";
+		CinPause();
 		WorldState[GAMEEND] = true; //mark that the game ended because this item ends the game
 	//teaches the player character new attacks
 	} else if (!strcmp(item->getType(), "education")) {
@@ -8290,16 +8317,6 @@ void Game::play() {
 		cout << "\rWelcome back!";
 		CinPause();
 	}
-	
-	if (WorldState[BURGERMENDEF] && !WorldState[POSTGAME]) {
-		Conversation welcome = {{NULL, "\nHENRY JERRY - \"Well I'm gonna go home I guess.\""},
-								{self, "Alright cya."},
-								{NULL, "HENRY JERRY went back to his house."},
-								{self, "..."},
-								{self, "Wait how are we supposed to get back?"}};
-		printConversation(&welcome, true);
-		WorldState[POSTGAME] = true;
-	}
 
 	sessions++; //we have one more session since we're playing!
 
@@ -8378,6 +8395,7 @@ void Game::play() {
 	}
 
 	cout << "\nLoading..."; //it's loading the main menu
+	if (WorldState[GAMEEND]) saveWorld(savetime, "", savedlast, true); //save the game automatically after getting an ending, and before deleting everything
 	
 	//deletes all the rooms
 	for (Room* room : roomsH) {
@@ -8398,9 +8416,9 @@ void Game::play() {
 
 	//say a prompt or something for reentering the title screen
 	if (WorldState[GAMEEND]) { //give a unique title screen that says continue instead of begin after getting an ending
-		saveWorld(savetime, "", savedlast, true); //save the game automatically after getting an ending
 		cout << "\r" << getTitle() << "\nPress ENTER to continue.";
 		CinPause();
+		cout << "\nType HELP for help.\nWhat would you like to do?"; //beginning prompt
 	} else { //the player quit normally so print message depending on game state
 		if (!save) { //player never saved
 			if (WorldState[TEMPLEQUEST]) cout << "\rYou give up on your quest to destroy BURGER."; //this message in-game is very annoying to get to
