@@ -51,7 +51,7 @@ namespace Helper {
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
 	void printConversation(const Conversation* _convo, bool finalpause, bool actuallyprint = true, bool* forcebranch = NULL); //print a conversation in conversation order
 	void printLvlUpData(NPC* npc, bool finalattackpause); //print the level up data of the given npc
-	void applyWorldChange(WorldChange& changes); //apply the changes to the world which are in the given stuff to change
+	void applyWorldChange(WorldChange& changes, bool announce = true); //apply the changes to the world which are in the given stuff to change
 	void applyWeaponAttack(NPC* player, Item* item); //gives the player the attack the weapon item has, weapon items can be gotten through different places so we have this helper
 	void updateTimeMachine(Room* timemachine, Room* destination, Room* from = NULL); //set up time machine exits, we do this from travel and load, so we have this helper function
 	bool getCardinal(const char* direction); //get if the direction given is a cardinal direction

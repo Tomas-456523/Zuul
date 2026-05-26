@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/21/26
+*  5/25/26
 *  This is the implementation file for my Helper namespace. It has a bunch of helpful functions that I might use in multiple files
 *  
 *  My Helper namespace has a wide range of functions that might be used anywhere. Some examples of utlities are parsing commands into
@@ -306,8 +306,8 @@ namespace Helper {
 				cout << convo[i].first->getName() << " - \"" << convo[i].second << "\"";
 			} else {
 				cout << convo[i].second;
-			}
-			if ((finalpause && !current->branch1.first && !current->next) || i + 1 < convo.size()) { //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards (AND we don't have branching paths)) we do a pause, so the last one lets the player type
+			} //if it's not the last one (or if we manually set it to print the final pause since some situations print more stuff afterwards (AND we don't have branching paths)) we do a pause, so the last one lets the player type afterwards with the >
+			if ((finalpause && !current->branch1.first || (current->next && !current->next->getOutdated())) || i + 1 < convo.size()) { //also if it has a next conversation, do the pause so it doesn't go straight into the next conversation without a break
 				CinPause();
 			}
 		}
@@ -320,14 +320,14 @@ namespace Helper {
 				addChunk(sectionW, ".b", wsize);
 				printConversation(current->branch2.second.get(), finalpause, actuallyprint);
 			}
-		} else if (Conversation* next = current->next.get()) {
-			printConversation(next, finalpause, actuallyprint);
+		} else if (current->next && !current->next->getOutdated()) {
+			printConversation(current->next.get(), finalpause, actuallyprint);
 		}
 		if (shared_ptr<Conversation> relay = current->relay.second.lock()) { //relay the relaying conversation to the npc
 			current->relay.first->addConversation(*relay);
 		}
 		if (shared_ptr<WorldChange> convochanges = current->convochanges) { //do changes that the conversation makes
-			applyWorldChange(*convochanges);
+			applyWorldChange(*convochanges, actuallyprint);
 		}
 	}
 	//print the level up data tracked by this npc
@@ -361,7 +361,7 @@ namespace Helper {
 		}
 	}
 	//changes the world based on the instructions passed, also the item/npc's world changes will be drained as we pass by reference
-	void applyWorldChange(WorldChange& changes) {
+	void applyWorldChange(WorldChange& changes, bool announce) { //really the only thing that gets announced is players getting moves
 		while (!changes.recruitLinks.empty()) {
 			NPC* npc = changes.recruitLinks.front();
 			npc->setRecruitable(true);
@@ -446,11 +446,9 @@ namespace Helper {
 		while (!changes.linkedAttacks.empty()) { //change all changing stats
 			pair<NPC*, Attack*>& data = changes.linkedAttacks.front();
 			data.first->addSpecialAttack(data.second);
-			if (data.first->getPlayerness()) { //print what the new attack does if it's the player
+			if (announce && data.first->getPlayerness()) { //print what the new attack does if it's the player
 				cout << "\n" << data.first->getName() << " learned " << data.second->name << "!\n" << data.second->name << " - " << data.second->trueDesc;
 				CinPause();
-			} else { //we just added a move so we have to recalculate the weights to account for it
-				data.first->calculateWeights();
 			}
 			changes.linkedAttacks.pop();
 		}
@@ -558,7 +556,7 @@ namespace Helper {
 		while (!changes.linkedBackups.empty()) { //place an item in the room if it's not in the inventory
 			tuple<Room*, Item*, vector<Item*>*>& data = changes.linkedBackups.front();
 			if (!getItemInVector(*get<2>(data), get<1>(data)->getName())) {
-				get<0>(data)->setItem(get<1>(data));
+				get<1>(data)->setRoom(get<0>(data));
 			}
 			changes.linkedBackups.pop();
 		}
@@ -591,6 +589,12 @@ namespace Helper {
 			get<0>(*changes.hjLink)->setTalkOnRecruit(false); //he only had this so the segway can work when recruiting but the segway isn't in the postgame
 			get<0>(*changes.hjLink)->addRecruitmentDialogue(get<1>(*changes.hjLink)); //give him the new recruitment dialogue, normal links only add regular conversations
 			get<0>(*changes.hjLink)->addDismissalDialogue(get<2>(*changes.hjLink)); //same thing as above but with dismissal dialogue
+		}
+		if (changes.lobblock) { //the lobster starts blocking the OUT exit if it's not tamed, pretty specific functionality
+			if (get<0>(*changes.lobblock)->getLeader()) { //if the lobster isn't tamed yet
+				get<0>(*changes.lobblock)->addBlockLink(get<1>(*changes.lobblock), get<2>(*changes.lobblock), get<4>(*changes.lobblock), get<5>(*changes.lobblock));
+				get<0>(*changes.lobblock)->addBlockLink(get<1>(*changes.lobblock), get<3>(*changes.lobblock), get<4>(*changes.lobblock), get<5>(*changes.lobblock));
+			}
 		}
 		if (Item* orb = changes.linkedOrb) { //petrify the linked escape/entry orb
 			((EscapeOrb*)orb)->petrify();
@@ -634,7 +638,7 @@ namespace Helper {
 	}
 	//get if the direction given is a cardinal direction
 	bool getCardinal(const char* direction) {
-		return !strcmp(direction, "NORTH") || !strcmp(direction, "SOUTH") || !strcmp(direction, "EAST") || !strcmp(direction, "WEST") || !strcmp(direction, "NORTHEAST") || !strcmp(direction, "NORTHWEST") || !strcmp(direction, "SOUTHEAST") || !strcmp(direction, "SOUTHWEST") || !strcmp(direction, "UP") || !strcmp(direction, "DOWN"); //never seat eoggy waffles
+		return direction && !strcmp(direction, "NORTH") || !strcmp(direction, "SOUTH") || !strcmp(direction, "EAST") || !strcmp(direction, "WEST") || !strcmp(direction, "NORTHEAST") || !strcmp(direction, "NORTHWEST") || !strcmp(direction, "SOUTHEAST") || !strcmp(direction, "SOUTHWEST") || !strcmp(direction, "UP") || !strcmp(direction, "DOWN"); //never seat eoggy waffles
 	}
 	//get the title screen so we can print it. This is so I can modify it from one place since it gets printed in the beginning but also endings
 	const char* getTitle() {

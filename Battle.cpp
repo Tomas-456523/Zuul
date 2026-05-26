@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/23/26
+*  5/26/26
 *  This is the implementation file for battles, which controls combat with teammates against enemies
 *
 *  Battles are created using the constructor, where you must pass the enemy and player teams. All NPCs involved
@@ -88,6 +88,8 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	//give the enemies xp corresponding with the enemy's level, in order to scale them to that level
 	//sets the enemy level to the enemy leader, which should be the first one in the party since they put themselves in their own party when set to a leader
 	int teamlevel = worldleader->getLevel();
+	givemonies = worldleader->getMonyReward(); //get if we should give any rewards based on if the world leader has rewards
+	givexp = worldleader->getXpReward();
 	for (NPC* npc : team) { //sets every enemy to the found level and sets them to be an enemy
 		npc->setLevel(teamlevel);
 		buildReward(npc, false); //add their reward to the battle reward
@@ -103,7 +105,9 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	numberNPC(newguy, *team); //number the npc so that the player can specify which one to target
 	newguy->setSummoner(summoner);
 	newguy->setLevel((summoner ? summoner : (*team)[0])->getLevel()); //update the level to match the team, base it off the summoner if we can but default to the team leader's level
-	buildReward(newguy, true); //add to the fight reward based on the new guy
+	if (newguy->getEnemy()) buildReward(newguy, true); //add to the fight reward based on the new guy
+	else if (teameffect && !newguy->getPlayerness()) attachEffect(newguy->setEffect(teameffect, NULL)); //add the lead or team effect if there is one and this is a player team summon, and depending on if this is a player npc (cloned from kosmic katana) or teammate npc
+	else if (leadeffect) attachEffect(newguy->setEffect(leadeffect, NULL));
 	if (newguy->getOpener()) { //do the opening attack if they have one
 		checkOpeners({newguy});
 	}
@@ -150,8 +154,8 @@ void Battle::buildReward(NPC* enemy, bool summon) {
 		mony /= 5.0;
 	}
 
-	xpReward += Round(xp); //add the amounts we calculated!
-	monyReward += Round(mony);
+	if (givexp) xpReward += Round(xp); //add the amounts we calculated! (if we should, if the rewards weren't manually disabled in world setup)
+	if (givemonies) monyReward += Round(mony);
 }
 //checks all the effects that the given npc has for if they've run out, for duration 0 moves MARK: check effects
 void Battle::checkEffects(NPC* npc) {
@@ -200,6 +204,42 @@ void Battle::detatchEffect(NPCEffect* effect) {
 	} 
 	if (effect->effect->speedbuff != 1) { //if the speed has changes
 		speedSort(effect->affected); //reconfigure the npc's speed and turn stuff to account for the new speed
+	} //spread fall damage to the npc's surroundings
+	const vector<NPC*>& party = (effect->affected->getEnemy() ? enemyTeam : playerTeam); //get the party so we can check the size for the spread fall damage case
+	if (party.size() != 1 && effect->effect->spreadfalldamage) { //don't do this if there are no other teammates because there wouldn't really be any point in pointing it out
+		int pos = distance(party.begin(), find(party.begin(), party.end(), effect->affected)); //get the affected npc's position
+		cout << "\n" << effect->affected->getName() << "'s surrounding teammates were also affected!";
+		CinPause();
+		vector<NPC*> affected;
+		if (pos > 0) affected.push_back(party[pos-1]); //find if the npc's surroundings are within bounds
+		if (pos < party.size()-1) affected.push_back(party[pos+1]);
+		for (NPC* npc : affected) {
+			if (npc->getAway()) { //check if we can hit the adjacent npc
+				cout << "\n" << npc->getName() << " isn't in the battlefield right now!";
+				CinPause();
+				continue;
+			} if (!npc->getHealth()) {
+				cout << "\n" << npc->getName() << " was not affected due to being incapacitated!";
+				CinPause();
+				continue;
+			} if (npc->getInvincible() && effect->effect->falldamage >= 0) {
+				cout << "\n" << npc->getName() << " brushed it off due to their invincibility!"; //says they weren't affected cause they're invincible
+				CinPause();
+				continue;
+			}
+			int damage = npc->damage(effect->effect->falldamage, 0);
+			CinPause();
+			bool ko = npc->popKO();
+			if (ko) handleKnockout(npc);
+
+			for (NPC* affector : effect->affected->getOldAffectors(effect->effect)) {
+				if (trackNPC(affector)) { //increase damage counters for tracked affectors
+					if (damage > 0) damagedealt[affector->getParent()] += damage;
+					else healthhealed[affector->getParent()] -= damage;
+					if (ko) knockouts[affector->getParent()]++; //also track the ko if the npc just got ko'd due to this fall damage
+				}
+			}
+		}
 	}
 
 	if (effect->affected->popKO()) handleKnockout(effect->affected); //handle ko stuff if the npc was just incapacitated due to effect fall damage
@@ -283,6 +323,8 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if (synergized) CinPause(); //final pause
 	}
 	
+	bool parriedhit = false; //track if we parried something just so we don't say "the attack missed" if we parried it because that's a bit redundant
+
 	for (int j = 0; j < hits; j++) { //damages the target the given amount of times
 		if (hits > 1) cout << "\nHit " << j+1 << "!"; //announce which hit it was if it's multi-hit
 
@@ -327,11 +369,14 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			CinPause();
 		}
 		if (reciever->getTrackRage() && attacker->getWrath()) { //track rage from the damage if this enemy tracks rage and the player is wrathful
-			reciever->trackRage(effectiveAttack, attacker);
+			reciever->trackRage(effectiveAttack, attacker, false);
 		}
 		if (reciever->getHealth() <= 0 && !attack->targetFainted) break; //stop hitting because the guy is already incapacitated
 	}
-	if (!hits) cout << "\nThe attack missed!";
+	if (!parriedhit && !hits) {
+		cout << "\nThe attack missed!";
+		CinPause();
+	}
 	if (reciever->popKO()) { //if the target was just ko'd
 		handleKnockout(reciever); //apply knockout stuff to the reciever
 		if (trackNPC(attacker)) knockouts[attacker->getParent()]++; //increase ko count of the attacker if we track them
@@ -358,7 +403,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	}
 	for (Effect* cancel : attack->cancels) { //removes the effects this attack cancels out
 		if (NPCEffect* canceled = reciever->getEffect(cancel, true)) {
-			detatchEffect(reciever->removeEffect(canceled->effect, NULL)); //don't announce the change, like "VIOLA flung BOB!" "BOB broke free!" like no he didn't he doesn't seem very free in the stratosphere
+			detatchEffect(reciever->removeEffect(canceled->effect, NULL));
 		}
 		if (reciever->popKO()) handleKnockout(reciever); //handle ko stuff if the reciever was just incapacitated due to effect fall damage
 	}
@@ -382,7 +427,10 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	} //do not recoil against beneficial attacks because that would be silly, and only if it does damage
 	if (!attack->getBeneficial() && attack->power && reciever->getRecoilAttack(attack->contact)) { //attacker gets attacked by the target's recoil attack
 		Attack* recoilatt = reciever->getRecoilAttack(attack->contact);
-		if (!recoilatt->targetAlly) carryOutAttack(recoilatt, reciever, attacker, true);
+		if (recoilatt->onlyRecoilOps) { //hit a random npc from the opposing team if it's supposed to hit them no matter what
+			const vector<NPC*>& team = (reciever->getEnemy() ? playerTeam : enemyTeam); //get the opposing side
+			carryOutAttack(recoilatt, reciever, team[rand()%team.size()], true);
+		} else if (!recoilatt->targetAlly) carryOutAttack(recoilatt, reciever, attacker, true);
 		else carryOutAttack(recoilatt, reciever, reciever, true); //if it was an ally targeting attack, we launch it from the reciever
 	}
 }
@@ -397,7 +445,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				continue;
 			}
 			if (!attack->targetFainted && !reciever->getHealth()) { //ignore incapacitated affected npcs if we don't target incapacitated and also can't target away npcs
-				cout << "\n" << reciever->getName() << " was not afected due to being incapacitated!";
+				cout << "\n" << reciever->getName() << " was not affected due to being incapacitated!";
 				CinPause();
 				continue;
 			}
@@ -426,7 +474,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	if (attack->spbomb) { //if it's this one move, we have to do stuff related to its unique functionality
 		attack->power = 0; //starts at 0 damage
 		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
-			if (npc->getHypnotized() != attacker->getHypnotized()) continue; //hypnotized npcs don't contribute to the sp bomb (or if you're hypnotized, non-hypnotized npcs don't contribute)
+			if (npc->getHypnotized() != attacker->getHypnotized() || npc->getWrath()) continue; //hypnotized npcs don't contribute to the sp bomb (or if you're hypnotized, non-hypnotized npcs don't contribute). Also, wrathful npcs don't contribute to the SP bomb
 			attack->power += npc->getSP();
 			int contribution = npc->alterSp(-npc->getSP());
 			if (trackNPC(npc)) spusedup[npc->getParent()] -= contribution; //I mean we kinda used it for them but it's still their sp being used so track as sp usage
@@ -439,9 +487,12 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			return;
 		}
 		cout << "\n" << attack->power << " SP went into the attack!\nIt's ";
-		if (attack->power < 12) {
+		if (attack->power < 5) {
+			cout << "tiny!";
+			attack->targets = 1; //also dynamically scale size to match the flavor text (so I guess it's not just flavor anymore)
+		} else if (attack->power < 15) {
 			cout << "a sizable ball of energy!";
-			attack->targets = 3; //also dynamically scale size to match the flavor text (so I guess it's not just flavor anymore)
+			attack->targets = 3;
 		} else if (attack->power < 30) { 
 			cout << "really big!";
 			attack->targets = 5;
@@ -467,19 +518,23 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		if (attack == attacker->getBasicAttack()) basicslaunched[attacker->getParent()]++; //update basic attack counter
 		else spusedup[attacker->getParent()] -= spchange; //increase sp usage tracker if this is a special attack which spends sp
 	}
+	bool saidattackconvo = false;
 	//says what happened depending on if it was normal or due to recoil
 	if (!recoil) { //using normal attack
 		Conversation convo = attack->getConvo(target->getParent());
-		if (!convo.empty()) printConversation(&convo, true); //print the attack conversation if there is one
-		else cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //normal attack text
+		if (!convo.empty()) { //print the attack conversation if there is one
+			printConversation(&convo, true);
+			saidattackconvo = true;
+		} else cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //normal attack text
 	} else if (attack->focushits) cout << "\n" << target->getName() << " was affected by " << attacker->getName() << "'s " << attack->name << "!"; //attack triggered target's recoil or attack had recoil and hit teammate as well and this is the result of either situation
 	else cout << "\n" << attacker->getName() << "'s team was affected by " << attacker->getName() << "'s " << attack->name << "!"; //this was the result of a recoiling regular attack that hits the team unfocusedly
 
-	//print description of the attack and what the attacker did
-	cout << "\n" << attacker->getName() << " " << attack->description;
-	if (attack->focushits) cout << " " << target->getName() << attack->afterdesc; //prints the target unless it's not focused on a specific target
-	cout << "!"; //punctuate the description!
-	CinPause();
+	if (!saidattackconvo) { //print description of the attack and what the attacker did
+		cout << "\n" << attacker->getName() << " " << attack->description;
+		if (attack->focushits) cout << " " << target->getName() << attack->afterdesc; //prints the target unless it's not focused on a specific target
+		cout << "!"; //punctuate the description!
+		CinPause();
+	}
 
 	vector<NPC*> tarparty; //gets which party is being targeted based on if the target is an enemy or not
 	if (target->getEnemy()) {
@@ -501,16 +556,33 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		CinPause();
 	}
 	if (attack->nonspecificeffect) attack->specifictarget = target; //track the target so we can compare it later if the attack has a non-specific effect (non-specific instead of specific so you can't parry the attack with this which "benefits" the player)
+	//transform if it's a transformation attack (before attacking because it's convenient for the infernobo chain)
+	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
+	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
+		if (attack->announcetransform) { //announce the transformation if we're supposed to
+			cout << "\n" << attacker->getName() << " transformed into " << transformation->getName() << "!";
+			CinPause();
+		}
+		attacker->transform(transformation);
+		//we also have to renumber their name if the npc changes their name when doing a transformation
+		if (attacker->getChangeName()) numberNPC(attacker, (attacker->getEnemy() ? enemyTeam : playerTeam));
+	}
+
 	if (attack->focushits) { //normal moves which focus damage on one target
 		//gets the position of the target in the team vector
 		int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
 		hitTargets(attacker, attack, tarparty, tarPos);
 	} else { //unfocused moves which hit a random target for every hit
 		int hits = attack->minhits+ rand() % (attack->maxhits + 1 - attack->minhits);
-		for (size_t i = 0; i < hits; i++) {
-			if (hits > 1) cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
-			int tarPos = rand() % tarparty.size();
-			hitTargets(attacker, attack, tarparty, tarPos);
+		int smartnotawaycount = 0; //if it's smart unfocus it counts how many potential targets are not away so that it knows if it should hit an away target anyway (but there will never be 0 non-incapacitated targets because the battle would be over then)
+		if (attack->smartunfocus) for (NPC* npc : tarparty) if (!npc->getAway() && npc->getHealth()) smartnotawaycount++; //count the amount of non-away potential targets
+		for (size_t i = 0; i < hits;) {
+			int tarPos = rand() % tarparty.size(); //choose a random target and see if it works (usually yes)
+			if (!attack->smartunfocus || (tarparty[tarPos]->getHealth() && !(tarparty[tarPos]->getAway() && smartnotawaycount))) { //smart unfocused attacks only hit non-away (if it can) and non-incapacitated targets because they're smart
+				if (hits > 1) cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
+				hitTargets(attacker, attack, tarparty, tarPos);
+				i++;
+			} //if it does smart unfocus and didn't find a target, it just tries again
 		}
 	}
 	if (attack->trashsummons) { //if this attack trashes the attacker's summons, we do that via sending a lot of damage
@@ -553,13 +625,6 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		cout << " " << attack->summon->getName() << (attack->summonamount != 1 ? "s" : "") << " appeared!";
 		CinPause();
 	}
-	if (attack->transformtotar) attack->transformation = target; //transform into the target if that's what the attack does
-	if (NPC* transformation = attack->transformation) { //if the attack makes the attacker transform we make it transform into that
-		cout << "\n" << attacker->getName() << " transformed into " << transformation->getName() << "!";
-		attacker->transform(transformation);
-		//we also have to renumber their name if the npc changes their name when doing a transformation
-		if (attacker->getChangeName()) numberNPC(attacker, (attacker->getEnemy() ? enemyTeam : playerTeam));
-	}
 }
 //check all the given npcs for if they have an opening attack to do MARK: check openers
 void Battle::checkOpeners(const vector<NPC*>& checks) {
@@ -572,13 +637,12 @@ void Battle::checkOpeners(const vector<NPC*>& checks) {
 }
 //check the enemy leader for if they have any team effects to apply to the player team
 void Battle::checkFightEffects() {
-	Effect* teameffect = enemy->getFightTeamEffect();
-	if (Effect* leadeffect = enemy->getFightLeadEffect()) {
-		attachEffect(playerTeam[0]->setEffect(leadeffect, NULL)); //give the leader effect to the leader (player)
-	}
-	if (!teameffect) return; //don't apply NULL effects
-	for (NPC* npc : playerTeam) { //give the team effect to all the non-leaders
-		if (!npc->getLeader()) attachEffect(npc->setEffect(teameffect, NULL));
+	teameffect = enemy->getFightTeamEffect();
+	leadeffect = enemy->getFightLeadEffect();
+	if (!teameffect && !leadeffect) return; //don't bother checking the effects if there's not going to be anything to set
+	for (NPC* npc : playerTeam) { //give the team effect to all the non-leaders and the lead effect to the player
+		if (leadeffect && npc->getPlayerness()) attachEffect(npc->setEffect(leadeffect, NULL));
+		else if (teameffect) attachEffect(npc->setEffect(teameffect, NULL));
 	}
 }
 //do the business proposition, which is a very specific choice sequence for the forest temple boss, and return what the player chose MARK: business proposition
@@ -886,6 +950,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 		}
 
 		if (attack && (target || (!attack->targets || !attack->focushits))) { //if we found a valid attack and target for that attack (unless the attack doesn't use targets), we (try to) launch it!
+			if ((!attack->targets || !attack->focushits) && target) { //clarify to the player how the 0-target move works
+				cout << "\n" << attack->name << " doesn't need a target!";
+				return false;
+			}
 			if (!target) target = plr; //assume the player is targeting themselves for no-target attacks
 			if (target->getHealth() <= 0 && !attack->targetFainted) { //if trying to hit incapacitated npc
 				cout << "\n" << commandExtensionP << " is incapacitated";
@@ -901,6 +969,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 					}
 				} //if there's no one else to target, then just let the player try to hit the away npc because there's nothing better to do while waiting for them to come back
 			}
+			if (attack->spbomb && plr->getWrath()) { //can't use sp bomb if you're wrathful, since it's like a team-based attack that requires coordination
+				cout << "\nYou're too WRATHful to use the SP BOMB!";
+				return false;
+			}
 			if (plr->getBeneficialBlocker() && attack->getBeneficial()) { //can't use beneficial attacks if self has a beneficial-blocking effect, unless it's to remove it
 				bool virtue = false; //try to find if the attack is for being patient and removing wrath, because it'd be counterintuitive to block a beneficial that's beneficial due to removing the thing stopping you from using beneficial attacks
 				for (Effect* cancel : attack->cancels) {
@@ -913,10 +985,6 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 					cout << "\nYou're can't use beneficial attacks due to your " << plr->getBeneficialBlocker()->name << "!"; //say the issue
 					return false;
 				}
-			}
-			if ((!attack->targets || !attack->focushits) && target) { //clarify to the player how the 0-target move works
-				cout << "\n" << attack->name << " doesn't need a target!";
-				return false;
 			}
 			if (plr->getSP() < Round(attack->cost*plr->getSPUseMultiplier())) { //we don't launch the attack if we don't have enough sp
 				cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << Round(attack->cost * plr->getSPUseMultiplier()) << ")";
@@ -1172,12 +1240,9 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 
 		targets = getTargets(npc, attack); //find new targets with the new attack
 	}
-
-	if (npc->getWrath() && attack->getBeneficial()) { //if the npc ended up with a beneficial attack they can't use it if they're wrathful
-		attack = NULL;
-	}
-
-	if (targets.empty()) { //no targets were found for either the special or basic attack, so they just do nothing
+	
+	//no targets were found for either the special or basic attack, so they just do nothing
+	if (targets.empty() || npc->getWrath() && attack->getBeneficial()) { //also if the npc ended up with a beneficial attack they can't use it if they're wrathful
 		cout << "\n" << npc->getName() << " isn't sure what to do...";
 		CinPause();
 		return;
@@ -1199,8 +1264,8 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 }
 //prints text for starting a new wave or the battle as a whole MARK: print matchup
 void Battle::printVersus(size_t wave) { //shows everyone involved in the battle plus flavor text
-	if (!wave) cout << "\nBATTLE BEGIN!"; //first wave is just the starting text
-	else cout << "\nWAVE " << wave << "!"; //otherwise print which wave it is
+	if (!wave) cout << "\n\nBATTLE BEGIN!"; //first wave is just the starting text
+	else cout << "\n\nWAVE " << wave << "!"; //otherwise print which wave it is
 	printTeam(playerTeam);
 	cout << "\n<<< VERSUS >>>";
 	printTeam(enemyTeam);
@@ -1215,7 +1280,32 @@ int Battle::FIGHT() {
 	checkOpeners(everyone); //check any opening moves the npcs may have
 	checkFightEffects(); //check if this fight has any fight effects from the enemy leader
 
+	for (; !turn.empty(); turn.pop()); //remove any npcs from turn that may have been added due to the openers changing speed (I think priority queues should have a clear() function, but they don't so yeah)
+
 	for (bool continuing = true; continuing;) { //the main battle loop! continues until continuing is set to false, only if the player successfully runs away
+		bool newwave = false; //check if we're starting a new wave
+		
+		//check the player team and enemy team for if they've lost all hp, sees if we can go to a new wave, and if not, returns win or loss based on that result
+		if (aliveCount(playerTeam) <= 0) {
+			if (++pwave < player->getWaves()) { //also checks each team for if they have more waves
+				setupWave(true, pwave, false);
+				newwave = true;
+				printVersus(pwave+1); //print the new wave text
+			} else return 0; //lose
+		} else if (aliveCount(enemyTeam) <= 0) {
+			if (++ewave < enemy->getWaves()) {
+				setupWave(false, ewave, scaleEnemies);
+				newwave = true;
+				printVersus(ewave+1); //print the new wave text
+			} else return 1; //win
+		}
+
+		if (newwave) { //reset the turn queue if it's a new wave to force a new round
+			while (!turn.empty()) turn.pop();
+			checkOpeners(everyone); //check any opening moves the new npcs may have
+		}
+
+		//now that we're done checking end-of-battle stuff, do the actual turn process
 		if (turn.empty()) { //we put everyone in order again if the turn queue is empty
 			reorder(); //also clear went and reset known speeds
 		}
@@ -1259,28 +1349,6 @@ int Battle::FIGHT() {
 		}
 
 		went.insert(current); //the npc has went now so we track that they went
-
-		bool newwave = false; //check if we're starting a new wave
-		
-		//check the player team and enemy team for if they've lost all hp, sees if we can go to a new wave, and if not, returns win or loss based on that result
-		if (continuing && aliveCount(playerTeam) <= 0) { //don't check for health if running away
-			if (++pwave < player->getWaves()) { //also checks each team for if they have more waves
-				setupWave(true, pwave, false);
-				newwave = true;
-				printVersus(pwave+1); //print the new wave text
-			} else return 0; //lose
-		} else if (aliveCount(enemyTeam) <= 0) {
-			if (++ewave < enemy->getWaves()) {
-				setupWave(false, ewave, scaleEnemies);
-				newwave = true;
-				printVersus(ewave+1); //print the new wave text
-			} else return 1; //win
-		}
-
-		if (newwave) { //reset the turn queue if it's a new wave to force a new round
-			while (!turn.empty()) turn.pop();
-			checkOpeners(everyone); //check any opening moves the new npcs may have
-		}
 	}
 	return 2; //return 2 because the player ran away
 }

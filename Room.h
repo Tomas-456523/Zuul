@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/21/26
+*  5/25/26
 *  This is the header file for rooms
 *  
 *  Rooms are the locations of the game world which are linked up and the player can move between.
@@ -53,9 +53,9 @@ public:
 	const char* getBlockType(const char* direction); //gets the type of the exit's block
 	const char* getSpecialExit(); //gets the special exit which is different for different room types but we basically just use it for the time machine's OUT
 	bool gotBackup(); //get if there is a backup item to get, so that we don't make a pointless duplicate if we have repeating backups
-	Item* popBackup(int force = 0); //take the backup from the room to check if we should put it there
+	Item* popBackup(); //take the backup from the room to check if we should put it there
 
-	void doEnterChanges();
+	void doEnterChanges(bool force = false); //do changes when we enter the room and the change condition is met
 
 	void printExits(); //functions for printing the stuff in the room
 	void printItems();

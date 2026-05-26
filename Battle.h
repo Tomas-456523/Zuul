@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/20/26
+*  5/25/26
 *  This is the header file for battles
 *  
 *  After constructing a Battle, the combat process is started by the FIGHT() function. It loops through
@@ -89,6 +89,12 @@ private:
 
 	NPC* player; //the original player object
 	NPC* enemy; //the original enemy object
+
+	Effect* leadeffect = NULL; //if the fight has fight effects, we store them so we can apply them to player team summons
+	Effect* teameffect = NULL;
+
+	bool givemonies = true; //flags which are disabled if we manually set the leader to give 0 monies or xp respectively, to be consistent with the intent
+	bool givexp = true;
 
 	size_t pwave = 0;
 	size_t ewave = 0;

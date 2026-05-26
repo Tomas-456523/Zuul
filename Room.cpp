@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/21/26
+*  5/25/26
 *  This is the implementation file for rooms
 *  
 *  Rooms are the places that NPCs and the player are physically located in. The player can only interact
@@ -97,21 +97,22 @@ const char* Room::getSpecialExit() { //gets the special exit which is different 
 bool Room::gotBackup() { //get if there is a backup item to get, so that we don't make a pointless duplicate if we have repeating backups
 	return backup;
 }
-Item* Room::popBackup(int force) { //we can force it to do one or the other options as well (for loading saves)
-	Item* _backup;
-	if (force == 1 || onebackup) { //if there is only one backup
+Item* Room::popBackup() {
+	Item* _backup; //keep in mind we only call this function if we know the room has a backup available
+	if (onebackup) { //if there is only one backup
 		_backup = backup;
 		backup = NULL; //make gift NULL because we only give one gift
 		if (_backup) logW("c", id); //log the popping only if we actually popped anything
-	} else if (force == 2 || !getItemInVector(items, backup->getName())) { //if there is endless backups (and there isn't one just lying on the floor), give a copy of the backup
+	} else { //if there is endless backups (and there isn't one just lying on the floor), give a copy of the backup
+		if (getItemInVector(items, backup->getName())) return NULL; //don't do anything if there's one just lying on the floor
 		_backup = backup->Duplicate();
-		logW("k", id); //always log the duplicating of the item, onebackup wouldn't be false if we didn't have a backup
+		logW("c", id); //always log the duplicating of the item, onebackup wouldn't be false if we didn't have a backup
 	}
 	return _backup;
 }
 //do changes that are done when entering the room
-void Room::doEnterChanges() { //don't do the change if it has none or if the condition isn't met and we have a condition set to something other than NEVER
-	if (!hasenterchanges || !WorldState[enterchangecondition] && enterchangecondition != NEVER) return;
+void Room::doEnterChanges(bool force) { //don't do the change if it has none or if the condition isn't met and we have a condition set to something other than NEVER
+	if (!hasenterchanges || !force && !WorldState[enterchangecondition] && enterchangecondition != NEVER) return; //we can force the enter changes because world states are not fully initialized at the time of loading the world from save data
 	applyWorldChange(enterchange);
 	hasenterchanges = false; //don't do it again
 	logW("e", id); //track the enter changes because we just did some
@@ -215,7 +216,7 @@ void Room::printWelcome(bool actuallyprint) { //option to not print if we just w
 	if (!welcome) return;
 	welcome = false; //we only do the welcome once
 	if (welcomeText.getOutdated()) return; //don't do outdated welcomes
-	if (actuallyprint) printConversation(&welcomeText, true);
+	printConversation(&welcomeText, true, actuallyprint);
 	logW("w", id); //log this welcome we just did
 }
 void Room::setItem(Item* item) {

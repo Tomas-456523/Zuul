@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/22/26
+*  5/26/26
 *  This is the header file for attacks
 *  
 *  The attack struct is primarily a data container to avoid circular inclusion, so most of the logic is
@@ -44,6 +44,7 @@ struct Attack {
 	bool targetFainted = false; //if the attack is supposed to hit 0 hp npcs
 	bool instakill = false; //if it instantly defeats non-boss npcs
 	bool focushits = true; //if every hit of multihit moves should hit the same target, as opposed to random targets each time
+	bool smartunfocus = false; //if unfocused hits should not hit incapacitated or away targets
 	int recoil = 0; //how much damage the user takes (calculated later using their own attack stat)
 	int guardset = 0; //set guard on the attacker
 	int targuard = 0; //set guard on the target
@@ -76,6 +77,8 @@ struct Attack {
 	Attack* recoilatt = NULL;
 	double recoilchance = 0;
 
+	bool onlyRecoilOps = false; //this is unrelated to the above two fields, just means even if a teammate triggers the npc's recoil attack if it should only target the other side
+
 	NPC* summon = NULL; //the npc that the attack summons
 	int summonamount = 0; //how many of the summon to summon
 	bool enemysummon = false; //if the summon goes to the enemy team
@@ -103,6 +106,7 @@ struct Attack {
 
 	bool transformtotar = false; //if this attack makes the attacker transform into the target (if this is true, NPC* transformation will be overridden on use)
 	NPC* transformation = NULL; //the attacker transforms into this npc
+	bool announcetransform = true; //there are some circumstances we might not want to announce the transformation so we have this boolean
 
 	double statchip = 0; //how much % of the target's stats this attack chips away (random between 0 and this)
 
@@ -111,7 +115,7 @@ struct Attack {
 	vector<pair<NPC*, Conversation>> specificconvo; //the attack conversation is this when using it on this specific npc
 
 	//constructs the attack
-	Attack(const char* _name, const char* _description, bool _contact, int _cost, int _power, int _pierce = 20, int _minhits = 1, int _maxhits = 1, int _targets = 1, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {
+	Attack(const char* _name, const char* _description, bool _contact, int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {
 		name = _name;
 		description = _description;
 		contact = _contact;
@@ -162,7 +166,7 @@ struct Attack {
 
 	//gets (estimates) if you want to be hit by this attack, like buffs or heals and stuff like that
 	bool getBeneficial() {
-		if (power < 0 || spleak < 0 || extralives || targuard || protect || copyamount) return true; //obvious positives
+		if (power < 0 || spleak < 0 || extralives || targuard || protect || copyamount || summon && !enemysummon) return true; //obvious positives
 		if (risky) return true; //we wouldn't clarify that it's risky unless it was for a teammate, why wouldn't we want to give something risky to an enemy
 		if (power > 0 || take || spleak > 0) return false; //obvious negatives
 		if (appliedeffect) return appliedeffect->getBeneficial(); //see if the effect is beneficial and the attack's beneficialness probably matches

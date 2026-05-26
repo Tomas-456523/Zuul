@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/16/26
+*  5/25/26
 *  This is the header file for world changes
 *  
 *  World changes are a generalized data container used by things like NPCs when they are defeated,
@@ -79,6 +79,7 @@ struct WorldChange {
 	std::queue<std::pair<std::vector<NPC*>*, Item*>> unLightOrb; //make these light orbs give the teammate back to the party
 
 	std::shared_ptr<std::tuple<NPC*, Conversation, Conversation>> hjLink; //does stuff to Henry Jerry after beating the game (he had a few specific functionalities so it's prolly best to just have it be grouped)
+	std::shared_ptr<std::tuple<NPC*, Room*, const char*, const char*, const char*, const char*>> lobblock; //the lobster starts blocking the exit if it's not tamed, other specific enough functionality
 
 	Item* linkedOrb = NULL; //petrify this orb, a very specific functionality
 

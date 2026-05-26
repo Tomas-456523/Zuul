@@ -369,7 +369,7 @@ void HoseItem::addDropBlock(Room* droproom, Room* blocked, const char* direction
 }
 const char* HoseItem::getBlocked(Room* currentroom, const char* direction) { //check if this hose is blocking going in this direction from this room, return why if so
 	for (tuple<Room*, const char*, const char*, const char*>& blocker : blockers) {
-		if (currentroom == get<0>(blocker) && direction == get<1>(blocker)) return (room ? get<2>(blocker) : get<3>(blocker)); //return different message based on if it's in the inventory or on the floor
+		if (currentroom == get<0>(blocker) && !strcmp(direction, get<1>(blocker))) return (!room ? get<2>(blocker) : get<3>(blocker)); //return different message based on if it's in the inventory or on the floor
 	}
 	return NULL;
 }

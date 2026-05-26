@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/22/26
+*  5/26/26
 *  This is the implementation file for npcs
 *  
 *  NPCs are the characters who the player can interact with, and also include player character himself.
@@ -241,9 +241,6 @@ pair<int, int> NPC::getPurPos(Room* room) {
 NPC* NPC::getSummoner() {
 	return summoner;
 }
-bool NPC::getScaleFight() {
-	return scaleFight;
-}
 Effect* NPC::getFightTeamEffect() {
 	return fightteameffect;
 }
@@ -296,6 +293,9 @@ Attack* NPC::getPropAttack() {
 Attack* NPC::getBetrayal() {
 	return betrayalattack;
 }
+const set<NPC*>& NPC::getOldAffectors(Effect* effect) { //get the old affectors for the effect from before we removed it
+	return oldaffectors[effect];
+}
 //coordinates to room, clamps to grid
 Room* NPC::getPurRoom(pair<size_t, size_t>& pos) {
 	pos.first = Clamp(pos.first, 0, pursueRooms.size()-1);
@@ -309,11 +309,11 @@ bool NPC::getEscapable() { //if you can escape battle with this npc
 	return escapable;
 }
 int NPC::getXpReward() {
-	if (xpReward) return  xpReward;
+	if (xpReward >= 0) return  xpReward;
 	return level*3+3; //arbitrary formula to reward xp
 }
 int NPC::getMonyReward() {
-	if (monyReward) return monyReward;
+	if (monyReward >= 0) return monyReward;
 	if (level < 12) return level*2;
 	return level/4 + 21; //I had too many monies late game so I reduced the slope a little bit after Viola level. You fight bigger enemy groups anyway so it evens out
 }
@@ -507,7 +507,7 @@ bool NPC::getFifth() {
 bool NPC::getBlocked(Room* room, const char* direction) {
 	if (WorldState[blockunless]) return false; //if the unless is true we don't block
 	for (pair<Room*, const char*>& block : blockers) {
-		if (room == block.first && direction == block.second) {
+		if (room == block.first && !strcmp(direction, block.second)) {
 			return true;
 		}
 	}
@@ -531,17 +531,17 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 	if (cin >> amount) {
 		CinIgnoreAll(true);
 		if (!amount) {
-			cout << "\n" << name << "Just checking your balance, I seee.";
+			cout << "\n" << name << " - Just checking your balance, I seee.";
 		}
 		else if (amount > 0) { //deposit
-			if (amount > monies) cout << "\n" << name << "Youuu do not have this kind of moniiiiies...";
+			if (amount > monies) cout << "\n" << name << " - Youuu do not have this kind of moniiiiies...";
 			else {
 				monies -= amount;
 				depositedmonies += amount;
 				cout << "\nYou deposited " << amount << " mon" << (amount == 1 ? "y" : "ies") << ".\nYou now have " << monies << " mon" << (monies == 1 ? "y" : "ies") <<" and " << depositedmonies << " mon" << (depositedmonies == 1 ? "y" : "ies") <<" deposited.";
 			}
 		} else { //withdraw
-			if (amount < -depositedmonies) cout << "\n" << name << "Youuu do not have this kind of moniiiiies...";
+			if (amount < -depositedmonies) cout << "\n" << name << " - Youuu do not have this kind of moniiiiies...";
 			else {
 				monies -= amount;
 				depositedmonies += amount;
@@ -549,7 +549,7 @@ void NPC::depositMonies(int& monies) { //mony depositing system for the banker
 			}
 		}
 	} else {
-		cout << "\n" << name << "This issss... not a number I know of.";
+		cout << "\n" << name << " - This issss... not a number I know of.";
 		invalidcommand++; //clearly whatever the player entered was unrelated to the banking
 		//cin >> can't detect blank inputs so we can't handle nothingtosay++ in this one thingy I guess
 	}
@@ -1147,9 +1147,6 @@ void NPC::setSummoner(NPC* npc) {
 void NPC::setParent(NPC* npc) {
 	parent = npc;
 }
-void NPC::setScaleFight() {
-	scaleFight = true;
-}
 void NPC::setImmunity(Effect* effect, const Conversation& immunetext) {
 	immunities.push_back(effect);
 	immuneText[effect] = immunetext;
@@ -1164,8 +1161,8 @@ void NPC::transform(NPC* npc) {
 	if (transformchangename) strcpy(name, npc->getName()); //change the name if we do that
 	description = npc->getDescription();
 	int _level = level; //track old stats so we can reset them
-	double healthPercent = health/stats.hpmax;
-	double spPercent = sp/stats.spmax;
+	double healthPercent = health*1.0/stats.hpmax;
+	double spPercent = sp*1.0/stats.spmax;
 	stats = basestats = npc->getBaseStats(); //set new base and scaling stats
 	scale = npc->getStatScale();
 	level = 0; //bring level down to 0 so we can readjust stats with setLevel()
@@ -1227,17 +1224,25 @@ void NPC::setTrackRage(initializer_list<pair<double, NPC*>> stages) { //set that
 		ragestages.push(stage);
 	}
 }
-void NPC::trackRage(double damage, NPC* attacker) { //tracks rage in the rage meter and does stuff accordingly
-	//rage goes up by a third of the damage (minimum of 1) because wrath makes attack x1.5, so the damage wrath gives the player is the same portion the boss recieves as rage
+void NPC::stageRageConvo(const Conversation& convo) { //stage a conversation to be printed when the rage phase increments
+	rageconvos.push(convo);
+}
+void NPC::trackRage(double damage, NPC* attacker, bool printgeneric) { //tracks rage in the rage meter and does stuff accordingly
+	//rage goes up by a third of the damage (minimum of 3) because wrath makes attack x1.5, so the damage wrath gives the player is the same portion the boss recieves as rage
 	//the rage meter is based on how much % of health was taken away due to wrathful hits, though non-player characters contribute less
-	int rage = max(Round(damage/(attacker->getPlayerness() ? 3 : 7.5)), 1); //non-player characters increase wrath less since the player can't control them
-	cout << "\n" << attacker->getName() << "'s WRATH fueled " << name << "'s fire!";
-	CinPause();
+	int rage = max(Round(damage/(attacker->getPlayerness() ? 3 : 6)), 3); //non-player characters increase wrath less since the player can't control them
+	if (printgeneric) {
+		cout << "\n" << attacker->getName() << "'s WRATH fueled " << name << "'s fire!";
+		CinPause();
+	}
+	
 	ragemeter += rage;
 	if (!ragestages.empty() && Round(ragestages.front().first*stats.hpmax) <= ragemeter) { //if we've reached a phase, transform into that phase
 		transform(ragestages.front().second);
-		cout << "\n" << name << " started burning brighter!";
+		cout << "\n" << attacker->getName() << "'s WRATH made " << name << "'s fire burn brighter!";
 		CinPause();
+		printConversation(&rageconvos.front(), true);
+		rageconvos.pop();
 		ragestages.pop();
 	} else if (ragestages.empty()) { //no more phases left, just increase attack
 		attackMultiplier += rage/30.0;
@@ -1293,6 +1298,12 @@ void NPC::addLinkedWelcome(Room* room, const Conversation& welcome) {
 }
 void NPC::addDismissLink(vector<NPC*>* party, NPC* npc) {
 	getBackChange().dismissLinks.push({party, npc});
+}
+void NPC::addBlockLink(Room* room, const char* exit, const char* type, const char* reason) { //different than the normal npc block, this one uses its world change functionality to block the exit
+	getBackChange().exitBlocks.push(make_tuple(room, exit, type, reason));
+}
+void NPC::addUnblockLink(Room* room, const char* exit) {
+	getBackChange().exitUnblocks.push({room, exit});
 }
 void NPC::addHJLink(NPC* npc, const Conversation& newrecruitment, const Conversation& newdismissal) { //set the very specific linked changes for Henry Jerry
 	getBackChange().hjLink = make_shared<tuple<NPC*, Conversation, Conversation>>(tuple<NPC*, Conversation, Conversation>(npc, newrecruitment, newdismissal));
@@ -1481,7 +1492,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 	for (Effect* _effect : effects) {
 		if (effect == _effect) {
 			int stacks = 1; //default to one stack being removed, tho this is changed if removing all stacks due to no passed specific affector
-			set<NPC*> affectors = npceffects[effect].affectors; //store affectors just in case so we can attribute fall damage later
+			oldaffectors[effect] = npceffects[effect].affectors; //store affectors just in case so we can attribute fall damage and spread fall damage later
 			if (!affector) {
 				npceffects[effect].affectors.clear(); //clear ALL of it
 				stacks = npceffects[effect].stacks; //all the stacks!!!!!!
@@ -1608,11 +1619,11 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 			//apply fall damage (effect removal damage) if the npc isn't invincible (or the fall damage heals for some reason)
 			if (effect->falldamage && !(effect->falldamage > 0 && invincibility)) {
 				int damag = damage(effect->falldamage, 0);
-				for (NPC* affector : affectors) {
+				for (NPC* affector : oldaffectors[effect]) {
 					if (trackNPC(affector)) { //increase damage counters for tracked affectors
-						if (damag > 0) damagerecieved[affector->getParent()] += damag;
-						else healthrecovered[affector->getParent()] -= damag;
-						if (!health && koCheck) knockouts[affector->getParent()]++; //also track the ko if the npc just got ko'd due to this fall damage
+						if (damag > 0) damagedealt[affector->getParent()] += damag;
+						else healthhealed[affector->getParent()] -= damag;
+						if (koCheck) knockouts[affector->getParent()]++; //also track the ko if the npc just got ko'd due to this fall damage
 					}
 				}
 				CinPause();
@@ -1660,6 +1671,11 @@ void NPC::tickEffect(Effect* effect) {
 				CinPause();
 			}
 			setGuard(effect->guardset, false);
+		}
+		if (effect->wrath) { //passively track rage just to speed up the fight a bit even if the npc ends up doing nothing
+			for (NPC* affector : npceffect.affectors) {
+				if (affector->getTrackRage()) affector->trackRage(0, this); //since it has a minimum rage tracking it contributes that little bit
+			}
 		}
 	}
 	//decrement even if the npc is unconscious because a fire will eventually go out if you're on fire even if you're asleep
@@ -1762,7 +1778,7 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone, bool actuallyprin
 		do { //do while because conversation starts uninitialized with garbage data
 			conversation = conversations.front(); //gets the current conversation
 			conversations.pop();
-		} while (conversation.getOutdated()); //try again if the conversation is outdated, atm only regular conversations can be outdated
+		} while (conversation.getOutdated() && !conversations.empty()); //try again if the conversation is outdated, atm only regular conversations can be outdated
 		if (conversation.getOutdated()) conversation = dialogue; //just default to the exhausted dialogue if they were all outdated
 		else trackConv(this); //track that we said this since we used up a conversation
 	} else if (currentRoom->getGym()) { //gym dialogue if they're in the gym

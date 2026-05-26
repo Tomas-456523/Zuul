@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/16/26
+*  5/26/26
 *  This is the header file for NPCs
 *  
 *  NPCs are all the characters in the game, including the player, despite what it stands for. They all have Battle stats
@@ -153,7 +153,6 @@ public: //you need to set stats on creation
 	NPC* getSummoner();
 	const Stats& getBaseStats();
 	const Stats& getStatScale();
-	bool getScaleFight();
 	Effect* getFightTeamEffect();
 	Effect* getFightLeadEffect();
 	Attack* getStaged();
@@ -166,6 +165,7 @@ public: //you need to set stats on creation
 	Effect* getPropEffect();
 	Attack* getPropAttack();
 	Attack* getBetrayal(); //get the betrayal attack that can happen in the forest temple boss after all your teammates get defeated if you joined the boss's side
+	const set<NPC*>& getOldAffectors(Effect* effect); //get the old affectors for the effect from before we removed it
 
 	//bunch of functions for affecting npc variables
 	void setDialogue(const Conversation& _dialogue); //sets the default dialogue for the npc
@@ -267,7 +267,6 @@ public: //you need to set stats on creation
 	void doCatchChanges();
 	void setSummoner(NPC* npc);
 	void setParent(NPC* npc);
-	void setScaleFight();
 	void setImmunity(Effect* effect, const Conversation& immunetext);
 	void setFightEffects(Effect* team, Effect* lead);
 	void transform(NPC* npc); //transform into the given npc
@@ -275,7 +274,8 @@ public: //you need to set stats on creation
 	void stageAttack(double hppercent, Attack* attack);
 	void setChangeName(); //sets that it changes the name when transforming in battle
 	void setTrackRage(initializer_list<pair<double, NPC*>> stages); //set that this is the volcano temple boss which tracks rage
-	void trackRage(double damage, NPC* attacker); //tracks rage in the rage meter and does stuff accordingly
+	void stageRageConvo(const Conversation& convo); //stage a conversation to be printed when the rage phase increments
+	void trackRage(double damage, NPC* attacker, bool printgeneric = true); //tracks rage in the rage meter and does stuff accordingly
 	void setInternalBlender(Item* blender); //set a blender item which is part of the npc so they can craft stuff
 	bool blendItems(vector<Item*>* inventory); //try to blend items from the inventory together with the internal blender and return whether we could blend anything successfully
 	void setProposition(double hp, Attack* attack, Effect* effect, const Conversation& text); //sets the business proposition for the forest temple boss
@@ -302,6 +302,8 @@ public: //you need to set stats on creation
 	void addEnterChanges(Room* room, shared_ptr<WorldChange> enterchanges);
 	void addLinkedWelcome(Room* room, const Conversation& welcome);
 	void addDismissLink(vector<NPC*>* party, NPC* npc);
+	void addBlockLink(Room* room, const char* exit, const char* type, const char* reason); //different than the normal npc block, this one uses its world change functionality to block the exit
+	void addUnblockLink(Room* room, const char* exit);
 	void addHJLink(NPC* npc, const Conversation& newrecruitment, const Conversation& newdismissal); //set the very specific linked changes for Henry Jerry
 
 	WorldChange& editRespawnChanges(); //gets respawn changes for editing
@@ -373,6 +375,7 @@ protected:
 	bool trackrage = false; //if this is the volcano temple boss which has a rage meter that is basically what the whole fight revolves around
 	int ragemeter = 0; //how much rage the boss has accumulated, which is about the same as how much damage it took due to wrathful hits, though non-player characters contribute less
 	queue<pair<double, NPC*>> ragestages; //for the volcano temple boss, transforms into these phases after reaching this % of health lost due to rage
+	queue<Conversation> rageconvos; //what the boss says when going up a rage phase
 
 	Effect* attackeffect = NULL; //effect this npc gives to the (enemy) target of every attack
 	map<Effect*, Effect*> responseEffects; //if hit by an npc with the first effect, this npc gets the second effect
@@ -386,6 +389,8 @@ protected:
 
 	vector<Effect*> effects; //the effects affecting this npc
 	map<Effect*, NPCEffect> npceffects; //map of effect to the data this npc has on the effect relating to how it's being affected by the effect
+	map<Effect*, set<NPC*>> oldaffectors; //log the old affectors from before we cleared the list so we can attribute damage credit to the affectors for fall damage spreading in detatchEffect in Battle
+
 	vector<Effect*> immunities; //npc is immune to these effects
 	map<Effect*, Conversation> immuneText; //stuff this npc says if immune to the effect and someone tries to apply the effect
 
@@ -478,8 +483,6 @@ protected:
 	int level = 0;
 	int xp = 0; //how much xp the npc has stored up
 
-	bool scaleFight = false; //if this npc should scale to the player's level when fighting
-
 	bool leveledUp = false; //if the npc leveled up
 	Stats statChangesSum; //sum of all the stat changes that have occured and haven't been printed yet
 	vector<Attack*> newAttacks; //the newest attacks we've gotten
@@ -532,7 +535,7 @@ protected:
 	bool escapable = true; //if you can escape from this enemy in a battle
 	int guard = 0; //how many hits the npc can block before guard is broken
 
-	int xpReward = 0; //extra battle rewards
-	int monyReward = 0;
+	int xpReward = -1; //manual battle rewards instead of calculating from level, -1 mean not manually set so we should calculate it
+	int monyReward = -1;
 };
 #endif

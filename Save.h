@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/25/26
 *  This is the header file for the world saves
 *  
 *  This struct stores and manages save data. When calling SaveGame, it builds a new save string according
@@ -34,7 +34,7 @@
 *  - Room welcomes that were triggered, denoted by w[room]
 *  - If the player was caught by a pursuer, denoted by p[npc]
 *  - Opening a temple in a temple entrance room, denoted by t[room]
-*  - Backup items that were popped from a room, denoted by c[room] for non-repeating and k[room] for repeating backups
+*  - Backup items that were popped from a room, denoted by c[room] for both repeating and non-repeating backups
 *  Section U: Only exists while pursuer is pursuing, tracks their room
 *  Section R: Stuff related to the player team
 *  - First, the teammate this chunk is tracking:
@@ -646,6 +646,7 @@ struct Save {
 				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
 				item->unRoom(); //unroom it if it's a roomed item
 				discontinuity.insert(id); //log the discontinuity because we're about to delete the item
+				logW("x", id); //this doesn't log itself so we log it to make sure it stays deleted
 				delete item; //cannot be in the inventory at this point in the loading process so we just delete it
 			} else if (*data == 'd') { //defeat defeated enemies
 				NPC* npc = npcsH[ParseNum(++data)];
@@ -680,17 +681,17 @@ struct Save {
 
 				if (*data != ',' && *data != '|' && *data != '=') data++; //skip the dividing comma if we didn't skip it due to checking the suboption from the optional .
 			} else if (*data == 'e') { //room enter changes
-				roomsH[ParseNum(++data)]->doEnterChanges(); //this function also logs the thing automatically
+				roomsH[ParseNum(++data)]->doEnterChanges(true); //this function also logs the thing automatically
 			} else if (*data == 'w') { //do room welcomes
 				roomsH[ParseNum(++data)]->printWelcome(false); //printWelcome logs it automatically
 			} else if (*data == 'p') { //player got caught by pursuer
-				npcsH[ParseNum(++data)]->doCatchChanges();
+				int pursuerid = ParseNum(++data);
+				npcsH[pursuerid]->doCatchChanges();
+				logW("p", pursuerid); //it doesn't relog itself so we have to manually log it here
 			} else if (*data == 't') { //open temples
 				roomsH[ParseNum(++data)]->openTemple(false); //openTemple logs that the temple was opened automatically
 			} else if (*data == 'c') { //pop backup item in room
-				roomsH[ParseNum(++data)]->popBackup(1); //don't need to set the location, just pop it, item location is set in section I
-			} else if (*data == 'k') { //pop repeating backup item in room
-				roomsH[ParseNum(++data)]->popBackup(2);
+				roomsH[ParseNum(++data)]->popBackup(); //don't need to set the location, just pop it, item location is set in section I, also this logs itself automatically
 			}
 		}
 	}
