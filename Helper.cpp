@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/25/26
+*  5/26/26
 *  This is the implementation file for my Helper namespace. It has a bunch of helpful functions that I might use in multiple files
 *  
 *  My Helper namespace has a wide range of functions that might be used anywhere. Some examples of utlities are parsing commands into

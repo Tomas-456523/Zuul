@@ -104,7 +104,7 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	everyone.push_back(newguy);
 	numberNPC(newguy, *team); //number the npc so that the player can specify which one to target
 	newguy->setSummoner(summoner);
-	newguy->setLevel((summoner ? summoner : (*team)[0])->getLevel()); //update the level to match the team, base it off the summoner if we can but default to the team leader's level
+	if (newguy->getBasicAttack() || !newguy->getSpecialAttacks().empty()) newguy->setLevel((summoner ? summoner : (*team)[0])->getLevel()); //update the level to match the team, base it off the summoner if we can but default to the team leader's level, but don't level up dummies because they're supposed to get incapacitated instantly
 	if (newguy->getEnemy()) buildReward(newguy, true); //add to the fight reward based on the new guy
 	else if (teameffect && !newguy->getPlayerness()) attachEffect(newguy->setEffect(teameffect, NULL)); //add the lead or team effect if there is one and this is a player team summon, and depending on if this is a player npc (cloned from kosmic katana) or teammate npc
 	else if (leadeffect) attachEffect(newguy->setEffect(leadeffect, NULL));
@@ -833,10 +833,10 @@ void Battle::printTeam(vector<NPC*>& team, bool printLevel, bool printSP, bool p
 			continue;
 		} //prints their name and how much health they have left out of their maximum health
 		cout << "\n" << npc->getName() << " " << npc->getHealth() << "/" << npc->getHealthMax() << " HP";
-		if (printSP) { //prints their sp and how much they have left out of their maximum if printSP is true
+		if (printSP && (npc->getBasicAttack() || !npc->getSpecialAttacks().empty())) { //prints their sp and how much they have left out of their maximum if printSP is true and they're not a dummy (because dummies can't do anything with their sp anyway)
 			cout << " " << npc->getSP() << "/" << npc->getSPMax() << " SP";
 		} //prints the level of the npc
-		if (printLevel) {
+		if (printLevel && (npc->getBasicAttack() || !npc->getSpecialAttacks().empty())) { //don't print dummies' levels because it doesn't really matter
 			cout << " - LEVEL " << npc->getLevel();
 		} //give a way to easily tell if they're away because I wasn't paying attention and it was annoying suddenly realizing I wasted like 1-2 whole seconds trying to hit someone who wasn't actually there
 		if (npc->getAway()) {

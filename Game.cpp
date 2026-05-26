@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/25/26
+*  5/26/26
 *  This is the implementation file for the game world and playing the game!
 *  
 *  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
@@ -989,7 +989,7 @@ void Game::SetupWorld() {
 	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", false, 7, 0, 0, 0, 0, 0);
 	plantlifeplant->focushits = false;
 	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0), Stats(0, 0, 0, 0, 0, 0, 1));
-	Attack* lifeplantheal = new Attack("LIFE", "sent its nutrients to its team starting from", false, 0, -7, 0, 1, 1, 999, true);
+	Attack* lifeplantheal = new Attack("LIFE", "sent its nutrients to its team starting from", false, 0, -15, 0, 1, 1, 999, true);
 	lifeplantheal->skiptarget = true; //because it was hitting itself and making an infinite loop
 	lifeplant->setRecoilAttack(lifeplantheal, false);
 	plantlifeplant->summon = lifeplant;
@@ -5001,14 +5001,15 @@ void Game::SetupWorld() {
 	Attack* firefight2 = new Attack("FIREFIGHT", "fought", true, -5, 2, 4, 3, 3, 1);
 	firefight2->afterdesc = " with blue fire";
 	firefight2->addEffect(extrafire);
-	Attack* ragebait = new Attack("RAGEBAIT", "ragebaited", false, 8, 0, 0, 1, 1, 1);
+	Attack* ragebait = new Attack("RAGEBAIT", "ragebaited", false, 5, 0, 0, 1, 1, 1);
 	Effect* wrath = new Effect("WRATH", 3, 0, 0, 1.5, 1, 1, 1, 1.5);
 	wrath->playerduration = 5; //it's longer for the player because they have to calm down manually while the teammates calm down automatically
 	wrath->wrath = true; //sounds about right
 	wrath->nobeneficial = true; //too angry to be helpful
 	ragebait->addEffect(wrath);
 	ragebait->redundanteffect = false; //fire with fire spreads out the temptations to more efficiently build up rage points
-	Attack* spark = new Attack("SPARK", "flicked an explosive spark at", false, 4, 3, 15, 1, 1, 3);
+	ragebait->hpmin = 0.25; //he doesn't use ragebait under 500 health because he'd basically just be handing the player team a free victory by buffing them and that is counter-theme
+	Attack* spark = new Attack("SPARK", "flicked an explosive spark at", false, 3, 3, 15, 1, 1, 3);
 	Attack* basicspark = new Attack("SPARK", "flicked a purple spark at", false, -5, 3, 15, 1, 1, 3); //spark but it's a basic attack and generates sp instead of needing it
 	Attack* flame = new Attack("FLAME", "flamed", false, 10, 5, 50, 1, 1, 3);
 	flame->addEffect(extrafire);
@@ -5030,7 +5031,7 @@ void Game::SetupWorld() {
 	firewithfire->stageRageConvo({{NULL, "The flames around you started burning a bright blue!"}}); //when is printed after the burning brighter text when he goes to the next phase
 	firewithfire->stageRageConvo({{NULL, "The flames around you started burning an intense purple hue!"}});
 	wrath->playerresponse = calmdown; //the player can only calm themselves down so we only give the attack if the player is affected
-	firewithfire->setTrackRage({{0.05, firewithfir2}, {0.1, firewithfir3}}); //phase 2 after 5% rage and phase 3 after 10%, relative to total health
+	firewithfire->setTrackRage({{0.025, firewithfir2}, {0.1, firewithfir3}}); //phase 2 after 2.5% rage and phase 3 after 10%, relative to total health
 	ragebait->setTargetConv(floria, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Floria your hat looks stupid. ^^D\""}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}});
 	ragebait->setTargetConv(egadwick, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Who let this fossil into the team?\""}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd! ^^D"}, {egadwick, "You don't understand the marvelousness of science!"}});
 	ragebait->setTargetConv(forestknight, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the mighty forest knight...\""}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA! ^^D"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me into wrath!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
@@ -6662,6 +6663,9 @@ void Game::SetupWorld() {
 	vtsink->linkedItems.push({coldorb1, limbo}); //move the cold orbs to limbo so they don't get pushed out of the temple
 	vtsink->linkedItems.push({coldorb2, limbo});
 	vtsink->linkedItems.push({coldorb3, limbo});
+	vtsink->linkedItems.push({riddle1, limbo}); //same thing with the riddle signs
+	vtsink->linkedItems.push({riddle2, limbo});
+	vtsink->linkedItems.push({riddle3, limbo});
 	vtboss->addEnterChanges(volcanotempleentrance, vtsink);
 	vtboss->addLinkedWelcome(volcanotempleentrance, {{NULL, "The ground around you rumbles..."},
 		{NULL, "The volcano temple starts receding into the wall!"},
