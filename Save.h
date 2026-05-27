@@ -35,6 +35,7 @@
 *  - If the player was caught by a pursuer, denoted by p[npc]
 *  - Opening a temple in a temple entrance room, denoted by t[room]
 *  - Backup items that were popped from a room, denoted by c[room] for both repeating and non-repeating backups
+*  - NPCs that were taken and are now being tracked by a light orb, denoted by l[item].[npc]
 *  Section U: Only exists while pursuer is pursuing, tracks their room
 *  Section R: Stuff related to the player team
 *  - First, the teammate this chunk is tracking:

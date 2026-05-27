@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/25/26
+*  5/26/26
 *  This is the implementation file for rooms
 *  
 *  Rooms are the places that NPCs and the player are physically located in. The player can only interact
@@ -256,6 +256,7 @@ void Room::removeExit(const char* direction) {
 }
 void Room::setRedirect(Room* room) {
 	redirect = room;
+	if (&getItems() == &redirect->getItems()) return; //don't redirect to our own items because that would cause an infinite loop while loading
 	while (!getItems().empty()) { //moves all this room's items to the redirect room, in case the player dropped some items here
 		getItems().front()->setRoom(redirect); //item's setRoom calls setItem and removeItem as well
 	}

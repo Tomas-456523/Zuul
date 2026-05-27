@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/23/26
+*  5/26/26
 *  This header file is an extension of the Helper namespace, but it's in a seperate file due to 
 *  circular dependency with Conversation.h.
 *  
@@ -37,7 +37,6 @@ namespace Helper {
 		TEMPLEQUEST, //otherwise known as DESTROY BURGER QUEST
 		BURGERCHASE,
 		IMPRISONED,
-		LOBSTERPRISON,
 		ESCAPEDBASE,
 		CANDISMISS, //if you're currently allowed to dismiss your teammates
 		GOTPLOTDEVICE,

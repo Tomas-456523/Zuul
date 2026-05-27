@@ -482,7 +482,7 @@ void Game::SetupWorld() {
 	//Create the temple rooms MARK: TEMPLES!
 	Room* forestbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
 	Room* forestbuffer2 = new Room("fully in the forest temple. You must DROP the ESCAPE ORB if you wish to leave.");
-	forestbuffer2->shareItems(forestbuffer1); //share items because it's the same room
+	forestbuffer1->shareItems(forestbuffer2); //share items because it's the same room
 	Room* foresttemple = new Room("in the forest temple.\nYou are presented with a CHOICE ORB.");
 	Room* forestbranchw = new Room("on the western branch of the forest temple. Plants and purple smog seep through the walls.");
 	Room* forestbranche = new Room("on the eastern branch of the forest temple. Plants and purple smog seep through the walls.");
@@ -499,7 +499,7 @@ void Game::SetupWorld() {
 	
 	Room* desertbuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
 	Room* desertbuffer2 = new Room("fully in the desert temple. You must DROP the ESCAPE ORB if you wish to leave.");
-	desertbuffer2->shareItems(desertbuffer1); //share items because it's the same room
+	desertbuffer1->shareItems(desertbuffer2); //share items because it's the same room
 	Room* deserthallway = new Room("in the desert temple. The bricks are a darker shade down here.");
 	Room* deserthallway2 = new Room("in a long dark hallway.");
 	Room* deserthallway3 = new Room("in the hallway. The light keeps getting fainter and fainter.");
@@ -525,7 +525,7 @@ void Game::SetupWorld() {
 
 	Room* volcanobuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
 	Room* volcanobuffer2 = new Room("fully in the volcano temple. You must DROP the ESCAPE ORB if you wish to leave.");
-	volcanobuffer2->shareItems(volcanobuffer1);
+	volcanobuffer1->shareItems(volcanobuffer2);
 	Room* volcanotemple = new Room("in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into.");
 	Room* volcanotempleboss = new Room("in an arena burning with fire. There's a fiery figure in the center of the room.");
 	Room* volcanotemplel = new Room("on a path with lava on both sides. Twin lavafalls flow lava into the temple.");
@@ -550,6 +550,8 @@ void Game::SetupWorld() {
 	Room* abysselevatortop = new Room("in the elevator, elevated all the way to the top.");
 	Room* abysselevator = new Room("at ground level, far far below the ground you know.");
 	Room* abysselevatorbottom = new Room("in the restricted level of the elevator. The AC can't prevent the intense heat at this depth.");
+	abysselevatortop->shareItems(abysselevator);
+	abysselevatorbottom->shareItems(abysselevator);
 	Room* abyssbasement = new Room("in a chunk of the BURGER BASEMENT, dragged down along with the rest of the restaurant.\nYou're blocked by a wall of natural rock.");
 	Room* abyssentrance = new Room("in the entrance of the BURGER RESTAURANT. The glass is very structurally sound to be intact after all that.");
 	Room* abyss = new Room("right outside the BURGER RESTAURANT in the depths of the world.");
@@ -1274,6 +1276,7 @@ void Game::SetupWorld() {
 	gramchanges4.roomChanges.push({casinobase, "in the casino's basement, featuring cracks and now-spherical protective walls, courtesy of you."});
 	gramchanges4.roomChanges.push({casino, "in the casino, full of complaining gamblers and deprived of its flashing lights."});
 	gramchanges4.roomChanges.push({leftstreet4, "at the entrance of the casino, more dark than the average block due to the building's shadow."});
+	gramchanges4.worldcon = NOGAMBLING;
 
 	Item* grambutton3 = new WorldChangeItem("TURBO BUTTON", "A blue button with a skull on it.", limbo, {{NULL, "You press the TURBO BUTTON."}, {NULL, "The basement starts shaking with power!"}});
 	WorldChange& gramchanges3 = ((WorldChangeItem*)grambutton3)->getChanges();
@@ -3721,9 +3724,9 @@ void Game::SetupWorld() {
 	desertbacktrack2->setExit(EAST, desertbacktrack2);
 	desertbacktrack2->setExit(WEST, deserttemple);
 	deserttemple->setExit(EAST, desertbacktrack);
-	deserttemple->setExit(NORTH, deserttemple);
-	deserttemple->setExit(SOUTH, deserttemple);
-	deserttemple->setExit(WEST, deserttemple);
+	deserttemple->setExit(NORTH, deserttemplene);
+	deserttemple->setExit(SOUTH, deserttemplese);
+	deserttemple->setExit(WEST, deserttemplec);
 	deserttemplenw->setExit(EAST, deserttemplen);
 	deserttemplenw->setExit(SOUTH, deserttemplew);
 	deserttemplen->setExit(SOUTH, deserttemplec);
@@ -7434,7 +7437,7 @@ void Game::dropItem(Room* currentRoom, const char* itemname) {
 	if (!strcmp(item->getType(), "escapeorb")) { //the escape/entry orbs require extra confirmation before being dropped due to their effects
 		EscapeOrb* orb = (EscapeOrb*)item;
 		if (!orb->getInert()) {
-			cout << "\nAll your progress in the temple will be reset.\nAre you sure you want to drop your " << item->getName() << "?";
+			cout << "\nAll your progress in the temple will be reset.\nAre you sure you want to drop your " << item->getName() << "? (YES or NO)";
 			if (!AOrB(NULL, "YES", "NO")) return;
 		}
 	}

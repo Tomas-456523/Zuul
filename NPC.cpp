@@ -1185,28 +1185,28 @@ void NPC::chipStats(double maxpercent) {
 	bool printed = false; //technically due to chance, we could potentially change print nothing, so we track it here so we know if we should pause
 	if (chips[0]) {
 		stats[0] -= chips[0];
-		cout << "\n" << name << "'s MAX HP " << (chips[0] > 0 ? "fell" : "rose") << " by " << chips[0];
+		cout << "\n" << name << "'s MAX HP " << (chips[0] > 0 ? "fell" : "rose") << " by " << chips[0] << "!";
 		health = min(health, stats.hpmax); //make sure current health is not more than max health, just in case cause that'd be weird
 		printed = true;
 	} if (chips[1]) {
 		stats[1] -= chips[1];
-		cout << "\n" << name << "'s DEFENSE " << (chips[1] > 0 ? "fell" : "rose") << " by " << chips[1];
+		cout << "\n" << name << "'s DEFENSE " << (chips[1] > 0 ? "fell" : "rose") << " by " << chips[1] << "!";
 		printed = true;
 	} if (chips[2]) {
 		stats[2] -= chips[2];
-		cout << "\n" << name << "'s ATTACK " << (chips[2] > 0 ? "fell" : "rose") << " by " << chips[2];
+		cout << "\n" << name << "'s ATTACK " << (chips[2] > 0 ? "fell" : "rose") << " by " << chips[2] << "!";
 		printed = true;
 	} if (chips[3]) {
 		stats[3] -= chips[3];
-		cout << "\n" << name << "'s TOUGHNESS " << (chips[3] > 0 ? "fell" : "rose") << " by " << chips[3];
+		cout << "\n" << name << "'s TOUGHNESS " << (chips[3] > 0 ? "fell" : "rose") << " by " << chips[3] << "!";
 		printed = true;
 	} if (chips[4]) {
 		stats[4] -= chips[4];
-		cout << "\n" << name << "'s PIERCE " << (chips[4] > 0 ? "fell" : "rose") << " by " << chips[4];
+		cout << "\n" << name << "'s PIERCE " << (chips[4] > 0 ? "fell" : "rose") << " by " << chips[4] << "!";
 		printed = true;
 	} if (chips[5]) {
 		stats[5] -= chips[5];
-		cout << "\n" << name << "'s SPEED " << (chips[5] > 0 ? "fell" : "rose") << " by " << chips[5];
+		cout << "\n" << name << "'s SPEED " << (chips[5] > 0 ? "fell" : "rose") << " by " << chips[5] << "!";
 		printed = true;
 	}
 	if (printed) CinPause(); //do the pause because we printed stuff
