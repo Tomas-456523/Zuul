@@ -419,6 +419,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	}
 	if (attack->statchip) { //if this is a stat chipping attack we do that
 		reciever->chipStats(attack->statchip);
+		speedSort(reciever); //the npc's speed might've been changed from the stat chipping so we have to retrack their speed
 	}
 	if (attack->take) { //take away the reciever for taking attacks
 		attacker->setTaking(reciever);

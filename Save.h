@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/25/26
+*  5/27/26
 *  This is the header file for the world saves
 *  
 *  This struct stores and manages save data. When calling SaveGame, it builds a new save string according
@@ -22,6 +22,14 @@
 *  Section V: A character representing the save system version (for futureproofing)
 *  Section N: Player name in plaintext, except if there is a | or = or , in the name we store it with a preceding \, same thing with \'s to account for this (e.g. B|O\B= would be stored as NB\|O\\B\=)
 *  Section M: Monies
+*  Section P: What the player's party is (apart from the player), using the below codes (e.g. jbhl) would mean a party of Self, Michelin, Ratman, Henry Jerry, and Jilly in that order
+*  The teammate letters are:
+*    a - Player 	l - Jilly	h - Henry Jerry
+*    f - Floria		m - Mike	j - Michelin	g - Graham
+*    e - Egadwick	v - Viola	x - Carlos		r - Richie
+*    k - Absolom	c - Cacty	p - Plum		b - Ratman
+*  - Worth mentioning, these aren't teammates but have their own letter:
+*    t - Florian	n - Banker	u - Buford (buford's stats are tracked)
 *  Section W: Everything that can cause world changes in the order they happened in.
 *  - Items that were bought and therefore duplicated, denoted by b[item]
 *  - Item usage in which room, denoted by u[item].[room] (including taking take to use world change items and taking manhole covers)
@@ -38,17 +46,10 @@
 *  - NPCs that were taken and are now being tracked by a light orb, denoted by l[item].[npc]
 *  Section U: Only exists while pursuer is pursuing, tracks their room
 *  Section R: Stuff related to the player team
-*  - First, the teammate this chunk is tracking:
-*    a - Player 	l - Jilly	h - Henry Jerry
-*    f - Floria		m - Mike	j - Michelin	g - Graham
-*    e - Egadwick	v - Viola	x - Carlos		r - Richie
-*    k - Absolom	c - Cacty	p - Plum		b - Ratman
-*  - Worth mentioning, these aren't teammates but have their own letter:
-*    t - Florian	n - Banker	u - Buford (buford's stats are tracked)
+*  - First, the teammate this chunk is tracking using their correspinding letter (listed in section P)
 *  - Then level, xp, room, stats (attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage), and finally, time left in gym (0 if not in gym)
 *  - Everything connected to the NPC is seperated by .
 *  - So, this section would look something like: R[level].[xp].[room].[attacks].[helps].[damage dealt].[health dealt].[damage taken].[health recovered].[kos].[ko'd].[special].[sp usage].[gym time]
-*  Section P: What the player's party actually is (apart from the player), using the above codes (e.g. jbhl) would mean a party of Self, Michelin, Ratman, Henry Jerry, and Jilly in that order
 *  Section E: Enemy types that have been encountered
 *  Section I: Every item's room, or -1 if it's in the inventory (saved in order, so the items in the rooms and in the inventory remain in the same order) (-1 instead of 0 because 0 is a valid room ID, being limbo, so -1 translates to NULL room here)
 *  - Denoted by [item].[room]
@@ -162,16 +163,23 @@ struct Save {
 				if (!verifyName(++p)) return false; //the name was invalid for whatever reason
 			} else if (*p == 'M') { //check if the monies amount is valid
 				if (!verifyNum(++p, 32)) return false;
+			} else if (*p == 'P') { //player party
+				if (sections.count('W')) return false; //light orbs need the player's party to be set in subsection l, so section P must precede section W for this one functionality
+				const char* validChars = "feklmvcjxpgrbh"; //no buford because he's not recruited technically
+				for (p++; *p != '|' && *p != '='; p++) { //start at the first char and go until we reach the end of the party section
+					if (!strchr(validChars, *p)) return false; //check that all the party members are recruitable teammates
+				}
 			} else if (*p == 'W') {
 				if (sections.count('U') || sections.count('R') || sections.count('I') || sections.count('S') || sections.count('Q')) return false; //section W must precede these sections because otherwise it could overwrite stuff they set, or they could be missing data
 				for (p++;; p++) {
 					if (strchr("bxdrewptck", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
 						if (!verifyNum(++p)) return false; //check item/npc/room id
-					} else if (*p == 'u') {
+					} else if (*p == 'u' || *p == 'l') { //item use and light orb teammate tracking are grouped because they both have the [letter][id].[id] format
+						bool l = *p == 'l'; //subsection l can't have the choice orb thing because it's not a choice orb
 						if (!verifyNum(++p)) return false; //check item id
 						if (*p != '.') return false; //check connecting period
-						if (!verifyNum(++p)) return false; //check room id
-						if (*p == '.') { //check the optional point for choice orbs
+						if (!verifyNum(++p)) return false; //check room id (or npc id for l)
+						if (!l && *p == '.') { //check the optional point for choice orbs
 							if (*(++p) != 'a' && *p != 'b') return false;
 							p++;
 						}
@@ -206,11 +214,6 @@ struct Save {
 					}
 					if (*p == '|' || *p == '=') break; //break because it's the end of the team stats section
 					if (*p != ',') return false; //check dividing comma
-				}
-			} else if (*p == 'P') { //player party
-				const char* validChars = "feklmvcjxpgrbh"; //no buford because he's not recruited technically
-				for (p++; *p != '|' && *p != '='; p++) { //start at the first char and go until we reach the end of the party section
-					if (!strchr(validChars, *p)) return false; //check that all the party members are recruitable teammates
 				}
 			} else if (*p == 'E') { //enemy types
 				for (;;) {
@@ -369,6 +372,14 @@ struct Save {
 			snprintf(sectionM, 20, "|M%d", monies);
 			addChunk(save->data, sectionM, save->savesize);
 		}
+		//Section P, save the player's party
+		{ char team[12] = "|P"; //build the team here starting with the P section identifier then all their representing chars in order
+		size_t plen = Helper::charNPC['a']->getParty()->size();
+		for (size_t i = 1; i < plen; i++) { //add all the party characters to the string (skipping the player because of course they're in the party)
+			team[i+1] = Helper::npcChar[(*Helper::charNPC['a']->getParty())[i]];
+		}
+		team[plen+1] = '\0'; //null terminate it!
+		addChunk(save->data, team, save->savesize); } //add the team chunk
 		//Section W, this is built during gameplay, so we just add it if we've done any changes
 		if (Helper::sectionW) { //if it's been edited so it's not null
 			addChunk(save->data, "|W", save->savesize);
@@ -390,14 +401,6 @@ struct Save {
 			addChunk(save->data, sectionR, save->savesize);
 			if (next(teamiterator) != Helper::Rnpcs.end()) addChunk(save->data, ",", save->savesize); //dividing comma
 		}
-		//Section P, save the player's party
-		{ char team[12] = "|P"; //build the team here starting with the P section identifier then all their representing chars in order
-		size_t plen = Helper::charNPC['a']->getParty()->size();
-		for (size_t i = 1; i < plen; i++) { //add all the party characters to the string (skipping the player because of course they're in the party)
-			team[i+1] = Helper::npcChar[(*Helper::charNPC['a']->getParty())[i]];
-		}
-		team[plen+1] = '\0'; //null terminate it!
-		addChunk(save->data, team, save->savesize); } //add the team chunk
 		//Section E, save all encountered enemy types
 		if (encountered.size()) addChunk(save->data, "|E", save->savesize);
 		for (set<NPC*>::iterator enemyiterator = Helper::encountered.begin(); enemyiterator != Helper::encountered.end(); enemyiterator++) {
@@ -693,6 +696,13 @@ struct Save {
 				roomsH[ParseNum(++data)]->openTemple(false); //openTemple logs that the temple was opened automatically
 			} else if (*data == 'c') { //pop backup item in room
 				roomsH[ParseNum(++data)]->popBackup(); //don't need to set the location, just pop it, item location is set in section I, also this logs itself automatically
+			} else if (*data == 'l') { //track teammates with light orb
+				Item* item = itemsH[adjustItemID(ParseNum(++data), discontinuity)];
+				NPC* npc = npcsH[ParseNum(++data)];
+				//this is why we need W to be after P, we don't set the light orb's teammate if they're in the party already because that would put them in the party twice
+				if (find(player->getParty()->begin(), player->getParty()->end(), npc) == player->getParty()->end()) {
+					((LightOrb*)item)->setTeammate(npc, NULL, false); //logs itself automatically
+				}
 			}
 		}
 	}
@@ -710,6 +720,12 @@ struct Save {
 				if (*(++data) != '|') ParseName(player, data);
 			} else if (*data == 'M') { //m for monies
 				monies = ParseNum(++data);
+			} else if (*data == 'P') { //p for party
+				while (*(++data) != '|' && *data != '=') { //add the teammates until we reach the end
+					NPC* teammate = charNPC[*data];
+					player->setParty({teammate});
+					teammate->Recruit();
+				}
 			} else if (*data == 'W') { //w for world change and everything that can cause it, most important section
 				loadW(data, player, discontinuity); //it was a pretty big section so I gave it its own function
 			} else if (*data == 'U') { //u for second letter of pursuer
@@ -732,12 +748,6 @@ struct Save {
 					spusedup[npc] = ParseNum(++data);
 					npc->setGymStart(ParseNum(++data));
 					Rnpcs.insert(npc);
-				}
-			} else if (*data == 'P') { //p for party
-				while (*(++data) != '|' && *data != '=') { //add the teammates until we reach the end
-					NPC* teammate = charNPC[*data];
-					player->setParty({teammate});
-					teammate->Recruit();
 				}
 			} else if (*data == 'E') { //e for encountered enemies
 				while (*data != '|' && *data != '=') {

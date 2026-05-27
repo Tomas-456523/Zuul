@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  5/27/26
 *  This is the implementation file for npcs
 *  
 *  NPCs are the characters who the player can interact with, and also include player character himself.
@@ -98,7 +98,7 @@ void NPC::printRejectionDialogue(bool actuallyprint) {
 	}
 }
 void NPC::printRecruitmentDialogue(bool actuallyprint) {
-	if (speakOnRecruit && !conversations.empty()) { //if we have to print normal dialogue before regular dialogue
+	if (speakOnRecruit && actuallyprint && !conversations.empty()) { //if we have to print normal dialogue before regular dialogue, don't do this during loading also
 		printDialogue(true);
 		speakOnRecruit = false; //only do this once
 	}
@@ -695,8 +695,8 @@ void NPC::setRecruitable(bool _recruitable) {
 void NPC::setDismissable(bool _dismissable) {
 	dismissable = _dismissable;
 }
-void NPC::Recruit(bool announce) { //recruits the npc
-	if (announce && !newDialogue.empty()) {
+void NPC::Recruit() { //recruits the npc
+	if (!newDialogue.empty()) {
 		dialogue = newDialogue;
 	}
 	if (recruitcondition != NEVER) {
@@ -1185,28 +1185,28 @@ void NPC::chipStats(double maxpercent) {
 	bool printed = false; //technically due to chance, we could potentially change print nothing, so we track it here so we know if we should pause
 	if (chips[0]) {
 		stats[0] -= chips[0];
-		cout << "\n" << name << "'s MAX HP " << (chips[0] > 0 ? "fell" : "rose") << " by " << chips[0] << "!";
+		cout << "\n" << name << "'s MAX HP " << (chips[0] > 0 ? "fell" : "rose") << " by " << chips[0]*(chips[0]>0?1 :-1) << "!";
 		health = min(health, stats.hpmax); //make sure current health is not more than max health, just in case cause that'd be weird
 		printed = true;
 	} if (chips[1]) {
 		stats[1] -= chips[1];
-		cout << "\n" << name << "'s DEFENSE " << (chips[1] > 0 ? "fell" : "rose") << " by " << chips[1] << "!";
+		cout << "\n" << name << "'s DEFENSE " << (chips[1] > 0 ? "fell" : "rose") << " by " << chips[1]*(chips[1]>0?1 :-1) << "!";
 		printed = true;
 	} if (chips[2]) {
 		stats[2] -= chips[2];
-		cout << "\n" << name << "'s ATTACK " << (chips[2] > 0 ? "fell" : "rose") << " by " << chips[2] << "!";
+		cout << "\n" << name << "'s ATTACK " << (chips[2] > 0 ? "fell" : "rose") << " by " << chips[2]*(chips[2]>0?1 :-1) << "!";
 		printed = true;
 	} if (chips[3]) {
 		stats[3] -= chips[3];
-		cout << "\n" << name << "'s TOUGHNESS " << (chips[3] > 0 ? "fell" : "rose") << " by " << chips[3] << "!";
+		cout << "\n" << name << "'s TOUGHNESS " << (chips[3] > 0 ? "fell" : "rose") << " by " << chips[3]*(chips[3]>0?1 :-1) << "!";
 		printed = true;
 	} if (chips[4]) {
 		stats[4] -= chips[4];
-		cout << "\n" << name << "'s PIERCE " << (chips[4] > 0 ? "fell" : "rose") << " by " << chips[4] << "!";
+		cout << "\n" << name << "'s PIERCE " << (chips[4] > 0 ? "fell" : "rose") << " by " << chips[4]*(chips[4]>0?1 :-1) << "!";
 		printed = true;
 	} if (chips[5]) {
 		stats[5] -= chips[5];
-		cout << "\n" << name << "'s SPEED " << (chips[5] > 0 ? "fell" : "rose") << " by " << chips[5] << "!";
+		cout << "\n" << name << "'s SPEED " << (chips[5] > 0 ? "fell" : "rose") << " by " << chips[5]*(chips[5]>0?1 :-1) << "!";
 		printed = true;
 	}
 	if (printed) CinPause(); //do the pause because we printed stuff
@@ -1531,7 +1531,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 					pause = true;
 				}
 			}
-			if (effect->hypnotize && affector) { //adds hypnosis to the npc
+			if (effect->hypnotize) { //adds hypnosis to the npc
 				hypnosis -= stacks;
 				incontrol = true; //only one effect is hypnosis without control so we can do this without affecting other hypnotizing effects
 				if (!hypnosis) { //if the npc is no longer hynotized
@@ -1685,11 +1685,19 @@ void NPC::tickEffect(Effect* effect) {
 }
 //calculate attack weights
 void NPC::calculateWeights() {
-	if (!standard_attack) { //if we don't have a basic attack just weight every special attack equally (if we don't pull a special attack when choosing one just reroll)
+	if (!standard_attack && special_attacks.size()) { //if we don't have a basic attack just weight every special attack equally (if we don't pull a special attack when choosing one just reroll)
+		int remainder = 100; //calculate how much is left so we can distribute it across some attacks if there's extra weight left over
+		vector<Attack*> usable; //which attacks are usable, used for remainder weight distribution
 		for (Attack* attack : special_attacks) {
 			if (level >= attack->minLevel && !(wrath && attack->getBeneficial())) { //npcs don't use beneficial attacks if they're wrathful
-				attackWeights[attack] = 100/special_attacks.size();
+				int amount = 100/special_attacks.size();
+				attackWeights[attack] = amount;
+				remainder -= amount;
+				usable.push_back(attack);
 			}
+		}
+		for (; remainder; remainder--) { //distribute the remaining weight randomly (doesn't need to be deterministic, this is just so it always has an attack to do)
+			attackWeights[usable[rand()%usable.size()]]++;
 		}
 		return;
 	} //and then the normal process from here

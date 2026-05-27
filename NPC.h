@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  5/27/26
 *  This is the header file for NPCs
 *  
 *  NPCs are all the characters in the game, including the player, despite what it stands for. They all have Battle stats
@@ -193,7 +193,7 @@ public: //you need to set stats on creation
 
 	void setRecruitable(bool _recruitable); //set if you can recruit them
 	void setDismissable(bool _dismissable);
-	void Recruit(bool announce = true); //set recurited to true
+	void Recruit(); //set recurited to true
 	void Dismiss(bool gohome = true); //dismiss them and go home if specified
 	void setRoom(Room* _room); //move the npc
 	void setHome(Room* room);

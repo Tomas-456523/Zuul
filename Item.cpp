@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  5/27/26
 *  This is the implementation file for items
 *  
 *  Items are all the things the player can interact with that are stored in rooms or the player inventory. Not every
@@ -659,12 +659,13 @@ LightOrb::LightOrb(const char* _name, const char* desc, Room* _room, Room* _drop
 void LightOrb::setTeammate(NPC* npc, vector<NPC*>* party, bool announce) {
 	if (npc) {
 		npc->setRoom(limbo); //remove the teammate from the party and put them in limbo
-		party->erase(remove(party->begin(), party->end(), npc), party->end());
+		if (party) party->erase(remove(party->begin(), party->end(), npc), party->end());
 		npc->Dismiss(false);
+		logW("l", id, npc->getID());
 	} else if (teammate) { //if we're tracking a teammate
 		teammate->setRoom(room); //put the teammate back in the room (room should be set correctly now)
-		party->push_back(teammate);
-		teammate->Recruit(false);
+		party->push_back(teammate); //can only call with a null party if setting the teammate, so for removing we don't guard it
+		teammate->Recruit();
 		if (announce) cout << "\n" << teammate->getName() << " appeared in a flash of light!\n" << teammate->getName() << " is back!"; //tell the player their teammate is back
 	}
 	teammate = npc; //track the npc so we can put them back later

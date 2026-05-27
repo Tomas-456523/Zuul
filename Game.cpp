@@ -664,7 +664,7 @@ void Game::SetupWorld() {
 	Item* kosmickatana = new WeaponItem("KOSMIC KATANA", "A katana beautifully forged from the corn of a unihorn, sparkling like the stars of the cosmos.\nIt's so sharp it can slice through the spacetime continuum.", limbo, spacetimeslice);
 	Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 7, 15, 0, 1, 1, 1);
 	uppercut->afterdesc = " into the air";
-	Effect* uppercutted = new Effect("UPPERCUTTED", 0);
+	Effect* uppercutted = new Effect("UPPERCUTTED", 2);
 	uppercutted->remove = true;
 	uppercutted->falldamage = 10;
 	uppercut->addEffect(uppercutted);
@@ -1299,6 +1299,7 @@ void Game::SetupWorld() {
 	Attack* bonk = new Attack("BONK", "flew into", true, 8, 24, 24, 1, 1, 1);
 	bonk->afterdesc = "'s head";
 	Effect* hypnotized = new Effect("HYPNOTIZED", 2);
+	hypnotized->bond = true;
 	hypnotized->hypnotize = true;
 	Attack* hypnotize = new Attack("HYPNOTIZE", "emitted hypnotizing waves at", false, 15, 0, 0, 1, 1, 1);
 	hypnotize->addEffect(hypnotized);
@@ -3745,7 +3746,7 @@ void Game::SetupWorld() {
 	deserttemplesw->setExit(EAST, deserttemples);
 	deserttemples->setExit(NORTH, deserttemplec);
 	deserttemples->setExit(WEST, deserttemplesw);
-	deserttemples->setExit(SOUTH, deserttemplese);
+	deserttemples->setExit(EAST, deserttemplese);
 	deserttemplese->setExit(NORTH, deserttemple);
 	deserttemplese->setExit(WEST, deserttemples);
 	deserttemple2->setExit(UP, deserttemplec);
@@ -4844,23 +4845,23 @@ void Game::SetupWorld() {
 	hindsight2020->repeatconvo = true; //it's funny so repeat it
 	senseofsel2->setBetrayal(hindsight2020);
 
-	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(30, 0, 10, 0, 20, 30, 9));
-	Attack* shadowslap = new Attack("SHADOW SLAP", "slapped away", true, -5, 6, 12, 1, 1, 1);
+	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(19, 0, 10, 0, 20, 30, 9));
+	Attack* shadowslap = new Attack("SHADOW SLAP", "slapped away", true, -5, 4, 12, 1, 1, 1);
 	shadowslap->afterdesc = "'s strength";
 	shadowslap->statchip = 0.03; //up to 5% stat chip per turn
-	Attack* shadowscurry = new Attack("SCURRY", "scurried frantically at the team", true, 15, 4, 8, 3, 3, 1);
+	Attack* shadowscurry = new Attack("SCURRY", "scurried frantically at the team", true, 15, 3, 8, 3, 3, 1);
 	shadowscurry->focushits = false;
 	shadowscurry->statchip = 0.02; //up to 2% stat chip per hit
 	shadowcreature->setBasicAttack(shadowslap);
 	shadowcreature->addSpecialAttack(shadowscurry);
 
-	NPC* masky = new NPC("", "MASKY", "Plain white mask floating in the air who warps the world depending on its fluctuating mood.\nIts resting expression is ¦|", limbo, 0, Stats(20, 25, 7, 45, 4, 11, 9));
+	NPC* masky = new NPC("", "MASKY", "Plain white mask floating in the air who warps the world depending on its fluctuating mood.\nIts resting expression is ¦|", limbo, 0, Stats(20, 10, 7, 45, 4, 11, 9), Stats(0, 0, 1, 1, 0, 0, 1));
 	//:D - heal teammate, buff teammate (unchip stats), or make teammate radiant
-	Attack* happyheal = new Attack(":D", "is in a good mood.", false, 0, -10, 0, 1, 1, 1, true);
+	Attack* happyheal = new Attack(":D", "is in a good mood.", false, 0, -5, 0, 1, 1, 1, true);
 	happyheal->afterdesc = " recovered health";
 	Attack* happyunchip = new Attack(":D", "is in a good mood.", false, 0, 0, 0, 1, 1, 1, true);
 	happyunchip->afterdesc = "'s strength grew";
-	happyunchip->statchip = -0.05; //up to 5% stat increasing
+	happyunchip->statchip = -0.1; //up to 10% stat increasing
 	Attack* happyradiate = new Attack(":D", "is in a good mood.", false, 0, 0, 0, 1, 1, 1, true);
 	happyradiate->afterdesc = " started glowing brightly";
 	Effect* radiant = new Effect("RADIANT", 3, 0, 0, 1.5, 1, 1, 1.5, 2);
@@ -4869,32 +4870,34 @@ void Game::SetupWorld() {
 	masky->addSpecialAttack(happyunchip);
 	masky->addSpecialAttack(happyradiate);
 	//D: - damage enemy, big chip enemy stats, or turn them into stone
-	Attack* saddamage = new Attack("D:", "is in a bad mood.", false, 0, 20, 50, 1, 1, 1);
+	Attack* saddamage = new Attack("D:", "is in a bad mood.", false, 0, 5, 50, 1, 1, 1);
 	saddamage->afterdesc = " took internal damage";
-	Attack* sadchip = new Attack("D:", "is in a bad mood.", false, 0, 15, 5, 1, 1, 1);
+	Attack* sadchip = new Attack("D:", "is in a bad mood.", false, 0, 0, 0, 1, 1, 1);
 	sadchip->afterdesc = "'s strength fell";
-	sadchip->statchip = 0.10; //up to 10% stat chipping
+	sadchip->statchip = 0.1; //up to 10% stat chipping
 	Attack* sadstone = new Attack("D:", "is in a bad mood.", false, 0, 0, 0, 1, 1, 1);
 	sadstone->afterdesc = " turned into stone";
-	Effect* stone = new Effect("STONE", 3, 0, 0, 1, 0.75, 1.5);
+	Effect* stone = new Effect("STONE", 3, 0, 0, 1, 1.5, 1.5);
+	stone->freeze = true;
 	sadstone->addEffect(stone);
 	masky->addSpecialAttack(saddamage);
 	masky->addSpecialAttack(sadchip);
 	masky->addSpecialAttack(sadstone);
 
-	NPC* pyramid = new NPC("", "PYRAMON", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.", limbo, 0, Stats(220, 17, 15, 16, 17, 5, 9));
+	NPC* pyramid = new NPC("", "PYRAMON", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.", limbo, 0, Stats(120, 7, 15, 10, 17, 5, 9));
 	Effect* spiedout = new Effect("SPIED OUT", 2, 0, 0, 1, .5);
 	pyramid->setTargetEffect(spiedout);
-	Attack* lasereye = new Attack("LASER EYE", "sniped", false, -5, 10, 20, 1, 1, 1);
+	Attack* lasereye = new Attack("LASER EYE", "sniped", false, -5, 5, 20, 1, 1, 1);
 	lasereye->afterdesc = " with its laser eye";
 	Attack* eyespy = new Attack("EYE SPY", "spied out", false, 5, 0, 0, 1, 1, 1);
-	eyespy->afterdesc = "'s weaknesses";
+	eyespy->afterdesc = "'s weaknesses with its big eye";
 	eyespy->addEffect(spiedout);
-	Attack* segmentation = new Attack("SEGMENTATION", "flew at the team in layers", true, 12, 15, 5, 3, 3, 1);
+	Attack* segmentation = new Attack("SEGMENTATION", "flew at the team in layers", true, 12, 6, 0, 3, 3, 1);
 	segmentation->focushits = false;
+	segmentation->smartunfocus = true;
 	Attack* spiraleye = new Attack("SPIRAL EYE", "hypnotized", false, 15, 0, 0, 1, 1, 1);
 	spiraleye->afterdesc = " with a spiral projection from its eye";
-	Effect* spiraling = new Effect("SPIRALING", 3);
+	Effect* spiraling = new Effect("SPIRALING", 2);
 	spiraling->hypnotize = true;
 	spiraleye->addEffect(spiraling);
 	pyramid->setBasicAttack(lasereye);
@@ -4902,7 +4905,7 @@ void Game::SetupWorld() {
 	pyramid->addSpecialAttack(segmentation);
 	pyramid->addSpecialAttack(spiraleye);
 
-	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(8000, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
+	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(2943, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
 	thedark->setBoss(true);
 	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 5, 5, 1, 1, 1);
 	choke->statchip = 0.03; //chip up to 3% of stats per hit
@@ -4921,7 +4924,7 @@ void Game::SetupWorld() {
 	thedark->addSpecialAttack(terror);
 	Attack* snatch = new Attack("SNATCH", "dragged", true, 15, 0, 0, 1, 1, 1);
 	snatch->afterdesc = " into the darkness";
-	Effect* snatched = new Effect("SNATCHED", 3, 15, 0);
+	Effect* snatched = new Effect("SNATCHED", 3, 7, 0);
 	snatched->remove = true;
 	snatch->addEffect(snatched);
 	thedark->addSpecialAttack(snatch);
@@ -6390,24 +6393,26 @@ void Game::SetupWorld() {
 
 	NPC* dtguard21 = new NPC(*pyramid);
 	dtguard21->setLeader(true, 21, deserttemplen, false);
+	dtguard21->setMask("", "PYRAMON 1", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.");
 	dtguard21->setParty({masky}); //pyramon masky
-	dtguard21->blockExit(EAST, ENEMY, "guarded by the PYRAMON.", true);
+	dtguard21->blockExit(EAST, ENEMY, "guarded by PYRAMON 1.", true);
 	dtguard21->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
 	dtguard21->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
 	dtguard21->setXPReward(0);
 
-	NPC* dtguard22 = new NPC(*pyramid);
+	NPC* dtguard22 = new NPC(*shadowcreature);
 	dtguard22->setLeader(true, 21, deserttemple, false);
-	dtguard22->setParty({shadowcreature}); //pyramon shadow
-	dtguard22->blockExit(NORTH, ENEMY, "guarded by the PYRAMON.", true);
-	dtguard22->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
-	dtguard22->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
+	dtguard22->setParty({shadowcreature, shadowcreature, masky}); //shadow shadow shadow masky
+	dtguard22->blockExit(NORTH, ENEMY, "guarded by the SHADOW CREATURE.", true);
+	dtguard22->setDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
+	dtguard22->addRejectionDialogue({{NULL, "SHADOW CREATURE - *raspy breathing noises*"}});
 	dtguard22->setXPReward(0);
 
 	NPC* dtguard31 = new NPC(*pyramid);
 	dtguard31->setLeader(true, 22, deserttemplen, false);
-	dtguard31->setParty({masky, masky, shadowcreature, shadowcreature}); //pyramon masky masky shadow shadow
-	dtguard31->blockExit(WEST, ENEMY, "guarded by the PYRAMON.", true);
+	dtguard31->setMask("", "PYRAMON 2", "Floating layered pyramid from the stars that sees all that is right in front of it, much like a normal eye.");
+	dtguard31->setParty({shadowcreature, shadowcreature, masky}); //pyramon shadow shadow masky
+	dtguard31->blockExit(WEST, ENEMY, "guarded by PYRAMON 2.", true);
 	dtguard31->setDialogue({{NULL, "PYRAMON - *UFO noises*"}});
 	dtguard31->addRejectionDialogue({{NULL, "PYRAMON - *rejectful UFO noises*"}});
 	dtguard31->setXPReward(0);
@@ -6421,8 +6426,8 @@ void Game::SetupWorld() {
 	dtguard32->setXPReward(0);
 
 	Item* lightorb1 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemples, deserttemplec, limbo, DOWN, deserttemple2);
-	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
-	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb2 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplene, deserttemplec, limbo, DOWN, deserttemple2);
+	Item* lightorb3 = new LightOrb("LIGHT ORB", "A floating orb that is glowing warmly, serving as a key in the desert temple.", deserttemplenw, deserttemplec, limbo, DOWN, deserttemple2);
 
 	shared_ptr<WorldChange> dtdisappear = make_shared<WorldChange>(); //change to make the teammates disappear after reaching the end of the dark hallway
 	dtdisappear->linkedLightOrbs.push({self->getParty(), lightorb1});
@@ -7468,6 +7473,7 @@ void Game::dropItem(Room* currentRoom, const char* itemname) {
 		if (orb->getDropoff(currentRoom)) { //if this is the light orb dropoff
 			CinPause();
 			cout << "The LIGHT ORB rolled into its slot!";
+			CinPause();
 			orb->setTeammate(NULL, self->getParty()); //get the teammate back, this also prints the "teammate is back" text
 			vector<Item*> lightorbs; //get all the light orbs so we can check if we can open the ground yet
 			while (Item* lorb = getItemTypeInVector(currentRoom->getItems(), "lightorb")) {

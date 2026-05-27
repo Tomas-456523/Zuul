@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  5/27/26
 *  This is the implementation file for my Helper namespace. It has a bunch of helpful functions that I might use in multiple files
 *  
 *  My Helper namespace has a wide range of functions that might be used anywhere. Some examples of utlities are parsing commands into
@@ -576,12 +576,13 @@ namespace Helper {
 		}
 		while (!changes.linkedLightOrbs.empty()) {
 			pair<vector<NPC*>*, Item*>& data = changes.linkedLightOrbs.front();
-			((LightOrb*)data.second)->setTeammate((*data.first)[1], data.first); //no need to check because of the very specific circumstances this is called in
+			//the party size might not be full even though it's a temple because this might be called while loading a save file
+			if (data.first->size() > 1) ((LightOrb*)data.second)->setTeammate((*data.first)[1], data.first);
 			changes.linkedLightOrbs.pop();
 		}
 		while (!changes.unLightOrb.empty()) {
 			pair<vector<NPC*>*, Item*>& data = changes.unLightOrb.front();
-			((LightOrb*)data.second)->setTeammate(NULL, data.first); //put the teammate back
+			((LightOrb*)data.second)->setTeammate(NULL, data.first, false); //put the teammate back
 			changes.unLightOrb.pop();
 		}
 		if (changes.hjLink) { //do stuff for Henry Jerry after beating the game
