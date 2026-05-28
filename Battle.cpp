@@ -565,6 +565,8 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			CinPause();
 		}
 		attacker->transform(transformation);
+		speedSort(attacker); //transforming might change their speed so we should note their new speed
+
 		//we also have to renumber their name if the npc changes their name when doing a transformation
 		if (attacker->getChangeName()) numberNPC(attacker, (attacker->getEnemy() ? enemyTeam : playerTeam));
 	}
@@ -643,20 +645,20 @@ void Battle::checkFightEffects() {
 	if (!teameffect && !leadeffect) return; //don't bother checking the effects if there's not going to be anything to set
 	for (NPC* npc : playerTeam) { //give the team effect to all the non-leaders and the lead effect to the player
 		if (leadeffect && npc->getPlayerness()) attachEffect(npc->setEffect(leadeffect, NULL));
-		else if (teameffect) attachEffect(npc->setEffect(teameffect, NULL));
+		else if (teameffect && !npc->getPlayerness()) attachEffect(npc->setEffect(teameffect, NULL));
 	}
 }
 //do the business proposition, which is a very specific choice sequence for the forest temple boss, and return what the player chose MARK: business proposition
 bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
 	carryOutAttack(sos->getPropAttack(), sos, plr); //do the set-up for the business proposition (remove effects)
-	if (faint) cout << sos->getName() << " catches you as you fall.";
-	else cout << sos->getName() << " shrinks down to your height.";
+	if (faint) cout << "\n" << sos->getName() << " catches you as you fall.";
+	else cout << "\n" << sos->getName() << " shrinks down to your height.";
 	CinPause();
 	if (beenhypno) WorldState[GAMEEND] = true; //just use this as a quick cheaty skip condition for the conversation, I think it would be a waste to have a whole state for one tiny moment in one battle
 	printConversation(&sos->getPropConv(), false);
 	WorldState[GAMEEND] = false; //reset game end state, doesn't matter what faint was (if the game was ended, we wouldn't be in this battle so yeah)
 	if (AOrB(NULL, "YES", "NO")) { //if the player chooses yes, give them the effect
-		cout << sos->getName() << " - \"Well well, welcome to the better side!\"";
+		cout << "\n" << sos->getName() << " - \"Well well, welcome to the better side!\"";
 		CinPause();
 		attachEffect(plr->setEffect(sos->getPropEffect(), sos));
 		if (faint) plr->directDamage(-1); //keep the player alive if this was the "player got defeated early" fallback path
@@ -774,8 +776,9 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		if (affecter->getEffect()->getBeneficial()) helpslaunched[player]++; //this was helpful so increase the player help counter
 		else attackslaunched[player]++; //this was detrimental so increase the player attack counter
 		//the SUPERSMOOTHIE has this specific battle-handled effect
+		vector<NPC*>& team = (npc->getEnemy() ? enemyTeam : playerTeam);
 		for (int i = 0; i < affecter->getEffect()->multipositioning; i++) {
-			playerTeam.push_back(npc); //add a shallow copy to the team lists so they're just in multiple positions, very cool
+			team.push_back(npc); //add a shallow copy to the team lists so they're just in multiple positions, very cool
 			everyone.push_back(npc);
 		}
 	//some key items have attacks, so you can use them here
@@ -785,7 +788,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 			cout << "The " << itemname << " can't be used in battle!";
 			return false;
 		} //carries out the attack on the target
-		carryOutAttack(key->getAttack(), playerTeam[0], npc);
+		carryOutAttack(key->getAttack(), plr, npc);
 		attackslaunched[player]++; //key items only have attacking attacks
 	//some movement items have attacks as well
 	} else if (!strcmp(item->getType(), "movement")) {
@@ -794,13 +797,13 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 			cout << "The " << itemname << " can't be used in battle!";
 			return false;
 		} //carries out the attack on the target
-		carryOutAttack(mover->getAttack(), playerTeam[0], npc);
+		carryOutAttack(mover->getAttack(), plr, npc);
 		attackslaunched[player]++; //movement items only have attacking attacks
 	//manhole items' names are misleading. They're just random stuff on the ground that you can find and throw at enemies as an attack
 	} else if (!strcmp(item->getType(), "manhole")) {
 		ManholeItem* cover = (ManholeItem*)item; //converts to the corresponding subclass
 		//they all have attacks so we don't check for it, we just launch the attack onto the target
-		carryOutAttack(cover->getAttack(), playerTeam[0], npc);
+		carryOutAttack(cover->getAttack(), plr, npc);
 		attackslaunched[player]++; //manhole items only have attacking attacks
 	//info items give information as usual
 	} else if (!strcmp(item->getType(), "info")) {
@@ -810,7 +813,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		return false;
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items are another way of just using their attack
 		WeaponItem* weapon = (WeaponItem*)item;
-		carryOutAttack(weapon->getAttack(), playerTeam[0], npc);
+		carryOutAttack(weapon->getAttack(), plr, npc);
 		if (weapon->getAttack()->getBeneficial()) helpslaunched[player]++;
 		else attackslaunched[player]++;
 	} else if (!strcmp(item->getType(), "PLOTDEVICE")) { //plot device does(n't need to do) nothing in battle

@@ -2455,9 +2455,9 @@ void Game::SetupWorld() {
 	 {developer, "Bro you're carrying monies around you tell me."},
 	 {self, "Well you made me say that so you could explain what monies are. T_T"},
 	 {developer, "Yep that's true!"},
-	 {developer, "Well so I'm thinking monies are like gold coins."},
-	 {developer, "So yeah there you have it."},
-	 {developer, "I'm pretty sure that name was based off of this Desmos bookmark,"},
+	 {developer, "Well so I'm thinking monies are like [REDACTED]."},
+	 {developer, "Actually I think I'll leave it up to interpretation."},
+	 {developer, "Anyway I'm pretty sure the name was based off of this Desmos bookmark,"},
 	 {developer, "for some graph that was for visualizing currency inflation,"},
 	 {developer, "like it starts at a certain value and gets divided by x,"},
 	 {developer, "where x is how many of that currency exists."},
@@ -3682,6 +3682,7 @@ void Game::SetupWorld() {
 	BURGERPRISON->setExit(OUT, burgplats);
 	basestation->setExit(NORTH, BURGERPRISON);
 	foresttemplestairs->setExit(SOUTH, forestbuffer1);
+	foresttemplestairs->setExit(OUT, foresttempleentrance);
 	forestbuffer1->setExit(NORTH, foresttemplestairs);
 	forestbuffer2->setExit(SOUTH, foresttemple);
 	foresttemple->setExit(NORTH, forestbuffer2);
@@ -4698,14 +4699,15 @@ void Game::SetupWorld() {
 	burgercultist->addSpecialAttack(sorcery);
 	burgercultist->addSpecialAttack(curse);
 
-	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(25, 14, 15, 5, 15, 7, 9));
-	Effect* macerated = new Effect("MACERATED", 4, 9, 0, 1, 1, 1, 1, 0.25);
-	Attack* snaptrap = new Attack("SNAP TRAP", "snapped its fangs upon", true, -5, 5, 15, 1, 1, 1);
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(27, 14, 15, 5, 15, 7, 9), Stats(0, 1, 1, 0, 0, 0, 1));
+	Effect* macerated = new Effect("MACERATED", 4, 0, 0, 1, 1, 1, 1, 0.25);
+	Attack* snaptrap = new Attack("SNAP TRAP", "snapped its fangs upon", true, -5, 5, 10, 1, 1, 1);
 	snaptrap->synergies.push_back(macerated);
-	Attack* pitcherfluid = new Attack("PITCHER FLUID", "coughed up sticky pitcher fluid at", true, 6, 5, 30, 1, 1, 3);
+	Attack* pitcherfluid = new Attack("PITCHER FLUID", "coughed up sticky pitcher fluid at", true, 6, 6, 5, 1, 1, 3);
 	pitcherfluid->addEffect(macerated);
-	Attack* sundew = new Attack("SUNDEW TENDRIL", "wrapped a sundew tendril around", true, 9, 5, 10, 1, 1, 1, false, 0, 0, 1);
+	Attack* sundew = new Attack("SUNDEW TENDRIL", "wrapped a sundew tendril around", true, 9, 0, 0, 1, 1, 1);
 	Effect* sundewed = new Effect("SUNDEWED", 3, 10);
+	sundewed->bond = true;
 	sundewed->lifesteal = 1;
 	sundew->addEffect(sundewed);
 	carnplant->setBasicAttack(snaptrap);
@@ -4713,13 +4715,13 @@ void Game::SetupWorld() {
 	carnplant->addSpecialAttack(sundew);
 
 	NPC* smogfish = new NPC("", "SMOGFISH", "Floating many-finned fish of purple smog who fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 35, 9));
-	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 0, 0, 1);
+	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 1, 1, 1); //you see it's funny becuase it's a fish
 	copycat->transformtotar = true;
 	copycat->announcetransform = false; //it's literally the exact same text as the copycat attack text so we shouldn't print it again
 	copycat->prioritizenonleader = true; //don't transform into the player if possible to make sense of self stand out more
 	smogfish->setBasicAttack(copycat);
 
-	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle, puppeted by vines wrapped round about and through its helmet.", limbo, 0, Stats(200, 20, 10, 30, 4, 25, 9));
+	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle, puppeted by vines wrapped round about and through its helmet.", limbo, 0, Stats(180, 20, 10, 30, 4, 25, 9));
 	Attack* fullsteam = new Attack("FULL STEAM", "charged full steam at", true, -5, 20, 0, 1, 1, 1);
 	Effect* knockedaway = new Effect("KNOCKED AWAY", 0);
 	knockedaway->remove = true;
@@ -4729,6 +4731,7 @@ void Game::SetupWorld() {
 	Attack* constrict = new Attack("CONSTRICT", "constricted", true, 12, 8, 0, 1, 1, 1);
 	constrict->afterdesc = " with its vines";
 	Effect* constricted = new Effect("CONSTRICTED", 2, 10);
+	constricted->bond = true;
 	constricted->freeze = true;
 	Attack* piledrive = new Attack("PILEDRIVE", "piledrove", true, 12, 20, 6, 1, 1, 1);
 	Effect* piledriven = new Effect("FRACTURED", 4, 0, 0, 1, 0.5);
@@ -4739,8 +4742,8 @@ void Game::SetupWorld() {
 	junglenaut->addSpecialAttack(constrict);
 	junglenaut->addSpecialAttack(piledrive);
 
-	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
-	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
+	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(2142, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
+	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(2142, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
 	senseofself->setBoss(true);	
 	Attack* spotlight = new Attack("SPOTLIGHT", "put the spotlight on", false, 0, 0, 0, 1, 1, 999); //this is automatically bad by itself since it's a net loss in terms of team stats
 	Effect* inthespotlight = new Effect("IN THE SPOTLIGHT", 2147483647, 0, 0, 2, 2, 2, 2, 2);
@@ -4751,24 +4754,25 @@ void Game::SetupWorld() {
 	spotlight->onlyplayer = true; //this is a player-character-focused temptation since he's the leader
 	spotlight->nottoohypno = true; //sense of self only uses spotlight if less than 2 teammates are hypnotized, because otherwise there's not enough net loss to make staying in the spotlight unoptimal (due to pride giving immunity to this), and also mechanic/choice clutter
 	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "SENSE OF SELF - \"Alright, you think you're the main character?\""}, {senseofself, "PROVE IT."}};
-	senseofself->stageAttack(0.7, spotlight); //(try to) use the attack at these points specifically
-	senseofself->stageAttack(0.45, spotlight);
+	senseofself->stageAttack(0.75, spotlight); //(try to) use the attack at these points specifically
+	senseofself->stageAttack(0.4, spotlight);
 	//copies of the player's attacks except cooler
 	Attack* coolpunch = new Attack("COOL PUNCH", "punched", true, -5, 10, 0, 1, 1, 1);
 	coolpunch->afterdesc = " very coolly";
 	senseofself->setBasicAttack(coolpunch);
 	Attack* coolenergyball = new Attack("COOL ENERGY BALL", "threw a very cool energy ball at", false, 10, 12, 10, 1, 1, 1);
 	senseofself->addSpecialAttack(coolenergyball);
-	Attack* supersidekick = new Attack("SUPER SIDE KICK", "jumped at", true, -5, 20, 0, 1, 1, 1);
+	Attack* supersidekick = new Attack("SUPER SIDE KICK", "jumped at", true, -5, 15, 0, 1, 1, 1);
 	supersidekick->afterdesc = " with a super cool side kick";
 	senseofsel2->setBasicAttack(supersidekick);
-	Attack* superswaggyenergyball = new Attack("SUPER SWAGGY ENERGY BALL", "threw a super swaggy ball of energy at", false, 10, 20, 10, 1, 1, 1);
+	Attack* superswaggyenergyball = new Attack("SUPER SWAGGY ENERGY BALL", "threw a super swaggy ball of energy at", false, 10, 13, 10, 1, 1, 1);
 	senseofsel2->addSpecialAttack(superswaggyenergyball);
 	Attack* turbopunchflurry = new Attack("TURBO PUNCH FLURRY", "unleashed a huge barrage of cool punches", true, 15, 5, 0, 10, 10, 1);
 	turbopunchflurry->focushits = false;
 	senseofsel2->addSpecialAttack(turbopunchflurry);
 	Effect* pride = new Effect("PRIDE", 2147483647, 0, 0, 1.5); //he promises buffs so this buffs attack by 1.5x
 	pride->hypnotize = true;
+	pride->hypnocontrol = true; //so the player can control themselves if they have this
 	pride->immunity = outthespotlight;
 	senseofself->setAvoidEffect(pride); //he doesn't target guys he tempted because that wouldn't be very convincing
 	forestknight->setImmunity(pride, {{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, who needs you..."}});
@@ -4776,11 +4780,11 @@ void Game::SetupWorld() {
 	Attack* recruit1 = new Attack("RECRUIT", "tempted", false, 2, 0, 0, 1, 1, 1); //since we're adding identical attacks, it effectively makes the same move more likely to be chosen
 	recruit1->afterdesc = " into joining the better side, calling to mind your selfish choices";
 	recruit1->donotplayer = true;
-	recruit1->ignoreeffect = outthespotlight; //don't tempt npcs out of the spotlight, because that might lead to situations where it's optimal to keep the spotlight which is counter-thematic
 	recruit1->redundanteffect = false; //reapplying this would be counterproductive since it lasts forever if ignored
 	recruit1->hpmax = 0.9; //he just shows off for the first few turns to have a basis to call himself "better" on
 	recruit1->addEffect(pride);
-	recruit1->cancels = {outthespotlight}; //get rid of the spotlight debuff since they're on sense of self's team now
+	recruit1->cancels = {outthespotlight}; //get rid of the spotlight debuff since they're on sense of self's team now and it avoids situations where it might seem optimal to keep the spotlight
+	recruit1->weight = 2.0;
 	Attack* recruit2 = new Attack(*recruit1);
 	Attack* recruit3 = new Attack(*recruit1);
 	recruit1->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Hey! Don't you remember the first choice in the temple?\""}, {senseofself, "He chose to buff himself, when he could've helped you guys out!"}, {senseofself, "I won't keep the buffs to myself! Join me!"}};
@@ -4796,7 +4800,7 @@ void Game::SetupWorld() {
 	sharethespotlight->addDescription("Share the spotlight with your team and remove all spotlight statuses.");
 	sharethespotlight->cancels = {inthespotlight, outthespotlight};
 	sharethespotlight->focushits = false;
-	inthespotlight->teamresponse = sharethespotlight;
+	inthespotlight->playerresponse = sharethespotlight;
 	Attack* goback = new Attack("GO BACK", "came back to the team", false, 0, 0, 0, 1, 1, 0);
 	goback->addDescription("Leave the team of only yous and go back your original team.");
 	goback->selfcancel = pride;
@@ -4940,7 +4944,7 @@ void Game::SetupWorld() {
 	worstnightmare2->addEffect(despair);
 	worstnightmare2->onlyplayer = true;
 	thedark->stageAttack(0.25, worstnightmare2); //do this attack when reaching 25% health
-	Attack* followup = new Attack("FEAR OF THE DARK", "preyed on the team's fear of the dark", false, 0, 12, 10, 1, 1, 999);
+	Attack* followup = new Attack("NIGHT TERROR", "preyed on the team's fear of the dark", false, 0, 12, 10, 1, 1, 999);
 	followup->focushits = false;
 	followup->statchip = 0.5; //chip up to 50% of stats with the attack
 	thedark->stageAttack(0.25, followup); //do this attack right after worst nightmare 2
@@ -6146,13 +6150,13 @@ void Game::SetupWorld() {
 	//choice orb effects MARK: forest temple stuff
 	Effect* fbuff = new Effect("TEMPLE BUFF", 2147483647, 0, 0, 1.5, 1.5, 1.5, 1.5, 1.5);
 	Effect* debuff = new Effect("TEMPLE DEBUFF", 2147483647, 0, 0, .75, .75, .75, .75, .75);
-	Effect* superswaggy = new Effect("SUPER SWAGGY", 2147483647, 0, 0, 3, 3, 3, 3, 3);
-	Effect* prettyswaggy = new Effect("SWAGGY", 2147483647, 0, 0, 1.75, 1.75, 1.75, 1.75, 1.75);
+	Effect* superswaggy = new Effect("SUPER SWAGGY", 2147483647, 0, 0, 2.5, 2, 2.5, 2.5, 2.5);
+	Effect* prettyswaggy = new Effect("SWAGGY", 2147483647, 0, 0, 1.5, 1.5, 1.5, 1.5, 1.5);
 	
 	//left path guards
 	NPC* ftlguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
 	ftlguard1->setLeader(true, 20, forestbranchw, false);
-	ftlguard1->setParty({carnplant, smogfish});
+	ftlguard1->setParty({carnplant, smogfish, smogfish});
 	ftlguard1->blockExit(SOUTHEAST, ENEMY, "guarded by the CARNIVOROUS PLANT.");
 	ftlguard1->setFightEffects(NULL, fbuff); //buff self but not teammates
 	ftlguard1->setDialogue({{NULL, "CARNIVOROUS PLANT - *snapping biting noises*"}});
@@ -6176,9 +6180,9 @@ void Game::SetupWorld() {
 	ftlguard2->addOpeningDialogue({{NULL, "You have a TEMPLE DEBUFF!"}, {NULL, "Your stats fell to 75%!"}});
 	ftlguard2->setXPReward(0);
 
-	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
+	NPC* ftlguard3 = new NPC(*junglenaut); //junglenaut, smogfish x4 (final test with the big target + 4 of your own team basically)
 	ftlguard3->setLeader(true, 22, forestbranchw3, false);
-	ftlguard3->setParty({smogfish, smogfish, smogfish});
+	ftlguard3->setParty({smogfish, smogfish, smogfish, smogfish});
 	ftlguard3->blockExit(EAST, ENEMY, "guarded by the JUNGLENAUT.");
 	ftlguard3->setFightEffects(prettyswaggy, prettyswaggy); //share buff with whole team including self
 	ftlguard3->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
@@ -6186,13 +6190,13 @@ void Game::SetupWorld() {
 	ftlguard3->addLinkedDialogue(ftlguard3, {{NULL, "Your team's SWAGGY faded..."}});
 	ftlguard3->setLoopChanges(); //loop the dialogue
 	ftlguard3->setTalkOnDefeat();
-	ftlguard3->addOpeningDialogue({{NULL, "Your team has SWAGGY!"}, {NULL, "Your stats rose to 175%!"}});
+	ftlguard3->addOpeningDialogue({{NULL, "Your team has SWAGGY!"}, {NULL, "Your stats rose to 150%!"}});
 	ftlguard3->setXPReward(0);
 	
 	//right path guards
 	NPC* ftrguard1 = new NPC(*carnplant); //carnplant x2, smogfish (introduce smogfish)
 	ftrguard1->setLeader(true, 20, forestbranche, false);
-	ftrguard1->setParty({carnplant, smogfish});
+	ftrguard1->setParty({carnplant, smogfish, smogfish});
 	ftrguard1->blockExit(SOUTH, ENEMY, "guarded by the CARNIVOROUS PLANT.");
 	ftrguard1->setFightEffects(fbuff, NULL); //buff teammates but not self
 	ftrguard1->setDialogue({{NULL, "CARNIVOROUS PLANT - *snapping biting noises*"}});
@@ -6216,9 +6220,9 @@ void Game::SetupWorld() {
 	ftrguard2->addOpeningDialogue({{NULL, "Your teammates have a TEMPLE DEBUFF!"}, {NULL, "Their stats fell to 75%!"}});
 	ftrguard2->setXPReward(0);
 
-	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x3 (final test with the big target + 3 of your own team basically)
+	NPC* ftrguard3 = new NPC(*junglenaut); //junglenaut, smogfish x4 (final test with the big target + 4 of your own team basically)
 	ftrguard3->setLeader(true, 22, forestbranche3, false);
-	ftrguard3->setParty({smogfish, smogfish, smogfish});
+	ftrguard3->setParty({smogfish, smogfish, smogfish, smogfish});
 	ftrguard3->blockExit(SOUTHEAST, ENEMY, "guarded by the JUNGLENAUT.");
 	ftrguard3->setFightEffects(NULL, superswaggy); //keep all the buff to yourself
 	ftrguard3->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
@@ -6226,7 +6230,7 @@ void Game::SetupWorld() {
 	ftrguard3->addLinkedDialogue(ftrguard3, {{NULL, "Your SUPER SWAGGY faded..."}});
 	ftrguard3->setLoopChanges(); //loop the dialogue
 	ftrguard3->setTalkOnDefeat();
-	ftrguard3->addOpeningDialogue({{NULL, "You have SUPER SWAGGY!"}, {NULL, "Your stats rose to 300%!"}});
+	ftrguard3->addOpeningDialogue({{NULL, "You have SUPER SWAGGY!"}, {NULL, "Your stats rose to 250%!"}});
 	ftrguard3->setXPReward(0);
 
 	//the boss!
@@ -6240,7 +6244,7 @@ void Game::SetupWorld() {
 							 {self, "Who are you?"},
 							 {senseofself, "I'm you,"},
 							 {senseofself, "but better!"}});
-	ftboss->addLinkedConvo(senseofself, {{NULL, "SENSE OF SELF starts sublimating into smog..."},
+	ftboss->addLinkedConvo(ftboss, {{NULL, "SENSE OF SELF starts sublimating into smog..."},
 							{senseofself, "Wwhhaatt?"},
 							{senseofself, "Ii'mm bbetterr tthaan yyoooouuuuuuu......"},
 							{NULL, "The smog fades from the room..."},
