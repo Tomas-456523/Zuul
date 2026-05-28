@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  5/28/26
 *  This is the implementation file for the game world and playing the game!
 *  
 *  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
@@ -662,9 +662,9 @@ void Game::SetupWorld() {
 	spacetimeslice->copyamount = 1;
 	spacetimeslice->addDescription("Slice a teammate's spacetime into two, duplicating them for the duration of the battle.");
 	Item* kosmickatana = new WeaponItem("KOSMIC KATANA", "A katana beautifully forged from the corn of a unihorn, sparkling like the stars of the cosmos.\nIt's so sharp it can slice through the spacetime continuum.", limbo, spacetimeslice);
-	Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 7, 15, 0, 1, 1, 1);
+	Attack* uppercut = new Attack("UPPERCUT", "uppercut", true, 8, 15, 0, 1, 1, 1);
 	uppercut->afterdesc = " into the air";
-	Effect* uppercutted = new Effect("UPPERCUTTED", 2);
+	Effect* uppercutted = new Effect("UPPERCUTTED", 1);
 	uppercutted->remove = true;
 	uppercutted->falldamage = 10;
 	uppercut->addEffect(uppercutted);
@@ -990,7 +990,7 @@ void Game::SetupWorld() {
 	cacty->setBasicAttack(cactbomb);
 	Attack* plantlifeplant = new Attack("LIFE PLANT", "planted a life plant", false, 7, 0, 0, 0, 0, 0);
 	plantlifeplant->focushits = false;
-	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 0, 0, 0, 0, 0), Stats(0, 0, 0, 0, 0, 0, 1));
+	NPC* lifeplant = new NPC("", "LIFE PLANT", "Inanimate cactus which distracts the enemies and heals the team when destroyed.", limbo, 0, Stats(1, 0, 10, 0, 0, 0, 0), Stats(0, 0, 0, 0, 0, 0, 1));
 	Attack* lifeplantheal = new Attack("LIFE", "sent its nutrients to its team starting from", false, 0, -15, 0, 1, 1, 999, true);
 	lifeplantheal->skiptarget = true; //because it was hitting itself and making an infinite loop
 	lifeplant->setRecoilAttack(lifeplantheal, false);
@@ -1299,7 +1299,6 @@ void Game::SetupWorld() {
 	Attack* bonk = new Attack("BONK", "flew into", true, 8, 24, 24, 1, 1, 1);
 	bonk->afterdesc = "'s head";
 	Effect* hypnotized = new Effect("HYPNOTIZED", 2);
-	hypnotized->bond = true;
 	hypnotized->hypnotize = true;
 	Attack* hypnotize = new Attack("HYPNOTIZE", "emitted hypnotizing waves at", false, 15, 0, 0, 1, 1, 1);
 	hypnotize->addEffect(hypnotized);
@@ -4699,39 +4698,39 @@ void Game::SetupWorld() {
 	burgercultist->addSpecialAttack(sorcery);
 	burgercultist->addSpecialAttack(curse);
 
-	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(25, 6, 15, 5, 15, 7, 9));
+	NPC* carnplant = new NPC("", "CARNIVOROUS PLANT", "Really big plant who likes eating meat.", limbo, 0, Stats(25, 14, 15, 5, 15, 7, 9));
 	Effect* macerated = new Effect("MACERATED", 4, 9, 0, 1, 1, 1, 1, 0.25);
-	Attack* snaptrap = new Attack("SNAP TRAP", "snapped its fangs upon", true, -5, 15, 15, 1, 1, 1);
+	Attack* snaptrap = new Attack("SNAP TRAP", "snapped its fangs upon", true, -5, 5, 15, 1, 1, 1);
 	snaptrap->synergies.push_back(macerated);
-	Attack* pitcherfluid = new Attack("PITCHER FLUID", "coughed up sticky pitcher fluid at", true, 6, 8, 30, 1, 1, 3);
+	Attack* pitcherfluid = new Attack("PITCHER FLUID", "coughed up sticky pitcher fluid at", true, 6, 5, 30, 1, 1, 3);
 	pitcherfluid->addEffect(macerated);
-	Attack* sundew = new Attack("SUNDEW TENDRIL", "wrapped a sundew tendril around", true, 9, 5, 20, 1, 1, 1, false, 0, 0, 1);
-	Effect* sundewed = new Effect("SUNDEWED", 5, 12);
+	Attack* sundew = new Attack("SUNDEW TENDRIL", "wrapped a sundew tendril around", true, 9, 5, 10, 1, 1, 1, false, 0, 0, 1);
+	Effect* sundewed = new Effect("SUNDEWED", 3, 10);
 	sundewed->lifesteal = 1;
 	sundew->addEffect(sundewed);
 	carnplant->setBasicAttack(snaptrap);
 	carnplant->addSpecialAttack(pitcherfluid);
 	carnplant->addSpecialAttack(sundew);
 
-	NPC* smogfish = new NPC("", "SMOGFISH", "Floating many-finned fish of purple smog who fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 18, 9));
+	NPC* smogfish = new NPC("", "SMOGFISH", "Floating many-finned fish of purple smog who fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 35, 9));
 	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 0, 0, 1);
 	copycat->transformtotar = true;
 	copycat->announcetransform = false; //it's literally the exact same text as the copycat attack text so we shouldn't print it again
 	copycat->prioritizenonleader = true; //don't transform into the player if possible to make sense of self stand out more
 	smogfish->setBasicAttack(copycat);
 
-	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle, puppeted by vines wrapped round about and through its helmet.", limbo, 0, Stats(250, 30, 10, 30, 4, 25, 9));
-	Attack* fullsteam = new Attack("FULL STEAM", "charged full steam at", true, -5, 22, 0, 1, 1, 1);
+	NPC* junglenaut = new NPC("", "JUNGLENAUT", "Armored juggernaut of the jungle, puppeted by vines wrapped round about and through its helmet.", limbo, 0, Stats(200, 20, 10, 30, 4, 25, 9));
+	Attack* fullsteam = new Attack("FULL STEAM", "charged full steam at", true, -5, 20, 0, 1, 1, 1);
 	Effect* knockedaway = new Effect("KNOCKED AWAY", 0);
 	knockedaway->remove = true;
 	fullsteam->addEffect(knockedaway);
-	Attack* vinelash = new Attack("VINE LASH", "lashed its vines around", true, 7, 19, 5, 2, 2, 1);
+	Attack* vinelash = new Attack("VINE LASH", "lashed its vines around", true, 7, 10, 5, 2, 2, 1);
 	vinelash->focushits = false;
-	Attack* constrict = new Attack("CONSTRICT", "constricted", true, 12, 10, 0, 1, 1, 1);
+	Attack* constrict = new Attack("CONSTRICT", "constricted", true, 12, 8, 0, 1, 1, 1);
 	constrict->afterdesc = " with its vines";
 	Effect* constricted = new Effect("CONSTRICTED", 2, 10);
 	constricted->freeze = true;
-	Attack* piledrive = new Attack("PILEDRIVE", "piledrove", true, 12, 30, 6, 1, 1, 1);
+	Attack* piledrive = new Attack("PILEDRIVE", "piledrove", true, 12, 20, 6, 1, 1, 1);
 	Effect* piledriven = new Effect("FRACTURED", 4, 0, 0, 1, 0.5);
 	piledrive->addEffect(piledriven);
 	constrict->addEffect(constricted);
@@ -4740,8 +4739,8 @@ void Game::SetupWorld() {
 	junglenaut->addSpecialAttack(constrict);
 	junglenaut->addSpecialAttack(piledrive);
 
-	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
-	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 20, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
+	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
+	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
 	senseofself->setBoss(true);	
 	Attack* spotlight = new Attack("SPOTLIGHT", "put the spotlight on", false, 0, 0, 0, 1, 1, 999); //this is automatically bad by itself since it's a net loss in terms of team stats
 	Effect* inthespotlight = new Effect("IN THE SPOTLIGHT", 2147483647, 0, 0, 2, 2, 2, 2, 2);
@@ -4772,7 +4771,6 @@ void Game::SetupWorld() {
 	pride->hypnotize = true;
 	pride->immunity = outthespotlight;
 	senseofself->setAvoidEffect(pride); //he doesn't target guys he tempted because that wouldn't be very convincing
-	senseofsel2->addSpecialAttack(spotlight);
 	forestknight->setImmunity(pride, {{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, who needs you..."}});
 	//these three temptation attacks are identical, but each gets added by choosing the selfish choices in the life orbs, so effectively each selfish choice increases the likelyhood this attack gets chosen
 	Attack* recruit1 = new Attack("RECRUIT", "tempted", false, 2, 0, 0, 1, 1, 1); //since we're adding identical attacks, it effectively makes the same move more likely to be chosen
@@ -4780,7 +4778,7 @@ void Game::SetupWorld() {
 	recruit1->donotplayer = true;
 	recruit1->ignoreeffect = outthespotlight; //don't tempt npcs out of the spotlight, because that might lead to situations where it's optimal to keep the spotlight which is counter-thematic
 	recruit1->redundanteffect = false; //reapplying this would be counterproductive since it lasts forever if ignored
-	recruit1->hpmin = 0.9; //he just shows off for the first few turns to have a basis to call himself "better" on
+	recruit1->hpmax = 0.9; //he just shows off for the first few turns to have a basis to call himself "better" on
 	recruit1->addEffect(pride);
 	recruit1->cancels = {outthespotlight}; //get rid of the spotlight debuff since they're on sense of self's team now
 	Attack* recruit2 = new Attack(*recruit1);
@@ -4789,9 +4787,10 @@ void Game::SetupWorld() {
 	recruit2->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Why are you still on his team?\""}, {senseofself, "Don't you remember at the lake when he chose to debuff you?"}, {senseofself, "He could NEVER take one for the team..."}, {senseofself, "I won't treat you like that!"}};
 	recruit3->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Man, remember the room with the flowers?\""}, {senseofself, "This guy can't help but be the star of the show!"}, {senseofself, "He kept the SUPER SWAGGiness alllll to himself..."}, {senseofself, "But here, there's plenty of stardom and buffs to share!"}, {senseofself, "Come over here!"}};
 	//moves to get rid of the temptation statuses
-	Attack* apolagize = new Attack("APOLAGIZE TO", "apolagized to", false, 0, 0, 0, 1, 1, 1); //apolagizing only costs a turn, not sp
+	Attack* apolagize = new Attack("APOLAGIZE TO", "apolagized to", false, 0, 0, 0, 1, 1, 1, true); //apolagizing only costs a turn, not sp
 	apolagize->cancels = {pride};
 	apolagize->addDescription("Take a turn to apolagize to a teammate with PRIDE in hopes of bringing them back.");
+	apolagize->donotplayer = true; //you need to GO BACK instead
 	pride->teamresponse = apolagize; //player can apolagize once a teammate gets pride
 	Attack* sharethespotlight = new Attack("SHARE THE SPOTLIGHT", "shared the spotlight", false, 0, 0, 0, 1, 1, 999, true);
 	sharethespotlight->addDescription("Share the spotlight with your team and remove all spotlight statuses.");
@@ -4843,7 +4842,7 @@ void Game::SetupWorld() {
 								  {NULL, "\nYou blow up behind SENSE OF SELF as he looks away"},
 								  {NULL, "because it's cooler not to look at explosions."}};
 	hindsight2020->repeatconvo = true; //it's funny so repeat it
-	senseofsel2->setBetrayal(hindsight2020);
+	senseofself->setBetrayal(hindsight2020);
 
 	NPC* shadowcreature = new NPC("", "SHADOW CREATURE", "Lanky creature of darkness that chips away at people's strength.", limbo, 0, Stats(19, 0, 10, 0, 20, 30, 9));
 	Attack* shadowslap = new Attack("SHADOW SLAP", "slapped away", true, -5, 4, 12, 1, 1, 1);
@@ -4905,22 +4904,24 @@ void Game::SetupWorld() {
 	pyramid->addSpecialAttack(segmentation);
 	pyramid->addSpecialAttack(spiraleye);
 
-	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(2943, 10, 5, 50, 10, 0, 9), Stats(2, 1, 0, 2, 0, 0, 0));
+	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(2943, 0, 5, 0, 10, 0, 9), Stats(2, 1, 0, 1, 0, 0, 0));
 	thedark->setBoss(true);
-	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 5, 5, 1, 1, 1);
+	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 8, 10, 1, 1, 1);
 	choke->statchip = 0.03; //chip up to 3% of stats per hit
 	thedark->setBasicAttack(choke);
-	Attack* ballofpain = new Attack("BALL OF PAIN", "sent a dark ball of pain at", false, 4, 10, 40, 1, 1, 1);
-	Effect* pain = new Effect("PAIN", 3, 10, 0, 0.5, 0.5, 0.5, 0.5, 0.5);
+	Attack* ballofpain = new Attack("BALL OF PAIN", "sent a dark ball of pain at", false, 5, 10, 40, 1, 1, 1);
+	Effect* pain = new Effect("PAIN", 3, 0, 0, 0.5, 0.5, 0.5, 0.5, 0.5);
 	ballofpain->addEffect(pain);
 	thedark->addSpecialAttack(ballofpain);
 	Attack* terror = new Attack("TERROR", "showed its face to", false, 7, 0, 0, 1, 1, 1); //the main mechanic of the fight; the player has to deal with unfreezing their teammates
-	terror->hpmax = 0.8; //the dark must be below 80% health to start inflicting despair, to introduce the normal attacks before the main mechanic
+	terror->hpmax = 0.85; //the dark must be below 85% health to start inflicting despair, to introduce the normal attacks before the main mechanic
 	Effect* despair = new Effect("DESPAIR", 2147483647);
+	despair->playerduration = 1; //for the second worst nightmare
 	despair->freeze = true;
 	terror->addEffect(despair);
 	terror->donotplayer = true; //because that would be a bit annoying at most and have literally only one possible response so it's better for the fight to only let teammates have despair
 	terror->redundanteffect = false; //cause it lasts forever so reapplying it would be a waste of a turn
+	terror->weight = 2.5; //this move is like the whole point of the fight and makes it more interesting so the dark uses it more often without costing too much
 	thedark->addSpecialAttack(terror);
 	Attack* snatch = new Attack("SNATCH", "dragged", true, 15, 0, 0, 1, 1, 1);
 	snatch->afterdesc = " into the darkness";
@@ -4928,11 +4929,22 @@ void Game::SetupWorld() {
 	snatched->remove = true;
 	snatch->addEffect(snatched);
 	thedark->addSpecialAttack(snatch);
-	Attack* worstnightmare = new Attack("WORST NIGHTMARE", "sapped everyone's strength", false, 0, 0, 0, 1, 1, 999);
-	worstnightmare->statchip = 0.5; //chip up to 50% of stats with the attack
-	worstnightmare->focushits = false;
-	thedark->stageAttack(0.3, worstnightmare); //do this attack when reaching 30% health
-	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1); //encouraging only costs a turn, not sp
+	Attack* worstnightmare1 = new Attack("WORST NIGHTMARE", "subjected everyone around", false, 0, 0, 0, 1, 1, 999);
+	worstnightmare1->afterdesc = " to their greatest fears";
+	worstnightmare1->skiptarget = true; //don't hit the player yet
+	worstnightmare1->addEffect(despair);
+	worstnightmare1->onlyplayer = true;
+	thedark->stageAttack(0.66, worstnightmare1); //do this attack when reaching ~2/3 health
+	Attack* worstnightmare2 = new Attack("WORST NIGHTMARE", "fully revealed itself to the team!\nChills go down your spine", false, 0, 0, 0, 1, 1, 999);
+	worstnightmare2->focushits = false;
+	worstnightmare2->addEffect(despair);
+	worstnightmare2->onlyplayer = true;
+	thedark->stageAttack(0.25, worstnightmare2); //do this attack when reaching 25% health
+	Attack* followup = new Attack("FEAR OF THE DARK", "preyed on the team's fear of the dark", false, 0, 12, 10, 1, 1, 999);
+	followup->focushits = false;
+	followup->statchip = 0.5; //chip up to 50% of stats with the attack
+	thedark->stageAttack(0.25, followup); //do this attack right after worst nightmare 2
+	Attack* encourage = new Attack("ENCOURAGE", "encouraged", false, 0, 0, 0, 1, 1, 1, true); //encouraging only costs a turn, not sp
 	encourage->afterdesc = " to keep fighting";
 	encourage->cancels = {despair};
 	encourage->addDescription("Take a turn to encourage a teammate with DESPAIR to have hope and keep fighting!");
@@ -8468,6 +8480,6 @@ void Game::play() {
 			else cout << "\rYou take a nap. You will continue on your quest to get the BURGER later!";
 		}
 		CinPause();
-		cout << "\nWhat would you like to do? (Type HELP for help)";
+		cout << "\nType HELP for help\nWhat would you like to do?";
 	}
 }

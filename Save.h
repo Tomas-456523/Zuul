@@ -151,12 +151,13 @@ struct Save {
 		std::set<char> sections; //sections that we have found already
 		
 		for (const char* p = data+4; *p != '=';) { //start right after the BQ2| until reaching the =
-			if (*p != '|') { //checks stuff if it's not a divider
-				if (sections.count(*p)) return false; //no duplicate sections
-				sections.insert(*p); //track that we have checked this section so we can verify there aren't any duplicates using the check immediately before this
-			} else { //skip the dividers, they are already checked during the sections and at the end
+			if (*p == '|') { //skip the dividers, they are already checked during the sections and at the end
 				p++;
 			}
+			
+			if (sections.count(*p)) return false; //no duplicate sections
+			sections.insert(*p); //track that we have checked this section so we can verify there aren't any duplicates using the check immediately before this
+
 			if (*p == 'V') {
 				p += 2; //skip the version number
 			} else if (*p == 'N') {

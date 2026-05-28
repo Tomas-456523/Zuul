@@ -248,15 +248,14 @@ Effect* NPC::getFightLeadEffect() {
 	return fightleadeffect;
 }
 Attack* NPC::getStaged() {
-	pair<double, Attack*> staged = {1, NULL};
-	while (!stagedattacks.empty()) { //keep going until we can't use the next one
-		//choose the next available attack if its before the next one and it's below the hp threshold
-		if (stagedattacks.front().first < staged.first && health <= stagedattacks.front().first * stats.hpmax) {
-			staged = stagedattacks.front();
-			stagedattacks.pop(); //pop the attack because we already checked/used it
-		} else break; //we're at the latest possible staged attack so just use this one	
+	if (stagedattacks.empty()) return NULL; //we don't have any staged attacks
+	//choose the next available attack if it's below the hp threshold
+	if (health <= stagedattacks.front().first * stats.hpmax) {
+		Attack* staged = stagedattacks.front().second;
+		stagedattacks.pop(); //pop the attack because we already checked/used it
+		return staged; //return whatever we found
 	}
-	return staged.second; //return whatever we found, which could be null if we found nothing
+	return NULL; //we found nothing so return null for no staged attack
 }
 bool NPC::getChangeName() { //get if this npc changes its name when transforming
 	return transformchangename;
@@ -1180,7 +1179,7 @@ void NPC::chipStats(double maxpercent) {
 	int chips[6]; //chip all the stats up to the maximum percentage
 	for (size_t i = 0; i < 6; i++) {
 		int change = Round(stats[i]*maxpercent*rand()/(RAND_MAX));
-		chips[i] = min(change, stats[i]-(i != 5 ? 5 : 0)); //stats can't fall below 5 because that would be silly, except speed, it doesn't not make sense for that to be that low
+		chips[i] = min(change, stats[i]-(i != 5 ? min(stats[i], 5) : 0)); //stats can't fall below 5 because that would be silly (or just cap at the stat if it's below that), except speed, it doesn't not make sense for that to be that low
 	}
 	bool printed = false; //technically due to chance, we could potentially change print nothing, so we track it here so we know if we should pause
 	if (chips[0]) {
@@ -1685,16 +1684,19 @@ void NPC::tickEffect(Effect* effect) {
 }
 //calculate attack weights
 void NPC::calculateWeights() {
+	attackWeights.clear(); //make sure any attacks we can't use have a weight of 0
 	if (!standard_attack && special_attacks.size()) { //if we don't have a basic attack just weight every special attack equally (if we don't pull a special attack when choosing one just reroll)
-		int remainder = 100; //calculate how much is left so we can distribute it across some attacks if there's extra weight left over
 		vector<Attack*> usable; //which attacks are usable, used for remainder weight distribution
-		for (Attack* attack : special_attacks) {
+		for (Attack* attack : special_attacks) { //build the list of attacks we can choose from depending on the conditions
 			if (level >= attack->minLevel && !(wrath && attack->getBeneficial())) { //npcs don't use beneficial attacks if they're wrathful
-				int amount = 100/special_attacks.size();
-				attackWeights[attack] = amount;
-				remainder -= amount;
 				usable.push_back(attack);
 			}
+		}
+		int remainder = 100; //calculate how much is left so we can distribute it across some attacks if there's extra weight left over
+		int amount = 100/usable.size();
+		for (Attack* attack : usable) { //distribute the weight across the attacks as evenly divisibly as we can
+			attackWeights[attack] = amount;
+			remainder -= amount;
 		}
 		for (; remainder; remainder--) { //distribute the remaining weight randomly (doesn't need to be deterministic, this is just so it always has an attack to do)
 			attackWeights[usable[rand()%usable.size()]]++;
@@ -1704,14 +1706,14 @@ void NPC::calculateWeights() {
 	int maxWeight = 90; //maximum weight that all attacks' cumulative weights add up to (out of 100)
 	int totalSpCost = 0; //total cost of all attacks
 	for (Attack* attack : special_attacks) { //add the cost of every special attack to the total
-		if (level >= attack->minLevel && Round(attack->cost*spUseMultiplier) <= stats.spmax) { //only attacks we can use currently
-			totalSpCost += Round(attack->cost*spUseMultiplier);
+		if (level >= attack->minLevel && Round(attack->cost*spUseMultiplier) <= stats.spmax && !(wrath && attack->getBeneficial())) { //only attacks we can use currently
+			totalSpCost += Round(attack->cost*attack->weight*spUseMultiplier);
 		}
 	}
 	for (Attack* attack : special_attacks) { //calculate the weight based on the cost out of total cost
-		if (level >= attack->minLevel) {
+		if (level >= attack->minLevel && Round(attack->cost*spUseMultiplier) <= stats.spmax  && !(wrath && attack->getBeneficial())) {
 			if (!totalSpCost) attackWeights[attack] = 0; //if all attacks were too expensive to use, than you just use nothing so they have 0 weight :P
-			else attackWeights[attack] = maxWeight*Round(attack->cost*spUseMultiplier)/totalSpCost;
+			else attackWeights[attack] = maxWeight*Round(attack->cost*attack->weight*spUseMultiplier)/totalSpCost;
 		}
 	}
 }

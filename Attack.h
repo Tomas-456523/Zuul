@@ -114,6 +114,8 @@ struct Attack {
 	bool repeatconvo = false; //if the conversation prints every time the attack goes instead of just the first time you ever see it
 	vector<pair<NPC*, Conversation>> specificconvo; //the attack conversation is this when using it on this specific npc
 
+	double weight = 1.0; //how much this affects attack weights for special attacks compared to other attacks of similar sp cost, change if we want an npc to use a cool attack more or something
+
 	//constructs the attack
 	Attack(const char* _name, const char* _description, bool _contact, int _cost, int _power, int _pierce, int _minhits, int _maxhits, int _targets, bool _targetAlly = false, int _minlevel = 0, int _spleak = 0, double _lifesteal = 0) {
 		name = _name;

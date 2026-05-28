@@ -840,9 +840,8 @@ void Battle::printTeam(vector<NPC*>& team, bool printLevel, bool printSP, bool p
 		if (printLevel && (npc->getBasicAttack() || !npc->getSpecialAttacks().empty())) { //don't print dummies' levels because it doesn't really matter
 			cout << " - LEVEL " << npc->getLevel();
 		} //give a way to easily tell if they're away because I wasn't paying attention and it was annoying suddenly realizing I wasted like 1-2 whole seconds trying to hit someone who wasn't actually there
-		if (npc->getAway()) {
-			cout << " (away)";
-		}
+		if (npc->getAway()) cout << " (away)"; //status indicators for convenience
+		if (npc->getFrozen()) cout << " (frozen)";
 	}
 }
 //prints all the items in the inventory MARK: print inventory
@@ -991,6 +990,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 				cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << Round(attack->cost * plr->getSPUseMultiplier()) << ")";
 				return false; //could not launch attack
 			}
+			if (attack->donotplayer && target->getPlayerness()) { //can't hit the player with player-avoiding attacks
+				cout << "\nYou can't " << attack->name << " yourself!";
+				return false;
+			}
 			carryOutAttack(attack, plr, target);
 			return true; //successfully launched attack!
 		} else if (target && strlen(commandWordP) >= strlen(tcother)) { //track the invalid attack or command when target was valid (prefer longer ones cause they're probably more meaningful error messages)
@@ -1087,6 +1090,17 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		}
 	} //use this to build up a list of valid targets
 	vector<NPC*> targets;
+	//if we shouldn't launch the attack if there's too many hypnotized npcs, check for that
+	if (attack->nottoohypno) {
+		int hypnocount = 0;
+		for (NPC* npc : targets) {
+			if (npc->getHypnotized()) hypnocount++;
+			if (hypnocount > 1) { //more than 1 is too much (works best for the one move that uses this field)
+				targets.clear();
+				break; //break because the amount isn't going to get any lower
+			}
+		}
+	}
 	//check each target in the team this attack would target and add it if it's a valid target for the attack
 	for (NPC* target : choices) {
 		if (!attack->targetFainted && target->getHealth() <= 0) continue; //can't target non-fainted if bro is fainted
@@ -1125,6 +1139,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		for (NPC* target : targets) {
 			if (!target->getHypnotized()) _targets.push_back(target); //add the target if they are not also hypnotized
 		}
+		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
 	}
 	if (!attack->targetAlly && targets.size() > 1) { //filter out fifth npcs if the attacker attacking the opposite team and there's other non-fifth npcs, so that the fifth npcs don't affect enemy targeting too much
 		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
@@ -1168,16 +1183,6 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		NPC* leader = ((!npc->getSummoner() || !getNPCInVector(choices, npc->getSummoner()->getName())) ? choices[0] : npc->getSummoner()); //or just choose the actual parent
 		//if removing the leader wouldn't make it an empty list, we try to filter it out
 		if (targets.size() != 1) targets.erase(remove(targets.begin(), targets.end(), leader), targets.end());
-	}
-	if (attack->nottoohypno) { //if we shouldn't launch the attack if there's too many hypnotized npcs, check for that
-		int hypnocount = 0;
-		for (NPC* npc : targets) {
-			if (npc->getHypnotized()) hypnocount++;
-			if (hypnocount > 1) { //more than 1 is too much (works best for the one move that uses this field)
-				targets.clear();
-				break; //break because the amount isn't going to get any lower
-			}
-		}
 	}
 
 	return targets; //return the targets!
