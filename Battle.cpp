@@ -461,7 +461,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 				NPC* guardian = guardians[i];
 				//guardians block hits if they're not beneficial and the guardian still has hp and they're not frozen or recovering or not here, of course, and also they won't block hits for opposing side (for example, after getting hypnotized and doing a protect move), also taking hypnotization into account
 				if (!attack->getBeneficial() && guardian->getHealth() && !guardian->getFrozen() && !guardian->getRecovering() && !guardian->getAway() && (!guardian->getHypnotized() && guardian->getEnemy() == reciever->getEnemy()|| guardian->getHypnotized() && guardian->getEnemy() != reciever->getEnemy())) {
-					cout << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
+					cout << "\n" << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
 					reciever = guardian;
 					CinPause();
 					break;

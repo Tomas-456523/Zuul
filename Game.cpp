@@ -74,7 +74,6 @@ void Game::SetupWorld() {
 	const char* IN_ROOM = "IN ROOM";
 	const char* IN_BACK_ROOM = "IN BACK ROOM";
 	const char* INSIDE = "INSIDE";
-	const char* OUTSIDE = "OUTSIDE";
 	const char* UPSTAIRS = "UPSTAIRS";
 	const char* DOWNSTAIRS = "DOWNSTAIRS";
 	const char* UNDERGROUND = "UNDERGROUND";
@@ -129,7 +128,7 @@ void Game::SetupWorld() {
 	const char* FIRE = "FIRE";
 
 	//I send all the template enemy NPCs and also shop items to limbo, since I need to set a room for them MARK: make rooms
-	Room* limbo = new Room("not supposed to be in this room... if you break something by editing your save that's not my fault.\nHere I put all the stuff that's not in any accessible room,\nstuff like the original copy of things you can buy,\nor enemy templates.");
+	Room* limbo = new Room("not supposed to be in this room...");
 
 	//create all WANING WOODLANDS rooms MARK: WW
 	Room* village = new Room("in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.");
@@ -827,7 +826,7 @@ void Game::SetupWorld() {
 	egadwick->addSpecialAttack(orbitalstrike);
 	
 	//Forest Knight Absolom is primarily a tank with some knightly support as well MARK: Absolom
-	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 25, Stats(30, 17, 15, 30, 10, 0, 10), Stats(1, 1, 1, 1, 0, 0, 0));
+	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 25, Stats(30, 20, 15, 10, 10, 0, 10), Stats(1, 0, 1, 1, 0, 0, 0));
 	npcChar[forestknight] = 'k'; //Absolom's character representation is k for knight
 	forestknight->setRoaming(true, false); //Absolom roams after going to his room, meaning you beat Jim Shady, but also he doesn't help in battle when roaming cause he's more focused on non-natural threats
 	forestknight->setRoamRooms({forest, forestleft, forestright, foresttempleentrance, forestfork, forestgate, forestwall, forestgrave, forestspork, bossgrove, forestnice, treasuregrove, flowerfield});
@@ -869,33 +868,33 @@ void Game::SetupWorld() {
 	forestknight->setDialogue({{forestknight, "What a beautiful forest..."}, {forestknight, "I shall protect it 'till my last breath!"}});
 	forestknight->setTalkOnRecruit(true);
 	
-	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 5, 5, 1, 1, 1);
+	Attack* forestslash = new Attack("FOREST SLASH", "slashed", true, -5, 8, 5, 1, 1, 1);
 	forestslash->afterdesc = " with his forest sword";
 	forestknight->setBasicAttack(forestslash);
 	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 0, 0, 1, 1, 1, true, 10);
 	defend->protect = true; //defend start protecting
 	forestknight->addSpecialAttack(defend);
-	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 8, 15, 1, 1, 3, false, 12);
+	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 12, 15, 1, 1, 3, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
-	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 20, 0, 0, 0, 0, 999, true, 15);
+	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 15, 0, 0, 1, 1, 999, true, 15);
 	warcry->focushits = false;
 	Effect* galvanized = new Effect("GALVANIZED", 3, 0, 0, 2.0);
 	warcry->addEffect(galvanized);
 	forestknight->addSpecialAttack(warcry);
 	Attack* enrootf = new Attack("ENROOT", "rooted into the soil", false, 10, 0, 0, 0, 0, 0, true, 18);
-	Effect* rootedf = new Effect("ROOTED", 5, -10, 0, 0, 3.0, 3.0);
+	Effect* rootedf = new Effect("ROOTED", 5, 0, -5, 1, 2.0, 2.0);
 	enrootf->selfeffect = rootedf;
 	enrootf->focushits = false;
 	forestknight->addSpecialAttack(enrootf);
-	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 18, 20, 0, 1, 1, 1, false, 20);
+	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 15, 30, 0, 1, 1, 1, false, 20);
 	sequoiasmash->afterdesc = " with the weight of a sequoia";
 	forestknight->addSpecialAttack(sequoiasmash);
-	Attack* splinter = new Attack("SPLINTER", "swung splinters from his sword at", false, 12, 3, 0, 1, 1, 3, true, 25);
-	Effect* splintered = new Effect("SPLINTERED", 5, 10);
+	Attack* splinter = new Attack("SPLINTER", "swung splinters from his sword at", false, 12, 3, 0, 1, 1, 3, false, 25);
+	Effect* splintered = new Effect("SPLINTERED", 5, 7);
 	splinter->addEffect(splintered);
 	forestknight->addSpecialAttack(splinter);
-	Attack* blitz = new Attack("BLITZ", "rushed at", true, 25, 3, 15, 10, 10, 1, false, 26);
+	Attack* blitz = new Attack("BLITZ", "rushed at", true, 15, 4, 15, 10, 10, 1, false, 26);
 	blitz->afterdesc = " with a rapid flurry of sword strikes";
 	blitz->addDescription("Rush at the target with a rapid flurry of strikes.");
 	forestknight->addSpecialAttack(blitz);
@@ -921,9 +920,9 @@ void Game::SetupWorld() {
 	mike->setTalkOnRecruit(true);
 	mike->setRecruitable(true);
 
-	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", false, -5, 10, 10, 2, 2, 1);
+	Attack* mdynamite = new Attack("DUAL DYNAMITE", "threw dual sticks of dynamite", false, -5, 7, 10, 2, 2, 1);
 	mdynamite->focushits = false;
-	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", false, 0, 5, 10, 1, 1, 1);
+	Attack* drecoil = new Attack("LOOSE DYNAMITE", "accidentally bounced a stick of dynamite towards", false, 0, 5, 10, 1, 1, 1, true);
 	mdynamite->recoilatt = drecoil;
 	mdynamite->recoilchance = 1.0/3;
 	mike->setBasicAttack(mdynamite);
@@ -931,47 +930,49 @@ void Game::SetupWorld() {
 	Effect* stunned = new Effect("STUNNED", 3);
 	stunned->freeze = true;
 	flashbang->addEffect(stunned);
-	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", false, 0, 5, 10, 1, 1, 1);
+	Attack* frecoil = new Attack("SIDE EFFECT", "accidentally stunned", false, 0, 5, 10, 1, 1, 1, true);
 	frecoil->afterdesc = " as well";
 	frecoil->addEffect(stunned);
 	flashbang->recoilatt = frecoil;
 	flashbang->recoilchance = 1.0/3;
 	mike->addSpecialAttack(flashbang);
 	Attack* bigbundle = new Attack("BIG BUNDLE", "threw a big bundle of dynamite at", false, 13, 12, 10, 1, 1, 3);
-	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", false, 0, 10, 5, 1, 1, 1);
+	Attack* brecoil = new Attack("LOOSE DYNAMITE", "didn't tie the bundle tightly enough, making some dynamite fall close to", false, 0, 5, 5, 1, 1, 1, true);
 	brecoil->afterdesc = " in the process";
 	bigbundle->recoilatt = brecoil;
 	bigbundle->recoilchance = 1.0/3;
 	mike->addSpecialAttack(bigbundle);
 	Attack* bunkerbuster = new Attack("BUNKER BUSTER", "aimed a bunker buster at", false, 11, 15, 100, 1, 1, 1, false, 8);
-	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", false, 0, 8, 100, 1, 1, 1);
+	Attack* bbrecoil = new Attack("MISAIM", "aimed it too close to", false, 0, 3, 100, 1, 1, 1, true);
 	bunkerbuster->recoilatt = bbrecoil;
 	bunkerbuster->recoilchance = 1.0/3;
 	mike->addSpecialAttack(bunkerbuster);
 	bunkerbuster->addDescription("Throw a bunker-busting explosive at the target with immense pierce. (15 ATTACK, 100 PIERCE)");
-	Attack* dedefenser = new Attack("DEDEFENSER", "threw a heavy charge at", false, 15, 10, 20, 1, 1, 1, false, 12);
-	Effect* dedefensed = new Effect("DEDEFENSED", 10, 0, 0, 1, 0.5, 0.25, 1, 0.5);
+	Attack* dedefenser = new Attack("DEDEFENSER", "threw a defense-destroying charge at", false, 15, 10, 20, 1, 1, 1, false, 12);
+	Effect* dedefensed = new Effect("DEDEFENSED", 7, 0, 0, 1, 0.5, 0.25);
 	dedefenser->addEffect(dedefensed);
-	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", false, 0, 10, 20, 1, 1, 1);
+	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", false, 0, 10, 20, 1, 1, 1, true);
 	ddrecoil->addEffect(dedefensed);
 	dedefenser->recoilatt = ddrecoil;
 	dedefenser->recoilchance = 1.0/3;
+	dedefenser->redundanteffect = false;
 	mike->addSpecialAttack(dedefenser);
-	dedefenser->addDescription("Throw a heavy explosive that will leave the target off with permanently reduced defense. (10 ATTACK, 20 PIERCE)");
+	dedefenser->addDescription("Throw a heavy explosive that damages the target's defense for a long time. (10 ATTACK, 20 PIERCE)");
 	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", false, 20, 20, 40, 1, 1, 5, false, 17);
-	Attack* dcrecoil = new Attack("MISINPUT", "accidentally included", false, 0, 10, 20, 1, 1, 1);
+	Attack* dcrecoil = new Attack("MISINPUT", "accidentally included", false, 0, 10, 20, 1, 1, 1, true);
 	dcrecoil->afterdesc = " in the charge's radius";
 	depthcharge->recoilatt = dcrecoil;
 	depthcharge->recoilchance = 2.0/3;
 	mike->addSpecialAttack(depthcharge);
 	depthcharge->addDescription("Throw a an explosive of the depths with an enormous blast radius. (20 ATTACK, 40 PIERCE)");
-	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 29, 10, 20, 12, 12, 1, false, 20);
+	Attack* minesweeper = new Attack("MINESWEEPER", "unleashed a mine-sweeping explosive upon the enemy team", false, 29, 3, 20, 10, 12, 1, false, 20);
 	minesweeper->focushits = false;
-	Attack* mrecoil = new Attack("MINESWEEPER RECOIL", "hit his team with the minesweeper as well", false, 0, 10, 20, 3, 3, 1);
+	Attack* mrecoil = new Attack("MINESWEEPER", "hit his team with the minesweeper as well", false, 0, 2, 20, 3, 3, 1, true);
+	mrecoil->focushits = false;
 	minesweeper->recoilatt = mrecoil;
 	minesweeper->recoilchance = 1;
 	mike->addSpecialAttack(minesweeper);
-	minesweeper->addDescription("Unleash a mine-sweeping series of explosions... (10 ATTACK, 20 PIERCE, 12 hits)");
+	minesweeper->addDescription("Unleash a mine-sweeping series of explosions... (3 ATTACK, 20 PIERCE, 10-12 hits)");
 
 	//Cactus Cacty is a multi-hit damage dealer with some support/healing abilities MARK: Cacty
 	NPC* cacty = new NPC("CACTUS", "CACTY", "Sharp cactus, brown from dehydration. He looks very sad, on the brink of death.", oasis, 15, Stats(20, 10, 5, 10, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 0));
@@ -1103,38 +1104,38 @@ void Game::SetupWorld() {
 	blenderchanges.recruitLinks.push(michelin);
 	blenderchanges.linkedDialogue.push({michelin, {{michelin, "Man what a waste of time :("}}});
 
-	Attack* castiron = new Attack("CAST IRON", "bonked", true, -5, 5, 0, 1, 1, 1);
+	Attack* castiron = new Attack("CAST IRON", "bonked", true, -5, 7, 0, 1, 1, 1);
 	castiron->afterdesc = " with his cast iron pan";
 	michelin->setBasicAttack(castiron);
-	Attack* qualitymeal = new Attack("5-STAR MEAL", "prepared a 5-star meal for", false, 5, -10, 0, 1, 1, 1, true);
+	Attack* qualitymeal = new Attack("5-STAR MEAL", "prepared a 5-star meal for", false, 10, -4, 0, 1, 1, 1, true);
 	michelin->addSpecialAttack(qualitymeal);
-	Effect* marinated = new Effect("MARINATED", 5, 0, 0, 1, 0.5);
-	Attack* flambe = new Attack("FLAMBE'", "bonked", true, 7, 10, 5, 1, 1, 1);
+	Effect* marinated = new Effect("MARINATED", 3, 0, 0, 1, 0.5);
+	Attack* flambe = new Attack("FLAMBE'", "bonked", true, 7, 12, 5, 1, 1, 1);
 	flambe->afterdesc = " with a flaming pan";
-	Effect* flambed = new Effect("FLAMBE'D", 5, 5, 0, 1, 0.8);
+	Effect* flambed = new Effect("FLAMBE'D", 5, 5);
 	flambe->addEffect(flambed);
 	flambe->synergies.push_back(marinated);
 	flambe->cancels = {marinated};
 	michelin->addSpecialAttack(flambe);
-	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 0, 0, 1, 1, 1, true, 11);
+	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 4, 0, 0, 1, 1, 1, true, 11);
 	Effect* hotsauced = new Effect("HOT SAUCED", 5, 0, 0, 1.25, 0.75);
 	hotsauce->addEffect(hotsauced);
 	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
 	michelin->addSpecialAttack(hotsauce);
-	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 15, -15, 0, 1, 1, 999, true, 13);
+	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 20, -3, 0, 1, 1, 999, true, 13);
 	feast->focushits = false;
-	feast->addDescription("Prepare a feast for the whole team, for much healing. (15 POWER)");
+	feast->addDescription("Prepare a feast for the whole team, healing everyone.");
 	michelin->addSpecialAttack(feast);
 	Attack* marinate = new Attack("MARINATE", "doused", false, 10, 0, 0, 1, 1, 1, false, 12);
 	marinate->afterdesc = " with alcohol";
 	marinate->addEffect(marinated);
 	michelin->addSpecialAttack(marinate);
 	marinate->addDescription("Douse the target with alcohol, halving their defense and increasing damage taken from FLAMBE'.");
-	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 12, -999, 0, 1, 1, 1, true, 15);
+	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 15, -999, 0, 1, 1, 1, true, 15);
 	michmeal->addDescription("Prepare a teammate a super high-quality meal, for much healing.");
 	michelin->addSpecialAttack(michmeal);
-	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 30, 40, 40, 1, 1, 1, false, 20);
+	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 25, 40, 40, 1, 1, 1, false, 20);
 	congratulation->afterdesc = " congratulation";
 	congratulation->instakill = true;
 	congratulation->addDescription("Cook the target not just well done, but CONGRATULATION.");
@@ -1159,7 +1160,7 @@ void Game::SetupWorld() {
 	carlosplugchanges.linkedDialogue.push({carlos, {{carlos, "broooooo i was so close... >:("}}});
 	
 	Effect* infected = new Effect("INFECTED", 5, 10, 10);
-	Attack* backtrack = new Attack("BACKTRACK", " sent malware to the attacker's traced location", false, 0, 0, 0, 1, 1, 1);
+	Attack* backtrack = new Attack("BACKTRACK", "sent malware to the attacker's traced location", false, 0, 0, 0, 1, 1, 1);
 	backtrack->addEffect(infected);
 	carlos->setRecoilAttack(backtrack);
 	Attack* hack = new Attack("HACK", "hacked into", false, -5, 0, 0, 1, 1, 1, false, 0, 5); //no damage but steals sp which I think is pretty interesting
@@ -1169,18 +1170,18 @@ void Game::SetupWorld() {
 	trojan->addEffect(infected);
 	carlos->addSpecialAttack(trojan);
 	Attack* stacksmash = new Attack("STACK SMASH", "stack smashed", false, 14, 7, 30, 1, 1, 1);
-	Effect* overflow = new Effect("OVERFLOW", 4, 0, 0, 1, 0.5);
+	Effect* overflow = new Effect("OVERFLOW", 3, 0, 0, 1, 0.5);
 	stacksmash->addEffect(overflow);
 	carlos->addSpecialAttack(stacksmash);
-	Attack* socialengineering = new Attack("SOCIAL ENGINEERING", "socially engineered", false, 14, 0, 0, 1, 1, 1, false, 12);
+	Attack* socialengineering = new Attack("SOCIAL ENGINEERING", "socially engineered", false, 18, 0, 0, 1, 1, 1, false, 12);
 	socialengineering->afterdesc = " into fighting for him";
 	Effect* compromised = new Effect("SOCIALLY ENGINEERED", 2);
 	compromised->hypnotize = true;
 	socialengineering->addEffect(compromised);
 	carlos->addSpecialAttack(socialengineering);
 	socialengineering->addDescription("Socially engineer an enemy into fighting for your team.");
-	Attack* ddos = new Attack("DDOS", "directed his botnet's traffic towards", false, 12, 8, 40, 3, 3, 1, false, 14);
-	Effect* overloaded = new Effect("OVERLOADED", 3);
+	Attack* ddos = new Attack("DDOS", "directed his botnet's traffic towards", false, 15, 8, 40, 3, 3, 1, false, 14);
+	Effect* overloaded = new Effect("OVERLOADED", 2);
 	overloaded->freeze = true;
 	ddos->addEffect(overloaded);
 	carlos->addSpecialAttack(ddos);
@@ -1203,7 +1204,7 @@ void Game::SetupWorld() {
 	cascadingfailure->synergies.push_back(overloaded);
 	cascadingfailure->synergies.push_back(cryptojacked);
 	carlos->addSpecialAttack(cascadingfailure);
-	cascadingfailure->addDescription("Trigger a cascading failure in the enemy team, with the attack's effectiveness multiplied for every one of Carlos's statuses present. (20 ATTACK, 40 PIERCE)");
+	cascadingfailure->addDescription("Trigger a cascading failure in the enemy team, with the attack's effectiveness multiplied for every one of Carlos's statuses present. (10 ATTACK, 10 PIERCE)");
 
 	//Princess Plum is support MARK: Plum
 	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", castlethrone, 18, Stats(20, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 0));
@@ -1233,7 +1234,7 @@ void Game::SetupWorld() {
 	Attack* bobbybomb = new Attack("BOBBY BOMB", "threw a Bobby Bomb at", false, 10, 20, 20, 1, 1, 3, false, 7);
 	plum->addSpecialAttack(bobbybomb);
 	Attack* metalhat = new Attack("METAL HAT", "gave a metal hat to", false, 14, 0, 0, 1, 1, 1, true, 10);
-	Effect* metallic = new Effect("METAL", 3, 0, 0, 1.5, 4.0);
+	Effect* metallic = new Effect("METAL", 3, 0, 0, 1.25, 3.0);
 	metalhat->addEffect(metallic);
 	plum->addSpecialAttack(metalhat);
 	Attack* lightning = new Attack("LIGHTNING", "used a lightning bolt to shock the enemy team", false, 22, 5, 15, 1, 1, 999);
@@ -1295,9 +1296,9 @@ void Game::SetupWorld() {
 	gramchanges.roomChanges.push({casinobase, "in the casino's basement. The energy core is glowing extra blue."});
 
 	NPC* icosahedrongus = new NPC("", "ICOSAHEDRONGUS", "Floating yellow icosahedral construct from Graham's icosahedral die.", limbo, 0, Stats(20, 10, 20, 10, 20, 20, 9));
-	Attack* laser = new Attack("LASER", "fired a laser at", false, -5, 3, 12, 1, 1, 1);
+	Attack* laser = new Attack("LASER", "fired a laser at", false, -5, 5, 12, 1, 1, 1);
 	laser->afterdesc = " from one of its vertices";
-	Attack* bonk = new Attack("BONK", "flew into", true, 8, 6, 3, 1, 1, 1);
+	Attack* bonk = new Attack("BONK", "flew into", true, 8, 9, 3, 1, 1, 1);
 	bonk->afterdesc = "'s head";
 	Effect* hypnotized = new Effect("HYPNOTIZED", 2);
 	hypnotized->hypnotize = true;
@@ -1308,14 +1309,14 @@ void Game::SetupWorld() {
 	icosahedrongus->addSpecialAttack(hypnotize);
 	
 	Attack* nat1 = new Attack("DICE ROLL", "rolled a NAT 1!", false, 0, 0, 0, 1, 1, 3, true); //1 - Graham explodes
-	nat1->afterdesc = " blew up!";
+	nat1->afterdesc = " blew up";
 	nat1->targetself = true;
 	nat1->instakill = true;
 	graham->addSpecialAttack(nat1);
 	Attack* nat2 = new Attack("DICE ROLL", "rolled a 2!", false, 0, -999, 0, 1, 1, 1); //2 - enemy gets fully healed
 	nat2->afterdesc = " was fully healed";
 	graham->addSpecialAttack(nat2);
-	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stuns the team!", false, 0, 0, 0, 1, 1, 999, true); //3 - freeze team
+	Attack* nat3 = new Attack("DICE ROLL", "rolled a 3! A flash of light stunned the team", false, 0, 0, 0, 1, 1, 999, true); //3 - freeze team
 	nat3->focushits = false;
 	Effect* blinded = new Effect("BLINDED", 2);
 	blinded->freeze = true;
@@ -1333,10 +1334,11 @@ void Game::SetupWorld() {
 	anvilabove->falldamage = 50;
 	nat6->addEffect(anvilabove);
 	graham->addSpecialAttack(nat6);
-	Attack* nat7 = new Attack("DICE ROLL", "rolled a 7", false, 0, 0, 0, 0, 0, 0); //7 - give enemy team an icosahedrongus
+	Attack* nat7 = new Attack("DICE ROLL", "rolled a 7! The enemy team got an ICOSAHEDRONGUS", false, 0, 0, 0, 0, 0, 0); //7 - give enemy team an icosahedrongus
 	nat7->summon = icosahedrongus;
 	nat7->enemysummon = true;
 	nat7->summonamount = 1;
+	nat7->focushits = false;
 	graham->addSpecialAttack(nat7);
 	Attack* nat8 = new Attack("DICE ROLL", "rolled an 8!", false, 0, 0, 0, 1, 1, 1, true); //8 - fling teammate into the air
 	nat8->afterdesc = " was surged up into the sky";
@@ -1349,6 +1351,7 @@ void Game::SetupWorld() {
 	nat9->afterdesc = " took damage";
 	graham->addSpecialAttack(nat9);
 	Attack* nat10 = new Attack("DICE ROLL", "rolled a 10! Nothing happened", false, 0, 0, 0, 0, 0, 0); //10 - do nothing
+	nat10->focushits = false;
 	graham->addSpecialAttack(nat10);
 	Attack* nat11 = new Attack("DICE ROLL", "rolled an 11!", false, 0, 7, 20, 1, 1, 1); //11 - enemy takes some damage
 	nat11->afterdesc = " took damage";
@@ -1365,13 +1368,14 @@ void Game::SetupWorld() {
 	frozen->freeze = true;
 	nat14->addEffect(frozen);
 	graham->addSpecialAttack(nat14);
-	Attack* nat15 = new Attack("DICE ROLL", "rolled a 15! Icosahedral energy barriers form around the team!", false, 0, 0, 0, 1, 1, 999, true); //15 - summon guard for team
+	Attack* nat15 = new Attack("DICE ROLL", "rolled a 15! Icosahedral energy barriers form around the team", false, 0, 0, 0, 1, 1, 999, true); //15 - summon guard for team
 	nat15->focushits = false;
 	nat15->targuard = 1;
 	graham->addSpecialAttack(nat15);
-	Attack* nat16 = new Attack("DICE ROLL", "rolled a 16!", false, 0, 0, 0, 0, 0, 0, true); //16 - summon icosahedrongus for team
+	Attack* nat16 = new Attack("DICE ROLL", "rolled a 16! The team got an ICOSAHEDRONGUS", false, 0, 0, 0, 0, 0, 0, true); //16 - summon icosahedrongus for team
 	nat16->summon = icosahedrongus;
 	nat16->summonamount = 1;
+	nat16->focushits = false;
 	graham->addSpecialAttack(nat16);
 	Attack* nat17 = new Attack("DICE ROLL", "rolled a 17!", false, 0, -999, 0, 1, 1, 1, true); //17 - teammate gets fully healed
 	nat17->afterdesc = " was fully healed";
@@ -1382,8 +1386,8 @@ void Game::SetupWorld() {
 	nat19->afterdesc = " is invincible";
 	nat19->addEffect(invincible); //from plum's move, also buffs attack cause there's no teammate buff roll anyway
 	graham->addSpecialAttack(nat19);
-	Attack* nat20 = new Attack("DICE ROLL", "rolled a NAT 20!", false, 0, 40, 40, 1, 1, 1); //20 - target explodes
-	nat20->afterdesc = " blew up!";
+	Attack* nat20 = new Attack("DICE ROLL", "rolled a NAT 20!", false, 0, 80, 80, 1, 1, 1); //20 - target explodes
+	nat20->afterdesc = " blew up";
 	nat20->instakill = true;
 	graham->addSpecialAttack(nat20);
 
@@ -1467,32 +1471,32 @@ void Game::SetupWorld() {
 	richie->setBlockMessage({{richie, "Umm why are we going there?"}, {richie, "We were like fighting BURGER and stuff."}});
 	richie->setBlockUnless(TEMPLEQUEST);
 
-	NPC* drone = new NPC("", "DRONE", "Combat drone that Richie bought to help in battle.", limbo, 0, Stats(16, 0, 15, 0, 20, 30, 9));
+	NPC* drone = new NPC("", "DRONE", "Combat drone that Richie bought to help in battle.", limbo, 0, Stats(5, 0, 15, 0, 20, 30, 9));
 	Attack* dronegun = new Attack("DRONE GUN", "fired at", false, -5, 4, 10, 3, 3, 1);
 	Attack* ram = new Attack("RAM", "rammed into", true, 10, 15, 0, 1, 1, 1);
 	drone->setBasicAttack(dronegun);
 	drone->addSpecialAttack(ram);
 
-	NPC* healsprinkler = new NPC("", "HEAL SPRINKLER", "Portable station that sprinkles health onto the team, bought by Richie to aid in battle.", limbo, 0, Stats(30, 0, 10, 0, 0, 0, 9));
-	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -5, 0, 1, 1, 999, true);
+	NPC* healsprinkler = new NPC("", "HEAL SPRINKLER", "Portable station that sprinkles health onto the team, bought by Richie to aid in battle.", limbo, 0, Stats(1, 0, 5, 0, 0, 0, 9));
+	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -3, 0, 1, 1, 999, true);
 	sprinkle->focushits = false;
 	healsprinkler->setBasicAttack(sprinkle);
 
-	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(40, 0, 16, 0, 8, 13, 9));
+	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(10, 0, 16, 0, 8, 13, 9));
 	Effect* swatshield = new Effect("SWAT SHIELD", 2147483647);
 	swatshield->guardset = 1;
 	guardbot->setEffect(swatshield, NULL);
-	Attack* baton = new Attack("BATON", "thwacked", true, -5, 5, 0, 1, 1, 1);
+	Attack* baton = new Attack("BATON", "thwacked", true, -5, 7, 0, 1, 1, 1);
 	baton->afterdesc = " with its baton";
 	Attack* pepperspray = new Attack("PEPPER SPRAY", "sprayed pepper spray at", false, 7, 5, 0, 1, 1, 1);
-	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 3, 0, 0.5, 0.75);
+	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 3, 0, 1, 0.75);
 	pepperspray->addEffect(peppersprayed);
 	guardbot->addSpecialAttack(pepperspray);
 	Attack* protectandserve = new Attack("PROTECT AND SERVE", "is protecting", false, 10, 0, 0, 1, 1, 1, true);
 	protectandserve->protect = true;
 	guardbot->addSpecialAttack(protectandserve);
 
-	NPC* marinemech = new NPC("", "MARINE MECH", "Advanced and expensive military droid bought by Richie as a great help in battle.", limbo, 0, Stats(50, 0, 20, 0, 35, 30, 9));
+	NPC* marinemech = new NPC("", "MARINE MECH", "Advanced and expensive military droid bought by Richie as a great help in battle.", limbo, 0, Stats(20, 0, 20, 0, 35, 30, 9));
 	Attack* openfire = new Attack("OPEN FIRE", "opened fire upon", false, -5, 3, 20, 5, 5, 1);
 	Attack* rockemsockem = new Attack("ROCKEM SOCKEM", "rocked and socked", true, 8, 7, 0, 2, 2, 1);
 	Attack* pgmissile = new Attack("PRECISION GUIDED MISSILE", "fired a precision guided missile at", false, 10, 10, 10, 1, 1, 3);
@@ -1505,22 +1509,26 @@ void Game::SetupWorld() {
 	Attack* buydrone = new Attack("AMAZON PRIME", "bought a DRONE on Amazon", false, 5, 0, 0, 0, 0, 0);
 	buydrone->summon = drone;
 	buydrone->summonamount = 1;
+	buydrone->focushits = false;
 	richie->addSpecialAttack(buydrone);
 	Attack* buyheal = new Attack("AMAZON PRIME", "bought a HEAL SPRINKLER on Amazon", false, 10, 0, 0, 0, 0, 0);
 	buyheal->summon = healsprinkler;
 	buyheal->summonamount = 1;
+	buyheal->focushits = false;
 	richie->addSpecialAttack(buyheal);
 	Attack* buybot = new Attack("AMAZON PRIME", "bought a ROBOCOP on Amazon", false, 15, 0, 0, 0, 0, 0);
 	buybot->summon = guardbot;
 	buybot->summonamount = 1;
+	buybot->focushits = false;
 	richie->addSpecialAttack(buybot);
 	Attack* buymech = new Attack("AMAZON PRIME", "bought a MARINE MECH on Amazon", false, 20, 0, 0, 0, 0, 0);
 	buymech->summon = marinemech;
 	buymech->summonamount = 1;
+	buymech->focushits = false;
 	richie->addSpecialAttack(buymech);
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
-	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(40, 10, 10, 20, 0, 25, 9), Stats(0, 1, 1, 0, 1, 0, 1));
+	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(40, 10, 15, 20, 0, 25, 9), Stats(0, 0, 1, 0, 1, 0, 1));
 	npcChar[buford] = 'u'; //Buford's character representation is u for the second letter of Buford
 	richie->setGuardian(buford);
 	buford->setGuarding(richie);
@@ -2630,6 +2638,24 @@ void Game::SetupWorld() {
 	 {self, "Archie why are you here?"},
 	 {NULL, "\nThere is nobody named \"ARCHIE\" here."},
 	 {self, "ok."}});
+	developer->addConversation({{developer, "So I'm working on GitHub Codespaces right now"},
+	 {developer, "and it has Copilot on it so it keeps suggesting random stuff as I type."},
+	 {developer, "(and it's pretty much trying to suggest me advertisements for itself as I write this lol)"},
+	 {developer, "Anyway I was just about to write a normal conversation here,"},
+	 {developer, "and it suggested this???"},
+	 {NULL, "\nTOMAS - \"I have a funny story about the name of the VILLAGE ELDER.\""},
+	 {developer, "So I was trying to come up with a name for him,"},
+	 {developer, "and I was like, well he's an elder and he's in a village so maybe his name could be something like \"VILLAGE ELDER\" but that would be really boring."},
+	 {developer, "So I thought about how to make it more interesting,"},
+	 {developer, "and I was like, well what if his name was just VILLAGE and his title was ELDER?"},
+	 {developer, "But that would be confusing because then people might think his name is actually VILLAGE."},
+	 {developer, "So then I thought about how to make it clear that his name is VILLAGE and his title is ELDER,"},
+	 {developer, "and I was like, well what if his name was ARCHIE and his title was VILLAGE ELDER?"},
+	 {developer, "And then I realized that ARCHIE is actually a pretty good name for him."},
+	 {developer, "So yeah that's how he got his name."},
+	 {NULL, "\nTOMAS - \"So yeah that's what it suggested\""},
+	 {developer, "Idk I just found it goofy."},
+	 {developer, "Also it is really weird seeing AI try to speak like me."}});
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
@@ -2819,7 +2845,7 @@ void Game::SetupWorld() {
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
-	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 20, 20, 1, 1, 1);
+	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 7, 20, 1, 1, 1);
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
 	kaboomroom->setStock(dynamite, 2147483647, 5, {{skeleseller, "Do you need some explosives? Here you go! I assume you know what you're doing..."}});
 
@@ -3173,15 +3199,15 @@ void Game::SetupWorld() {
 	village->setExit(IN_TENT_3, tentchurch);
 	villageleft->setExit(EAST, village);
 	villageleft->setExit(IN_TENT, tentmansion);
-	tentmansion->setExit(OUT/*SIDE*/, villageleft);
+	tentmansion->setExit(OUT, villageleft);
 	tentmansion->setExit(UPSTAIRS, tentlab);
 	tentlab->setExit(DOWNSTAIRS, tentmansion);
-	tentstore->setExit(OUT/*SIDE*/, village);
-	tentstation->setExit(OUT/*SIDE*/, village);
-	tentchurch->setExit(OUT/*SIDE*/, village);
+	tentstore->setExit(OUT, village);
+	tentstation->setExit(OUT, village);
+	tentchurch->setExit(OUT, village);
 	docks->setExit(NORTH, village);
 	docks->setExit(IN_TENT, tenthouse);
-	tenthouse->setExit(OUT/*SIDE*/, docks);
+	tenthouse->setExit(OUT, docks);
 	forestentrance->setExit(WEST, village);
 	forestentrance->setExit(NORTH, forest);
 	forest->setExit(SOUTH, forestentrance); //forest exits
@@ -3199,9 +3225,9 @@ void Game::SetupWorld() {
 	ninjavillage->setExit(IN_HOUSE_1, ninjapantry);
 	ninjavillage->setExit(IN_HOUSE_2, ninjaforge);
 	ninjavillage->setExit(IN_HOUSE_3, ninjacapitol);
-	ninjapantry->setExit(OUT/*SIDE*/, ninjavillage);
-	ninjaforge->setExit(OUT/*SIDE*/, ninjavillage);
-	ninjacapitol->setExit(OUT/*SIDE*/, ninjavillage);
+	ninjapantry->setExit(OUT, ninjavillage);
+	ninjaforge->setExit(OUT, ninjavillage);
+	ninjacapitol->setExit(OUT, ninjavillage);
 	ninjavillage->setExit(DOWN, ninjaland);
 	foresttempleentrance->setExit(SOUTHWEST, forestleft);
 	foresttempleentrance->setExit(SOUTHEAST, forestright);
@@ -3261,11 +3287,11 @@ void Game::SetupWorld() {
 	deserttown->setExit(IN_HOUSE_1, desertshop);
 	deserttown->setExit(IN_HOUSE_2, desertgym);
 	deserttown->setExit(IN_HOUSE_3, deserthouse);
-	desertshop->setExit(OUT/*SIDE*/,deserttown);
-	desertgym->setExit(OUT/*SIDE*/,deserttown);
-	deserthouse->setExit(OUT/*SIDE*/,deserttown);
-	desertshopfixed->setExit(OUT/*SIDE*/,deserttown);
-	desertgymfixed->setExit(OUT/*SIDE*/,deserttown);
+	desertshop->setExit(OUT,deserttown);
+	desertgym->setExit(OUT,deserttown);
+	deserthouse->setExit(OUT,deserttown);
+	desertshopfixed->setExit(OUT,deserttown);
+	desertgymfixed->setExit(OUT,deserttown);
 	oasis->setExit(WEST, deserttown);
 	canyon->setExit(UP, thatcliff);
 	canyon->setExit(EAST, deserttown);
@@ -3333,18 +3359,18 @@ void Game::SetupWorld() {
 	volcano7->setExit(SOUTHEAST, volcano6);
 	castleentrance->setExit(NORTHEAST, volcano7);
 	castleentrance->setExit(IN_CASTLE, castlehall);
-	castlehall->setExit(OUT/*SIDE*/, castleentrance);
+	castlehall->setExit(OUT, castleentrance);
 	castlehall->setExit(SOUTH, castlethrone);
 	castlethrone->setExit(NORTH, castlehall);
-	factory1->setExit(OUT/*SIDE*/, volcano1);
+	factory1->setExit(OUT, volcano1);
 	factory1->setExit(EAST, factorykitchen);
 	factory1->setExit(UP, factoryplat);
 	factorykitchen->setExit(WEST, factory1);
 	factoryplat->setExit(EAST, controlroom1);
 	factoryplat->setExit(DOWN, factory1);
 	controlroom1->setExit(WEST, factoryplat);
-	volcanostation->setExit(OUT/*SIDE*/, volcano3);
-	factory2->setExit(OUT/*SIDE*/, volcano3);
+	volcanostation->setExit(OUT, volcano3);
+	factory2->setExit(OUT, volcano3);
 	factory2->setExit(NORTHWEST, switchroom);
 	factory2->setExit(NORTHEAST, conveyor1);
 	switchroom->setExit(SOUTHEAST, factory2);
@@ -3373,7 +3399,7 @@ void Game::SetupWorld() {
 	factorybalcony2->setExit(EAST, factorygarden);
 	factorygarden->setExit(WEST, factorybalcony2);
 	factorygarden->setExit(DOWN, factorycenter);
-	factory3->setExit(OUT/*SIDE*/, volcano6);
+	factory3->setExit(OUT, volcano6);
 	factory3->setExit(NORTH, factorynw);
 	factory3->setExit(EAST, factoryse);
 	factory3->setExit(UP, factoryroofsw);
@@ -3447,7 +3473,7 @@ void Game::SetupWorld() {
 	mountain3->setExit(DOWN, mountain2);
 	mountainpeak->setExit(IN_TENT, tenthome);
 	mountainpeak->setExit(DOWN, mountain3);
-	tenthome->setExit(OUT/*SIDE*/, mountainpeak);
+	tenthome->setExit(OUT, mountainpeak);
 	bridge1->setExit(NORTH, bridge2);
 	bridge1->setExit(SOUTH, volcano7);
 	bridge2->setExit(NORTH, bridge3);
@@ -3464,7 +3490,7 @@ void Game::SetupWorld() {
 	leftstreet2->setExit(SOUTH, leftstreet1);
 	leftstreet2->setExit(EAST, newstreet2);
 	leftstreet2->setExit(INSIDE, burgfish);
-	burgfish->setExit(OUT/*SIDE*/, leftstreet2);
+	burgfish->setExit(OUT, leftstreet2);
 	burgfish->setExit(DOWNSTAIRS, burgchurch);
 	burgchurch->setExit(UPSTAIRS, burgfish);
 	leftstreet3->setExit(NORTH, leftstreet4);
@@ -3474,7 +3500,7 @@ void Game::SetupWorld() {
 	leftstreet4->setExit(SOUTH, leftstreet3);
 	leftstreet4->setExit(EAST, newstreet4);
 	leftstreet4->setExit(INSIDE, casino);
-	casino->setExit(OUT/*SIDE*/, leftstreet4);
+	casino->setExit(OUT, leftstreet4);
 	casino->setExit(IN_BACK_ROOM, casinoback);
 	casinoback->setExit(OUT, casino);
 	casinoback->setExit(DOWN, casinobase);
@@ -3491,7 +3517,7 @@ void Game::SetupWorld() {
 	newstreet2->setExit(EAST, mainstreet2);
 	newstreet2->setExit(WEST, leftstreet2);
 	newstreet2->setExit(INSIDE, burgstore);
-	burgstore->setExit(OUT/*SIDE*/, newstreet2);
+	burgstore->setExit(OUT, newstreet2);
 	newstreet3->setExit(NORTH, newstreet4);
 	newstreet3->setExit(SOUTH, newstreet2);
 	newstreet3->setExit(EAST, mainstreet3);
@@ -3537,7 +3563,7 @@ void Game::SetupWorld() {
 	coolstreet2->setExit(EAST, rightstreet2);
 	coolstreet2->setExit(WEST, mainstreet2);
 	coolstreet2->setExit(INSIDE, shrimpartment1);
-	shrimpartment1->setExit(OUT/*SIDE*/, coolstreet2);
+	shrimpartment1->setExit(OUT, coolstreet2);
 	shrimpartment1->setExit(UP, shrimpartment2);
 	shrimpartment2->setExit(DOWN, shrimpartment1);
 	shrimpartment2->setExit(UP, shrimpartment3);
@@ -3571,7 +3597,7 @@ void Game::SetupWorld() {
 	rightstreet5->setExit(SOUTH, rightstreet4);
 	rightstreet5->setExit(WEST, coolstreet5);
 	rightstreet5->setExit(INSIDE, firedepartment);
-	firedepartment->setExit(OUT/*SIDE*/, rightstreet5);
+	firedepartment->setExit(OUT, rightstreet5);
 	richneighborhood1->setExit(EAST, richneighborhood2);
 	richneighborhood1->setExit(NORTHEAST, richneighborhood4);
 	richneighborhood1->setExit(SOUTH, leftstreet5);
@@ -3585,7 +3611,7 @@ void Game::SetupWorld() {
 	richneighborhood4->setExit(SOUTHEAST, richneighborhood3);
 	richneighborhood4->setExit(SOUTHWEST, richneighborhood1);
 	richneighborhood4->setExit(INSIDE, ceolobby);
-	ceolobby->setExit(OUT/*SIDE*/, richneighborhood4);
+	ceolobby->setExit(OUT, richneighborhood4);
 	ceolobby->setExit(IN_ELEVATOR, ceoelevator1);
 	ceolobby->setExit(UP, ceolobby2);
 	ceolobby2->setExit(IN_ROOM, ballroom);
@@ -3604,7 +3630,7 @@ void Game::SetupWorld() {
 	ceoroom->setExit(IN_ELEVATOR, ceoelevator3);
 	ceoroom->setExit(IN_SAFE, burgsafe);
 	burgsafe->setExit(OUT, ceoroom);
-	elevatorentrance->setExit(OUT/*SIDE*/, mainstreet5);
+	elevatorentrance->setExit(OUT, mainstreet5);
 	elevator->setExit(TO_THE_TOP, elevatortop);
 	elevator->setExit(OUT, elevatorentrance);
 	elevatortop->setExit(OUT, BURGERRESTAURANT);
@@ -3682,7 +3708,7 @@ void Game::SetupWorld() {
 	foresttemple5->setExit(WEST, foresttemple4);
 	foresttemple5->setExit(NORTH, foresttempleboss);
 	foresttempleboss->setExit(SOUTH, foresttemple5);
-	deserttemplestairs->setExit(OUT/*SIDE*/, deserttempleentrance);
+	deserttemplestairs->setExit(OUT, deserttempleentrance);
 	deserttemplestairs->setExit(WEST, desertbuffer1);
 	desertbuffer1->setExit(EAST, deserttemplestairs);
 	desertbuffer2->setExit(WEST, deserthallway);
@@ -3732,7 +3758,7 @@ void Game::SetupWorld() {
 	deserttemple2->setExit(UP, deserttemplec);
 	deserttemple2->setExit(NORTH, deserttempleboss);
 	deserttempleboss->setExit(SOUTH, deserttemple2);
-	volcanotemplestairs->setExit(OUT/*SIDE*/, volcanotempleentrance);
+	volcanotemplestairs->setExit(OUT, volcanotempleentrance);
 	volcanotemplestairs->setExit(NORTHEAST, volcanobuffer1);
 	volcanobuffer1->setExit(SOUTHWEST, volcanotemplestairs);
 	volcanobuffer2->setExit(NORTHEAST, volcanotemple);
@@ -4508,7 +4534,7 @@ void Game::SetupWorld() {
 	ratman->setTargetEffect(prepared);
 	Effect* shrouded = new Effect("SHROUDED", 5); //5 but probably gets canceled before that
 	shrouded->evasive = true;
-	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 3, 10, 1, 1, 1);
+	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 6, 10, 1, 1, 1);
 	ratarang->synergies.push_back(prepared);
 	ratman->setBasicAttack(ratarang);
 	Attack* mma = new Attack("MIXED MARTIAL ARTS", "engaged", true, 8, 2, 0, 3, 3, 1);
@@ -4526,7 +4552,7 @@ void Game::SetupWorld() {
 	Attack* explosivegel = new Attack("EXPLOSIVE GEL", "sprayed explosive gel on", false, 12, 0, 0, 1, 1, 1);
 	explosivegel->synergies.push_back(prepared);
 	Effect* abttoexplode = new Effect("READY TO BLOW", 1);
-	abttoexplode->falldamage = 35;
+	abttoexplode->falldamage = 40;
 	abttoexplode->spreadfalldamage = true;
 	explosivegel->addEffect(abttoexplode);
 	explosivegel->selfcancel = shrouded;
@@ -5087,7 +5113,7 @@ void Game::SetupWorld() {
 	summoning->summonamount = 2;
 	burgermenace->stageAttack(.75, summoning); //summon two BURGER demons halfway into phase 1 just for variety and stuff
 
-	NPC* adversary = new NPC("", "THE ADVERSARY", "The true form of the creator of BURGERs and the final boss of BURGER QUEST 2: ELECTRIC BOOGALOO.", limbo, 0, Stats(5000, 5000, 7000, 8000, 7000, 15000, 9), Stats(0, 0, 1, 1, 1, 2, 0));
+	NPC* adversary = new NPC("", "THE ADVERSARY", "The true form of the creator of BURGERs who tempts the world into sin.", limbo, 0, Stats(5000, 5000, 7000, 8000, 7000, 15000, 9), Stats(0, 0, 1, 1, 1, 2, 0));
 	Attack* pitchfork = new Attack("PITCHFORK", "pierced", true, -5, 7, 5, 1, 1, 1);
 	pitchfork->afterdesc = " with his pitchfork";
 	adversary->setBasicAttack(pitchfork);
