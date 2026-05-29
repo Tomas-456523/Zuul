@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/28/26
+*  5/29/26
 *  This is the implementation file for the game world and playing the game!
 *  
 *  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
@@ -134,7 +134,7 @@ void Game::SetupWorld() {
 	//create all WANING WOODLANDS rooms MARK: WW
 	Room* village = new Room("in Tactical Tent Village, your home village of tipi tents.\nIt's a beautiful day; perfect for staying indoors and gaming.");
 	//the player! defined here so the temple opening sequences and welcomes can use the player's name which they chose
-	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", limbo, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 1, 1, 0), true, true);
+	self = new NPC("\0", "SELF", "The protagonist of BURGER QUEST 2, with a cool scarf and blond anime hair.\nIt's a me.", village, 0, Stats(20, 5, 6, 0, 0, 10, 9), Stats(1, 0, 1, 0, 1, 1, 0), true, true);
 	Room* villageleft = new Room("at the westernmost end of the village, where the second-tallest tent stands.\nIt's only two stories, but it's comparatively a tent mansion.");
 	Room* tentstore = new Room("in the village convenience store. No other store is more convenient, or so they say.");
 	Room* tentmansion = new Room("in the tent mansion's living room. There are way too many clocks here.");
