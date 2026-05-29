@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  5/28/26
 *  This is the header file for attacks
 *  
 *  The attack struct is primarily a data container to avoid circular inclusion, so most of the logic is
@@ -84,6 +84,7 @@ struct Attack {
 	bool enemysummon = false; //if the summon goes to the enemy team
 
 	int copyamount = 0; //how many times the target gets duplicated
+	bool copylimit = false; //if you can only make once copy (for balance)
 
 	bool contact; //if the attacker makes contact with the target
 	bool prioritizeleader = false; //if this attack prioritizes hitting the leader, so if they're not incapacitated

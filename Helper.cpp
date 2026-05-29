@@ -617,7 +617,7 @@ namespace Helper {
 		set<const char*> existing; //space travel directions that currently we can currently travel to from the time machine
 		const char* out = timemachine->getSpecialExit(); //the time machine stores the out exit in its special exit variable, so we get it here to make it go to the appropriate destination
 		//find where the outside of the time machine is right now, explained after the for loop, and also used after the for loop as well
-		map<const char*, Room*> tmdir(TimeMachineDirection.begin(), TimeMachineDirection.end()); //copy the "map" as an actual map so it's easier to use
+		map<const char*, Room*, charComparer> tmdir(TimeMachineDirection.begin(), TimeMachineDirection.end()); //copy the "map" as an actual map so it's easier to use
 		
 		for (size_t i = 0; i < TimeMachineDirection.size(); i++) {
 			pair<const char*, Room*>& spaces = TimeMachineDirection[i];

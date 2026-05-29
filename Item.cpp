@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/27/26
+*  5/28/26
 *  This is the implementation file for items
 *  
 *  Items are all the things the player can interact with that are stored in rooms or the player inventory. Not every
@@ -129,8 +129,10 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 			CinPause();
 			printConversation(&pityDescription, false);
 			pity = false; //only give one freebie
+			stock--; //decrements the amount left in stock of this item
 			Item* dupe = Duplicate();
 			dupe->unRoom();
+			dupe->setStock(0);
 			inventory->push_back(dupe); //copies the item and adds it to the inventory
 			logW("b", id); //track the item buying
 		}
@@ -140,6 +142,7 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 	stock--; //decrements the amount left in stock of this item
 	Item* dupe = Duplicate();
 	dupe->unRoom();
+	dupe->setStock(0);
 	inventory->push_back(dupe); //copies the item and adds it to the inventory
 	//if the item says something after being bought (like the shopkeeper saying "thank you for your purchase!" or something)
 	if (!buyDescription.empty()) {
@@ -157,8 +160,12 @@ void Item::buy(int& mony, vector<Item*>* inventory) {
 //buy expedited for loading the world, return the duplicated item
 Item* Item::loadBuy() {
 	pity = false;
+	stock--;
+	Item* dupe = Duplicate();
+	dupe->unRoom();
+	dupe->setStock(0);
 	logW("b", id); //log the buying in section W automatically
-	return Duplicate(); //return the duplicated item
+	return dupe; //return the duplicated item
 }
 //makes the item for sale
 void Item::setStock(int _stock, int _price, const Conversation& buydesc) {
@@ -243,7 +250,7 @@ int ReviveItem::getHp() {
 }
 
 //effect items for adding effects to npcs
-EffectItem::EffectItem(const char* _name, const char* _description, Room* _room, Effect* _effect) : Item(_name, _description, _room, true, true) {
+EffectItem::EffectItem(const char* _name, const char* _description, Room* _room, Effect* _effect) : Item(_name, _description, _room, true, true, true) {
 	effect = _effect;
 	type = "effect"; //sets the type
 }

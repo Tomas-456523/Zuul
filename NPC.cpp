@@ -382,6 +382,7 @@ bool NPC::getForceBattle(bool uponarrival) {
 	if (uponarrival) {
 		bool fight = fightwhenarrive;
 		fightwhenarrive = false; //only force the fight the first time
+		if (fight) logW("f", id); //log the popping so we don't force the battle again
 		return fight;
 	}
 	return forcebattle;
@@ -419,6 +420,12 @@ double NPC::getSPUseMultiplier() {
 }
 double NPC::getDamageMultiplier() {
 	return damageMultiplier;
+}
+bool NPC::getNerfHeal() { //get if we should nerf heal based on if we have the big effect from the final boss
+	for (Effect* effect : effects) {
+		if (effect->attackbuff >= 999.0) return true; //this is the final boss buff
+	}
+	return false; //we don't have the final boss buff so don't nerf healing
 }
 double NPC::getSpeedMultiplier() {
 	return speedMultiplier;
@@ -921,7 +928,12 @@ void NPC::blockExit(const char* _exitBlocking, const char* type, const char* rea
 	}
 }
 void NPC::printDamage(int damage, const char* status) { //prints the damage the npc took and why if a reason is given
-	if (stats.hpmax <= 999) damage = (damage > 0 ? min(damage, 999) : max(damage, -999)); //cap damage printing at 999, unless we actually have reason to print that high
+	int cap = 999; //cap damage printing at 999, unless we actually have reason to print that high
+	while (stats.hpmax >= cap) { //keep adding 9s to the cap until it's over the total hp
+		cap = cap*10+9;
+	}
+	damage = (damage > 0 ? min(damage, cap) : max(damage, -cap));
+
 	if (damage >= 0) {
 		cout << "\n" << name << " took " << damage << " damage";
 	} else if (damage < 0) {
@@ -1265,8 +1277,9 @@ bool NPC::blendItems(vector<Item*>* inventory) { //try to blend items from the i
 	Item* product = blender->getProduct();
 	product->unRoom(); //removes the item from the room
 	inventory->push_back(product); //adds it to the inventory
-	printConversation(&blender->getUseText(), true); //prints the blender's use text
+	printConversation(&blender->getUseText(), false); //prints the blender's use text
 	applyWorldChange(blender->getChanges());
+	trackItemUse(internalblender, currentRoom); //track that we used the internal blender
 	internalblender = NULL; //we can't make anything else now so make the internal blender null so we don't check the whole inventory on proceeding conversations with this character
 	return true; //return true because we successfully blended the items!
 }
@@ -1778,7 +1791,7 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone, bool actuallyprin
 	Conversation conversation; //uninitialized, please initialize
 	if (thisone) { //if we passed thisone, print that one
 		conversation = *thisone;
-	} else if (recruited) { //prints recruited dialogue if recruited
+	} else if (recruited && actuallyprint) { //prints recruited dialogue if recruited (don't do this during loading because we do that manually)
 		conversation = recruitedDialogue.front();
 		if (recruitedDialogue.size() > 1) {
 			recruitedDialogue.pop();

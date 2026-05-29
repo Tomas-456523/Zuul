@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/27/26
+*  5/29/26
 *  This is the header file for the world saves
 *  
 *  This struct stores and manages save data. When calling SaveGame, it builds a new save string according
@@ -44,6 +44,7 @@
 *  - Opening a temple in a temple entrance room, denoted by t[room]
 *  - Backup items that were popped from a room, denoted by c[room] for both repeating and non-repeating backups
 *  - NPCs that were taken and are now being tracked by a light orb, denoted by l[item].[npc]
+*  - NPCs that had their fight on arrival flag popped, denoted by f[npc]
 *  Section U: Only exists while pursuer is pursuing, tracks their room
 *  Section R: Stuff related to the player team
 *  - First, the teammate this chunk is tracking using their correspinding letter (listed in section P)
@@ -173,7 +174,7 @@ struct Save {
 			} else if (*p == 'W') {
 				if (sections.count('U') || sections.count('R') || sections.count('I') || sections.count('S') || sections.count('Q')) return false; //section W must precede these sections because otherwise it could overwrite stuff they set, or they could be missing data
 				for (p++;; p++) {
-					if (strchr("bxdrewptck", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
+					if (strchr("bxdrewptckf", *p)) { //if it's one of these subsections we just need to check one id, so I can group these together as one check
 						if (!verifyNum(++p)) return false; //check item/npc/room id
 					} else if (*p == 'u' || *p == 'l') { //item use and light orb teammate tracking are grouped because they both have the [letter][id].[id] format
 						bool l = *p == 'l'; //subsection l can't have the choice orb thing because it's not a choice orb
@@ -537,7 +538,10 @@ struct Save {
 	static void loadW(const char*& data, NPC* player, set<int>& discontinuity) {
 		while(*data != '|' && *data != '=') {
 			if (*(++data) == 'b') { //duplicate item because it was bought
-				itemsH[adjustItemID(ParseNum(++data), discontinuity)]->loadBuy(); //dupe the item and its position will be handled later, logs in W automatically, don't adjust because we only buy (dupe) items that are in limbo and can't be interacted with
+				Item* item = itemsH[adjustItemID(ParseNum(++data), discontinuity)];
+				item->loadBuy(); //dupe the item and its position will be handled later, logs in W automatically
+				//this is a band-aid fix that removes the item from being sold once the player buys all the stock. There aren't any items sold in two rooms so this is fine
+				if (!item->getStock()) for (Room* room : roomsH) room->removeStock(item, false); //the better fix would be to add .[room] to subsection b but I'm tired so this will do
 			} else if (*data == 'u') { //use item in world
 				int id = ParseNum(++data); //get the id unadjusted so we can update discontinuities more conveniently later if we delete the item
 				Item* item = itemsH[adjustItemID(id, discontinuity)]; //get the item adjusted for item deletions
@@ -704,6 +708,8 @@ struct Save {
 				if (find(player->getParty()->begin(), player->getParty()->end(), npc) == player->getParty()->end()) {
 					((LightOrb*)item)->setTeammate(npc, NULL, false); //logs itself automatically
 				}
+			} else if (*data == 'f') { //pop fight on arrival
+				npcsH[ParseNum(++data)]->getForceBattle(true); //pops and logs itself automatically
 			}
 		}
 	}

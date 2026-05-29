@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  5/29/26
 *  This is the implementation file for battles, which controls combat with teammates against enemies
 *
 *  Battles are created using the constructor, where you must pass the enemy and player teams. All NPCs involved
@@ -309,7 +309,9 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		attackProcessing = reciever->getHealth()*attack->power/100.0;
 		if (parry) attackProcessing /= 10.0; //if you parry it, it shouldn't deal half of the attacker's health, but you still get rewarded for parrying the attack so we just reduce the power by a factor of 10
 	} else { //normal attacks, we multiply the attack power/pierce and attack/pierce stat together so they both matter equally, and divide by 10 just cause I don't want the numbers to be too big
-		attackProcessing = attack->power * Round(attacker->getAttack() * attacker->getAttMultiplier()) / 10.0;
+		double attmultiplier = attacker->getAttMultiplier();
+		if (attack->power < 0 && attacker->getNerfHeal()) attmultiplier /= 1000.0; //during the final boss, healing should not have 1000x power, only attacks should be affected by the final boss multiplier
+		attackProcessing = attack->power * Round(attacker->getAttack() * attmultiplier) / 10.0;
 		pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
 	}
 	if (parry) attackProcessing *= 2; //parried hits hit with double power!
@@ -397,8 +399,12 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	map<Effect*, Effect*> responses = reciever->getResponseEffects();
 	for (Effect* effect : attacker->getEffects()) {
 		if (Effect* response = responses[effect]) { //the effetc has a response so affect the reciever with the response
-			attachEffect(reciever->setEffect(response, attacker, (attacker->getPlayerness() ? 5 : 3))); //more duration if done by the player since they can control themselves
-			cout << "\n" << attacker->getName() << "'s " << effect->name << " game a foothold to " << reciever->getName() << "!"; //this is specific text but it works for the only effect responses in the game anyway so that's fine
+			//print this if they don't already have it
+			if (!reciever->getEffect(response, true)) {
+				cout << "\n" << attacker->getName() << "'s " << effect->name << " gave a foothold to " << reciever->getName() << "!"; //this is specific text but it works for the only effect responses in the game anyway so that's fine
+				CinPause();
+			}
+			attachEffect(reciever->setEffect(response, attacker, (attacker->getPlayerness() ? 4 : 2))); //more duration if done by the player since they can control themselves
 		}
 	}
 	for (Effect* cancel : attack->cancels) { //removes the effects this attack cancels out
@@ -590,8 +596,9 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	}
 	if (attack->trashsummons) { //if this attack trashes the attacker's summons, we do that via sending a lot of damage
 		for (NPC* npc : (attacker->getEnemy() ? enemyTeam : playerTeam)) { //check the attacker's team for its summons
-			if (npc->getSummoner() == attacker) { //if the summoner was the attacker, we trash the npc
+			if (npc->getSummoner() == attacker && npc->getHealth()) { //if the summoner was the attacker, we trash the npc
 				npc->damage(9999999, 9999999);
+				CinPause();
 				if (npc->popKO()) handleKnockout(npc);
 			}
 		}
@@ -654,7 +661,7 @@ bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
 	if (faint) cout << "\n" << sos->getName() << " catches you as you fall.";
 	else cout << "\n" << sos->getName() << " shrinks down to your height.";
 	CinPause();
-	if (beenhypno) WorldState[GAMEEND] = true; //just use this as a quick cheaty skip condition for the conversation, I think it would be a waste to have a whole state for one tiny moment in one battle
+	if (!beenhypno) WorldState[GAMEEND] = true; //just use this as a quick cheaty skip condition for the conversation, I think it would be a waste to have a whole state for one tiny moment in one battle
 	printConversation(&sos->getPropConv(), false);
 	WorldState[GAMEEND] = false; //reset game end state, doesn't matter what faint was (if the game was ended, we wouldn't be in this battle so yeah)
 	if (AOrB(NULL, "YES", "NO")) { //if the player chooses yes, give them the effect
@@ -743,33 +750,46 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	if (!strcmp(item->getType(), "hp")) {
 		HpItem* hptem = (HpItem*)item; //converts to the corresponding subclass
 		if (!npc->getHealth()) { //you're not allowed to heal unconscious teammates, that's what revives are for
-			cout << npc->getName() << " is too damaged for the " << itemname << " to work!";
+			cout << npc->getName() << " is too damaged for the " << item->getName() << " to work!";
+			return false;
+		} if (npc->getHealth() == npc->getHealthMax()) { //don't waste the hp item
+			cout << npc->getName() << " already at full HP!";
 			return false;
 		} //directly applies the health to the target
 		int hp = npc->directDamage(-hptem->getHp());
+		CinPause();
 		helpslaunched[player]++; //this was helpful so increase the player help counter
 		healthhealed[player] += hp;
 	//sp items restore sp for the target
 	} else if (!strcmp(item->getType(), "sp")) {
 		SpItem* sp = (SpItem*)item; //converts to the corresponding subclass
+		if (!npc->getHealth()) { //you're not allowed to help unconscious teammates
+			cout << npc->getName() << " is incapacitated! The " << item->getName() << " won't work!";
+			return false;
+		} if (npc->getSP() == npc->getSPMax()) { //don't waste the sp item
+			cout << npc->getName() << " already at full SP!";
+			return false;
+		}
 		npc->alterSp(sp->getSp()); //alters the sp of the target
 		helpslaunched[player]++; //this was helpful so increase the player help counter
 	//revive items are just healing items but you can only use them on incapacitated teammates
 	} else if (!strcmp(item->getType(), "revive")) {
 		ReviveItem* revive = (ReviveItem*)item; //converts to the corresponding subclass
 		if (npc->getHealth()) { //gives error message if used on capacitated teammate
-			cout << "The " << itemname << " must be saved for dire circumstances!";
+			cout << "The " << item->getName() << " must be saved for dire circumstances!";
 			return false;
 		} //gives success message and revives the teammate
-		cout << npc->getName() << " was recapacitated!";
 		int hp = npc->directDamage(-revive->getHp());
+		CinPause();
+		cout << "\n" << npc->getName() << " was recapacitated!";
+		CinPause();
 		helpslaunched[player]++; //this was helpful so increase the player help counter
 		healthhealed[player] += hp;
 	//effect items apply an effect to the target
 	} else if (!strcmp(item->getType(), "effect")) {
 		EffectItem* affecter = (EffectItem*)item; //converts to the corresponding subclass
 		if (!npc->getHealth()) { //gives error message because you're not allowed to affect incapacitated teammates
-			cout << npc->getName() << " is incapacitated! The " << itemname << " won't work!";
+			cout << npc->getName() << " is incapacitated! The " << item->getName() << " won't work!";
 			return false;
 		} //sets the effect on the target
 		attachEffect(npc->setEffect(affecter->getEffect(), plr));
@@ -785,7 +805,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	} else if (!strcmp(item->getType(), "key") || !strcmp(item->getType(), "hose")) {
 		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass
 		if (key->getAttack() == NULL) { //if the key item has no attack
-			cout << "The " << itemname << " can't be used in battle!";
+			cout << "The " << item->getName() << " can't be used in battle!";
 			return false;
 		} //carries out the attack on the target
 		carryOutAttack(key->getAttack(), plr, npc);
@@ -794,7 +814,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
 		if (mover->getAttack() == NULL) { //if the movement item has no attack
-			cout << "The " << itemname << " can't be used in battle!";
+			cout << "The " << item->getName() << " can't be used in battle!";
 			return false;
 		} //carries out the attack on the target
 		carryOutAttack(mover->getAttack(), plr, npc);
@@ -820,7 +840,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		cout << "\nTHE PLOT DEVICE's PLOTOMETER isn't locked onto anything!";
 		return false;
 	} else { //otherwise the player tried to use an item that is only usable in the overworld so we give an error message
-		cout << "\nThe " << itemname << " can't be used in battle!";
+		cout << "\nThe " << item->getName() << " can't be used in battle!";
 		return false;
 	} //if the item gets used up after use, we delete it! (since deleteItem checks inventory first, we can get away with passing NULL for room)
 	if (item->getConsumable()) {
@@ -833,7 +853,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 //prints the given team's data MARK: print team
 void Battle::printTeam(vector<NPC*>& team, bool printLevel, bool printSP, bool printFainted) {
 	for (NPC* npc : team) { //we skip incapacitated npcs if we're ignoring fainted npcs
-		if (!printFainted && !npc->getHealth()) {
+		if (!printFainted && !npc->getHealth() || printFainted && !npc->getHealth() && !npc->getBasicAttack() && npc->getSpecialAttacks().empty()) { //also don't print incapacitated dummies
 			continue;
 		} //prints their name and how much health they have left out of their maximum health
 		cout << "\n" << npc->getName() << " " << npc->getHealth() << "/" << npc->getHealthMax() << " HP";
@@ -997,6 +1017,14 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 				cout << "\nYou can't " << attack->name << " yourself!";
 				return false;
 			}
+			if (attack->copyamount && attack->copylimit) { //limit the amount of copies we can make if the attack does that (this is specifically designed for spacetime slice at the moment since there's no other similar attacks)
+				for (NPC* npc : playerTeam) {
+					if (npc != target && npc->getParent() == target->getParent() && !npc->getSummoner()) { //if they have the same parent but are not the same (and don't have a summoner meaning they don't come from a summon move) that means it was duplicated so don't copy it again
+						cout << "\n" << target->getName() << "'s spacetime is too unstable to slice again!";
+						return false;
+					}
+				}
+			}
 			carryOutAttack(attack, plr, target);
 			return true; //successfully launched attack!
 		} else if (target && strlen(commandWordP) >= strlen(tcother)) { //track the invalid attack or command when target was valid (prefer longer ones cause they're probably more meaningful error messages)
@@ -1085,6 +1113,17 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 	
 	vector<NPC*> tarteam = getTarTeam(npc, attack); //get the options of targets that we have depending on who the attacker is and what the attack does
 	vector<NPC*> choices = tarteam; //start narrowing down the target choices starting from the full list of the target team
+	//if we shouldn't launch the attack if there's too many hypnotized npcs, check for that
+	if (attack->nottoohypno) {
+		int hypnocount = 0;
+		for (NPC* npc : choices) {
+			if (npc->getHypnotized()) hypnocount++;
+			if (hypnocount > 1) { //more than 1 is too much (works best for the one move that uses this field)
+				choices.clear();
+				break; //break because the amount isn't going to get any lower
+			}
+		}
+	}
 	//check team-wide attack validity rules, just return early if it wouldn't work
 	if (attack->take) {
 		if (aliveCount(choices) <= 1) return {}; //can't take the last npc on a team or that would be an endless fight of doing nothing
@@ -1093,17 +1132,6 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		}
 	} //use this to build up a list of valid targets
 	vector<NPC*> targets;
-	//if we shouldn't launch the attack if there's too many hypnotized npcs, check for that
-	if (attack->nottoohypno) {
-		int hypnocount = 0;
-		for (NPC* npc : targets) {
-			if (npc->getHypnotized()) hypnocount++;
-			if (hypnocount > 1) { //more than 1 is too much (works best for the one move that uses this field)
-				targets.clear();
-				break; //break because the amount isn't going to get any lower
-			}
-		}
-	}
 	//check each target in the team this attack would target and add it if it's a valid target for the attack
 	for (NPC* target : choices) {
 		if (!attack->targetFainted && target->getHealth() <= 0) continue; //can't target non-fainted if bro is fainted
