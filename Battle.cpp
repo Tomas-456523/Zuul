@@ -834,6 +834,10 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		return false;
 	} else if (!strcmp(item->getType(), "weapon")) { //weapon items are another way of just using their attack
 		WeaponItem* weapon = (WeaponItem*)item;
+		if (plr->getSP() < Round(weapon->getAttack()->cost*plr->getSPUseMultiplier())) { //we can't launch the attack if we don't have enough sp
+			cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << Round(weapon->getAttack()->cost*plr->getSPUseMultiplier()) << ")";
+			return false; //could not launch attack
+		}
 		carryOutAttack(weapon->getAttack(), plr, npc);
 		if (weapon->getAttack()->getBeneficial()) helpslaunched[player]++;
 		else attackslaunched[player]++;
