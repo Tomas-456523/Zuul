@@ -315,7 +315,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		attackProcessing = attack->power * Round(attacker->getAttack() * attmultiplier) / 10.0;
 		pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
 	}
-	if (parry) attackProcessing *= 2; //parried hits hit with double power!
+	if (parry && !attack->percentagebased) attackProcessing *= 2; //parried hits hit with double power!
 	for (Effect* effect : attack->synergies) { //increase attack power by 1.5x for all synergies on the reciever
 		bool synergized = false; //track if we synergized at all so we can pause once for any amount of synergies found
 		if (reciever->getEffect(effect, true)) {
@@ -1400,7 +1400,9 @@ int Battle::getMonyReward() {
 }
 //deletes the npc copies because they were only for this instance of battle MARK: destructor
 Battle::~Battle() {
+	went.clear(); //use went to track npc deletion so we don't double free npcs with multiposition
 	for (NPC* npc : everyone) {
-		delete npc;
-	}
+		if (!went.count(npc)) delete npc;
+		went.insert(npc); //the last thing I edited in BURGER QUEST 2 (before releasing the beta) was the fix to prevent the SUPERSMOOTHIE from crashing the game, when the SUPERSMOOTHIE was the thing you got to help you get to the end of BURGER QUEST 1. How poetic
+	}                     //nevermind I just edited how parrying interacts with percentage-based attacks. Oh well
 }

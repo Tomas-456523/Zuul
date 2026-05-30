@@ -894,9 +894,9 @@ void Game::SetupWorld() {
 	Effect* splintered = new Effect("SPLINTERED", 5, 7);
 	splinter->addEffect(splintered);
 	forestknight->addSpecialAttack(splinter);
-	Attack* blitz = new Attack("BLITZ", "rushed at", true, 15, 4, 15, 10, 10, 1, false, 26);
+	Attack* blitz = new Attack("BLITZ", "rushed at", true, 15, 2, 15, 10, 10, 1, false, 26);
 	blitz->afterdesc = " with a rapid flurry of sword strikes";
-	blitz->addDescription("Rush at the target with a rapid flurry of strikes.");
+	blitz->addDescription("Rush at the target with a rapid flurry of strikes. (2 ATTACK, 15 PIERCE, 10 hits)");
 	forestknight->addSpecialAttack(blitz);
 
 	//Miner Maniac Mike is a good damage teammate with the risk of friendly fire MARK: Mike
@@ -1107,7 +1107,7 @@ void Game::SetupWorld() {
 	Attack* castiron = new Attack("CAST IRON", "bonked", true, -5, 7, 0, 1, 1, 1);
 	castiron->afterdesc = " with his cast iron pan";
 	michelin->setBasicAttack(castiron);
-	Attack* qualitymeal = new Attack("5-STAR MEAL", "prepared a 5-star meal for", false, 10, -4, 0, 1, 1, 1, true);
+	Attack* qualitymeal = new Attack("5-STAR MEAL", "prepared a 5-star meal for", false, 5, -4, 0, 1, 1, 1, true);
 	michelin->addSpecialAttack(qualitymeal);
 	Effect* marinated = new Effect("MARINATED", 3, 0, 0, 1, 0.5);
 	Attack* flambe = new Attack("FLAMBE'", "bonked", true, 7, 12, 5, 1, 1, 1);
@@ -1117,25 +1117,25 @@ void Game::SetupWorld() {
 	flambe->synergies.push_back(marinated);
 	flambe->cancels = {marinated};
 	michelin->addSpecialAttack(flambe);
-	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 4, 0, 0, 1, 1, 1, true, 11);
+	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 0, 0, 1, 1, 1, true, 11);
 	Effect* hotsauced = new Effect("HOT SAUCED", 5, 0, 0, 1.25, 0.75);
 	hotsauce->addEffect(hotsauced);
 	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
 	michelin->addSpecialAttack(hotsauce);
-	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 20, -3, 0, 1, 1, 999, true, 13);
+	Attack* feast = new Attack("FEAST", "prepared a feast for the team", false, 15, -3, 0, 1, 1, 999, true, 13);
 	feast->focushits = false;
 	feast->addDescription("Prepare a feast for the whole team, healing everyone.");
 	michelin->addSpecialAttack(feast);
-	Attack* marinate = new Attack("MARINATE", "doused", false, 10, 0, 0, 1, 1, 1, false, 12);
+	Attack* marinate = new Attack("MARINATE", "doused", false, 5, 0, 0, 1, 1, 1, false, 12);
 	marinate->afterdesc = " with alcohol";
 	marinate->addEffect(marinated);
 	michelin->addSpecialAttack(marinate);
 	marinate->addDescription("Douse the target with alcohol, halving their defense and increasing damage taken from FLAMBE'.");
-	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 15, -999, 0, 1, 1, 1, true, 15);
+	Attack* michmeal = new Attack("MICHELIN STAR MEAL", "prepared a michelin-star meal for", false, 10, -999, 0, 1, 1, 1, true, 15);
 	michmeal->addDescription("Prepare a teammate a super high-quality meal, for much healing.");
 	michelin->addSpecialAttack(michmeal);
-	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 25, 40, 40, 1, 1, 1, false, 20);
+	Attack* congratulation = new Attack("CONGRATULATION", "cooked", false, 20, 30, 30, 1, 1, 1, false, 20);
 	congratulation->afterdesc = " congratulation";
 	congratulation->instakill = true;
 	congratulation->addDescription("Cook the target not just well done, but CONGRATULATION.");
@@ -1159,14 +1159,14 @@ void Game::SetupWorld() {
 	carlosplugchanges.linkedDescriptions.push({carlos, "Black hat hacker with no hat and no vitamin D, whose attempt to hack Microsoft's monies you foiled."});
 	carlosplugchanges.linkedDialogue.push({carlos, {{carlos, "broooooo i was so close... >:("}}});
 	
-	Effect* infected = new Effect("INFECTED", 5, 10, 10);
+	Effect* infected = new Effect("INFECTED", 3, 5);
 	Attack* backtrack = new Attack("BACKTRACK", "sent malware to the attacker's traced location", false, 0, 0, 0, 1, 1, 1);
 	backtrack->addEffect(infected);
 	carlos->setRecoilAttack(backtrack);
 	Attack* hack = new Attack("HACK", "hacked into", false, -5, 0, 0, 1, 1, 1, false, 0, 5); //no damage but steals sp which I think is pretty interesting
 	hack->afterdesc = "'s SP supply";
 	carlos->setBasicAttack(hack);
-	Attack* trojan = new Attack("TROJAN", "sent a trojan to", false, 7, 5, 20, 1, 1, 1);
+	Attack* trojan = new Attack("TROJAN", "sent a trojan to", false, 5, 5, 20, 1, 1, 1);
 	trojan->addEffect(infected);
 	carlos->addSpecialAttack(trojan);
 	Attack* stacksmash = new Attack("STACK SMASH", "stack smashed", false, 14, 7, 30, 1, 1, 1);
@@ -1180,23 +1180,24 @@ void Game::SetupWorld() {
 	socialengineering->addEffect(compromised);
 	carlos->addSpecialAttack(socialengineering);
 	socialengineering->addDescription("Socially engineer an enemy into fighting for your team.");
-	Attack* ddos = new Attack("DDOS", "directed his botnet's traffic towards", false, 15, 8, 40, 3, 3, 1, false, 14);
+	Attack* ddos = new Attack("DDOS", "directed his botnet's traffic towards", false, 15, 1, 40, 5, 5, 1, false, 14);
 	Effect* overloaded = new Effect("OVERLOADED", 2);
 	overloaded->freeze = true;
 	ddos->addEffect(overloaded);
 	carlos->addSpecialAttack(ddos);
-	ddos->addDescription("Direct all of Carlos's botnet's traffic, freezing them in place. (8 ATTACK, 40 PIERCE, 3 hits)");
-	Attack* forkbomb = new Attack("FORK BOMB", "sent a forking bomb towards the enemy team", false, 14, 10, 40, 1, 1, 999, false, 15);
+	ddos->addDescription("Direct all of Carlos's botnet's traffic, freezing them in place. (1 ATTACK, 40 PIERCE, 3 hits)");
+	Attack* forkbomb = new Attack("FORK BOMB", "sent a forking bomb towards the enemy team", false, 14, 10, 15, 1, 1, 999, false, 15);
 	forkbomb->focushits = false;
 	carlos->addSpecialAttack(forkbomb);
-	forkbomb->addDescription("Send a forking bomb, covering the entire enemy team. (25 ATTACK, 40 PIERCE)");
+	forkbomb->addDescription("Send a forking bomb, covering the entire enemy team. (10 ATTACK, 15 PIERCE)");
 	Attack* cryptojack = new Attack("CRYPTOJACK", "set up an SP and HP mine in", false, 15, 0, 0, 1, 1, 1, false, 17);
 	Effect* cryptojacked = new Effect("CRYPTOJACKED", 5, 5, 5);
 	cryptojacked->lifesteal = cryptojacked->spsteal = 1;
 	cryptojack->addEffect(cryptojacked);
 	carlos->addSpecialAttack(cryptojack);
 	cryptojack->addDescription("Set up a bitcoin mine in the target, stealing their HP and SP for 5 turns.");
-	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 10, 15, 15, 1, 1, 999, false, 20);
+	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 5, 15, 15, 1, 1, 999, false, 20);
+	cascadingfailure->weight = 2.0; //we do this so it's cheap and Carlos can chain it with other moves better but still gets called a reasonable number of times
 	cascadingfailure->focushits = false;
 	cascadingfailure->synergies.push_back(infected);
 	cascadingfailure->synergies.push_back(overflow);
@@ -1392,7 +1393,7 @@ void Game::SetupWorld() {
 	graham->addSpecialAttack(nat20);
 
 	//Rich Guy Richie is the summoner MARK: Richie
-	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(10, 0, 15, 0, 0, 14, 9), Stats(1, 0, 1, 0, 0, 1, 0));
+	NPC* richie = new NPC("RICH GUY", "RICHIE", "Rich guy trying to figure out what to do with his massive inheritence.", richneighborhood3, 20, Stats(5, 0, 15, 0, 0, 14, 9), Stats(0, 0, 1, 0, 0, 1, 0));
 	npcChar[richie] = 'r'; //Richie's character representation is r for Richie
 	Conversation richrej = {{richie, "No, everyone in this city is either rich and trying to get me to join some BURGER cult,"}, {richie, "or not rich and trying to rob me."}, {richie, "No offense but I don't really trust you."}};
 	shared_ptr<Conversation> richrej2 = make_shared<Conversation>(Conversation({{self, "Hey you wanna help me fight these BURGER guys?"},
@@ -1471,40 +1472,41 @@ void Game::SetupWorld() {
 	richie->setBlockMessage({{richie, "Umm why are we going there?"}, {richie, "We were like fighting BURGER and stuff."}});
 	richie->setBlockUnless(TEMPLEQUEST);
 
-	NPC* drone = new NPC("", "DRONE", "Combat drone that Richie bought to help in battle.", limbo, 0, Stats(5, 0, 15, 0, 20, 30, 9));
+	NPC* drone = new NPC("", "DRONE", "Combat drone that Richie bought to help in battle.", limbo, 0, Stats(3, 0, 10, 0, 20, 30, 9));
 	Attack* dronegun = new Attack("DRONE GUN", "fired at", false, -5, 4, 10, 3, 3, 1);
 	Attack* ram = new Attack("RAM", "rammed into", true, 10, 15, 0, 1, 1, 1);
 	drone->setBasicAttack(dronegun);
 	drone->addSpecialAttack(ram);
 
-	NPC* healsprinkler = new NPC("", "HEAL SPRINKLER", "Portable station that sprinkles health onto the team, bought by Richie to aid in battle.", limbo, 0, Stats(1, 0, 5, 0, 0, 0, 9));
-	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -3, 0, 1, 1, 999, true);
+	NPC* healsprinkler = new NPC("", "HEAL SPRINKLER", "Portable station that sprinkles health onto the team, bought by Richie to aid in battle.", limbo, 0, Stats(1, 0, 5, 0, 0, 0, 9), Stats(0, 0, 1, 0, 0, 0, 0));
+	Attack* sprinkle = new Attack("SPRINKLE", "sprinkled health on the team", false, 0, -1, 0, 1, 1, 999, true);
 	sprinkle->focushits = false;
 	healsprinkler->setBasicAttack(sprinkle);
 
-	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(10, 0, 16, 0, 8, 13, 9));
+	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(8, 0, 16, 0, 8, 13, 9));
 	Effect* swatshield = new Effect("SWAT SHIELD", 2147483647);
 	swatshield->guardset = 1;
 	guardbot->setEffect(swatshield, NULL);
 	Attack* baton = new Attack("BATON", "thwacked", true, -5, 7, 0, 1, 1, 1);
 	baton->afterdesc = " with its baton";
+	guardbot->setBasicAttack(baton);
 	Attack* pepperspray = new Attack("PEPPER SPRAY", "sprayed pepper spray at", false, 7, 5, 0, 1, 1, 1);
-	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 3, 0, 1, 0.75);
+	Effect* peppersprayed = new Effect("PEPPER SPRAYED", 3, 5, 0, 1, 0.75);
 	pepperspray->addEffect(peppersprayed);
 	guardbot->addSpecialAttack(pepperspray);
 	Attack* protectandserve = new Attack("PROTECT AND SERVE", "is protecting", false, 10, 0, 0, 1, 1, 1, true);
 	protectandserve->protect = true;
 	guardbot->addSpecialAttack(protectandserve);
 
-	NPC* marinemech = new NPC("", "MARINE MECH", "Advanced and expensive military droid bought by Richie as a great help in battle.", limbo, 0, Stats(20, 0, 20, 0, 35, 30, 9));
-	Attack* openfire = new Attack("OPEN FIRE", "opened fire upon", false, -5, 3, 20, 5, 5, 1);
-	Attack* rockemsockem = new Attack("ROCKEM SOCKEM", "rocked and socked", true, 8, 7, 0, 2, 2, 1);
+	NPC* marinemech = new NPC("", "MARINE MECH", "Advanced and expensive military droid bought by Richie as a great help in battle.", limbo, 0, Stats(15, 0, 20, 0, 35, 30, 9));
+	Attack* openfire = new Attack("OPEN FIRE", "opened fire upon", false, -5, 2, 20, 5, 5, 1);
+	Attack* rockemsockem = new Attack("ROCKEM SOCKEM", "rocked and socked", true, 8, 9, 0, 2, 2, 1);
 	Attack* pgmissile = new Attack("PRECISION GUIDED MISSILE", "fired a precision guided missile at", false, 10, 10, 10, 1, 1, 3);
 	marinemech->setBasicAttack(openfire);
 	marinemech->addSpecialAttack(rockemsockem);
 	marinemech->addSpecialAttack(pgmissile);
 	
-	Attack* throwmoney = new Attack("THROW MONEY AT THE PROBLEM", "threw a heavy gold bar at", false, -5, 10, 0, 1, 1, 1);
+	Attack* throwmoney = new Attack("THROW MONEY AT THE PROBLEM", "threw a heavy gold bar at", false, -5, 5, 0, 1, 1, 1);
 	richie->setBasicAttack(throwmoney);
 	Attack* buydrone = new Attack("AMAZON PRIME", "bought a DRONE on Amazon", false, 5, 0, 0, 0, 0, 0);
 	buydrone->summon = drone;
@@ -1528,7 +1530,7 @@ void Game::SetupWorld() {
 	richie->addSpecialAttack(buymech);
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
-	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 30, Stats(40, 10, 15, 20, 0, 25, 9), Stats(0, 0, 1, 0, 1, 0, 1));
+	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 25, Stats(35, 10, 15, 20, 0, 25, 9), Stats(0, 0, 1, 0, 1, 0, 1));
 	npcChar[buford] = 'u'; //Buford's character representation is u for the second letter of Buford
 	richie->setGuardian(buford);
 	buford->setGuarding(richie);
@@ -4534,14 +4536,16 @@ void Game::SetupWorld() {
 	ratman->setTargetEffect(prepared);
 	Effect* shrouded = new Effect("SHROUDED", 5); //5 but probably gets canceled before that
 	shrouded->evasive = true;
-	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 6, 10, 1, 1, 1);
+	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 8, 10, 1, 1, 1);
 	ratarang->synergies.push_back(prepared);
 	ratman->setBasicAttack(ratarang);
-	Attack* mma = new Attack("MIXED MARTIAL ARTS", "engaged", true, 8, 2, 0, 3, 3, 1);
+	Attack* mma = new Attack("MIXED MARTIAL ARTS", "engaged", true, 8, 5, 0, 3, 3, 1);
 	mma->afterdesc = " in close combat";
 	mma->selfcancel = shrouded;
+	mma->synergies.push_back(prepared);
 	ratman->addSpecialAttack(mma);
-	Attack* preptime = new Attack("PREP TIME", "prepared against", false, 10, 0, 0, 1, 1, 1);
+	Attack* preptime = new Attack("PREP TIME", "prepared against", false, 5, 0, 0, 1, 1, 1);
+	preptime->weight = 2.0;
 	preptime->addEffect(prepared);
 	preptime->redundanteffect = false; //don't prepare multiple times
 	ratman->addSpecialAttack(preptime);
@@ -4550,7 +4554,6 @@ void Game::SetupWorld() {
 	smokepellet->selfeffect = shrouded;
 	ratman->addSpecialAttack(smokepellet);
 	Attack* explosivegel = new Attack("EXPLOSIVE GEL", "sprayed explosive gel on", false, 12, 0, 0, 1, 1, 1);
-	explosivegel->synergies.push_back(prepared);
 	Effect* abttoexplode = new Effect("READY TO BLOW", 1);
 	abttoexplode->falldamage = 40;
 	abttoexplode->spreadfalldamage = true;
@@ -4559,6 +4562,7 @@ void Game::SetupWorld() {
 	ratman->addSpecialAttack(explosivegel);
 	Attack* grapplegun = new Attack("GRAPPLE GUN", "grappled", false, 12, 4, 0, 1, 1, 1);
 	grapplegun->afterdesc = "'s legs and flung them away";
+	grapplegun->synergies.push_back(prepared);
 	Effect* grappled = new Effect("GRAPPLED AWAY", 1);
 	grappled->remove = true;
 	grapplegun->addEffect(grappled);
@@ -5142,10 +5146,15 @@ void Game::SetupWorld() {
 	adversary->addSpecialAttack(temptationd);
 	//works a little differently than fire with fire's wrath. If you do a wrathful hit to him, the wrath gives him a foothold and he gets a buff to all stats (duration of 5 for player hits and 3 for teammate)
 	Attack* temptationw = new Attack("TEMPTATION", "tempted", false, 6, 0, 0, 1, 1, 1);
+	Effect* awrath = new Effect("WRATH", 3, 0, 0, 1.5, 1, 1, 1, 1.5); //this is a different effect so Absolom can have different immunity text
+	awrath->playerduration = 5; //it's longer for the player because they have to calm down manually while the teammates calm down automatically
+	awrath->wrath = true; //sounds about right
+	awrath->nobeneficial = true; //too angry to be helpful
 	temptationw->afterdesc = " into WRATH";
 	Effect* foothold = new Effect("FOOTHOLD", 2, 0, 0, 1.5, 1.5, 1.5, 1.5, 1.5);
-	temptationw->addEffect(wrath);
-	burgermenace->setResponseEffect(wrath, foothold); //burger menace transforms into the adversary but transformations don't change response effects so we set the effect for the burger menace
+	temptationw->addEffect(awrath);
+	burgermenace->setResponseEffect(awrath, foothold); //burger menace transforms into the adversary but transformations don't change response effects so we set the effect for the burger menace
+	forestknight->setImmunity(awrath, {{forestknight, "You shall never tempt me into wrath!"}, {forestknight, "Friends! Keep a level head!"}, {forestknight, "Do not give a foothold to the enemy!"}}); //we have to set the immunity here
 	adversary->addSpecialAttack(temptationw);
 	Attack* devestation = new Attack("DEVESTATION", "devestated the battlefield with dark energy", false, 18, 15, 25, 1, 1, 999);
 	devestation->focushits = false;
