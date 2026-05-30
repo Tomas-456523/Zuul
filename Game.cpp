@@ -1196,7 +1196,7 @@ void Game::SetupWorld() {
 	cryptojack->addEffect(cryptojacked);
 	carlos->addSpecialAttack(cryptojack);
 	cryptojack->addDescription("Set up a bitcoin mine in the target, stealing their HP and SP for 5 turns.");
-	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 20, 10, 10, 1, 1, 999, false, 20);
+	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 10, 15, 15, 1, 1, 999, false, 20);
 	cascadingfailure->focushits = false;
 	cascadingfailure->synergies.push_back(infected);
 	cascadingfailure->synergies.push_back(overflow);
@@ -1204,7 +1204,7 @@ void Game::SetupWorld() {
 	cascadingfailure->synergies.push_back(overloaded);
 	cascadingfailure->synergies.push_back(cryptojacked);
 	carlos->addSpecialAttack(cascadingfailure);
-	cascadingfailure->addDescription("Trigger a cascading failure in the enemy team, with the attack's effectiveness multiplied for every one of Carlos's statuses present. (10 ATTACK, 10 PIERCE)");
+	cascadingfailure->addDescription("Trigger a cascading failure in the enemy team, with the attack's effectiveness multiplied for every one of Carlos's statuses present. (15 ATTACK, 15 PIERCE)");
 
 	//Princess Plum is support MARK: Plum
 	NPC* plum = new NPC("PRINCESS", "PLUM", "Sporty princess in purple attire kidnapped from a distant fungal kingdom.", castlethrone, 18, Stats(20, 10, 8, 1, 5, 12, 9), Stats(0, 0, 1, 0, 1, 1, 0));

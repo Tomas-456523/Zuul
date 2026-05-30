@@ -111,7 +111,7 @@ public: //you need to set stats on creation
 	double getSpeedMultiplier();
 	double getSPUseMultiplier();
 	double getDamageMultiplier();
-	bool getNerfHeal(); //get if we should nerf heal based on if we have the big effect from the final boss
+	bool getPlotPower(); //get if we have the big effect from the final boss
 	time_t getGymStart();
 	int getGuard();
 	bool getAway();

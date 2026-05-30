@@ -303,6 +303,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	double pierceProcessing = 0;
 	if (attack->spbomb) { //sp bombs don't get multipliers or modifiers of any sort, power still increases due to level from sp stat
 		attackProcessing = attack->power;
+		if (attacker->getPlotPower()) attackProcessing *= 1000; //power of plot does actually affect the sp bomb, so that it's still usable against the final boss
 	} else if (attack->instakill && !reciever->getBoss()) { //instakill attacks remove all health except for bosses
 		attackProcessing = pierceProcessing = 9999999; //just send a lot of damage to make it print the cool 999 
 	} else if (attack->percentagebased) { //if it's percentage based, set the damage to attack->power% of the reciever's health, and we direct damage later
@@ -310,7 +311,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		if (parry) attackProcessing /= 10.0; //if you parry it, it shouldn't deal half of the attacker's health, but you still get rewarded for parrying the attack so we just reduce the power by a factor of 10
 	} else { //normal attacks, we multiply the attack power/pierce and attack/pierce stat together so they both matter equally, and divide by 10 just cause I don't want the numbers to be too big
 		double attmultiplier = attacker->getAttMultiplier();
-		if (attack->power < 0 && attacker->getNerfHeal()) attmultiplier /= 1000.0; //during the final boss, healing should not have 1000x power, only attacks should be affected by the final boss multiplier
+		if (attack->power < 0 && attacker->getPlotPower()) attmultiplier /= 1000.0; //during the final boss, healing should not have 1000x power, only attacks should be affected by the final boss multiplier
 		attackProcessing = attack->power * Round(attacker->getAttack() * attmultiplier) / 10.0;
 		pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
 	}

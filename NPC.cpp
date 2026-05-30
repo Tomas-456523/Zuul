@@ -421,11 +421,11 @@ double NPC::getSPUseMultiplier() {
 double NPC::getDamageMultiplier() {
 	return damageMultiplier;
 }
-bool NPC::getNerfHeal() { //get if we should nerf heal based on if we have the big effect from the final boss
+bool NPC::getPlotPower() { //get if we have the big effect from the final boss
 	for (Effect* effect : effects) {
 		if (effect->attackbuff >= 999.0) return true; //this is the final boss buff
 	}
-	return false; //we don't have the final boss buff so don't nerf healing
+	return false; //we don't have the final boss buff so return false
 }
 double NPC::getSpeedMultiplier() {
 	return speedMultiplier;
