@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/29/26
+*  5/30/26
 *  This is the implementation file for the game world and playing the game!
 *  
 *  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
@@ -525,7 +525,7 @@ void Game::SetupWorld() {
 	Room* volcanobuffer1 = new Room("at the bottom of the temple stairs. You must TAKE the ENTRY ORB to enter the temple.");
 	Room* volcanobuffer2 = new Room("fully in the volcano temple. You must DROP the ESCAPE ORB if you wish to leave.");
 	volcanobuffer1->shareItems(volcanobuffer2);
-	Room* volcanotemple = new Room("in the volcano temple, built with dull red bricks .\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into.");
+	Room* volcanotemple = new Room("in the volcano temple, built with dull red bricks.\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into.");
 	Room* volcanotempleboss = new Room("in an arena burning with fire. There's a fiery figure in the center of the room.");
 	Room* volcanotemplel = new Room("on a path with lava on both sides. Twin lavafalls flow lava into the temple.");
 	Room* volcanotempler = new Room("on a path with lava on both sides. Um ackshually it's magma, because it's underground.");
@@ -2645,16 +2645,16 @@ void Game::SetupWorld() {
 	 {developer, "(and it's pretty much trying to suggest me advertisements for itself as I write this lol)"},
 	 {developer, "Anyway I was just about to write a normal conversation here,"},
 	 {developer, "and it suggested this???"},
-	 {NULL, "\nTOMAS - \"I have a funny story about the name of the VILLAGE ELDER.\""},
-	 {developer, "So I was trying to come up with a name for him,"},
-	 {developer, "and I was like, well he's an elder and he's in a village so maybe his name could be something like \"VILLAGE ELDER\" but that would be really boring."},
-	 {developer, "So I thought about how to make it more interesting,"},
-	 {developer, "and I was like, well what if his name was just VILLAGE and his title was ELDER?"},
-	 {developer, "But that would be confusing because then people might think his name is actually VILLAGE."},
-	 {developer, "So then I thought about how to make it clear that his name is VILLAGE and his title is ELDER,"},
-	 {developer, "and I was like, well what if his name was ARCHIE and his title was VILLAGE ELDER?"},
-	 {developer, "And then I realized that ARCHIE is actually a pretty good name for him."},
-	 {developer, "So yeah that's how he got his name."},
+	 {NULL, "\nAI TOMAS - \"I have a funny story about the name of the VILLAGE ELDER.\""},
+	 {NULL, "AI TOMAS - \"So I was trying to come up with a name for him,\""},
+	 {NULL, "AI TOMAS - \"and I was like, well he's an elder and he's in a village so maybe his name could be something like \"VILLAGE ELDER\" but that would be really boring.\""},
+	 {NULL, "AI TOMAS - \"So I thought about how to make it more interesting,\""},
+	 {NULL, "AI TOMAS - \"and I was like, well what if his name was just VILLAGE and his title was ELDER?\""},
+	 {NULL, "AI TOMAS - \"But that would be confusing because then people might think his name is actually VILLAGE.\""},
+	 {NULL, "AI TOMAS - \"So then I thought about how to make it clear that his name is VILLAGE and his title is ELDER,\""},
+	 {NULL, "AI TOMAS - \"and I was like, well what if his name was ARCHIE and his title was VILLAGE ELDER?\""},
+	 {NULL, "AI TOMAS - \"And then I realized that ARCHIE is actually a pretty good name for him.\""},
+	 {NULL, "AI TOMAS - \"So yeah that's how he got his name.\""},
 	 {NULL, "\nTOMAS - \"So yeah that's what it suggested\""},
 	 {developer, "Idk I just found it goofy."},
 	 {developer, "Also it is really weird seeing AI try to speak like me."}});
@@ -5068,7 +5068,7 @@ void Game::SetupWorld() {
 	firewithfire->stageRageConvo({{NULL, "The flames around you started burning a bright blue!"}}); //when is printed after the burning brighter text when he goes to the next phase
 	firewithfire->stageRageConvo({{NULL, "The flames around you started burning an intense purple hue!"}});
 	wrath->playerresponse = calmdown; //the player can only calm themselves down so we only give the attack if the player is affected
-	firewithfire->setTrackRage({{0.025, firewithfir2}, {0.1, firewithfir3}}); //phase 2 after 2.5% rage and phase 3 after 10%, relative to total health
+	firewithfire->setTrackRage({{0.025, firewithfir2}, {0.09, firewithfir3}}); //phase 2 after 2.5% rage and phase 3 after 9%, relative to total health. Teammates trigger phase 2 at around 1/4 into the fight from testing
 	ragebait->setTargetConv(floria, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Floria your hat looks stupid. ^^D\""}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}});
 	ragebait->setTargetConv(egadwick, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Who let this fossil into the team?\""}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd! ^^D"}, {egadwick, "You don't understand the marvelousness of science!"}});
 	ragebait->setTargetConv(forestknight, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the mighty forest knight...\""}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA! ^^D"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me into wrath!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
@@ -5153,6 +5153,11 @@ void Game::SetupWorld() {
 	temptationw->afterdesc = " into WRATH";
 	Effect* foothold = new Effect("FOOTHOLD", 2, 0, 0, 1.5, 1.5, 1.5, 1.5, 1.5);
 	temptationw->addEffect(awrath);
+	Attack* acalmdown = new Attack("CALM DOWN", "took a breather", false, 0, 0, 0, 1, 1, 0); //since there is a unique wrath effect there also has to be a unique calm down attack to match since they're both player responses
+	acalmdown->addDescription("Take a breather in order to calm down and make your WRATH wear off.");
+	acalmdown->selfcancel = awrath;
+	acalmdown->focushits = false;
+	awrath->playerresponse = acalmdown;
 	burgermenace->setResponseEffect(awrath, foothold); //burger menace transforms into the adversary but transformations don't change response effects so we set the effect for the burger menace
 	forestknight->setImmunity(awrath, {{forestknight, "You shall never tempt me into wrath!"}, {forestknight, "Friends! Keep a level head!"}, {forestknight, "Do not give a foothold to the enemy!"}}); //we have to set the immunity here
 	adversary->addSpecialAttack(temptationw);
@@ -6896,9 +6901,7 @@ void Game::SetupWorld() {
 	 {developer, "which is why you see subtle differences such as the news."},
 	 {self, "Oh I see that makes perfect sense!"},
 	 {developer, "Anyway tying into the other BURGER MAN,"},
-	 {developer, "I guess universe -1 was some sort of prison for the final boss guy."},
-	 {developer, "And then he invented BURGERs,"},
-	 {developer, "and you know how there's time travel and everything?"},
+	 {developer, "you know how there's time travel and everything?"},
 	 {self, "Uh huh."},
 	 {developer, "Yeah so using a bootstrap paradox,"},
 	 {developer, "the BURGER MAN tempted Henry Jerry into finding the BURGER,"},
@@ -7579,7 +7582,7 @@ void Game::dropItem(Room* currentRoom, const char* itemname) {
 			if (coldorbs.size() >= 3) { //unblock the exit to the boss area!
 				orb->extinguishFire();
 				logW("u", item->getID(), currentRoom->getID()); //track the changes
-				currentRoom->setDescription("in the center of the desert temple. There's a platform heading down deeper into the temple.");
+				currentRoom->setDescription("in the volcano temple, built with dull red bricks. There is really good circulation here.");
 				CinPause();
 				cout << "\nAll three COLD ORBs are in their slots!";
 				CinPause();
@@ -8533,7 +8536,7 @@ void Game::play() {
 			else if (WorldState[JILLYQUEST]) cout << "\rYou give up on your quest to save JILLY.";
 			else cout << "\rYou give up on your quest to get the BURGER.";
 		} else { //player has saved at some point like a normal person
-			if (WorldState[BURGERMENDEF]) cout << "\nYou take a nap."; //no more quest so you just take a normal nap (the game saves and quits automatically after making BURGERMENDEF true so there's no corresponding didn't save text for this one)
+			if (WorldState[BURGERMENDEF]) cout << "\rYou take a nap."; //no more quest so you just take a normal nap (the game saves and quits automatically after making BURGERMENDEF true so there's no corresponding didn't save text for this one)
 			else if (WorldState[TEMPLEQUEST]) cout << "\rYou take a nap. You will continue on your quest to destroy BURGER later!";
 			else if (WorldState[JILLYQUEST]) cout << "\rYou take a nap. You will continue on your quest to save JILLY later!";
 			else cout << "\rYou take a nap. You will continue on your quest to get the BURGER later!";

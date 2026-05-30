@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/27/26
+*  5/30/26
 *  This is the implementation file for npcs
 *  
 *  NPCs are the characters who the player can interact with, and also include player character himself.
@@ -1242,7 +1242,7 @@ void NPC::trackRage(double damage, NPC* attacker, bool printgeneric) { //tracks 
 	//rage goes up by a third of the damage (minimum of 3) because wrath makes attack x1.5, so the damage wrath gives the player is the same portion the boss recieves as rage
 	//the rage meter is based on how much % of health was taken away due to wrathful hits, though non-player characters contribute less
 	int rage = max(Round(damage/(attacker->getPlayerness() ? 3 : 6)), 3); //non-player characters increase wrath less since the player can't control them
-	if (printgeneric) {
+	if (printgeneric && !ragestages.empty()) { //if no more rage stages we print this later
 		cout << "\n" << attacker->getName() << "'s WRATH fueled " << name << "'s fire!";
 		CinPause();
 	}
@@ -1257,7 +1257,8 @@ void NPC::trackRage(double damage, NPC* attacker, bool printgeneric) { //tracks 
 		ragestages.pop();
 	} else if (ragestages.empty()) { //no more phases left, just increase attack
 		attackMultiplier += rage/30.0;
-		cout << "\n" << name <<  "'s ATTACK rose to " << attackMultiplier << "x!";
+		cout << "\n" << attacker->getName() << "'s WRATH made " << name << "'s fire burn brighter!"
+		     << "\n" << name <<  "'s ATTACK rose to " << attackMultiplier << "x!";
 		CinPause();
 	}
 }
