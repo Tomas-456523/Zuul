@@ -376,7 +376,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		}
 		if (reciever->getHealth() <= 0 && !attack->targetFainted) break; //stop hitting because the guy is already incapacitated
 	}
-	if (!parriedhit && !hits) {
+	if (!parriedhit && !hits && !attack->transformtotar) { //don't say it missed if it's a transformation attack cause it was saying that "the attack missed" because it was a special case with 0 hits but a non-0 target amount
 		cout << "\nThe attack missed!";
 		CinPause();
 	}

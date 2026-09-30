@@ -4,3 +4,4 @@ main
 *:Zone.Identifier
 *.o
 *.bq2
+*.DS_Store

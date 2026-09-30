@@ -60,9 +60,9 @@ struct Conversation {
 		return (goToAlt() ? (alt && alt->empty()) : lines.empty());
 	}
 
-	Conversation() : skipcondition(Helper::NEVER), alt(0) {}
+	Conversation() : skipcondition({Helper::NEVER}), alt(0) {}
 
-	Conversation(std::initializer_list<std::pair<NPC*, const char*>> _lines) : lines(_lines), skipcondition(Helper::NEVER), alt(0) {}
+	Conversation(std::initializer_list<std::pair<NPC*, const char*>> _lines) : lines(_lines), skipcondition({Helper::NEVER}), alt(0) {}
 };
 
 #endif

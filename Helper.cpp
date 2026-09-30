@@ -646,7 +646,7 @@ namespace Helper {
 		return "BURGER QUEST 2:"
 			 "\nELECTRIC BOOGALOO"
 			 "\n"
-			 "\nVersion Beta 1.0"
+			 "\nVersion Beta 1.1"
 			 "\n(c) 2026 Tomas Carranza Echaniz"
 			 "\n";
 	}

@@ -629,7 +629,7 @@ void Game::SetupWorld() {
 	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
 	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, {bigscarf});
 	Attack* energize = new Attack("ENERGIZE", "energized", false, 10, 0, 0, 1, 1, 1, true, 15);
-	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 2.0, 0, 0, 0);
+	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 2.0, 1, 1, 1);
 	energize->addEffect(energized);
 	energize->addDescription("Imbue yourself or an teammate with energy, doubling attack for one turn.");
 	Attack* smokebomb = new Attack("SMOKE BOMB", "threw two smoke bombs, bringing SMOKEMEN into the battle", false, 14, 0, 0, 0, 0, 0);
@@ -2523,8 +2523,7 @@ void Game::SetupWorld() {
 	//talk about the mountain {developer, ""}
 	developer->addConversation({{developer, "There was going to be a \"BIG CAT\" as the first enemy on the mountain,"},
 	 {developer, "it was like a golden lion and it had a silver mane and it was really big,"},
-	 {developer, "but it was also really boring so I replaced it with that snowman that dies instantly."},
-	 {developer, "Sorry I mean \"gets incapacitated\" instantly."}});
+	 {developer, "but it was also really boring so I replaced it with that snowman that gets incapacitated instantly."}});
 	//limbo
 	//burger quest 2 ideation
 	//talk about bosses
@@ -3690,6 +3689,7 @@ void Game::SetupWorld() {
 	burglab->setExit(OUT, burgbases);
 	BURGERPRISON->setExit(OUT, burgplats);
 	basestation->setExit(NORTH, BURGERPRISON);
+	foresttemplestairs->setExit(OUT, foresttempleentrance);
 	foresttemplestairs->setExit(SOUTH, forestbuffer1);
 	forestbuffer1->setExit(NORTH, foresttemplestairs);
 	forestbuffer2->setExit(SOUTH, foresttemple);
@@ -4241,7 +4241,7 @@ void Game::SetupWorld() {
 	clavomit->addEffect(onfire);
 	lavadile->addSpecialAttack(clavomit);
 
-	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades.", limbo, 0, Stats(170, 25, 15, 35, 25, 20, 9));
+	NPC* lavagator = new NPC("", "LAVAGATOR", "Enormous alligator inhabitant of the laval sewer systems with retro shades because it's so cool.", limbo, 0, Stats(170, 25, 15, 35, 25, 20, 9));
 	lavagator->setBoss(true); //miniboss
 	Effect* gcrunched = new Effect("CRUNCHED", 3, 0, 0, 1, 0.6);
 	Attack* gcrunch = new Attack("CRUNCH", "crunched down on", true, -5, 10, 10, 1, 1, 1);
@@ -4506,9 +4506,9 @@ void Game::SetupWorld() {
 	naturaldisaster->addSpecialAttack(supercell);
 
 	NPC* gamblemonster = new NPC("GAMBLE MONSTER", "GAMBLONGO", "He's Gamblongo the Gamble monster and he owns the casino. He looks like a floating blob of puree with eyes.", limbo, 0, Stats(100, 20, 30, 40, 50, 70, 90), Stats(2, 2, 2, 2, 2, 2, 1));
-	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -5, 0, 0, 0, 0, 0, 0);
+	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -1, 0, 0, 0, 0, 0, 0);
 	gonna->focushits = false;
-	Attack* get = new Attack("DEATH", "got you", false, 90, 12345678, 12345678, 1, 1, 999);
+	Attack* get = new Attack("DEATH", "got you", false, 22, 12345678, 12345678, 1, 1, 999); //it will take 12 turns before gamblongo's intense attack is usable (22-10 starting sp)
 	get->focushits = false;
 	gamblemonster->setBasicAttack(gonna);
 	gamblemonster->addSpecialAttack(get);
@@ -4732,7 +4732,7 @@ void Game::SetupWorld() {
 	carnplant->addSpecialAttack(sundew);
 
 	NPC* smogfish = new NPC("", "SMOGFISH", "Floating many-finned fish of purple smog who fights in the form of others.", limbo, 0, Stats(10, 0, 10, 0, 0, 35, 9));
-	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 0, 0, 1);
+	Attack* copycat = new Attack("COPYCAT", "transformed into", false, 0, 0, 0, 0, 0, 1); //you see it's funny cause it's a fish
 	copycat->transformtotar = true;
 	copycat->announcetransform = false; //it's literally the exact same text as the copycat attack text so we shouldn't print it again
 	copycat->prioritizenonleader = true; //don't transform into the player if possible to make sense of self stand out more
@@ -5083,7 +5083,7 @@ void Game::SetupWorld() {
 	ragebait->setTargetConv(ratman, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Ratman!\""}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {firewithfire, "BAHAHAHAHA! ^^D"}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}});
 	
 	//the final boss!
-	NPC* burgermenace = new NPC("", "THE BURGER MENACE", "The creator of BURGERs. He looks like a giant winged BURGER.", limbo, 0, Stats(5000, 5000, 5000, 10000, 5000, 10000, 9), Stats(0, 0, 1, 1, 1, 2, 0));
+	NPC* burgermenace = new NPC("", "THE BURGER MENACE", "The creator of BURGERs. He looks like a giant winged BURGER in a horrible way.", limbo, 0, Stats(5000, 5000, 5000, 10000, 5000, 10000, 9), Stats(0, 0, 1, 1, 1, 2, 0));
 	burgermenace->setBoss(true); //of the final variety
 	Attack* burgertendril = new Attack("BURGER TENDRIL", "struck", true, -5, 7, 5, 1, 1, 1);
 	burgermenace->setBasicAttack(burgertendril);
@@ -6748,12 +6748,16 @@ void Game::SetupWorld() {
 					   {burgermenace, "SO I BROUGHT YOU DOWN HERE TO HAVE A CHAT FACE TO FACE."},
 					   {self, "So everything that happened is your fault? >:|"},
 					   {burgermenace, "YES, AND WHAT DO YOU THINK YOU WILL DO ABOUT IT?"},
-					   {burgermenace, "YOU ARE WEAK."},
-					   {burgermenace, "YOU ARE WORTHLESS."},
-					   {burgermenace, "YOU ARE NOTHING."},
-					   {burgermenace, "NOTHING YOU DID WILL HAVE EVER MATTERED."},
-					   {burgermenace, "YOU WILL NEVER HAVE MATTERED."},
-					   {self, "We'll see about that >:|"},
+					   {burgermenace, "I KNOW YOU BETTER THAN YOU KNOW YOURSELF."},
+					   {burgermenace, "YOUR ENTIRE QUEST WAS DIRECTED BY ME UNTIL YOUR LITTLE DETOUR."},
+					   {self, ":\\"},
+					   {burgermenace, "ONCE I DETOUR THE FLESH FROM YOUR BODIES"},
+					   {burgermenace, "I WILL USE IT IN A LIMITED TIME LINE OF BURGERS"},
+					   {burgermenace, "FOR THE GRAND REOPENING OF MY RESTAURANT."},
+					   {self, ":<"},
+					   {self, ">:/"},
+					   {self, "I don't know what I'm gonna do >:|"},
+					   {self, "But we're gonna win because we have God on our side! >:D"},
 					   {NULL, "\nYou and your team are filled with the POWER OF PLOT!"},
 					   {NULL, "Your stats rose to 100000%!"}});
 	finalboss->addLinkedConvo(finalboss, {{adversary, "I WILL NOT BE DEFEATED BY << YOU >> OF ALL PEOPLE."},
@@ -6779,10 +6783,10 @@ void Game::SetupWorld() {
 										  {hj, "Well, in the end, this has truly been a BURGER QUEST too."},
 										  {self, "Say that again?"},
 										  {NULL, "\nThank you so much for playing BURGER QUEST 2: ELECTRIC BOOGALOO all the way to the end!"},
-										  {NULL, "I hope this has been an enjoyable and meaningful experience."},
-										  {NULL, "May we meet again on the road ahead!"},
+										  {NULL, "I hope this has been an enjoyable and meaningful experience,"},
+										  {NULL, "and that I will see you again in the future!"},
 										  {NULL, "- Tomas"}});
-	finalboss->setDialogue({{burgermenace, "YOU WILL NEVER HAVE MATTERED."}, {self, "We'll see about that >:|"}});
+	finalboss->setDialogue({{burgermenace, "I WILL USE YOUR FLESH FOR A LIMITED TIME LINE OF BURGERS."}, {self, "We'll see about that >:|"}});
 	finalboss->addRejectionDialogue("...");
 	finalboss->setTalkOnDefeat();
 	finalboss->setForceBattle(true, true); //you get forced into battle the first time you get here
@@ -6908,6 +6912,25 @@ void Game::SetupWorld() {
 	 {developer, "and time traveled back to the future once all was said and done."},
 	 {developer, "So he ordered the BURGER from himself."},
 	 {self, "Dang that's crazy."}});
+	finalboss->addLinkedConvo(developer, {{developer, "Bro I cannot be fr"},
+	 {developer, "I started replaying my game for some reason cause I was being nostalgic or something"},
+	 {developer, "and I noticed..."},
+	 {NULL, "PAST TOMAS - \"hold up...\""},
+	 {NULL, "PAST TOMAS - \"I literally can't exit the forest temple...\""},
+	 {NULL, "(paraphrased)"},
+	 {developer, "It turns out that literally in the commit saying that I've verified the game is beatable,"},
+	 {developer, "that for some reason I removed the OUT exit from the forest temple stairs"},
+	 {developer, "I don't even know why!"},
+	 {developer, "It's very silly I hope that by fixing it im not reintroducing some other bug that led me to do that"},
+	 {developer, "Also apparently the energize move literally multiplied the target's defense, pierce, and toughness by 0..."},
+	 {developer, "(cause I never actually tested it it seems :P)"},
+	 {developer, "I only noticed because I was fighting the first grassman"},
+	 {developer, "with my level 25 team as I was on my way to enter the forest temple"},
+	 {developer, "where I would realize there was no exit"},
+	 {developer, "but I didn't really want to finish it off myself (cause I was the fastest member of my team so i went first)"},
+	 {developer, "so I like energized Viola and yeah I noticed then"},
+	 {developer, "Well in the meantime I had some other things to fix and noticed some other things to improve and the game can finally get past Beta 1.0!"},
+	 {developer, "yay"}});
 
 	//block exits MARK: block exits
 	forestgate->blockExit(NORTH, LOCK, "blocked by a large branchy gate. There is a large keyhole in the center with deer antlers.");
@@ -7732,6 +7755,7 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 		if (attacks.empty()) { //prints motivational message if none of these attacks are usable yet
 			cout << "\nYou're not LEVELED UP enough to use any of these new attacks.\nKeep training and you'll get there eventually!";
 		} else if (!futureattacks.empty()) { //print this message so the player knows they will also learn more attacks in the future
+			CinPause();
 			cout << "\nYou're not LEVELED UP enough to use " << (futureattacks.size() > 1 ? "some" : "one") << " of these new attacks.\nKeep training and you'll get there eventually!";
 		}
 	//summons the tunnel lobster to the current train station
@@ -7987,8 +8011,10 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 		return;
 	} else if (!strcmp(item->getType(), "PLOTDEVICE")) {
 		PLOTDEVICE* device = (PLOTDEVICE*)item;
-		if (!device->getUsable(currentRoom)) { //if you can't currently use the plot device say why
-			cout << "\nTHE PLOT DEVICE's PLOTOMETER isn't locked onto anything!";
+		if (!device->getUsable(currentRoom)) { //if the plot device has nothing to do it just does nothing
+			cout << "\nYou press down on THE PLOT DEVICE's BIG RED BUTTON!"; //old: THE PLOT DEVICE's PLOTOMETER isn't locked onto anything!
+			CinPause();
+			cout << "Nothing happened...";
 			return;
 		} //print the first part of the conversation which will the branch depending on the player's choice which is hopefully to not give the device
 		printConversation(&device->getUseText(), false);
