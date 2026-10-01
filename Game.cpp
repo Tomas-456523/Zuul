@@ -682,7 +682,7 @@ void Game::SetupWorld() {
 	NPC* floria = new NPC("FLOWER GIRL", "FLORIA", "Your little sister who gets along well with nature, especially flowers.\nShe has a flower-shaped hat.", flowerfield2, 5, Stats(10, 5, 4, 0, 5, 5, 9), Stats(1, 0, 1, 0, 1, 0, 0));
 	npcChar[floria] = 'f'; //Floria's character representation is f for flower
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely? :>"},
-							 {self, "NO THESE FLOWERS SUCK THEY TRIED TO EAT ME."},
+							 {self, "No these flowers SUCK they tried to eat me >:|"},
 							 {NULL, "FLORIA - :>"},
 							 {NULL, "FLORIA - ¦>"},
 							 {NULL, "FLORIA - :>"}});
@@ -5461,7 +5461,8 @@ void Game::SetupWorld() {
 	viola->addRecruitmentDialogue({{self, "Yo, wanna join my team?"},
 								   {viola, "Really?"},
 								   {viola, "After what I did?"},
-								   {self, "Yeah."},
+								   {self, "uh"},
+								   {self, "yeah."},
 								   {viola, "Um..."},
 								   {viola, "Alright..."}});
 	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");

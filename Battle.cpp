@@ -271,6 +271,8 @@ void Battle::handleKnockout(NPC* npc) {
 		for (NPC* enemy : (npc->getEnemy() ? playerTeam : enemyTeam)) enemy->setTaking(NULL);
 	}
 
+	lastincapacitated = npc->getEnemy() ? 0 : 1; //track who was last incapacitated to avoid tiebreakers
+
 	for (NPC* one : everyone) { //remove bond effects from everyone since the npc was incapacited
 		for (Effect* effect : one->getEffects()) {
 			NPCEffect* neffect = one->getEffect(effect, true);
@@ -447,6 +449,9 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 	for (int i = 0; i < tarparty.size(); i++) { //hits all the targets, we must iterate in order to account for multi-target attacks
 		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2 && !(attack->skiptarget && i == tarPos)) { //if they're within range and !(this is the target and we're skipping the target in this multi-target attack)
 			NPC* reciever = tarparty[i]; //who will recieve the damage, could be the target or the npc guarding the target
+			if (reciever->getFifth() && /*aliveCount(tarparty) != 1 &&*/ i != tarPos) { //we skip fifth teammates because they're more adding flavor to the fight and shouldn't really affect the targeting and stuff.
+				continue; //we still target fifth teammates if they were directly targeted because that means only they're left and the enemy is finishing them off or the player targeted them and as pointless as that is we should still let the player do that
+			}
 			if (reciever->getAway()) { //print how the npc isn't there, only gotten to if there is nobody else to target
 				cout << "\n" << reciever->getName() << " isn't in the battlefield right now!";
 				CinPause();
@@ -583,12 +588,16 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		int tarPos = distance(tarparty.begin(), find(tarparty.begin(), tarparty.end(), target));
 		hitTargets(attacker, attack, tarparty, tarPos);
 	} else { //unfocused moves which hit a random target for every hit
-		int hits = attack->minhits+ rand() % (attack->maxhits + 1 - attack->minhits);
-		int smartnotawaycount = 0; //if it's smart unfocus it counts how many potential targets are not away so that it knows if it should hit an away target anyway (but there will never be 0 non-incapacitated targets because the battle would be over then)
-		if (attack->smartunfocus) for (NPC* npc : tarparty) if (!npc->getAway() && npc->getHealth()) smartnotawaycount++; //count the amount of non-away potential targets
+		int hits = attack->minhits + rand() % (attack->maxhits + 1 - attack->minhits);
 		for (size_t i = 0; i < hits;) {
+			//do some filtering (at the start of each loop because we might incapacitate something on one hit then the next hit we have nothing to target)
+			int nonfifthcount = 0; //how many non-fifth targets we can hit (because we prefer those)
+			for (NPC* npc : tarparty) if (!npc->getFifth() && npc->getHealth()) nonfifthcount++; //count how many non-fifth npcs we can target
+			int smartnotawaycount = 0; //if it's smart unfocus it counts how many potential targets are not away so that it knows if it should hit an away target anyway (but there will never be 0 non-incapacitated targets because the battle would be over then)
+			if (attack->smartunfocus) for (NPC* npc : tarparty) if (!npc->getAway() && npc->getHealth() && (npc->getFifth() != (bool)nonfifthcount)) smartnotawaycount++; //count the amount of non-away potential targets (also filter for fifth teammates if we can only target those, and non-fifth teammates if available)
+
 			int tarPos = rand() % tarparty.size(); //choose a random target and see if it works (usually yes)
-			if (!attack->smartunfocus || (tarparty[tarPos]->getHealth() && !(tarparty[tarPos]->getAway() && smartnotawaycount))) { //smart unfocused attacks only hit non-away (if it can) and non-incapacitated targets because they're smart
+			if ((bool)nonfifthcount != tarparty[tarPos]->getFifth() && (!attack->smartunfocus || (tarparty[tarPos]->getHealth() && !(tarparty[tarPos]->getAway() && smartnotawaycount)))) { //smart unfocused attacks only hit non-away (if it can) and non-incapacitated targets because they're smart
 				if (hits > 1) cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
 				hitTargets(attacker, attack, tarparty, tarPos);
 				i++;
@@ -842,7 +851,9 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		if (weapon->getAttack()->getBeneficial()) helpslaunched[player]++;
 		else attackslaunched[player]++;
 	} else if (!strcmp(item->getType(), "PLOTDEVICE")) { //plot device does(n't need to do) nothing in battle
-		cout << "\nTHE PLOT DEVICE's PLOTOMETER isn't locked onto anything!";
+		cout << "\nYou press down on THE PLOT DEVICE's BIG RED BUTTON!"; //old: THE PLOT DEVICE's PLOTOMETER isn't locked onto anything!
+		CinPause();
+		cout << "Nothing happened...";
 		return false;
 	} else { //otherwise the player tried to use an item that is only usable in the overworld so we give an error message
 		cout << "\nThe " << item->getName() << " can't be used in battle!";
@@ -1163,6 +1174,13 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		targets.push_back(target);
 	}
 	//check for further prioritizations from here
+	/*if (targets.size() > 1)*/ { //filter out fifth npcs so that the fifth npcs don't affect anyone's targeting too much
+		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
+		for (NPC* target : targets) {
+			if (!target->getFifth()) _targets.push_back(target); //add the target if they are not fifth
+		}
+		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filter everyone out
+	}
 	{ //try to filter out npcs that are away because targeting npcs you can't hit when there's a perfectly targetable npc right there would be really dumb
 		vector<NPC*> _targets; //store non-away npcs to see if prioritization would remove all valid targets
 		for (NPC* target : targets) {
@@ -1174,13 +1192,6 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
 		for (NPC* target : targets) {
 			if (!target->getHypnotized()) _targets.push_back(target); //add the target if they are not also hypnotized
-		}
-		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
-	}
-	if (!attack->targetAlly && targets.size() > 1) { //filter out fifth npcs if the attacker attacking the opposite team and there's other non-fifth npcs, so that the fifth npcs don't affect enemy targeting too much
-		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
-		for (NPC* target : targets) {
-			if (!target->getFifth()) _targets.push_back(target); //add the target if they are not fifth
 		}
 		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filer everyone out
 	}
@@ -1328,13 +1339,25 @@ int Battle::FIGHT() {
 		bool newwave = false; //check if we're starting a new wave
 		
 		//check the player team and enemy team for if they've lost all hp, sees if we can go to a new wave, and if not, returns win or loss based on that result
-		if (aliveCount(playerTeam) <= 0) {
+		bool playergone = aliveCount(playerTeam) <= 0;
+		bool enemygone = aliveCount(enemyTeam) <= 0;
+		if (playergone && enemygone) {
+			if (pwave+1 < player->getWaves() && ewave+1 < enemy->getWaves()) { //if they both have new waves, start both new waves
+				pwave++; ewave++; //can't increment in if statement because that might need to happen in the else ifs
+				setupWave(true, pwave, false);
+				setupWave(false, ewave, scaleEnemies);
+				newwave = true;
+				printVersus(ewave+1); //print the new wave text (will only print enemy wave number but i dont really care because at the moment this doesn't really get reached)
+			} else if (++pwave < player->getWaves()) return 1; //if only one of them has another wave, the one with remaining waves wins
+			else if (++ewave < enemy->getWaves()) return 0;
+			else return lastincapacitated; //if neither of them has another wave, whoever was incapacitated last wins because that means they lasted longer
+		} else if (playergone) {
 			if (++pwave < player->getWaves()) { //also checks each team for if they have more waves
 				setupWave(true, pwave, false);
 				newwave = true;
 				printVersus(pwave+1); //print the new wave text
 			} else return 0; //lose
-		} else if (aliveCount(enemyTeam) <= 0) {
+		} else if (enemygone) {
 			if (++ewave < enemy->getWaves()) {
 				setupWave(false, ewave, scaleEnemies);
 				newwave = true;

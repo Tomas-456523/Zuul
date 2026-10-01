@@ -99,6 +99,8 @@ private:
 	size_t pwave = 0;
 	size_t ewave = 0;
 
+	int lastincapacitated = 0; //the last team that has a member be incapacitated, 0 for enemy, 1 for player, used for tiebreakers
+
 	int enemycount = 0; //tracks how many non-boss enemies have been in the battle, just for rewards calculation
 
 	bool escapable; //if you can run from this battle
