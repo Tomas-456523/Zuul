@@ -1338,7 +1338,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { /
 		Conversation& convo = immuneText[effect];
 		if (!convo.empty()) printConversation(&convo, true); //print the dialogue for this immunity
 		convo = {}; //only say the conversation once
-		cout << "\n" << name << " was not affected!";
+		cout << "\n" << name << " was not affected by the attack's " << effect->name << "!";
 		CinPause();
 		return NULL;
 	}

@@ -18,6 +18,7 @@
 #include "Room.h"
 #include "NPC.h"
 #include "Helper.h"
+#include "Attack.h"
 using namespace std;
 using namespace Helper;
 
@@ -301,7 +302,7 @@ Item* EducationItem::Duplicate() { //returns a new education item as an Item*
 }
 
 //weapon items, for using new moves
-WeaponItem::WeaponItem(const char* _name, const char* _description, Room* _room, Attack* _attack) : Item(_name, _description, _room, true, false, true, true) {
+WeaponItem::WeaponItem(const char* _name, const char* _description, Room* _room, Attack* _attack) : Item(_name, _description, _room, true, false, _attack, _attack && !_attack->targetAlly) {
 	attack = _attack;
 	type = "weapon"; //sets the type
 }
@@ -331,7 +332,7 @@ Item* CallerItem::Duplicate() { //returns a new caller item as an Item*
 }
 
 //key items, for unlocking and unblocking blocked exits
-KeyItem::KeyItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, true, true) {
+KeyItem::KeyItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _consumable, Attack* _attack) : Item(_name, _description, _room, true, _consumable, _attack, _attack && !_attack->targetAlly) {
 	unlockType = _unlockType;
 	useText = _useText;
 	type = "key"; //sets the type
@@ -395,7 +396,7 @@ void HoseItem::take(Room* currentroom) { //undo drop blocks for the current room
 }
 
 //movement items, for moving through blocked exits
-MovementItem::MovementItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _takable, Attack* _attack) : Item(_name, _description, _room, _takable, false, true, true) {
+MovementItem::MovementItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _takable, Attack* _attack, bool _target) : Item(_name, _description, _room, _takable, false, _target, _target) {
 	unlockType = _unlockType;
 	useText = _useText;
 	type = "movement"; //sets the type

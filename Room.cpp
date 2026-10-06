@@ -292,7 +292,7 @@ void Room::setStock(Item* item, int amount, int price, const Conversation& buyde
 	stock.push_back(item);
 }
 void Room::removeStock(Item* item, bool printmessage) { //we uncatalogue the item when it runs out
-	if (printmessage) cout << "You bought the last " << item->getName() << "! It's sold out!"; //lets the player know it's sold out
+	if (printmessage) cout << "\nYou bought the last " << item->getName() << "! It's sold out!"; //lets the player know it's sold out
 	stock.erase(remove(stock.begin(), stock.end(), item), stock.end()); //remove it from the list of stock
 }
 void Room::setBackup(Item* item, bool onlyone) {

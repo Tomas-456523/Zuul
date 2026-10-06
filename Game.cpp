@@ -334,20 +334,14 @@ void Game::SetupWorld() {
 						  {NULL, "<<< THE EDGE OF THE WORLD >>>"},
 						  {NULL, "Frigid winds blast your face and dark clouds cover both land and sky."},
 						  {NULL, "Ok have fun!"}});
-	Room* mountainmine = new Room("far away from the start of the track. A barrage of snow blows in from the exit.");
+	Room* mountainmine = new Room("a long ways away from the start of the track. A steady stream of snow blows in from the exit.");
 	mountainmine->setWelcome({{NULL, "..."},
-							  {NULL, "..."},
-							  {NULL, "..."},
-							  {NULL, "The SPARE MINECART runs out of momentum."},
-							  {self, "Oh."},
-							  {NULL, "You start propelling yourself forward with energy."},
-							  {NULL, "..."},
 							  {NULL, "..."},
 							  {NULL, "..."},
 							  {NULL, "Many many hours later..."}});
 	Room* mountain2 = new Room("on a little clearing on the mountain. The UPwards path has a ski lift!");
 	Room* mountainside = new Room("along a side path of the mountain. The snow is snowier than before.");
-	Room* mountainlake = new Room("at a lake full of baby shrimp. The shrimple aura keeps the water from freezing.");
+	Room* mountainlake = new Room("at a lake full of baby shrimp. Their shrimple aura keeps the water from freezing.");
 	Room* mountain3 = new Room("at a sheer cliff. Whoever's in charge of this place should really invest in guardrails.");
 	Room* mountainpeak = new Room("at the peak of the mountain, watching over a sea of clouds.\nYou can't even see the BURGER RESTAURANT from here; it really is so far away.\nThere's a tent here in the style of your home village.");
 	Room* tenthome = new Room("in the developer's house. He is not working on BURGER QUEST 2 DLC.");
@@ -684,7 +678,7 @@ void Game::SetupWorld() {
 	floria->addConversation({{floria, "Hey big brother! Aren't these flowers just so lovely? :>"},
 							 {self, "No these flowers SUCK they tried to eat me >:|"},
 							 {NULL, "FLORIA - :>"},
-							 {NULL, "FLORIA - ¦>"},
+							 {NULL, "FLORIA - |>"}, //¦
 							 {NULL, "FLORIA - :>"}});
 	floria->setDialogue("I just love flowers!");
 	floria->addGymDialogue({{floria, "I love running in circles around the gym!"}, {floria, "Exercise is so fun!"}});
@@ -1783,6 +1777,11 @@ void Game::SetupWorld() {
 	child->addBlock(elevatorbottom, TO_THE_TOP);
 	child->addBlock(elevator, TO_THE_BOTTOM); //if you bring her this far just fully bring her home at that point, I did specifically say "when you're ready"
 	child->addBlock(elevatorentrance, IN_ELEVATOR);
+	child->addBlock(mainstreethole, IN_THE_HOLE); //no post/end-game shenanigans either
+	child->addBlock(mainstreethole, IN_TIME_MACHINE);
+	child->addBlock(burgbasenw, IN_THE_HOLE);
+	child->addBlock(burgbasehole, IN_THE_HOLE);
+	child->addBlock(burgbasene, IN_THE_HOLE);
 	child->setRecruitable(true);
 	child->setRecruitCondition(SAVINGJILLY);
 	child->setFifth(true);
@@ -2205,8 +2204,7 @@ void Game::SetupWorld() {
 	usetheplotdevice.exitPavings.push(make_tuple(burgbasenw, burgbasehole, EAST, WEST)); //because the room was redirected to the abyss, we have this other room and link the rest of the basement to it
 	usetheplotdevice.exitPavings.push(make_tuple(burgbasene, burgbasehole, WEST, EAST));
 	usetheplotdevice.exitPavings.push(make_tuple(burgbasec, burgbasehole, NORTH, SOUTH));
-	usetheplotdevice.exitPavings.push(tuple<Room*, Room*, const char*, const char*>(burgbasene, abyss, IN_THE_HOLE, NULL));
-	usetheplotdevice.exitPavings.push(tuple<Room*, Room*, const char*, const char*>(burgbasene, abyss, IN_THE_HOLE, NULL));
+	usetheplotdevice.exitPavings.push(tuple<Room*, Room*, const char*, const char*>(burgbasenw, abyss, IN_THE_HOLE, NULL));
 	usetheplotdevice.exitPavings.push(tuple<Room*, Room*, const char*, const char*>(burgbasene, abyss, IN_THE_HOLE, NULL));
 	usetheplotdevice.uncon = CANDISMISS; //can't dismiss your teammates because you're in the abyss and the time machine hasn't arrived yet
 	
@@ -2380,7 +2378,7 @@ void Game::SetupWorld() {
 	factconvo2->skipcondition = {LAVADRAINED};
 	shared_ptr<Conversation> factconvo3 = make_shared<Conversation>(Conversation({{factelder, "Child, Have you seen the lava sea?"},
 							   {self, "Yeah I already did this whole quest."},
-							   {self, "Lava sea looks pretty lowered now."},
+							   {self, "Lava sea is pretty lowered now."},
 							   {factelder, "Oh. Well, good job!"},
 							   {self, "Thanks."}}));
 	factconvo2->alt = factconvo3;
@@ -2397,16 +2395,16 @@ void Game::SetupWorld() {
 								 "\n|"
 								 "\n|"
 								 "\n|"},
-	// (\               				// (\               				// (\               			// (\               
-	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,
-	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |
-	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  /\___/  |
-	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//    ___\, `' _____  `-"""/
-	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//    "--__  /___ ___\ _--"
-	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//         '|  |   |  |'
-	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /
-	//             """""				//             """""				//             """""			//             """""" \ 
-	//            |     |				//            |     |				//            |     |			//            |     |.`\ .
+	// (\               				// (\               				// (\               			// (\               			//
+	// /(\                .,			// /(\                .,			// /(\                .,		// /(\               .,			//
+	// \_/               / |			// \_/               / |			// \_/               / |		// \_/              / |			//
+	//      \-._    ___ /  |			//      \-._  ^ ___ /  |			//      \-._  ^ ___ /  |		//      \-._  /\___/  |			//
+	//  _____\,\`"-_____"  `-"""/		//  _____\, `"-_____"  `-"""/		//  _____\, `  _____   `-"""/	//    ___\, `' _____  `-"""/	//
+	//  ""---___\/___ ___\__--""		//  ""---___ /___ ___\__--""		//  ""---___ /___ ___\__--""	//    "--__  /___ ___\ _--"		//
+	//          |  |   |  |				//          |  |   |  |				//          |  |   |  |			//         '|  |   |  |'		//
+	//           \   -   /				//           \   -   /				//           \   -   /			//           \   -   /			//
+	//             """""				//             """""				//             """""			//             """""" \ 		//
+	//            |     |				//            |     |				//            |     |			//            |     |.`\ .		//
 							{developer, "Well that's pretty unfortunate."},
 							{self, "Why did you let them name me. T_T"}, //this is annoyed face not crying
 							{developer, "Sorry I came up with your name after the naming feature."},
@@ -2456,8 +2454,9 @@ void Game::SetupWorld() {
 	 {developer, "And anyway the bookmark was called \"economonies\" so that's where I assume monies came from."}});
 	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
 	developer->addConversation({{developer, "Have you ever played BURGER QUEST? (the first one)"},
-	 {developer, "The sequel is way better but if you're curious you can try it on this link:"},
-	 {developer, "https://codehs.com/sandbox/id/zuul-kb8vTu/run (You're probably on a terminal so you should do shift+insert to copy paste.)"}});
+	 {developer, "If you're curious you can try it on this link:"},
+	 {developer, "https://codehs.com/sandbox/id/zuul-kb8vTu/run (You're probably on a terminal so you should do shift+insert or ctrl+shift+c to copy it.)"},
+	 {developer, "The sequel is way better but I still like the original."}});
 	developer->addConversation({{developer, "I was walking to my C++ class today,"},
 	 {developer, "and I saw a bicycle-powered blender."},
 	 {developer, "So you pedal and that generates electricity and the blender blends the stuff."},
@@ -2472,7 +2471,7 @@ void Game::SetupWorld() {
 	//have you fought greer yet
 	developer->addConversation({{developer, "Hi can you give me feedback pls"},
 	 {developer, "Here is a link if yes: https://forms.gle/gL2tFzFhNiDk8gzy6 (you should prolly copy it using Ctrl + Shift + C)"},
-	 {developer, "(or Ctrl + Insert)"},
+	 {developer, "(or Shift + Insert)"},
 	 {developer, "(because you're probably on a terminal and Ctrl + C would end the game process)"}});
 	developer->addConversation({{developer, "Idk if you've encountered teammates with defend attack,"},
 	 {developer, "like they tank hits for someone else after using a defend move,"},
@@ -2698,7 +2697,7 @@ void Game::SetupWorld() {
 	skateboard->setTakable();
 	desertshopfixed->setStock(skateboard, 1, 100, {{merchant, "Thank you for your monies."}});
 
-	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting the heat.", {{NULL, "You applied the sunscreen."}, {NULL, "No amount of radiation should bother you now!"}}, limbo, HEAT, true);
+	Item* sunscreen = new KeyItem("SUNSCREEN", "Bottle of sunscreen for resisting all sorts of radiation.", {{NULL, "You applied the sunscreen."}, {NULL, "No amount of radiation should bother you now!"}}, limbo, HEAT, true);
 	KeyItem* _sunscreen = (KeyItem*)sunscreen;
 	_sunscreen->setTarget(volcanoentrance);
 	desertshopfixed->setStock(sunscreen, 1, 20, {{merchant, "Thank you for your monies."}});
@@ -2760,19 +2759,18 @@ void Game::SetupWorld() {
 		{{fr, "Well..."},
 		 {fr, "All of us have sinned,"},
 		 {fr, "and this sin keeps us from Heaven,"},
-		 {fr, "so we're destined for Hell."},
+		 {fr, "leading us to Hell."},
 		 {fr, "But,"},
 		 {fr, "because God loves us so much,"},
 		 {fr, "He wanted to save us from that."},
 		 {fr, "So, He sent His Son, Jesus, down to earth,"},
-		 {fr, "where He died on the cross and took our punishment for us."},
+		 {fr, "where He chose to take our punishment for us and died on the cross."},
 		 {fr, "..."},
 		 {fr, "Then, on the third day, He resurrected from the dead,"},
 		 {fr, "and in doing so He defeated death and sin."},
 		 {fr, "So now, through His sacrifice and resurrection,"},
 		 {fr, "all who believe in Him and follow Him, through His grace, get to share in His victory,"},
 		 {fr, "and will have eternal life with Him in Heaven."},
-		 //{self, "I see."},
 		 {fr, "Well, thanks for hearing me out."},
 		 {fr, "I'd encourage you to think about that."}}));
 	shared_ptr<Conversation> frno = make_shared<Conversation>(Conversation({{fr, "Well, if you ever want to know, just ASK. I'll be right here."}}));
@@ -2847,7 +2845,7 @@ void Game::SetupWorld() {
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 7, 20, 1, 1, 1);
-	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
+	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff such, as rocky rubble.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
 	kaboomroom->setStock(dynamite, 2147483647, 5, {{skeleseller, "Do you need some explosives? Here you go! I assume you know what you're doing..."}});
 
 	NPC* bob = new NPC("", "BOB", "A small child wearing a newsboy cap. He has a hard time making human friends and prefers plants.", limbo, 0);
@@ -2912,11 +2910,11 @@ void Game::SetupWorld() {
 	Effect* polevaulting = new Effect("POLE VAULTING", 0); //dodge until the next turn
 	polevaulting->remove = true;
 	polevault->selfeffect = polevaulting;
-	Attack* mineram = new Attack("MINECART RAM", "rammed", true, 0, 20, 0, 1, 1, 1); //decent attack but doesn't gain any sp
+	Attack* mineram = new Attack("MINECART RAM", "rammed", true, 0, 15, 0, 1, 1, 1); //equal to kick attack but doesn't gain any sp
 	mineram->afterdesc = " with the SPARE MINECART";
 
 	Item* sandcoolant = new KeyItem("SAND COOLANT", "Bottle of coolant handy for cooling down sand of the scorching variety.", {{NULL, "You poured some sand coolant onto the scorching sands."}, {NULL, "The sands cooled down!"}}, deserttempleentrance, SAND, false, cooldown);
-	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", {{NULL, "You used the pole to go over the chasm!"}}, desertpole, CHASM, true, polevault);
+	Item* powerpole = new MovementItem("POLE VAULT", "Very long stick, useful for travelling over chasms.", {{NULL, "You used the pole to go over the chasm!"}}, desertpole, CHASM, true, polevault, false);
 	Item* minecart = new MovementItem("SPARE MINECART", "A spare minecart unclamped from the tracks.", {{NULL, "You hopped into the SPARE MINECART and went to the other side of the track."}}, mineshaftside, TRACK, true, mineram);
 
 	Item* minecart1 = new MovementItem("WEST MINECART", "Cart used in mining and going over tracks.", {{NULL, "You hopped into the WEST MINECART and went to the other side of the track."}}, mineshaft3, TRACK, false);
@@ -2952,7 +2950,7 @@ void Game::SetupWorld() {
 	scissorup->focushits = false;
 
 	Item* forklift = new KeyItem("FORKLIFT", "Cool thing for lifting stuff such as collapsed roof material.", {{NULL, "You used the FORKLIFT to move the collapsed ceiling material out of the way."}}, heavymachineryroom, STUFF, false, forkliftup);
-	Item* scissorlift = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, heavymachineryroom, HIGH, true, scissorup);
+	Item* scissorlift = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, heavymachineryroom, HIGH, true, scissorup, false);
 	scissorlift->setDropToUse(true);
 
 	Item* scissorliftsw = new MovementItem("SCISSOR LIFT", "Cool thing for going UP and DOWN straight horizontal directions.", {{NULL, "You toggled the extension of the SCISSOR LIFT."}}, factoryroofsw, HIGH, false);
@@ -3155,6 +3153,7 @@ void Game::SetupWorld() {
 							 {NULL, "CHERYL uses her time machine key."},
 							 {NULL, "The time machine makes a car chirping noise."},
 							 {NULL, "You can go IN TIME MACHINE now!"},
+							 {self, ":O"},
 							 {cheryl, "Well I'll be in the time machine."},
 							 {cheryl, "..."},
 							 {cheryl, "Bye."}});
@@ -3999,14 +3998,14 @@ void Game::SetupWorld() {
 
 	NPC* skeleviking = new NPC("", "SKELEVIKING", "A lost skeleton with a horned hat and shield.", limbo, 0, Stats(5, 0, 30, 0, 30, 15, 9));
 	Effect* shieldup = new Effect("SHIELD UP", 2147483647);
-	shieldup->guardset = 5;
+	shieldup->guardset = 4;
 	skeleviking->setEffect(shieldup, NULL);
 	Attack* vslash = new Attack("VIKING SLASH", "hit", true, -5, 5, 0, 1, 1, 1);
 	vslash->afterdesc = " with his sword";
 	skeleviking->setBasicAttack(vslash);
-	Attack* vbonecone = new Attack("BONE CONE", "launched his helmet's bone cones at", false, 5, 1, 0, 4, 4, 1);
+	Attack* vbonecone = new Attack("BONE CONE", "launched his helmet's bone cones at", false, 5, 4, 0, 2, 2, 1);
 	skeleviking->addSpecialAttack(vbonecone);
-	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", true, 10, 8, 0, 3, 4, 3);
+	Attack* vtornado = new Attack("VIKING TORNADO", "spun like a tornado at", true, 10, 3, 0, 3, 3, 3);
 	skeleviking->addSpecialAttack(vtornado);
 
 	NPC* rumbleweed = new NPC("", "RUMBLEWEED", "Tumbling weed of the desert known to cause tremors among its path.", limbo, 0, Stats(9, 0, 15, 0, 15, 30, 9));
@@ -4726,6 +4725,7 @@ void Game::SetupWorld() {
 	Attack* sundew = new Attack("SUNDEW TENDRIL", "wrapped a sundew tendril around", true, 9, 5, 10, 1, 1, 1, false, 0, 0, 1);
 	Effect* sundewed = new Effect("SUNDEWED", 3, 10);
 	sundewed->lifesteal = 1;
+	sundewed->bond = true;
 	sundew->addEffect(sundewed);
 	carnplant->setBasicAttack(snaptrap);
 	carnplant->addSpecialAttack(pitcherfluid);
@@ -4749,6 +4749,7 @@ void Game::SetupWorld() {
 	constrict->afterdesc = " with its vines";
 	Effect* constricted = new Effect("CONSTRICTED", 2, 10);
 	constricted->freeze = true;
+	constricted->bond = true;
 	Attack* piledrive = new Attack("PILEDRIVE", "piledrove", true, 12, 20, 6, 1, 1, 1);
 	Effect* piledriven = new Effect("FRACTURED", 4, 0, 0, 1, 0.5);
 	piledrive->addEffect(piledriven);
@@ -4769,7 +4770,7 @@ void Game::SetupWorld() {
 	spotlight->nonspecificeffect = outthespotlight;
 	spotlight->onlyplayer = true; //this is a player-character-focused temptation since he's the leader
 	spotlight->nottoohypno = true; //sense of self only uses spotlight if less than 2 teammates are hypnotized, because otherwise there's not enough net loss to make staying in the spotlight unoptimal (due to pride giving immunity to this), and also mechanic/choice clutter
-	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "SENSE OF SELF - \"Alright, you think you're the main character?\""}, {senseofself, "PROVE IT."}};
+	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "SENSE OF SELF - \"Alright, you think you're the main character?\""}, {senseofself, "PROVE IT!"}};
 	senseofself->stageAttack(0.7, spotlight); //(try to) use the attack at these points specifically
 	senseofself->stageAttack(0.45, spotlight);
 	//copies of the player's attacks except cooler
@@ -5069,7 +5070,7 @@ void Game::SetupWorld() {
 	firewithfire->stageRageConvo({{NULL, "The flames around you started burning an intense purple hue!"}});
 	wrath->playerresponse = calmdown; //the player can only calm themselves down so we only give the attack if the player is affected
 	firewithfire->setTrackRage({{0.025, firewithfir2}, {0.09, firewithfir3}}); //phase 2 after 2.5% rage and phase 3 after 9%, relative to total health. Teammates trigger phase 2 at around 1/4 into the fight from testing
-	ragebait->setTargetConv(floria, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Floria your hat looks stupid. ^^D\""}, {floria, "WHAT?"}, {floria, "YOU MEANIE!"}});
+	ragebait->setTargetConv(floria, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Floria your hat looks stupid. ^^D\""}, {floria, "WHAT?"}, {floria, "HOW DARE YOU!"}});
 	ragebait->setTargetConv(egadwick, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Who let this fossil into the team?\""}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd! ^^D"}, {egadwick, "You don't understand the marvelousness of science!"}});
 	ragebait->setTargetConv(forestknight, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the mighty forest knight...\""}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA! ^^D"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me into wrath!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
 	forestknight->setImmunity(wrath, {}); //he doesn't say anything here cause he says everything up there ^^^
@@ -6197,9 +6198,9 @@ void Game::SetupWorld() {
 	ftlguard1->addOpeningDialogue({{NULL, "You have a TEMPLE BUFF!"}, {NULL, "Your stats rose to 150%!"}});
 	ftlguard1->setXPReward(0); //temples do not give xp because they scale to the player's level so they would be op for grinding and I don't want to deal with that. You still get monies though!
 
-	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
+	NPC* ftlguard2 = new NPC(*junglenaut); //junglenaut + carnplant (introduce the junglenaut + buildup)
 	ftlguard2->setLeader(true, 21, forestbranchw2, false);
-	ftlguard2->setParty({carnplant, carnplant});
+	ftlguard2->setParty({carnplant});
 	ftlguard2->blockExit(SOUTH, ENEMY, "guarded by the JUNGLENAUT.");
 	ftlguard2->setFightEffects(NULL, debuff); //debuff self but not teammates
 	ftlguard2->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
@@ -6237,9 +6238,9 @@ void Game::SetupWorld() {
 	ftrguard1->addOpeningDialogue({{NULL, "Your teammates have a TEMPLE BUFF!"}, {NULL, "Their stats rose to 150%!"}});
 	ftrguard1->setXPReward(0);
 
-	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant x2 (introduce the junglenaut + buildup)
+	NPC* ftrguard2 = new NPC(*junglenaut); //junglenaut + carnplant (introduce the junglenaut + buildup)
 	ftrguard2->setLeader(true, 21, forestbranche2, false);
-	ftrguard2->setParty({carnplant, carnplant});
+	ftrguard2->setParty({carnplant});
 	ftrguard2->blockExit(SOUTHWEST, ENEMY, "guarded by the JUNGLENAUT.");
 	ftrguard2->setFightEffects(debuff, NULL); //debuff teammates but not self
 	ftrguard2->setDialogue({{NULL, "JUNGLENAUT - *twisting vine noises*"}});
@@ -6333,7 +6334,7 @@ void Game::SetupWorld() {
 	choicea3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
 	WorldChange choiceb3;
 	choiceb3.exitPavings.push(make_tuple(foresttemple3, forestbranche3, SOUTHEAST, NORTHWEST));
-	choiceb3.exitPavings.push(make_tuple(foresttemple4, forestbranche3, NORTHEAST, SOUTHWEST));
+	choiceb3.exitPavings.push(make_tuple(foresttemple4, forestbranche3, NORTHWEST, SOUTHEAST));
 	choiceb3.roomChanges.push({foresttemple3, "in the forest temple. Large purple flowers are flowering here."});
 	choiceb3.linkedAttacks.push({ftboss, recruit3}); //the selfish choices give the boss more attacks to tempt your teammates away
 	Item* choice3 = new ChoiceOrb("CHOICE ORB", "A shiny floating orange orb waiting to give you a choice.", foresttemple3, limbo, choicea3, choiceb3,
@@ -6344,7 +6345,7 @@ void Game::SetupWorld() {
 								{{NULL, "CHOICE ORB - \"In your next battle, your team shall share the SWAGGY effect.\""},
 								 {NULL, "An exit opened to the SOUTH!"}},
 								{{NULL, "CHOICE ORB - \"In your next battle, you shall have your SUPER SWAGGY effect.\""},
-								 {NULL, "An exit opened to the SOUTHWEST!"}});
+								 {NULL, "An exit opened to the SOUTHEAST!"}});
 	choice3->setDenial("You try to TAKE the CHOICE ORB but it smacks you in the head.\nYou need to USE it instead.");
 
 	WorldChange ftodropchanges; //the changes that happen when dropping the forest temple escape orb in order to reset it
@@ -7749,7 +7750,7 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 			Attack* attack = attacks[i]; //get the attack to add
 			player->addSpecialAttack(attack);
 			//print the description and name of any attacks we have just learned
-			cout << "\n" << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc;
+			cout << "\n" << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
 			if (i < amount-1) CinPause(); //do not print the final pause cause then the > looks bad
 		}
 		for (Attack* attack : futureattacks) player->addSpecialAttack(attack); //add all the remaining attacks to the pool for use in the future but do not announce them

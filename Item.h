@@ -251,7 +251,7 @@ private:
 //movement items for moving through locked exits
 class MovementItem : public Item {
 public:
-	MovementItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _takable = true, Attack* _attack = NULL);
+	MovementItem(const char* _name, const char* _description, const Conversation& _useText, Room* _room, const char* _unlockType, bool _takable = true, Attack* _attack = NULL, bool _target = true);
 
 	Attack* getAttack(); //gets the attack it does in battle
 	const char* getUnlockType(); //gets the block type the thing moves through

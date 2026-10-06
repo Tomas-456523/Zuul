@@ -590,6 +590,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	} else { //unfocused moves which hit a random target for every hit
 		int hits = attack->minhits + rand() % (attack->maxhits + 1 - attack->minhits);
 		for (size_t i = 0; i < hits;) {
+			if (aliveCount(tarparty) == 0) break; //stop attacking because we won already since they're all incapacitated
 			//do some filtering (at the start of each loop because we might incapacitate something on one hit then the next hit we have nothing to target)
 			int nonfifthcount = 0; //how many non-fifth targets we can hit (because we prefer those)
 			for (NPC* npc : tarparty) if (!npc->getFifth() && npc->getHealth()) nonfifthcount++; //count how many non-fifth npcs we can target
@@ -721,7 +722,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 				cout << "\n" << npcName << " is not in the battlefield right now!";
 				return false;
 			}
-		} else {
+		} else if (strcmp(itemName, "")) {
 			itemname = itemName; //makes the null item print not say "You have no [item] ON [npc]"
 		}
 	} //error if you have no item of the given name
@@ -760,10 +761,10 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	if (!strcmp(item->getType(), "hp")) {
 		HpItem* hptem = (HpItem*)item; //converts to the corresponding subclass
 		if (!npc->getHealth()) { //you're not allowed to heal unconscious teammates, that's what revives are for
-			cout << npc->getName() << " is too damaged for the " << item->getName() << " to work!";
+			cout << "\n" << npc->getName() << " is too damaged for the " << item->getName() << " to work!";
 			return false;
 		} if (npc->getHealth() == npc->getHealthMax()) { //don't waste the hp item
-			cout << npc->getName() << " already at full HP!";
+			cout << "\n" << npc->getName() << " already at full HP!";
 			return false;
 		} //directly applies the health to the target
 		int hp = npc->directDamage(-hptem->getHp());
@@ -774,10 +775,10 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	} else if (!strcmp(item->getType(), "sp")) {
 		SpItem* sp = (SpItem*)item; //converts to the corresponding subclass
 		if (!npc->getHealth()) { //you're not allowed to help unconscious teammates
-			cout << npc->getName() << " is incapacitated! The " << item->getName() << " won't work!";
+			cout << "\n" << npc->getName() << " is incapacitated! The " << item->getName() << " won't work!";
 			return false;
 		} if (npc->getSP() == npc->getSPMax()) { //don't waste the sp item
-			cout << npc->getName() << " already at full SP!";
+			cout << "\n" << npc->getName() << " already at full SP!";
 			return false;
 		}
 		npc->alterSp(sp->getSp()); //alters the sp of the target
@@ -786,7 +787,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	} else if (!strcmp(item->getType(), "revive")) {
 		ReviveItem* revive = (ReviveItem*)item; //converts to the corresponding subclass
 		if (npc->getHealth()) { //gives error message if used on capacitated teammate
-			cout << "The " << item->getName() << " must be saved for dire circumstances!";
+			cout << "\nThe " << item->getName() << " must be saved for dire circumstances!";
 			return false;
 		} //gives success message and revives the teammate
 		int hp = npc->directDamage(-revive->getHp());
@@ -799,7 +800,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	} else if (!strcmp(item->getType(), "effect")) {
 		EffectItem* affecter = (EffectItem*)item; //converts to the corresponding subclass
 		if (!npc->getHealth()) { //gives error message because you're not allowed to affect incapacitated teammates
-			cout << npc->getName() << " is incapacitated! The " << item->getName() << " won't work!";
+			cout << "\n" << npc->getName() << " is incapacitated! The " << item->getName() << " won't work!";
 			return false;
 		} //sets the effect on the target
 		attachEffect(npc->setEffect(affecter->getEffect(), plr));
@@ -815,7 +816,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	} else if (!strcmp(item->getType(), "key") || !strcmp(item->getType(), "hose")) {
 		KeyItem* key = (KeyItem*)item; //converts to the corresponding subclass
 		if (key->getAttack() == NULL) { //if the key item has no attack
-			cout << "The " << item->getName() << " can't be used in battle!";
+			cout << "\nThe " << item->getName() << " can't be used in battle!";
 			return false;
 		} //carries out the attack on the target
 		carryOutAttack(key->getAttack(), plr, npc);
@@ -824,10 +825,10 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
 		if (mover->getAttack() == NULL) { //if the movement item has no attack
-			cout << "The " << item->getName() << " can't be used in battle!";
+			cout << "\nThe " << item->getName() << " can't be used in battle!";
 			return false;
 		} //carries out the attack on the target
-		carryOutAttack(mover->getAttack(), plr, npc);
+		carryOutAttack(mover->getAttack(), plr, npc ? npc : plr);
 		attackslaunched[player]++; //movement items only have attacking attacks
 	//manhole items' names are misleading. They're just random stuff on the ground that you can find and throw at enemies as an attack
 	} else if (!strcmp(item->getType(), "manhole")) {
@@ -1154,7 +1155,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		if (attack->targetFainted && target->getHealth() > 0) continue; //can't target fainted if bro isn't fainted
 		if (attack->power < 0 && target->getHealth() >= target->getHealthMax()) continue; //can't (shouldn't) heal if bro is at full health
 		if (attack->take && (target->getBoss() || target->getPlayerness() || target == npc)) continue; //taking attacks can't target bosses, the player (not player otherwise it would be boring gameplay waiting for your teammates to beat the guy), or the attacker (taking yourself would be some real cartoon stuff)
-		if (attack->appliedeffect && attack->appliedeffect->remove && (target->getBoss() || aliveCount(tarteam) == 1)) continue; //can't remove bosses cause that's just messing up everyone else's groove during the fight, and removing an enemy when there's only one left is just annoying and breaks the flow of the fight
+		if (attack->appliedeffect && attack->appliedeffect->remove && (target->getBoss() || aliveCount(tarteam) == 1 && !npc->getEnemy())) continue; //can't remove bosses cause that's just messing up everyone else's groove during the fight, and a teammate removing an enemy when there's only one left is just annoying and breaks the flow of the fight
 		if (attack->appliedeffect && attack->appliedeffect->hypnotize && target->getBoss()) continue; //can't hypnotize bosses because that would be weird for some fights
 		if (attack->risky && target->getHealth() < target->getHealthMax()/2) continue; //can't use risky moves if they have below half health because that would be risky
 		if (attack->targetshark && !target->getShark()) continue; //shark-targeting attacks must have a shark to target
@@ -1174,7 +1175,7 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		targets.push_back(target);
 	}
 	//check for further prioritizations from here
-	/*if (targets.size() > 1)*/ { //filter out fifth npcs so that the fifth npcs don't affect anyone's targeting too much
+	{ //filter out fifth npcs so that the fifth npcs don't affect anyone's targeting too much
 		vector<NPC*> _targets; //store npcs to see if prioritization would remove all valid targets
 		for (NPC* target : targets) {
 			if (!target->getFifth()) _targets.push_back(target); //add the target if they are not fifth
