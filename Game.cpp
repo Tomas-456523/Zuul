@@ -209,7 +209,7 @@ void Game::SetupWorld() {
 	Room* deserthill = new Room("on a very high dune. It'd be fun to roll all the way down, but your hair would be very annoying to clean afterwards.");
 	Room* deserttown = new Room("in an abandoned desert town. Everything still seems to be organized normally, though.");
 	Room* desertshop = new Room("in an abandoned store. The products are on the verge of expiration.");
-	Room* desertgym = new Room("in an abandoned gym. There's all the equipment you could ask for here, but no rock wall.");
+	Room* desertgym = new Room("in an abandoned gym. There's all the equipment you could ask for here, but the rock wall is gone.");
 	Room* deserthouse = new Room("in some house with zero purpose. It only exists because the town would feel weird with only two houses."); //I have no idea what to put in this house
 	Room* desertshopfixed = new Room("in the desert store. It smells like pastries and medicine.");
 	Room* desertgymfixed = new Room("in the desert gym. Now that it's back in business it's time to get on that GRIND!\nSimply DISMISS your teammates here to make them stay in shape while you're gone!");
@@ -746,14 +746,14 @@ void Game::SetupWorld() {
 	Conversation egadwreject1 = {{self, "Yo Gramps wanna join my BURGER QUEST?"},
 								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
 								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
-								{egadwick, "So now it's trying to cut my hair."},
+								{egadwick, "So now it's trying to cut my beautiful hair!"},
 								{self, "I can go destroy it if you want."},
 								{egadwick, "Yes! That would be great, thanks!"}};
 	egadwreject1.skipcondition = {TEMPLEQUEST};
 	shared_ptr<Conversation> egadwreject2 = make_shared<Conversation>(Conversation({{self, "Yo Gramps wanna help me destroy BURGERs?"},
 								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
 								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
-								{egadwick, "So now it's trying to cut my hair."},
+								{egadwick, "So now it's trying to cut my beautiful hair!"},
 								{self, "I can go destroy it if you want."},
 								{egadwick, "Yes! That would be great, thanks!"}}));
 	egadwreject1.alt = egadwreject2;
@@ -761,14 +761,14 @@ void Game::SetupWorld() {
 	shared_ptr<Conversation> egadwreject3 = make_shared<Conversation>(Conversation({{self, "Yo Gramps wanna join my team?"},
 								{egadwick, "Sorry, kiddo, I'm afraid there's a dangerous robot on the loose in the forest."},
 								{egadwick, "It was supposed to be for gardening but its definition of \"plant\" is a bit broad..."},
-								{egadwick, "So now it's trying to cut my hair."},
+								{egadwick, "So now it's trying to cut my beautiful hair!"},
 								{self, "I can go destroy it if you want."},
 								{egadwick, "Yes! That would be great, thanks!"}}));
 	egadwreject2->alt = egadwreject3;
 	egadwick->addRejectionDialogue(egadwreject1);
 	egadwick->addRejectionDialogue("Sorry, kiddo, there's the whole gardening robot situation, remember?");
 	egadwick->addRecruitmentDialogue({{egadwick, "Ah, I haven't been adventuring in decades."}, {egadwick, "Thanks for the invitation, kiddo!"}});
-	egadwick->addRecruitedDialogue({{egadwick, "So, what science class are you in right now?"}, {self, "I don't go to school."}, {egadwick, "Ah."}});
+	egadwick->addRecruitedDialogue({{egadwick, "So, what science class are you in right now?"}, {self, "Science."}, {egadwick, "Ah."}});
 	egadwick->addRecruitedDialogue("I love science!");
 	egadwick->addDismissalDialogue({{egadwick, "Great hanging out with you, kiddo!"},  {egadwick, "I'll be in my tent if you need me!"}});
 	egadwick->setTalkOnRecruit(true);
@@ -1669,8 +1669,7 @@ void Game::SetupWorld() {
 							  {mango, "But I hope yours goes well!"}};
 	mangorej1.skipcondition = {TEMPLEQUEST};
 	shared_ptr<Conversation> mangorej2 = make_shared<Conversation>(Conversation({{self, "Hey wanna help me destroy BURGERs?"},
-							  {mango, "Now I don't wanna hear any of this nonsense."},
-							  {mango, "Besides, how would you even do that?"}}));
+							  {mango, "Now what are you even talking about?"}}));
 	mangorej1.alt = mangorej2;
 	mangorej2->skipcondition = {BURGERMENDEF};
 	shared_ptr<Conversation> mangorej3 = make_shared<Conversation>(Conversation({{self, "Hey wanna join my team?"},
@@ -1687,7 +1686,7 @@ void Game::SetupWorld() {
 							 {self, "I'm actually like trying to destroy BURGERs now."},
 							 {mango, "..."},
 							 {mango, "Here, I made this cake for the occasion,"},
-							 {mango, "I'm sure you'll come to your senses soon..."},
+							 {mango, "(I'm sure you'll come to your senses soon...)"},
 							 {self, "Thanks mom."},
 							 {mango, "Of course sweetie! Have a safe trip!"}}));
 	shared_ptr<Conversation> mangodef3 = make_shared<Conversation>(Conversation({{mango, "Oh, sweetie!"},
@@ -1718,6 +1717,14 @@ void Game::SetupWorld() {
 	WorldChange charlygoeshome;
 	charlygoeshome.defeatRooms.push({burgcustomer, limbo});
 	BURGERRESTAURANT->setEnterChanges(charlygoeshome); //Charly goes home after you get to the restaurant, because he doesn't have anything else to do there
+
+	WorldChange enterthehouse;
+	enterthehouse.worldcon = BEENINHOUSE; //I removed all usages of this condition so I was able to switch it to this which is why I dedicated an entire world condition to this very useless status
+	deserthouse->setEnterChanges(enterthehouse); //after we enter the house, we mark that we have BEEN IN the HOUSE....................
+	
+	WorldChange confirmhouseuselessness;
+	confirmhouseuselessness.roomChanges.push({deserthouse, "in some house which still has zero purpose."});
+	deserttown->setEnterChanges(confirmhouseuselessness, BEENINHOUSE); //after entering the house and leaving it, we will update the house's description to dynamically be altered after the player comes back.
 
 	Item* cloakingdevice = new WorldChangeItem("CLOAKING DEVICE", "Specialized cloaking device for getting past advanced security systems.", limbo, {{NULL, "You equipped the CLOAKING DEVICE."}, {NULL, "No security system can spot you now!"}});
 	cloakingdevice->setTakable(true);
@@ -2310,17 +2317,17 @@ void Game::SetupWorld() {
 	jimmyjohn->setDialogue("Welcome to my convenience store! None is more convenient!");
 	jimmyjohn->addRejectionDialogue("I'm sorry I cannot. Who will take care of my store?");
 
-	Effect* minibuff = new Effect("MINIBUFF", 4, 0, 0, 1.25, 1.25, 1.25, 1.25);
-	Effect* buff = new Effect("BUFF", 4, 0, 0, 1.5, 1.5, 1.5, 1.5);
-	Effect* bigbuff = new Effect("BIG BUFF", 4, 0, 0, 2.0, 2.0, 2.0, 2.0);
+	Effect* minibuff = new Effect("MINIBUFF", 3, 0, 0, 1.25, 1.25, 1.25, 1.25);
+	Effect* buff = new Effect("BUFF", 3, 0, 0, 1.5, 1.5, 1.5, 1.5);
+	Effect* bigbuff = new Effect("BIG BUFF", 3, 0, 0, 2.0, 2.0, 2.0, 2.0);
 	Effect* megabuff = new Effect("MEGABUFF", 2, 0, 0, 2.5, 2.5, 2.5, 2.5);
 	
 	Item* mythicmango = new HpItem("MYTHICAL MANGO", "The most nutritious fruit, a big mango that sparkles in the sunlight. (heals all HP)", limbo, 999); //JIMMY JOHN - Ah yes, that's a very rare mango. Make sure to save it until you really need it! And thank you for your patronage
 
 	//tent store stock
 	Item* apple = new HpItem("HEALTHY APPLE", "A healthy red apple. (heals 10 HP)", limbo, 10);
-	Item* pineapple = new HpItem("HEALTHY PINE APPLE", "A crunchy and durable pine apple. Very annoying to eat, but apparently very healthy! (heals 25 HP)", limbo, 25);
-	Item* starapple = new HpItem("HEALTHY STAR APPLE", "A sparkling star-shaped fruit with enough nutrients to last you 10 days. (heals 50 HP)", limbo, 50);
+	Item* pineapple = new HpItem("HEALTHY PINE APPLE", "A crunchy and durable pine apple. Very annoying to eat, but apparently very healthy! (heals 20 HP)", limbo, 20);
+	Item* starapple = new HpItem("HEALTHY STAR APPLE", "A sparkling star-shaped fruit with enough nutrients to last you 10 days. (heals 35 HP)", limbo, 35);
 	Item* noodles = new EffectItem("MIGHTY NOODLES", "Some homemade noodles sprinkled with mighty spices. (MINIBUFF effect)", limbo, minibuff);
 	Item* lasagna = new EffectItem("MIGHTY LASAGNA", "A homemade lasagna made with mighty flour. (BUFF effect)", limbo, buff);
 	Item* pizza = new EffectItem("MIGHTY PIZZA", "A homemade pizza topped with mighty pepperoni. (BIG BUFF EFFECT)", limbo, bigbuff);
@@ -2333,10 +2340,10 @@ void Game::SetupWorld() {
 
 	tentstore->setStock(apple, 2147483647, 5, {{jimmyjohn, "Thank you for your patronage! Enjoy your apple!"}});
 	tentstore->setStock(pineapple, 2147483647, 20, {{jimmyjohn, "Thank you for your patronage! Enjoy your pine apple!"}});
-	tentstore->setStock(starapple, 2147483647, 60, {{jimmyjohn, "Thank you for your patronage! Enjoy your star apple!"}});
-	tentstore->setStock(noodles, 2147483647, 5, {{jimmyjohn, "Thank you for your patronage! Enjoy your noodles!"}});
-	tentstore->setStock(lasagna, 2147483647, 25, {{jimmyjohn, "Thank you for your patronage! Enjoy your lasagna!"}});
-	tentstore->setStock(pizza, 2147483647, 50, {{jimmyjohn, "Thank you for your patronage! Enjoy your pizza!"}});
+	tentstore->setStock(starapple, 2147483647, 55, {{jimmyjohn, "Thank you for your patronage! Enjoy your star apple!"}});
+	tentstore->setStock(noodles, 2147483647, 10, {{jimmyjohn, "Thank you for your patronage! Enjoy your noodles!"}});
+	tentstore->setStock(lasagna, 2147483647, 35, {{jimmyjohn, "Thank you for your patronage! Enjoy your lasagna!"}});
+	tentstore->setStock(pizza, 2147483647, 75, {{jimmyjohn, "Thank you for your patronage! Enjoy your pizza!"}});
 	tentstore->setStock(energybook, 1, 100, {{jimmyjohn, "I don't understand that book."}, {jimmyjohn, "But if it interests you then great!"}, {jimmyjohn, "Oh, and thank you for your patronage!"}});
 
 	NPC* mrdeer = new NPC("", "MR DEER", "Your friend MR. DEER. He's a deer.", deerclearing, 5);
@@ -2378,7 +2385,7 @@ void Game::SetupWorld() {
 	factconvo2->skipcondition = {LAVADRAINED};
 	shared_ptr<Conversation> factconvo3 = make_shared<Conversation>(Conversation({{factelder, "Child, Have you seen the lava sea?"},
 							   {self, "Yeah I already did this whole quest."},
-							   {self, "Lava sea is pretty lowered now."},
+							   {self, "The lava sea is pretty lowered now."},
 							   {factelder, "Oh. Well, good job!"},
 							   {self, "Thanks."}}));
 	factconvo2->alt = factconvo3;
@@ -2454,8 +2461,8 @@ void Game::SetupWorld() {
 	 {developer, "And anyway the bookmark was called \"economonies\" so that's where I assume monies came from."}});
 	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
 	developer->addConversation({{developer, "Have you ever played BURGER QUEST? (the first one)"},
-	 {developer, "If you're curious you can try it on this link:"},
-	 {developer, "https://codehs.com/sandbox/id/zuul-kb8vTu/run (You're probably on a terminal so you should do shift+insert or ctrl+shift+c to copy it.)"},
+	 {developer, "If not and you're curious you can try it on this link:"},
+	 {developer, "https://codehs.com/sandbox/id/zuul-kb8vTu/run (You're probably on a terminal so you should do ctrl+insert or ctrl+shift+c to copy it.)"},
 	 {developer, "The sequel is way better but I still like the original."}});
 	developer->addConversation({{developer, "I was walking to my C++ class today,"},
 	 {developer, "and I saw a bicycle-powered blender."},
@@ -2471,7 +2478,7 @@ void Game::SetupWorld() {
 	//have you fought greer yet
 	developer->addConversation({{developer, "Hi can you give me feedback pls"},
 	 {developer, "Here is a link if yes: https://forms.gle/gL2tFzFhNiDk8gzy6 (you should prolly copy it using Ctrl + Shift + C)"},
-	 {developer, "(or Shift + Insert)"},
+	 {developer, "(or Ctrl + Insert)"},
 	 {developer, "(because you're probably on a terminal and Ctrl + C would end the game process)"}});
 	developer->addConversation({{developer, "Idk if you've encountered teammates with defend attack,"},
 	 {developer, "like they tank hits for someone else after using a defend move,"},
@@ -2702,11 +2709,11 @@ void Game::SetupWorld() {
 	_sunscreen->setTarget(volcanoentrance);
 	desertshopfixed->setStock(sunscreen, 1, 20, {{merchant, "Thank you for your monies."}});
 
-	Item* vitaminb = new SpItem("VITAMIN B", "A small supplement bottle of pure Vitamin B. (Restores 15 SP)", limbo, 15);
-	desertshopfixed->setStock(vitaminb, 2147483647, 20, {{merchant, "Thank you for your monies."}});
-	Item* iron = new SpItem("IRON", "A small bottle of iron supplement. (Restores 30 SP)", limbo, 30);
-	desertshopfixed->setStock(iron, 2147483647, 40, {{merchant, "Thank you for your monies."}});
-	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 99999);
+	Item* vitaminb = new SpItem("VITAMIN B", "A small supplement bottle of pure Vitamin B. (Restores 10 SP)", limbo, 10);
+	desertshopfixed->setStock(vitaminb, 2147483647, 15, {{merchant, "Thank you for your monies."}});
+	Item* iron = new SpItem("IRON", "A small bottle of iron supplement. (Restores 15 SP)", limbo, 15);
+	desertshopfixed->setStock(iron, 2147483647, 30, {{merchant, "Thank you for your monies."}});
+	Item* magnesium = new SpItem("MAGNESIUM", "A small bottle of magnesium supplement. (Restores all SP)", limbo, 30);
 	desertshopfixed->setStock(magnesium, 2147483647, 100, {{merchant, "Thank you for your monies."}});
 
 	Item* reviveroot = new ReviveItem("REVIVE ROOT", "A small root vegetable known for completely healing any injury. (Recapacitates teammates)", limbo, 999);
@@ -3183,7 +3190,7 @@ void Game::SetupWorld() {
 	Item* salepick = new ManholeItem("PICKAXE","\"A tool consisting of a long handle set at right angles in the middle of a curved iron or steel bar with a point at one end and a chisel edge or point at the other, used for breaking up hard ground or rock.\"\n- Oxford Languages", limbo, pickthrow);
 	Item* saleknife = new ManholeItem("KNIFE", "\"An instrument composed of a blade fixed into a handle, used for cutting or as a weapon.\"\n- Oxford Languages", limbo, knifethrow);
 	Item* salecover = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", limbo, coverthrow);
-	Item* salespork = new ManholeItem("SPORK","\"Google changed their google definitions to use Gemini now and I can't find the source they used to get their definitions from before so I can't keep up the description theme :(\"\n- Tomas", limbo, sporkthrow); //MARK: find the definition
+	Item* salespork = new ManholeItem("SPORK","\"A spoon-shaped eating utensil with short tines at the tip.\"\n- Oxford Languages", limbo, sporkthrow); //MARK: find the definition
 
 	Item* tv = new InfoItem("TV", "A very cool flatscreen tv for watching tv.", {{NULL, "The TV is out of batteries!"}}, home); //they're all out of batteries logically, also it's an excuse to not make any functionality and the portal destinations
 	Item* hblender = new InfoItem("BLENDER", "A very cool blender for blending stuff into smoothies.", {{NULL, "The BLENDER is out of batteries!"}}, juiceroom);
@@ -4759,7 +4766,7 @@ void Game::SetupWorld() {
 	junglenaut->addSpecialAttack(constrict);
 	junglenaut->addSpecialAttack(piledrive);
 
-	NPC* senseofself = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
+	NPC* senseofself = new NPC("", "SENSE OF SELF", "A mirror image of yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
 	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
 	senseofself->setBoss(true);	
 	Attack* spotlight = new Attack("SPOTLIGHT", "put the spotlight on", false, 0, 0, 0, 1, 1, 999); //this is automatically bad by itself since it's a net loss in terms of team stats
@@ -4770,7 +4777,7 @@ void Game::SetupWorld() {
 	spotlight->nonspecificeffect = outthespotlight;
 	spotlight->onlyplayer = true; //this is a player-character-focused temptation since he's the leader
 	spotlight->nottoohypno = true; //sense of self only uses spotlight if less than 2 teammates are hypnotized, because otherwise there's not enough net loss to make staying in the spotlight unoptimal (due to pride giving immunity to this), and also mechanic/choice clutter
-	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "SENSE OF SELF - \"Alright, you think you're the main character?\""}, {senseofself, "PROVE IT!"}};
+	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "SENSE OF SELF - \"You think you're the main character?\""}, {senseofself, "PROVE IT!"}};
 	senseofself->stageAttack(0.7, spotlight); //(try to) use the attack at these points specifically
 	senseofself->stageAttack(0.45, spotlight);
 	//copies of the player's attacks except cooler
@@ -4803,9 +4810,9 @@ void Game::SetupWorld() {
 	recruit1->cancels = {outthespotlight}; //get rid of the spotlight debuff since they're on sense of self's team now
 	Attack* recruit2 = new Attack(*recruit1);
 	Attack* recruit3 = new Attack(*recruit1);
-	recruit1->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Hey! Don't you remember the first choice in the temple?\""}, {senseofself, "He chose to buff himself, when he could've helped you guys out!"}, {senseofself, "I won't keep the buffs to myself! Join me!"}};
-	recruit2->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Why are you still on his team?\""}, {senseofself, "Don't you remember at the lake when he chose to debuff you?"}, {senseofself, "He could NEVER take one for the team..."}, {senseofself, "I won't treat you like that!"}};
-	recruit3->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {NULL, "SENSE OF SELF - \"Man, remember the room with the flowers?\""}, {senseofself, "This guy can't help but be the star of the show!"}, {senseofself, "He kept the SUPER SWAGGiness alllll to himself..."}, {senseofself, "But here, there's plenty of stardom and buffs to share!"}, {senseofself, "Come over here!"}};
+	recruit1->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {senseofself, "Yo, don't you remember the first choice in the temple?"}, {senseofself, "Yall got robbed of the buff you deserved..."}, {senseofself, "Like, tactically, it's not even a good decision?"}, {senseofself, "Join me! I won't keep the buffs to myself!"}};
+	recruit2->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {senseofself, "Dude why are you still siding with this guy?"}, {senseofself, "Don't you remember at the lake how you all got debuffed,"}, {senseofself, "all cuz bro could NEVER take one for the team..."}, {senseofself, "I'll never treat you like that! I've got buffs saved just for you!"}};
+	recruit3->attackconvo = {{NULL, "\nSENSE OF SELF used RECRUIT!"}, {senseofself, "Hey! remember how your *generous leader* chose to hog alllll the SUPER SWAGGiness..."}, {senseofself, "Smh my head, always has to be the star of the show..."}, {senseofself, "Why don't you join me! I have plenty of buffs to share!"}};
 	//moves to get rid of the temptation statuses
 	Attack* apolagize = new Attack("APOLAGIZE TO", "apolagized to", false, 0, 0, 0, 1, 1, 1, true); //apolagizing only costs a turn, not sp
 	apolagize->cancels = {pride};
@@ -4829,16 +4836,19 @@ void Game::SetupWorld() {
 						  {senseofself, "you can't rely on these people!"},
 						  {senseofself, "Look how quick they were to betray you!"},
 						  {senseofself, "You don't need them!"},
+						  {senseofself, "You're the only part of the team that really matters."},
+						  {senseofself, "You've done most of the work to get to this point of the fight, am I right?"},
 						  {senseofself, "But what could be better..."},
 						  {senseofself, "than two of you?!"},
 						  {senseofself, "Help me finish them off, and we can defeat BURGER together!"},
 						  {NULL, "Join SENSE OF SELF? (YES or NO)"}};
 	shared_ptr<Conversation> prop2 = make_shared<Conversation>(Conversation({{senseofself, "Hey man,"}, //if nobody joined sense of self's side, he says this instead
 						  {senseofself, "I'm sorry about this whole 'you but better' shtick."},
-						  {senseofself, "I just wanted to show you,"},
+						  {senseofself, "I was just trying to show you,"},
 						  {senseofself, "you can do so much better than these people!"},
-						  {senseofself, "You're in charge!"},
-						  {senseofself, "You're the leader!"},
+						  {senseofself, "You're the one in charge!"},
+						  {senseofself, "The team's strength hinges on you!"},
+						  {senseofself, "You're the one with the highest damage stat after every fight."},
 						  {senseofself, "When you're alone in the spotlight,"},
 						  {senseofself, "you can do so much!"},
 						  {senseofself, "But what could be better..."},
@@ -4860,7 +4870,7 @@ void Game::SetupWorld() {
 								  {self, "what?"},
 								  {NULL, "\nSENSE OF SELF used HINDSIGHT 20/20!"},
 								  {NULL, "\nYou blow up behind SENSE OF SELF as he looks away"},
-								  {NULL, "because it's cooler not to look at explosions."}};
+								  {NULL, "because it's cooler to not look at explosions."}};
 	hindsight2020->repeatconvo = true; //it's funny so repeat it
 	senseofself->setBetrayal(hindsight2020);
 
@@ -5070,16 +5080,17 @@ void Game::SetupWorld() {
 	firewithfire->stageRageConvo({{NULL, "The flames around you started burning an intense purple hue!"}});
 	wrath->playerresponse = calmdown; //the player can only calm themselves down so we only give the attack if the player is affected
 	firewithfire->setTrackRage({{0.025, firewithfir2}, {0.09, firewithfir3}}); //phase 2 after 2.5% rage and phase 3 after 9%, relative to total health. Teammates trigger phase 2 at around 1/4 into the fight from testing
+	ragebait->setTargetConv(self, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate. ^^D"}, {self, "SHUT UP >:|"}});
 	ragebait->setTargetConv(floria, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Floria your hat looks stupid. ^^D\""}, {floria, "WHAT?"}, {floria, "HOW DARE YOU!"}});
 	ragebait->setTargetConv(egadwick, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Who let this fossil into the team?\""}, {firewithfire, "So much age and yet all his life amounts to is making science textbooks more annoying to read."}, {firewithfire, "What a nerd! ^^D"}, {egadwick, "You don't understand the marvelousness of science!"}});
 	ragebait->setTargetConv(forestknight, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the mighty forest knight...\""}, {firewithfire, "No stronger than a shrimp, though!"}, {firewithfire, "BAHAHAHAHAHAHAHA! ^^D"}, {forestknight, "Silence, fiend!"}, {forestknight, "You shall never tempt me into wrath!"}, {firewithfire, "Hmmmm! TT("}, {forestknight, "Come on, friends!"}, {forestknight, "Don't fall for his provocations!"}});
 	forestknight->setImmunity(wrath, {}); //he doesn't say anything here cause he says everything up there ^^^
 	ragebait->setTargetConv(mike, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh I just realized,\""}, {firewithfire, "you're carrying around dynamite!"}, {firewithfire, "I thought those were candles,"}, {firewithfire, "since that's about as hard as your dynamite hits! BAHAHAHA! ^^D"}, {mike, "Oh yeah?"}, {mike, "I'm gonna make you eat those words! HAHAHAHA!"}});
 	ragebait->setTargetConv(cacty, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - *insults Cacty's mother in cactus language*\""}, {NULL, "CACTY - *furious cactus noises*"}});
-	ragebait->setTargetConv(michelin, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Michelin, Mr. Purposeless!\""}, {michelin, "Bro what the heck."}, {firewithfire, "Well it's true!"}, {firewithfire, "Your whole job is to make food,"}, {firewithfire, "yet it tastes like what it turns into when you're done! ^^D"}, {michelin, "Hmmmm >:/"}, {michelin, "I'm gonna..."}, {firewithfire, "You're gonna what?"}, {firewithfire, "Give me food poisoning? ^^D"}, {firewithfire, "BAHAHAHAHA!"}, {michelin, "I'M GONNA MAKE YOU SHUT UP!"}});
+	ragebait->setTargetConv(michelin, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Michelin, Mr. Purposeless!\""}, {michelin, "Bro what the heck."}, {firewithfire, "Well it's true!"}, {firewithfire, "Your whole job is to make food,"}, {firewithfire, "yet it tastes like what it turns into when you're done! ^^D"}, {michelin, "Hmmmm >:/"}, {michelin, "I'm gonna...-"}, {firewithfire, "You're gonna what?"}, {firewithfire, "Give me food poisoning? ^^D"}, {firewithfire, "BAHAHAHAHA!"}, {michelin, "I'M GONNA MAKE YOU SHUT UP!"}});
 	ragebait->setTargetConv(carlos, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Carlos remember when your monthlong hacking attempt got foiled by some kid unplugging your computer?"}, {carlos, "..."}, {firewithfire, "Well I was right down here below you the whole time."}, {firewithfire, "You looked so stupid! BAHAHAHA! ^^D"}, {firewithfire, "BrO wHaT tHe HeCk"}, {firewithfire, "I wAs LiKe SeCoNdS fRoM sTeAlInG AlL oF mIcRoSoFtS mOnIeS"}, {carlos, "hey i know where u live i can-"}, {firewithfire, "*you"}, {carlos, "SHUT THE HECK UP"}});
 	ragebait->setTargetConv(plum, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh you must be the famous fungus princess.\""}, {firewithfire, "Hey I bet you liiiike Browser, don't you? ^^D"}, {plum, "WHAT?"}, {firewithfire, "Well why else do you get kidnapped so easily?"}, {firewithfire, "'ohhhh noooo I can't afford security with my enormous royal budget'"}, {firewithfire, "BAHAHAHA!"}, {plum, "I'm getting around to it!"}, {firewithfire, "Suuuuuure, suuuuuuure. ^^D"}});
-	ragebait->setTargetConv(graham, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Look at this bozo.\""}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA! ^^D"}, {graham, "Hey.... you shut up! >:("}});
+	ragebait->setTargetConv(graham, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at Graham."}, {firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA! ^^D"}, {graham, "Hey.... you shut up! >:("}});
 	ragebait->setTargetConv(richie, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the rich dirtbag of the group...\""}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history? ^^D"}, {richie, "STOP! >:("}});
 	ragebait->setTargetConv(ratman, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Ratman!\""}, {firewithfire, "Been reading up on your tragic backstory."}, {firewithfire, "How are your parents doing?"}, {firewithfire, "Oh wait..."}, {firewithfire, "BAHAHAHAHA! ^^D"}, {ratman, "I will not tolerate this mockery of my parents."}, {ratman, "Because I'm Ratman."}});
 	
@@ -5462,8 +5473,7 @@ void Game::SetupWorld() {
 	viola->addRecruitmentDialogue({{self, "Yo, wanna join my team?"},
 								   {viola, "Really?"},
 								   {viola, "After what I did?"},
-								   {self, "uh"},
-								   {self, "yeah."},
+								   {self, "uh yeah"},
 								   {viola, "Um..."},
 								   {viola, "Alright..."}});
 	viola->addRecruitedDialogue("It feels nice to walk. I hadn't done that in a while.");
@@ -5472,7 +5482,6 @@ void Game::SetupWorld() {
 	viola->addRedirect(desertshop, desertshopfixed);
 	viola->addRedirect(desertgym, desertgymfixed);
 	viola->addLinkedRoom(deserttown, "in the repopulated desert village. It's very lively here; looks like it's right back to business as usual.");
-	viola->addLinkedRoom(deserthouse, "in some house which still has zero purpose.");
 	viola->addRecruitLink(viola);
 	viola->addLinkedStats(viola, Stats(20, 0, 10, 0, 10, 20, 9));
 	viola->addLinkedConvo(viola, {{viola, "I'm sorry I'll free everyone..."},
@@ -5495,14 +5504,8 @@ void Game::SetupWorld() {
 	viola->setForceBattle();
 	viola->setEscapable(false);
 	viola->setTalkOnRecruit(true);
-	viola->setRecruitCondition(VIOLAREC);
-	//some stuff for the volcano temple boss fight
+	//some dialogue for the volcano temple boss fight
 	ragebait->setTargetConv(viola, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Viola? Why are you here?\""}, {firewithfire, "Didn't you kidnap the whole town in the desert?"}, {viola, "No!"}, {viola, "yeah..."}, {viola, "But I let them go!"}, {firewithfire, "Oh wow you kidnapped people BUT you let them go?"}, {firewithfire, "My mistake, you're so heroic!"}, {firewithfire, "BAHAHAHAHA! ^^D"}, {viola, "ALRIGHT I GET IT!"}});
-	Conversation selfrb = {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "Look at this shorty."}, {self, "WHAT"}, {firewithfire, "Yeah like why are you so short?"}, {firewithfire, "What even are you? 3'4?"}, {self, "NO! >:|"}, {firewithfire, "True, generous estimate. ^^D"}, {self, "SHUT UP >:|"}};
-	shared_ptr<Conversation> selfrb2 = make_shared<Conversation>(Conversation({{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at you."}, {firewithfire, "(I bet I can get this guy reeeaaalll mad ^^D)"}, {firewithfire, "HEY EVERYONE"}, {firewithfire, "Did you know this guy has a crush on Viola?"}, {viola, "What?"}, {self, "WHAT"}, {self, "WHY WOULD YOU SAY THAT"}, {self, "IM GONNA BEAT YOU UP >:|"}}));
-	selfrb.alt = selfrb2;
-	selfrb.skipcondition = {VIOLAREC};
-	ragebait->setTargetConv(self, selfrb);
 
 	NPC* springguard = new NPC(*greer);
 	springguard->setLeader(true, 18, minespring, false);
@@ -5521,7 +5524,7 @@ void Game::SetupWorld() {
 	springguard->addLinkedConvo(springguard, {{greer, "Youse gotta be kiddin' me..."},
 											  {greer, "Beaten by a kid?"},
 											  {greer, "I can't go back to da boss with a failya like dis!"},
-											  {greer, "I'm not looking forward to dis meetin'..."},
+											  {greer, "I ain't looking forward to dis meetin'..."},
 											  {NULL, "GREER disappeared into the darkness..."},
 											  {NULL, "The VALVE is no longer being guarded!"}});
 	springguard->setTalkOnDefeat();
@@ -6388,9 +6391,6 @@ void Game::SetupWorld() {
 
 	shared_ptr<WorldChange> ftsink = make_shared<WorldChange>(); //when the forest temple sinks into the ground
 	ftsink->exitPavings.push(make_tuple(dirtplain, foresttempleentrance, NORTH, SOUTH)); //very cool, there is a dirt plain here now
-	ftsink->exitPavings.push(make_tuple(dirtplain, forest, SOUTH, NORTH));
-	ftsink->exitPavings.push(make_tuple(dirtplain, forestright, EAST, WEST));
-	ftsink->exitPavings.push(make_tuple(dirtplain, forestleft, WEST, EAST));
 	ftsink->exitDepavings.push({foresttempleentrance, IN_TEMPLE}); //can't go in the temple anymore
 	ftsink->redirectRooms.push({foresttemplestairs, foresttempleentrance}); //set all these redirects so that they push all the items out of the temple, in case the player dropped some items or didn't take the output antenna (for some reason)
 	ftsink->redirectRooms.push({forestbuffer1, foresttempleentrance});
@@ -6925,12 +6925,12 @@ void Game::SetupWorld() {
 	 {developer, "I don't even know why!"},
 	 {developer, "It's very silly I hope that by fixing it im not reintroducing some other bug that led me to do that"},
 	 {developer, "Also apparently the energize move literally multiplied the target's defense, pierce, and toughness by 0..."},
-	 {developer, "(cause I never actually tested it it seems :P)"},
+	 {developer, "(and I never realized cause I never actually tested it :P)"},
 	 {developer, "I only noticed because I was fighting the first grassman"},
 	 {developer, "with my level 25 team as I was on my way to enter the forest temple"},
 	 {developer, "where I would realize there was no exit"},
 	 {developer, "but I didn't really want to finish it off myself (cause I was the fastest member of my team so i went first)"},
-	 {developer, "so I like energized Viola and yeah I noticed then"},
+	 {developer, "so I energized Viola and yeah I noticed then"},
 	 {developer, "Well in the meantime I had some other things to fix and noticed some other things to improve and the game can finally get past Beta 1.0!"},
 	 {developer, "yay"}});
 
@@ -7898,6 +7898,11 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 	//treasure chest items either give monies or are trapped and start a battle
 	} else if (!strcmp(item->getType(), "treasure")) {
 		TreasureItem* treasure = (TreasureItem*)item; //converts to the corresponding subclass
+		cout << "\nAre you sure you want to open the " << itemname << "? (YES or NO)";
+		if (!AOrB(NULL, "YES", "NO")) { //the player has the choice to change their mind (this probably makes clear the possibility of there being some sort of negative effect when opening it...)
+			cout << "\nYou did not open the " << itemname << ".";
+			return; //do not do or log anything because the player backed out
+		}
 		cout << "\nYou opened the " << itemname << "...";
 		CinPause();
 		if (NPC* mimic = treasure->getMimic()) { //if the item has a mimic
@@ -8443,11 +8448,11 @@ void Game::play() {
 			cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
 			CinPause();
 		//if the player typed anything by following the instructions too literally, the main character remarks on that
-		} else if (!strcmp(name, "YOUR NAME HERE!)")) {
-			cout << "\n" << name << " - \"You don't include the parenthesis cause it's closing the one from before...\"";
+		} else if (!strncmp(name, "YOUR NAME HERE!)", 16)) {
+			cout << "\n" << name << " - \"You don't include the parenthesis cause it's closing the one from before T_T\"";
 			CinPause();
 		} else if (!strncmp(name, "HELP FOR HELP", 13) || !strncmp(name, "YOUR NAME", 9)) {
-			cout << "\n" << name << " - \"Well, you're very good at following instructions...\"";
+			cout << "\n" << name << " - \"Well you're very good at following instructions...\"";
 			CinPause();
 		}
 

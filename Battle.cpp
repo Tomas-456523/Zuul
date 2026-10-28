@@ -356,11 +356,12 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			int damage = (!attack->percentagebased ? reciever->damage(effectiveAttack, effectivePierce) : reciever->directDamage(effectiveAttack)); //direct damage for percentage based sice defense should not affect it
 			if (attack->lifesteal) { //heal the attacker based on the lifesteal
 				CinPause();
-				attacker->damage(damage * -attack->lifesteal, 0);
+				int lifestealheal = attacker->damage(damage * -attack->lifesteal, 0);
+				if (trackkNPC(attacker) && lifestealheal) healthhealed[attacker->getParent()] -= lifestealheal;
 			}
 			if (trackNPC(attacker)) {
 				if (attack->power > 0) damagedealt[attacker->getParent()] += damage;
-				else healthhealed[attacker->getParent()] += damage;
+				else healthhealed[attacker->getParent()] -= damage;
 				if (damage < 0 && -damage == reciever->getHealth()) specialstat[attacker->getParent()]++; //the revives special stat is Floria's, and we defo just revived someone if the amount we healed by is their total health
 			}
 			CinPause();
@@ -770,7 +771,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		int hp = npc->directDamage(-hptem->getHp());
 		CinPause();
 		helpslaunched[player]++; //this was helpful so increase the player help counter
-		healthhealed[player] += hp;
+		healthhealed[player] -= hp;
 	//sp items restore sp for the target
 	} else if (!strcmp(item->getType(), "sp")) {
 		SpItem* sp = (SpItem*)item; //converts to the corresponding subclass
@@ -795,7 +796,7 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 		cout << "\n" << npc->getName() << " was recapacitated!";
 		CinPause();
 		helpslaunched[player]++; //this was helpful so increase the player help counter
-		healthhealed[player] += hp;
+		healthhealed[player] -= hp;
 	//effect items apply an effect to the target
 	} else if (!strcmp(item->getType(), "effect")) {
 		EffectItem* affecter = (EffectItem*)item; //converts to the corresponding subclass
@@ -820,7 +821,6 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 			return false;
 		} //carries out the attack on the target
 		carryOutAttack(key->getAttack(), plr, npc);
-		attackslaunched[player]++; //key items only have attacking attacks
 	//some movement items have attacks as well
 	} else if (!strcmp(item->getType(), "movement")) {
 		MovementItem* mover = (MovementItem*)item; //converts to the corresponding subclass
@@ -829,13 +829,11 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 			return false;
 		} //carries out the attack on the target
 		carryOutAttack(mover->getAttack(), plr, npc ? npc : plr);
-		attackslaunched[player]++; //movement items only have attacking attacks
 	//manhole items' names are misleading. They're just random stuff on the ground that you can find and throw at enemies as an attack
 	} else if (!strcmp(item->getType(), "manhole")) {
 		ManholeItem* cover = (ManholeItem*)item; //converts to the corresponding subclass
 		//they all have attacks so we don't check for it, we just launch the attack onto the target
 		carryOutAttack(cover->getAttack(), plr, npc);
-		attackslaunched[player]++; //manhole items only have attacking attacks
 	//info items give information as usual
 	} else if (!strcmp(item->getType(), "info")) {
 		InfoItem* info = (InfoItem*)item; //converts to the corresponding subclass
@@ -849,8 +847,6 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 			return false; //could not launch attack
 		}
 		carryOutAttack(weapon->getAttack(), plr, npc);
-		if (weapon->getAttack()->getBeneficial()) helpslaunched[player]++;
-		else attackslaunched[player]++;
 	} else if (!strcmp(item->getType(), "PLOTDEVICE")) { //plot device does(n't need to do) nothing in battle
 		cout << "\nYou press down on THE PLOT DEVICE's BIG RED BUTTON!"; //old: THE PLOT DEVICE's PLOTOMETER isn't locked onto anything!
 		CinPause();

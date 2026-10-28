@@ -746,7 +746,7 @@ struct Save {
 					attackslaunched[npc] = ParseNum(++data);
 					helpslaunched[npc] = ParseNum(++data);
 					damagedealt[npc] = ParseNum(++data);
-					healthhealed[npc] = ParseNum(++data);
+					healthhealed[npc] = llabs(ParseNum(++data)); //there used to be an issue where some health healed trackings added onto it and some subtracted to we force it to be positive to fix older saves
 					damagerecieved[npc] = ParseNum(++data);
 					healthrecovered[npc] = ParseNum(++data);
 					knockouts[npc] = ParseNum(++data);
@@ -808,6 +808,7 @@ struct Save {
 				for (size_t i = 0; *(++data) != '|' && *data != '='; i++) { //set all the states except for NEVER and GAMEEND because that's not tracked by SaveGame
 					WorldState[i] = *data - '0';
 				}
+				if (save->getVersion() = '0') WorldState[BEENINHOUSE] = false; //this is a new world condition so we must reset it when updating. The player might've been in the house before and we will never know but it's not that big of a deal so I think this is good enough
 			} else if (*data == 'Q') { //q for it's the randomest letter I could think of, random stats
 				playtime = ParseNum(++data); //yeah just set all the stats pretty simple
 				sessions = ParseNum(++data);

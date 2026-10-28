@@ -975,7 +975,7 @@ int NPC::damage(double power, double pierce) {
 	int damage = Round(power * (10.0/(10.0 + ClampD(Round(defenseD) - ((power/damagePierce + pierce)*10.0/(10.0 + Round(toughnessD))),0,Round(defenseD)))));
 	damage = Round(damage*damageMultiplier); //multiplies damage by the effects' damage multiplier
 	if (damage > 0) guard--; //hits lower guard
-	int totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
+	int totalDamage = 0; //start total damage at 0 in case the attack is blocked
 	
 	if (oldguard > 0 && guard < oldguard) { //block attacks if we have guard
 		cout <<  "\nThe attack was blocked by " << name << "'s guard!";
@@ -984,6 +984,7 @@ int NPC::damage(double power, double pierce) {
 			cout << name << "'s guard was broken!";
 		}
 	} else { //subtract the damage and print how much was done
+		totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
 		health -= totalDamage;
 		printDamage(damage);
 	}
@@ -1664,7 +1665,7 @@ void NPC::tickEffect(Effect* effect) {
 				if (trackNPC(affector)) {
 					if (damag > 0) damagedealt[affector->getParent()] += damag;
 					else healthhealed[affector->getParent()] -= damag;
-					if (lifestealdamage > 0) healthhealed[affector->getParent()] -= lifestealdamage;
+					if (lifestealdamage < 0) healthhealed[affector->getParent()] -= lifestealdamage;
 					if (!health) knockouts[affector->getParent()]++; //increase ko count of the attacker if we just got ko'd, just share the credit because it's basically all their faults
 				}
 			}
