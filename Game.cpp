@@ -823,7 +823,7 @@ void Game::SetupWorld() {
 	NPC* forestknight = new NPC("FOREST KNIGHT", "ABSOLOM", "An old knight decked out in wooden armor, on a quest to vanquish all evil that crosses his path.", forestgrave, 25, Stats(30, 20, 15, 10, 10, 0, 10), Stats(1, 0, 1, 1, 0, 0, 0));
 	npcChar[forestknight] = 'k'; //Absolom's character representation is k for knight
 	forestknight->setRoaming(true, false); //Absolom roams after going to his room, meaning you beat Jim Shady, but also he doesn't help in battle when roaming cause he's more focused on non-natural threats
-	forestknight->setRoamRooms({forest, forestleft, forestright, foresttempleentrance, forestfork, forestgate, forestwall, forestgrave, forestspork, bossgrove, forestnice, treasuregrove, flowerfield});
+	forestknight->setRoamRooms({forest, foresttempleentrance, forestgate, forestgrave, forestspork});
 	forestknight->addRejectionDialogue({{self, "Hey knight man wanna join me on my BURGER QUEST?"},
 										{forestknight, "A BURGER, you say?"},
 										{forestknight, "I shan't assist you; this is an object of sin."},
@@ -1947,9 +1947,9 @@ void Game::SetupWorld() {
 								{NULL, "..."},
 								{NULL, "It tasted pretty good."},
 								{NULL, "..."},
-								{NULL, "Was it really worth it?"},
 								{NULL, "You did the same as the world,"},
 								{NULL, "and the BURGER has hardened your heart."},
+								{NULL, "Was it really worth it?"},
 								{NULL, "\n\t<<< BURGER QUEST COMPLETE? >>>"
 									   "\n\t<<<    ENDING ACHIEVED:    >>>"
 									   "\n\t<<<    CONSUMER MINDSET    >>>\n"},
@@ -2205,7 +2205,7 @@ void Game::SetupWorld() {
 	usetheplotdevice.roomChanges.push({BURGERSBURG, "at the gate of BURGERSBURG. They might want to update the name of the city at some point..."});
 	usetheplotdevice.roomChanges.push({mountainpeak, "at the peak of the mountain, watching over a sea of clouds.\nThere's a tent here in the style of your home village."});
 	usetheplotdevice.roomChanges.push({fdintermission3, "on the path between the woodlands and the wastelands. Dead trees surround you."});
-	usetheplotdevice.roomChanges.push({burgbasenw, "in a sort of BURGER storage room, though the most of BURGERs have fallen into the hole."});
+	usetheplotdevice.roomChanges.push({burgbasenw, "in a sort of BURGER storage room, though the most of the BURGERs have fallen into the hole."});
 	usetheplotdevice.roomChanges.push({burgbasene, "at the entrance of a storage room, with the hole on the other side."});
 	usetheplotdevice.redirectRooms.push({burgerbasement, abyssbasement});
 	usetheplotdevice.exitPavings.push(make_tuple(burgbasenw, burgbasehole, EAST, WEST)); //because the room was redirected to the abyss, we have this other room and link the rest of the basement to it
@@ -2552,7 +2552,6 @@ void Game::SetupWorld() {
 	 {developer, "so yea just the earth."}});
 	//burger all caps lore
 	//kept thinking michelin is named jim
-	//viola after fire fight
 	//so nice seeing game systems evolve
 	//ascii art time
 	developer->addConversation({{developer, "Have you noticed how nobody actually says your name?"},
@@ -2610,7 +2609,7 @@ void Game::SetupWorld() {
 	 {developer, "like it just had such perfect comedic timing"},
 	 {developer, "I mean I was a little annoyed"},
 	 {developer, "well probably pretty annoyed"},
-	 {developer, "But it was also really funny."}});
+	 {developer, "But in the end I'm grateful that I have this really funny log now."}});
 	developer->addConversation({{developer, "Hey Bernard guess how I came up with your name."},
 	 {self, "idk"},
 	 {self, "If you're writing my dialogue how are you supposed to come up with a natural guess?"},
@@ -2764,7 +2763,8 @@ void Game::SetupWorld() {
 						  {NULL, "Would you like to hear about Jesus? (YES or NO)"}};
 	shared_ptr<Conversation> fryes = make_shared<Conversation>(Conversation(
 		{{fr, "Well..."},
-		 {fr, "All of us have sinned,"},
+		 {fr, "God made us good,"},
+		 {fr, "but all of us have sinned,"},
 		 {fr, "and this sin keeps us from Heaven,"},
 		 {fr, "leading us to Hell."},
 		 {fr, "But,"},
@@ -2779,7 +2779,8 @@ void Game::SetupWorld() {
 		 {fr, "all who believe in Him and follow Him, through His grace, get to share in His victory,"},
 		 {fr, "and will have eternal life with Him in Heaven."},
 		 {fr, "Well, thanks for hearing me out."},
-		 {fr, "I'd encourage you to think about that."}}));
+		 {fr, "I'd encourage you to think about that."},
+		 {fr, "Since your eternity does depend on it, after all."}}));
 	shared_ptr<Conversation> frno = make_shared<Conversation>(Conversation({{fr, "Well, if you ever want to know, just ASK. I'll be right here."}}));
 	frcon.branch1 = {"YES", fryes};
 	frcon.branch2 = {"NO", frno};
@@ -4655,7 +4656,7 @@ void Game::SetupWorld() {
 	burgerbutler->addSpecialAttack(chandelier);
 	burgerbutler->addSpecialAttack(vacuum);
 	
-	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(991, 10, 10, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 0));
+	NPC* ceo = new NPC("BURGER CEO", "ENZO", "The CEO of the whole BURGER corporation.\nHe's rejected his humanity in favor of the lethal efficiency of machines.", limbo, 0, Stats(991, 10, 10, 50, 50, 25, 9), Stats(0, 0, 1, 0, 1, 1, 0));
 	ceo->setBoss(true);
 	Effect* lockedon = new Effect("LOCKED ONTO", 4); //does nothing
 	Attack* lockon = new Attack("LOCK ON", "locked onto", false, -10, 0, 0, 1, 1, 1);
@@ -4767,7 +4768,7 @@ void Game::SetupWorld() {
 	junglenaut->addSpecialAttack(piledrive);
 
 	NPC* senseofself = new NPC("", "SENSE OF SELF", "A mirror image of yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0));
-	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "He looks like yourself, with a cool scarf and blond anime hair except taller.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
+	NPC* senseofsel2 = new NPC("", "SENSE OF SELF", "A mirror image of yourself, with a cool scarf and blond anime hair and also super cool sunglasses now.", limbo, 0, Stats(5500, 12, 10, 5, 0, 12, 9), Stats(2, 0, 1, 1, 0, 1, 0)); //sense of self turns into this after sending back the hypnotized teammates, no more tempting at this point because now it's directed at the player
 	senseofself->setBoss(true);	
 	Attack* spotlight = new Attack("SPOTLIGHT", "put the spotlight on", false, 0, 0, 0, 1, 1, 999); //this is automatically bad by itself since it's a net loss in terms of team stats
 	Effect* inthespotlight = new Effect("IN THE SPOTLIGHT", 2147483647, 0, 0, 2, 2, 2, 2, 2);
@@ -4801,7 +4802,7 @@ void Game::SetupWorld() {
 	forestknight->setImmunity(pride, {{forestknight, "Quiet, fiend!"}, {forestknight, "I will not betray my compatriots!"}, {senseofself, "Whatever, who needs you..."}});
 	//these three temptation attacks are identical, but each gets added by choosing the selfish choices in the life orbs, so effectively each selfish choice increases the likelyhood this attack gets chosen
 	Attack* recruit1 = new Attack("RECRUIT", "tempted", false, 2, 0, 0, 1, 1, 1); //since we're adding identical attacks, it effectively makes the same move more likely to be chosen
-	recruit1->afterdesc = " into joining the better side, calling to mind your selfish choices";
+	recruit1->afterdesc = " into joining the better side, calling to mind your previous choices";
 	recruit1->donotplayer = true;
 	recruit1->ignoreeffect = outthespotlight; //don't tempt npcs out of the spotlight, because that might lead to situations where it's optimal to keep the spotlight which is counter-thematic
 	recruit1->redundanteffect = false; //reapplying this would be counterproductive since it lasts forever if ignored
@@ -8575,6 +8576,6 @@ void Game::play() {
 			else cout << "\rYou take a nap. You will continue on your quest to get the BURGER later!";
 		}
 		CinPause();
-		cout << "\nType HELP for help\nWhat would you like to do?";
+		cout << "\nType HELP for help.\nWhat would you like to do?";
 	}
 }

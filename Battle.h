@@ -49,7 +49,7 @@ public:
 	void attachEffect(NPCEffect* effect); //handle stuff that happens when setting effects
 	void detatchEffect(NPCEffect* effect); //handle stuff that happens when removing effects
 	void handleKnockout(NPC* npc); //handles stuff related to when the npc gets incapacitated
-	void hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry = false); //hit one of the targets from hitTargets
+	void hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, NPC* parrier = NULL); //hit one of the targets from hitTargets
 	void hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, int tarPos); //hit the target, and surroundings if needed
 	void carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool recoil = false); //affects the given target based on the given attack
 	bool ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* commandExtensionP, int checkMax = 3); //interpret and carry out an attack command given by the player

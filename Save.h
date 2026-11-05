@@ -48,9 +48,9 @@
 *  Section U: Only exists while pursuer is pursuing, tracks their room
 *  Section R: Stuff related to the player team
 *  - First, the teammate this chunk is tracking using their correspinding letter (listed in section P)
-*  - Then level, xp, room, stats (attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage), and finally, time left in gym (0 if not in gym)
+*  - Then level, xp, room, stats (attacks launched, basic attacks launched, beneficial attacks launched, damage dealt, damage healed, damage recieved, health recovered, knockouts, times got ko'd, a special stat, and sp usage), and finally, time left in gym (0 if not in gym)
 *  - Everything connected to the NPC is seperated by .
-*  - So, this section would look something like: R[level].[xp].[room].[attacks].[helps].[damage dealt].[health dealt].[damage taken].[health recovered].[kos].[ko'd].[special].[sp usage].[gym time]
+*  - So, this section would look something like: R[level].[xp].[room].[attacks].[basics].[helps].[damage dealt].[health dealt].[damage taken].[health recovered].[kos].[ko'd].[special].[sp usage].[gym time]
 *  Section E: Enemy types that have been encountered
 *  Section I: Every item's room, or -1 if it's in the inventory (saved in order, so the items in the rooms and in the inventory remain in the same order) (-1 instead of 0 because 0 is a valid room ID, being limbo, so -1 translates to NULL room here)
 *  - Denoted by [item].[room]
@@ -150,6 +150,8 @@ struct Save {
 		if (data[strlen(data)-1] != '=') return false;
 
 		std::set<char> sections; //sections that we have found already
+
+		char version = '\0'; //track the save version when we get to section V. some things might be valid or invalid depending on the version. all checks that depend on this must come after section V so we must check for that in the beginning of the corresponding section
 		
 		for (const char* p = data+4; *p != '=';) { //start right after the BQ2| until reaching the =
 			if (*p == '|') { //skip the dividers, they are already checked during the sections and at the end
@@ -160,7 +162,9 @@ struct Save {
 			sections.insert(*p); //track that we have checked this section so we can verify there aren't any duplicates using the check immediately before this
 
 			if (*p == 'V') {
-				p += 2; //skip the version number
+				if (sections.count('R')) return false; //we need to be able to check the version due to an issue with basic attack tracking in version 0, so V must precede R
+				version = *(++p); //track the version for validity checks that depend on
+				p++; //skip the version number
 			} else if (*p == 'N') {
 				if (!verifyName(++p)) return false; //the name was invalid for whatever reason
 			} else if (*p == 'M') { //check if the monies amount is valid
@@ -202,7 +206,7 @@ struct Save {
 				const char* validChars = "afeklmvcjxpgrbhu";
 				for (p++;; p++) {
 					if (!strchr(validChars, *p)) return false; //can only track these specified characters
-					for (size_t i = 0; i < 5; i++) { //check level, xp, room id, attacks, and helps
+					for (size_t i = 0; i < (version == '0' ? 5 : 6); i++) { //check level, xp, room id, attacks, (basics if not save version 0) and helps
 						if (!verifyNum(++p, 32)) return false;
 					}
 					for (size_t i = 0; i < 4; i++) { //check damage dealt, damage healed, damage recieved, and health recovered
@@ -272,11 +276,13 @@ struct Save {
 			if (*p != '|' && *p != '=') return false; //check the divider
 		}
 
+		if (!sections.count('V')) return false; //we at least need the version section so we can check the version
+
 		return true; //yay everything worked so it's valid!
 	}
 
 	//goes through the thingy to find the position of the given section MARK: get section
-	const char* getSection(char section) {
+	const char* getSection(char section) const {
 		bool namesection = false; //we can't return anything if we're in the naming section because the player could type weird names
 		bool escaping = false; //don't end the naming section if we're escaping
 
@@ -297,7 +303,7 @@ struct Save {
 	}
 
 	//get the version of this save system, for future proofing! MARK: get version
-	char getVersion() {
+	char getVersion() const {
 		return getSection('V')[1]; //go to section V and the version is the character after that. (96 possible versions should be enough)
 	}
 
@@ -362,8 +368,8 @@ struct Save {
 	//gets the variables in main and serializes it into save data MARK: save game
 	static void SaveGame(Save* save, int monies, time_t lastsave) {
 		save->reset(); //reset the current save string so we can rebuild it, easier to edit that way
-		//add beginning and section V version number (we are in version 0)
-		addChunk(save->data, "BQ2|V0|N", save->savesize);
+		//add beginning and section V version number (we are in version 1)
+		addChunk(save->data, "BQ2|V1|N", save->savesize);
 		//Section N, add the name
 		{ char* name = formatName(Helper::charNPC['a']->getName()); //format the name to have escape codes so we can have special characters in the name
 		addChunk(save->data, name, save->savesize);
@@ -398,8 +404,8 @@ struct Save {
 		for (set<NPC*>::iterator teamiterator = Helper::Rnpcs.begin(); teamiterator != Helper::Rnpcs.end(); teamiterator++) {
 			NPC* teammate = *teamiterator;
 			char sectionR[1000]; //this is prolly enough space
-			//the teammate section included the identifying char, then the level, xp, room id, attacks launched, helps launched, damage dealt, heals dealt, damage taken, health recovered, knockouts, incapacitations, a special stat which varies by npc, total sp used up by pecial attacks, and gym starting time
-			snprintf(sectionR, 1000, "%c%d.%d.%d.%d.%d.%lld.%lld.%lld.%lld.%d.%d.%d.%lld.%lld", npcChar[teammate], teammate->getLevel(), teammate->getXP(), teammate->getRoom()->getID(), attackslaunched[teammate], helpslaunched[teammate], damagedealt[teammate], healthhealed[teammate], damagerecieved[teammate], healthrecovered[teammate], knockouts[teammate], incapacitations[teammate], specialstat[teammate], spusedup[teammate], (long long)teammate->getGymStart());
+			//the teammate section included the identifying char, then the level, xp, room id, attacks launched, basics launched, helps launched, damage dealt, heals dealt, damage taken, health recovered, knockouts, incapacitations, a special stat which varies by npc, total sp used up by pecial attacks, and gym starting time
+			snprintf(sectionR, 1000, "%c%d.%d.%d.%d.%d.%d.%lld.%lld.%lld.%lld.%d.%d.%d.%lld.%lld", npcChar[teammate], teammate->getLevel(), teammate->getXP(), teammate->getRoom()->getID(), attackslaunched[teammate], basicslaunched[teammate], helpslaunched[teammate], damagedealt[teammate], healthhealed[teammate], damagerecieved[teammate], healthrecovered[teammate], knockouts[teammate], incapacitations[teammate], specialstat[teammate], spusedup[teammate], (long long)teammate->getGymStart());
 			addChunk(save->data, sectionR, save->savesize);
 			if (next(teamiterator) != Helper::Rnpcs.end()) addChunk(save->data, ",", save->savesize); //dividing comma
 		}
@@ -718,11 +724,14 @@ struct Save {
 	static void LoadGame(const Save* save, NPC* player, std::vector<Item*>* inventory, int& monies) {
 		set<int> discontinuity; //the item id discontinuities, because we delete items sometimes so we need this to get actual itemsH index
 
+		char version = '\0'; //we record the version in section V so that we can account for differing save setups in different versions
+
 		for (const char* data = save->data+4; *data != '=';) { //keep loading stuff until we reach the end
 			if (*data == '|') { //just go past the dividers
 				data++;
-			} else if (*data == 'V') { //ignore version section, if it's a future version we should just check outside the function
-				data += 2;
+			} else if (*data == 'V') { //record the version and then move on
+				version = *(++data); //record the version
+				data++; //move on
 			} else if (*data == 'N') { //n for name
 				if (*(++data) != '|') ParseName(player, data);
 			} else if (*data == 'M') { //m for monies
@@ -744,6 +753,7 @@ struct Save {
 					npc->addXp(ParseNum(++data));
 					npc->setRoom(roomsH[ParseNum(++data)]);
 					attackslaunched[npc] = ParseNum(++data);
+					if (version != '0') basicslaunched[npc] = ParseNum(++data); //apparently version 0 saves didn't track basic attacks launched so we have to account for that now. Basics launched would be less accurate for those who played Beta 1.0 but some basics tracked is better than no basics tracked
 					helpslaunched[npc] = ParseNum(++data);
 					damagedealt[npc] = ParseNum(++data);
 					healthhealed[npc] = llabs(ParseNum(++data)); //there used to be an issue where some health healed trackings added onto it and some subtracted to we force it to be positive to fix older saves
@@ -808,7 +818,7 @@ struct Save {
 				for (size_t i = 0; *(++data) != '|' && *data != '='; i++) { //set all the states except for NEVER and GAMEEND because that's not tracked by SaveGame
 					WorldState[i] = *data - '0';
 				}
-				if (save->getVersion() = '0') WorldState[BEENINHOUSE] = false; //this is a new world condition so we must reset it when updating. The player might've been in the house before and we will never know but it's not that big of a deal so I think this is good enough
+				if (save->getVersion() == '0') WorldState[BEENINHOUSE] = false; //this is a new world condition so we must reset it when updating. The player might've been in the house before and we will never know but it's not that big of a deal so I think this is good enough
 			} else if (*data == 'Q') { //q for it's the randomest letter I could think of, random stats
 				playtime = ParseNum(++data); //yeah just set all the stats pretty simple
 				sessions = ParseNum(++data);

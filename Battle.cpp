@@ -246,6 +246,8 @@ void Battle::detatchEffect(NPCEffect* effect) {
 }
 //stuff that happens when an npc gets incapacitated MARK: handle knockout
 void Battle::handleKnockout(NPC* npc) {
+	if (trackNPC(npc)) incapacitations[npc->getParent()]++; //track that the npc got ko'd if we track them
+
 	if (npc->popExtraLives()) { //if the npc has extra lives, pop one and fully heal them
 		cout << "\n" << npc->getName() << " had an extra life!";
 		CinPause();
@@ -255,11 +257,14 @@ void Battle::handleKnockout(NPC* npc) {
 	if (npc->getPlayerness()) { //if the player just fainted, check if the forest temple boss is here and needing to do a business proposition
 		for (NPC* sospot : enemyTeam) { //check potential sense of selves
 			if (sospot->popProposition(true)) { //if they had the proposition, dew it
-				if (doBusinessProposition(sospot, npc, true)) return; //if the player accepted the offer, stop the incapacitation process because the boss is keeping them alive
-				else break; //stop checking because we found it already, also proceed to the normal incapacitation process because the player rejected the offer
+				if (!doBusinessProposition(sospot, npc, true)) break; //if the player rejected the offer, proceed to the normal incapacitation process and stop checking because we found it already
+				//if the player accepted the offer, stop the incapacitation process because the boss is keeping them alive
+				if (trackNPC(npc)) incapacitations[npc->getParent()]--; //untrack the knockout because they didn't really get knocked out, only almost, or kind of sort of
+				return;
 			}
 		}
-	} 
+	}
+	
 	//make sure the player understands this npc is incapacitated
 	cout << "\n" << npc->getName() << " is incapacitated!";
 	CinPause();
@@ -283,8 +288,6 @@ void Battle::handleKnockout(NPC* npc) {
 		}
 	}
 
-	if (trackNPC(npc)) incapacitations[npc->getParent()]++; //track that the npc got ko'd if we track them
-
 	if (!npc->getEnemy() && aliveCount(playerTeam) == 1) { //handle the betrayal attack if this is the forest temple boss fight, and now only one npc is left in the player team
 		NPC* sos = NULL; //try to find the boss in the enemy team
 		for (NPC* npc : enemyTeam) {
@@ -300,7 +303,7 @@ void Battle::handleKnockout(NPC* npc) {
 	}
 }
 //does the hitting stuff for only one of the targets MARK: hit target
-void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, bool parry) {
+void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, NPC* parrier) {
 	double attackProcessing = 0; //processes attack and pierce as doubles for better rounding at the end
 	double pierceProcessing = 0;
 	if (attack->spbomb) { //sp bombs don't get multipliers or modifiers of any sort, power still increases due to level from sp stat
@@ -310,14 +313,14 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 		attackProcessing = pierceProcessing = 9999999; //just send a lot of damage to make it print the cool 999 
 	} else if (attack->percentagebased) { //if it's percentage based, set the damage to attack->power% of the reciever's health, and we direct damage later
 		attackProcessing = reciever->getHealth()*attack->power/100.0;
-		if (parry) attackProcessing /= 10.0; //if you parry it, it shouldn't deal half of the attacker's health, but you still get rewarded for parrying the attack so we just reduce the power by a factor of 10
+		if (parrier) attackProcessing /= 10.0; //if you parry it, it shouldn't deal half of the attacker's health, but you still get rewarded for parrying the attack so we just reduce the power by a factor of 10
 	} else { //normal attacks, we multiply the attack power/pierce and attack/pierce stat together so they both matter equally, and divide by 10 just cause I don't want the numbers to be too big
 		double attmultiplier = attacker->getAttMultiplier();
 		if (attack->power < 0 && attacker->getPlotPower()) attmultiplier /= 1000.0; //during the final boss, healing should not have 1000x power, only attacks should be affected by the final boss multiplier
 		attackProcessing = attack->power * Round(attacker->getAttack() * attmultiplier) / 10.0;
 		pierceProcessing = attack->pierce * Round(attacker->getPierce() * attacker->getPierceMultiplier()) / 10.0;
 	}
-	if (parry && !attack->percentagebased) attackProcessing *= 2; //parried hits hit with double power!
+	if (parrier && !attack->percentagebased) attackProcessing *= 2; //parried hits hit with double power!
 	for (Effect* effect : attack->synergies) { //increase attack power by 1.5x for all synergies on the reciever
 		bool synergized = false; //track if we synergized at all so we can pause once for any amount of synergies found
 		if (reciever->getEffect(effect, true)) {
@@ -338,9 +341,10 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			cout << "\n" << reciever->getName() << " parried it!";
 			CinPause();
 			reciever->setParrying(NULL); //don't parry other attacks or hits
-			hitTarget(attack, attacker, attacker, 1, true); //send the hit right back at double power!
+			hitTarget(attack, attacker, attacker, 1, reciever); //send the hit right back at double power!
 			successfulparries++; //track the successful parry!
 			hits -= 1; //subtract one hit because we just parried it
+			parriedhit = true; //we have parried the hit so yeah
 			continue; //don't apply the damage of this hit to the npc
 		}
 		
@@ -357,12 +361,13 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 			if (attack->lifesteal) { //heal the attacker based on the lifesteal
 				CinPause();
 				int lifestealheal = attacker->damage(damage * -attack->lifesteal, 0);
-				if (trackkNPC(attacker) && lifestealheal) healthhealed[attacker->getParent()] -= lifestealheal;
+				if (trackNPC(attacker) && lifestealheal) healthhealed[attacker->getParent()] -= lifestealheal;
 			}
-			if (trackNPC(attacker)) {
-				if (attack->power > 0) damagedealt[attacker->getParent()] += damage;
-				else healthhealed[attacker->getParent()] -= damage;
-				if (damage < 0 && -damage == reciever->getHealth()) specialstat[attacker->getParent()]++; //the revives special stat is Floria's, and we defo just revived someone if the amount we healed by is their total health
+			NPC* payee = (parrier ? parrier : attacker); //who revieves credit for the damage (if it's healing you can't parry it so yeah). we attribute damage to the parrier if there is one, because like imagine you were the player and you parried a move; you'd want the credit for the damage
+			if (trackNPC(payee)) {
+				if (attack->power >= 0) damagedealt[payee->getParent()] += damage;
+				else healthhealed[payee->getParent()] -= damage;
+				if (damage < 0 && -damage == reciever->getHealth()) specialstat[payee->getParent()]++; //the revives special stat is Floria's, and we defo just revived someone if the amount we healed by is their total health
 			}
 			CinPause();
 		}
@@ -385,7 +390,8 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, b
 	}
 	if (reciever->popKO()) { //if the target was just ko'd
 		handleKnockout(reciever); //apply knockout stuff to the reciever
-		if (trackNPC(attacker)) knockouts[attacker->getParent()]++; //increase ko count of the attacker if we track them
+		NPC* payee = (parrier ? parrier : attacker); //who revieves credit for the ko
+		if (trackNPC(payee)) knockouts[payee->getParent()]++; //increase ko count of the attacker if we track them
 	}
 	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
 	if (Effect* effect = (attack->specifictarget && attack->specifictarget != reciever ? attack->nonspecificeffect : attack->appliedeffect)) { //adds an effect if the attack had one, might be different for the specific target of a multi-target attack
@@ -677,7 +683,11 @@ bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
 	printConversation(&sos->getPropConv(), false);
 	WorldState[GAMEEND] = false; //reset game end state, doesn't matter what faint was (if the game was ended, we wouldn't be in this battle so yeah)
 	if (AOrB(NULL, "YES", "NO")) { //if the player chooses yes, give them the effect
-		cout << "\n" << sos->getName() << " - \"Well well, welcome to the better side!\"";
+		cout << "\n" << sos->getName() << " - \"Alright! Let's show these GOOBERS what we're made of!\"";
+		CinPause();
+		cout << "\nA pair of sunglasses fall onto SENSE OF SELF's face.";
+		CinPause();
+		cout << "\nSENSE OF SELF - \">B)\"";
 		CinPause();
 		attachEffect(plr->setEffect(sos->getPropEffect(), sos));
 		if (faint) plr->directDamage(-1); //keep the player alive if this was the "player got defeated early" fallback path
@@ -686,7 +696,11 @@ bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
 		cout << "\n" << plr->getName() << " - \"No >:|\"";
 		CinPause();
 		if (faint) cout << sos->getName() << " - \"Ok bye, die.\"";
-		else cout << sos->getName() << " - \"Have it your way, then. I can just be amazing on my own!\"";
+		else cout << sos->getName() << " - \"Have it your way, then. Let's see who's really better!\"";
+		CinPause();
+		cout << "\nA pair of sunglasses fall onto SENSE OF SELF's face.";
+		CinPause();
+		cout << "\nSENSE OF SELF - \">B)\"";
 		CinPause();
 		return false;
 	}

@@ -46,7 +46,7 @@ void printSaves() {
 		Save* save = saves[i];
 		cout << "\nSAVE " << i+1 << " - ";
 		if (!save->getValid()) cout << "Save data is faulty.";
-		else if (save->getVersion() != '0') cout << "You need a newer version to play this save.";
+		else if (save->getVersion() != '0' && save->getVersion() != '1') cout << "You need a newer version to play this save.";
 		else {
 			save->printMainString();
 		}
@@ -101,7 +101,7 @@ void loadSave(const char* savename) {
 	} if (!saves[num-1]->getValid()) { //bad data so no play
 		cout << "\nThis save's data is faulty and cannot be played.";
 		return;
-	} if (saves[num-1]->getVersion() != '0') { //we be too outdated, no play
+	} if (saves[num-1]->getVersion() != '0' && saves[num-1]->getVersion() != '1') { //we be too outdated, no play
 		cout << "\nThis save is for a later version of the game. You need to update to a newer version to play it.";
 		return;
 	} //valid save number! play the game with the save we found!
@@ -189,7 +189,7 @@ void importSave(const char* savedata) {
 	newfile << savedata;
 	cout << "\nSuccessfully imported your save data into SAVE " << saves.size()+1 << "!"; //success text!
 	//the new save will be added to the vector at the start of each function via their reload
-	if (savey.getVersion() !='0') cout << " (Save data is from a future version; you must update to play on it.)";
+	if (savey.getVersion() !='0' && savey.getVersion() != '1') cout << " (Save data is from a future version; you must update to play on it.)";
 }
 
 //export save data in a copy-pastable way MARK: export save
