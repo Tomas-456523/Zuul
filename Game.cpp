@@ -148,7 +148,7 @@ void Game::SetupWorld() {
 	forest->setWelcome({{NULL, "Welcome to WANING WOODLANDS!"},
 						{NULL, "<<< THE FINAL FOREST >>>"},
 						{NULL, "The slowly decaying corner of the world, where you have lived your whole life."},
-						{NULL, "The grass is green and the chirds are birping."},
+						{NULL, "The grass is green and the birds are chirping."}, //was chirds are birping, but I changed my mind
 						{NULL, "Now, your BURGER QUEST begins!"}});
 	Room* forestleft = new Room("walking down the left path of the woodlands. It feels like a deer is watching you.");
 	Room* forestright = new Room("walking down the right path of the woodlands. It feels like a ninja is watching you.");
@@ -793,7 +793,7 @@ void Game::SetupWorld() {
 	Effect* acidified = new Effect("ACIDIFIED", 3, 8, 0, 1, 0.5, 0.5);
 	shieldacid->addEffect(acidified);
 	egadwick->addSpecialAttack(shieldacid);
-	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 10, 10, 1, 1, 3, false, 10, 20);
+	Attack* emp = new Attack("EMP", "threw an EMP at", false, 16, 10, 10, 1, 1, 3, false, 10, 10);
 	emp->addDescription("Throw an EMP, frying some of the target's and surrounding enemies' SP.");
 	egadwick->addSpecialAttack(emp);
 	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 1, 1, 1, true, 12);
@@ -1719,7 +1719,7 @@ void Game::SetupWorld() {
 	BURGERRESTAURANT->setEnterChanges(charlygoeshome); //Charly goes home after you get to the restaurant, because he doesn't have anything else to do there
 
 	WorldChange enterthehouse;
-	enterthehouse.worldcon = BEENINHOUSE; //I removed all usages of this condition so I was able to switch it to this which is why I dedicated an entire world condition to this very useless status
+	enterthehouse.worldcon = BEENINHOUSE; //I removed all usages of another condition so I was able to switch it to this which is why I dedicated an entire world condition to this very useless status
 	deserthouse->setEnterChanges(enterthehouse); //after we enter the house, we mark that we have BEEN IN the HOUSE....................
 	
 	WorldChange confirmhouseuselessness;
@@ -1959,8 +1959,6 @@ void Game::SetupWorld() {
 	Item* freeboiga = new BURGERItem(*(BURGERItem*)(BURGER));
 
 	NPC* burgerman = new NPC("", "BURGER MAN", "The manager and mascot of BURGERs. He has a BURGER for a head and a stick figure body.", BURGERRESTAURANT, 1000, Stats(500, 6000, 3000, 6000, 3000, 6000, 9), Stats(2, 2, 1, 2, 1, 2, 0));
-	//burgerman->setLeader(true, 0, BURGERRESTAURANT, false);
-	burgerman->setNoFight(false); //you can kind of fight the BURGER MAN but not really, leader status won't reset if trying to account for try to fight without THE PLOT DEVICE and then you get bad ending, then try to fight in the true ending
 	BURGERRESTAURANT->setStock(BURGER, 2147483647, 10, {{burgerman, "ENJOY YOUR BURGER!"}});
 	BURGER->setFreebie({{burgerman, "YOU CAN'T AFFORD A BURGER?"}, {burgerman, "I BELIEVE THERE SHOULD BE NO FINANCIAL BARRIERS TO ENJOYING A BURGER."}, {burgerman, "HERE, HAVE ONE ON THE HOUSE!"}, {self, "Oh thanks!"}});
 	burgerman->setDialogue({{burgerman, "HELLO! WELCOME TO MY BURGER RESTAURANT!"}, {burgerman, "HOW MAY I TAKE YOUR ORDER?"}});
@@ -2447,13 +2445,14 @@ void Game::SetupWorld() {
 	//least favorite character
 	developer->addConversation({{self, "So what actually are monies?"},
 	 {developer, "???"},
-	 {self, "wdym ???"},
+	 {self, "wdym '???\'"}, //apparently I have to backslash the ' because ??' means ^. The more you know!
 	 {developer, "Bro you're carrying monies around you tell me."},
 	 {self, "Well you made me say that so you could explain what monies are. T_T"},
 	 {developer, "Yep that's true!"},
 	 {developer, "Well so I'm thinking monies are like gold coins."},
 	 {developer, "So yeah there you have it."},
-	 {developer, "I'm pretty sure that name was based off of this Desmos bookmark,"},
+	 {developer, "Actually you know I think I might like it better if they were like dollar bills."},
+	 {developer, "Well anyway I'm pretty sure that name was based off of this Desmos bookmark,"},
 	 {developer, "for some graph that was for visualizing currency inflation,"},
 	 {developer, "like it starts at a certain value and gets divided by x,"},
 	 {developer, "where x is how many of that currency exists."},
@@ -2853,7 +2852,7 @@ void Game::SetupWorld() {
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
 	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 7, 20, 1, 1, 1);
-	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff such, as rocky rubble.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
+	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff, such as rocky rubble.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
 	kaboomroom->setStock(dynamite, 2147483647, 5, {{skeleseller, "Do you need some explosives? Here you go! I assume you know what you're doing..."}});
 
 	NPC* bob = new NPC("", "BOB", "A small child wearing a newsboy cap. He has a hard time making human friends and prefers plants.", limbo, 0);
@@ -3377,7 +3376,7 @@ void Game::SetupWorld() {
 	factoryplat->setExit(EAST, controlroom1);
 	factoryplat->setExit(DOWN, factory1);
 	controlroom1->setExit(WEST, factoryplat);
-	volcanostation->setExit(OUT, volcano3);
+	volcanostation->setExit(UP, volcano3);
 	factory2->setExit(OUT, volcano3);
 	factory2->setExit(NORTHWEST, switchroom);
 	factory2->setExit(NORTHEAST, conveyor1);
@@ -4512,13 +4511,14 @@ void Game::SetupWorld() {
 	naturaldisaster->addSpecialAttack(updraft);
 	naturaldisaster->addSpecialAttack(supercell);
 
-	NPC* gamblemonster = new NPC("GAMBLE MONSTER", "GAMBLONGO", "He's Gamblongo the Gamble monster and he owns the casino. He looks like a floating blob of puree with eyes.", limbo, 0, Stats(100, 20, 30, 40, 50, 70, 90), Stats(2, 2, 2, 2, 2, 2, 1));
+	NPC* gamblemonster = new NPC("GAMBLE MONSTER", "GAMBLONGO", "He's Gamblongo the Gamble monster and he owns the casino. He looks like a floating blob of puree with eyes.", limbo, 0, Stats(100, 20, 30, 40, 50, 70, 90), Stats(3, 2, 2, 2, 2, 2, 1));
 	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -1, 0, 0, 0, 0, 0, 0);
 	gonna->focushits = false;
 	Attack* get = new Attack("DEATH", "got you", false, 22, 12345678, 12345678, 1, 1, 999); //it will take 12 turns before gamblongo's intense attack is usable (22-10 starting sp)
 	get->focushits = false;
 	gamblemonster->setBasicAttack(gonna);
 	gamblemonster->addSpecialAttack(get);
+	gamblemonster->setBoss(true); //no instakilling him
 	
 	NPC* grandma = new NPC("EVIL GRANDMA", "MARGE", "Maniacal grandma, mortal nemesis of Ratman.\nShe is singlehandedly responsible for 10% of BURGERSBURG's robberies.", limbo, 0, Stats(170, 10, 20, 0, 30, 37, 9));
 	Attack* waraxe = new Attack("WAR AXE", "axed", true, -5, 9, 20, 1, 1, 1);
@@ -4778,7 +4778,7 @@ void Game::SetupWorld() {
 	spotlight->nonspecificeffect = outthespotlight;
 	spotlight->onlyplayer = true; //this is a player-character-focused temptation since he's the leader
 	spotlight->nottoohypno = true; //sense of self only uses spotlight if less than 2 teammates are hypnotized, because otherwise there's not enough net loss to make staying in the spotlight unoptimal (due to pride giving immunity to this), and also mechanic/choice clutter
-	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "SENSE OF SELF - \"You think you're the main character?\""}, {senseofself, "PROVE IT!"}};
+	spotlight->attackconvo = {{NULL, "\nSENSE OF SELF used SPOTLIGHT!"}, {NULL, "\nSENSE OF SELF - \"You think you're the main character?\""}, {senseofself, "PROVE IT!"}};
 	senseofself->stageAttack(0.7, spotlight); //(try to) use the attack at these points specifically
 	senseofself->stageAttack(0.45, spotlight);
 	//copies of the player's attacks except cooler
@@ -4947,7 +4947,7 @@ void Game::SetupWorld() {
 	Attack* terror = new Attack("TERROR", "showed its face to", false, 7, 0, 0, 1, 1, 1); //the main mechanic of the fight; the player has to deal with unfreezing their teammates
 	terror->hpmax = 0.85; //the dark must be below 85% health to start inflicting despair, to introduce the normal attacks before the main mechanic
 	Effect* despair = new Effect("DESPAIR", 2147483647);
-	despair->playerduration = 1; //for the second worst nightmare
+	despair->playerduration = 1; //for the second worst nightmare ("second" applying to "nightmare" rather than "worst")
 	despair->freeze = true;
 	terror->addEffect(despair);
 	terror->donotplayer = true; //because that would be a bit annoying at most and have literally only one possible response so it's better for the fight to only let teammates have despair
@@ -5088,7 +5088,7 @@ void Game::SetupWorld() {
 	forestknight->setImmunity(wrath, {}); //he doesn't say anything here cause he says everything up there ^^^
 	ragebait->setTargetConv(mike, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh I just realized,\""}, {firewithfire, "you're carrying around dynamite!"}, {firewithfire, "I thought those were candles,"}, {firewithfire, "since that's about as hard as your dynamite hits! BAHAHAHA! ^^D"}, {mike, "Oh yeah?"}, {mike, "I'm gonna make you eat those words! HAHAHAHA!"}});
 	ragebait->setTargetConv(cacty, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - *insults Cacty's mother in cactus language*\""}, {NULL, "CACTY - *furious cactus noises*"}});
-	ragebait->setTargetConv(michelin, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Michelin, Mr. Purposeless!\""}, {michelin, "Bro what the heck."}, {firewithfire, "Well it's true!"}, {firewithfire, "Your whole job is to make food,"}, {firewithfire, "yet it tastes like what it turns into when you're done! ^^D"}, {michelin, "Hmmmm >:/"}, {michelin, "I'm gonna...-"}, {firewithfire, "You're gonna what?"}, {firewithfire, "Give me food poisoning? ^^D"}, {firewithfire, "BAHAHAHAHA!"}, {michelin, "I'M GONNA MAKE YOU SHUT UP!"}});
+	ragebait->setTargetConv(michelin, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Michelin, Mr. Purposeless!\""}, {michelin, "Bro what the heck."}, {firewithfire, "Well it's true!"}, {firewithfire, "Your whole job is to make food,"}, {firewithfire, "yet it tastes like what it turns into when you're done! ^^D"}, {michelin, "Hmmmm >:/"}, {firewithfire, "Even your last hope turned out to be a poopy smoothie!"}, {michelin, "I'm gonna-"}, {firewithfire, "You're gonna what?"}, {firewithfire, "Give me food poisoning? ^^D"}, {firewithfire, "BAHAHAHAHA!"}, {michelin, "I'm gonna make you shut up! >:("}});
 	ragebait->setTargetConv(carlos, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Carlos remember when your monthlong hacking attempt got foiled by some kid unplugging your computer?"}, {carlos, "..."}, {firewithfire, "Well I was right down here below you the whole time."}, {firewithfire, "You looked so stupid! BAHAHAHA! ^^D"}, {firewithfire, "BrO wHaT tHe HeCk"}, {firewithfire, "I wAs LiKe SeCoNdS fRoM sTeAlInG AlL oF mIcRoSoFtS mOnIeS"}, {carlos, "hey i know where u live i can-"}, {firewithfire, "*you"}, {carlos, "SHUT THE HECK UP"}});
 	ragebait->setTargetConv(plum, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh you must be the famous fungus princess.\""}, {firewithfire, "Hey I bet you liiiike Browser, don't you? ^^D"}, {plum, "WHAT?"}, {firewithfire, "Well why else do you get kidnapped so easily?"}, {firewithfire, "'ohhhh noooo I can't afford security with my enormous royal budget'"}, {firewithfire, "BAHAHAHA!"}, {plum, "I'm getting around to it!"}, {firewithfire, "Suuuuuure, suuuuuuure. ^^D"}});
 	ragebait->setTargetConv(graham, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at Graham."}, {firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA! ^^D"}, {graham, "Hey.... you shut up! >:("}});
@@ -6976,8 +6976,8 @@ void Game::SetupWorld() {
 	volcano6->blockExit(DOWN, LAVA, "submerged in lava.");
 	sewerminessouth->blockExit(SOUTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
 	mineshortcut->blockExit(NORTH, TRACK, "blocked by a deep pit. A MINECART TRACK is set over it.");
-	factorybalcony2->blockExit(EAST, CHASM, "blocked by a lack of path over the central room.");
-	factorygarden->blockExit(WEST, CHASM, "blocked by a lack of path.");
+	factorybalcony2->blockExit(EAST, CHASM, "blocked by a lack of path over the central room, reminiscent of a steep ravine.");
+	factorygarden->blockExit(WEST, CHASM, "blocked by a lack of path, reminiscent of a steep ravine.");
 	factory3->blockExit(UP, HIGH, "too high up.");
 	factory3->blockExit(EAST, STUFF, "blocked by collapsed roof material.");
 	factorynw->blockExit(UP, HIGH, "too high up.");
@@ -7936,6 +7936,7 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 				for (size_t i = 0; i < amount; i++) {
 					if (!strcmp(items[i]->getType(), "weapon")) {
 						CinPause(); //pauses the last weapon printing, and also all the previous stuff!
+						cout << "\n";
 						applyWeaponAttack(self, items[i]);
 					}
 				}
