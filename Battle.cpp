@@ -246,7 +246,7 @@ void Battle::detatchEffect(NPCEffect* effect) {
 }
 //stuff that happens when an npc gets incapacitated MARK: handle knockout
 void Battle::handleKnockout(NPC* npc) {
-	if (trackNPC(npc)) incapacitations[npc->getParent()]++; //track that the npc got ko'd if we track them
+	if (trackNPC(npc)) incapacitations[npc->getParent()]++; //track that the npc got ko'd if we track them (including if we had an extra life because to use an extra life, logically, you have to die first. well you don't die so it's more like extranonincapacitations really, but I digress)
 
 	if (npc->popExtraLives()) { //if the npc has extra lives, pop one and fully heal them
 		cout << "\n" << npc->getName() << " had an extra life!";
@@ -256,7 +256,7 @@ void Battle::handleKnockout(NPC* npc) {
 	}
 	if (npc->getPlayerness()) { //if the player just fainted, check if the forest temple boss is here and needing to do a business proposition
 		for (NPC* sospot : enemyTeam) { //check potential sense of selves
-			if (sospot->popProposition(true)) { //if they had the proposition, dew it
+			if (sospot->popProposition(true) && aliveCount(npc->getEnemy() ? enemyTeam : playerTeam)) { //if they had the proposition (and this wasn't the last person left), dew it
 				if (!doBusinessProposition(sospot, npc, true)) break; //if the player rejected the offer, proceed to the normal incapacitation process and stop checking because we found it already
 				//if the player accepted the offer, stop the incapacitation process because the boss is keeping them alive
 				if (trackNPC(npc)) incapacitations[npc->getParent()]--; //untrack the knockout because they didn't really get knocked out, only almost, or kind of sort of
@@ -337,7 +337,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, N
 		if (hits > 1) cout << "\nHit " << j+1 << "!"; //announce which hit it was if it's multi-hit
 
 		//parry the hit if parrying the attacker
-		if (reciever->getParrying() == attacker && !attack->getBeneficial() && attack != attacker->getBetrayal()) { //you can't parry the betrayal because you're just exploding
+		if (reciever->getParrying() == attacker && !attack->direct && !attack->getBeneficial()) { //you can't parry direct attacks because they're direct
 			cout << "\n" << reciever->getName() << " parried it!";
 			CinPause();
 			reciever->setParrying(NULL); //don't parry other attacks or hits
@@ -395,7 +395,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, N
 	}
 	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
 	if (Effect* effect = (attack->specifictarget && attack->specifictarget != reciever ? attack->nonspecificeffect : attack->appliedeffect)) { //adds an effect if the attack had one, might be different for the specific target of a multi-target attack
-		NPCEffect* neffect = reciever->setEffect(effect, attacker, (reciever->getPlayerness() ? effect->playerduration : effect->duration)); //might have a different duration for the player, but the effects applied in other ways don't have this
+		NPCEffect* neffect = reciever->setEffect(effect, attacker, (reciever->getPlayerness() && (reciever == attacker || !attacker->getPlayerness()) ? effect->playerduration : effect->duration)); //might have a different duration for the player, but the effects applied in other ways don't have this (also, don't use player duration if the affector is the player so that you can't exploit a bug to energize your clone for double duration, while still allowing double duration for energizing yourself since that's the point of making its playerduration 2)
 		if (!neffect) { //don't target this npc type with this attack again because they were immune to the effect
 			donteffect[effect].insert(reciever->getParent());
 		}
@@ -456,15 +456,15 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 	for (int i = 0; i < tarparty.size(); i++) { //hits all the targets, we must iterate in order to account for multi-target attacks
 		if (tarPos - attack->targets / 2 <= i && i < tarPos + attack->targets - attack->targets / 2 && !(attack->skiptarget && i == tarPos)) { //if they're within range and !(this is the target and we're skipping the target in this multi-target attack)
 			NPC* reciever = tarparty[i]; //who will recieve the damage, could be the target or the npc guarding the target
-			if (reciever->getFifth() && /*aliveCount(tarparty) != 1 &&*/ i != tarPos) { //we skip fifth teammates because they're more adding flavor to the fight and shouldn't really affect the targeting and stuff.
+			if (!attack->affectAll && reciever->getFifth() && /*aliveCount(tarparty) != 1 &&*/ i != tarPos) { //we skip fifth teammates because they're more adding flavor to the fight and shouldn't really affect the targeting and stuff.
 				continue; //we still target fifth teammates if they were directly targeted because that means only they're left and the enemy is finishing them off or the player targeted them and as pointless as that is we should still let the player do that
 			}
-			if (reciever->getAway()) { //print how the npc isn't there, only gotten to if there is nobody else to target
+			if (!attack->affectAll && reciever->getAway()) { //print how the npc isn't there, only gotten to if there is nobody else to target
 				cout << "\n" << reciever->getName() << " isn't in the battlefield right now!";
 				CinPause();
 				continue;
-			}
-			if (!attack->targetFainted && !reciever->getHealth()) { //ignore incapacitated affected npcs if we don't target incapacitated and also can't target away npcs
+			} //ignore incapacitated affected npcs if we don't target incapacitated and also can't target away npcs
+			if (!attack->affectAll && !attack->targetFainted && !reciever->getHealth() && attack != attacker->getPropAttack()) { //also don't use this for the fainting path for the forest temple boss's business proposition attack
 				cout << "\n" << reciever->getName() << " was not affected due to being incapacitated!";
 				CinPause();
 				continue;
@@ -473,7 +473,7 @@ void Battle::hitTargets(NPC* attacker, Attack* attack, vector<NPC*>& tarparty, i
 			for (size_t i = 0; i < guardians.size(); i++) { //check all the guardians for if they can take the hit for the current reciever, and just go with the first one we find if there's multiple
 				NPC* guardian = guardians[i];
 				//guardians block hits if they're not beneficial and the guardian still has hp and they're not frozen or recovering or not here, of course, and also they won't block hits for opposing side (for example, after getting hypnotized and doing a protect move), also taking hypnotization into account
-				if (!attack->getBeneficial() && guardian->getHealth() && !guardian->getFrozen() && !guardian->getRecovering() && !guardian->getAway() && (!guardian->getHypnotized() && guardian->getEnemy() == reciever->getEnemy()|| guardian->getHypnotized() && guardian->getEnemy() != reciever->getEnemy())) {
+				if (!attack->direct && !attack->affectAll && !attack->getBeneficial() && guardian->getHealth() && !guardian->getFrozen() && !guardian->getRecovering() && !guardian->getAway() && (!guardian->getHypnotized() && guardian->getEnemy() == reciever->getEnemy()|| guardian->getHypnotized() && guardian->getEnemy() != reciever->getEnemy())) {
 					cout << "\n" << guardian->getName() << " is taking the hit for " << reciever->getName() << "!";
 					reciever = guardian;
 					CinPause();
@@ -493,12 +493,15 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 	int spchange = attacker->alterSp(-Round(spcost)); //removes sp from the attacker
 	if (attack->spbomb) { //if it's this one move, we have to do stuff related to its unique functionality
 		attack->power = 0; //starts at 0 damage
+		attack->pierce = 0;
 		for (NPC* npc : playerTeam) { //removes everyone's sp and adds it to the sp bomb damage total
 			if (npc->getHypnotized() != attacker->getHypnotized() || npc->getWrath()) continue; //hypnotized npcs don't contribute to the sp bomb (or if you're hypnotized, non-hypnotized npcs don't contribute). Also, wrathful npcs don't contribute to the SP bomb
 			attack->power += npc->getSP();
+			attack->pierce += npc->getSP();
 			int contribution = npc->alterSp(-npc->getSP());
 			if (trackNPC(npc)) spusedup[npc->getParent()] -= contribution; //I mean we kinda used it for them but it's still their sp being used so track as sp usage
 		}
+		attack->pierce = (int)round(attack->pierce / 2.0f);
 		biggestspbomb = max(attack->power, biggestspbomb); //update the tracker for the biggest sp bomb
 		cout << "\n" << attacker->getName() << " gathered the team's SP into an SP BOMB!";
 		CinPause();
@@ -514,7 +517,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			cout << "a sizable ball of energy!";
 			attack->targets = 3;
 		} else if (attack->power < 30) { 
-			cout << "really big!";
+			cout << "pretty big!";
 			attack->targets = 5;
 		} else if (attack->power < 60) {
 			cout << "a boulder of energy!";
@@ -602,10 +605,16 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			int nonfifthcount = 0; //how many non-fifth targets we can hit (because we prefer those)
 			for (NPC* npc : tarparty) if (!npc->getFifth() && npc->getHealth()) nonfifthcount++; //count how many non-fifth npcs we can target
 			int smartnotawaycount = 0; //if it's smart unfocus it counts how many potential targets are not away so that it knows if it should hit an away target anyway (but there will never be 0 non-incapacitated targets because the battle would be over then)
-			if (attack->smartunfocus) for (NPC* npc : tarparty) if (!npc->getAway() && npc->getHealth() && (npc->getFifth() != (bool)nonfifthcount)) smartnotawaycount++; //count the amount of non-away potential targets (also filter for fifth teammates if we can only target those, and non-fifth teammates if available)
-
+			int smartnotteamcount = 0; //if it's smart unfocus it also counts how many targets are not in control hypnotized; this is for the forest temple boss since that's the only time that happens
+			if (attack->smartunfocus) { //count the smart counts
+				for (NPC* npc : tarparty) { //count the amount of non-away potential targets (also filter for fifth teammates if we can only target those, and non-fifth teammates if available)
+					if (!npc->getAway() && npc->getHealth() && (npc->getFifth() != (bool)nonfifthcount) && !(npc->getHypnotized() && npc->getInControl())) smartnotawaycount++;
+					if (npc->getHealth() && (npc->getFifth() != (bool)nonfifthcount) && !(npc->getHypnotized() && npc->getInControl())) smartnotteamcount++; //priroitize not hitting this category over not hitting away targets
+				}
+			}
+			if (attack->smartunfocus && !smartnotteamcount) break; //we don't want to hit this hypnotized in control npc if they're the only one left so we can do the betrayal attack
 			int tarPos = rand() % tarparty.size(); //choose a random target and see if it works (usually yes)
-			if ((bool)nonfifthcount != tarparty[tarPos]->getFifth() && (!attack->smartunfocus || (tarparty[tarPos]->getHealth() && !(tarparty[tarPos]->getAway() && smartnotawaycount)))) { //smart unfocused attacks only hit non-away (if it can) and non-incapacitated targets because they're smart
+			if ((bool)nonfifthcount != tarparty[tarPos]->getFifth() && (!attack->smartunfocus || (tarparty[tarPos]->getHealth() && !(tarparty[tarPos]->getAway() && smartnotawaycount) && !(tarparty[tarPos]->getHypnotized() && tarparty[tarPos]->getInControl())))) { //smart unfocused attacks only hit non-away (if it can) and non-incapacitated targets because they're smart
 				if (hits > 1) cout << "\nHit " << i+1 << "!"; //make it clear which number of attack it's doing otherwise it looks like random chaos and it's harder to tell what's going on
 				hitTargets(attacker, attack, tarparty, tarPos);
 				i++;
@@ -683,14 +692,17 @@ bool Battle::doBusinessProposition(NPC* sos, NPC* plr, bool faint) {
 	printConversation(&sos->getPropConv(), false);
 	WorldState[GAMEEND] = false; //reset game end state, doesn't matter what faint was (if the game was ended, we wouldn't be in this battle so yeah)
 	if (AOrB(NULL, "YES", "NO")) { //if the player chooses yes, give them the effect
-		cout << "\n" << sos->getName() << " - \"Alright! Let's show these GOOBERS what we're made of!\"";
+		cout << "\n" << sos->getName() << " - \"Alright! Let's show these NITWITS what we're made of!\"";
 		CinPause();
 		cout << "\nA pair of sunglasses fall onto SENSE OF SELF's face.";
 		CinPause();
 		cout << "\nSENSE OF SELF - \">B)\"";
 		CinPause();
 		attachEffect(plr->setEffect(sos->getPropEffect(), sos));
-		if (faint) plr->directDamage(-1); //keep the player alive if this was the "player got defeated early" fallback path
+		if (faint) { //keep the player alive if this was the "player got defeated early" fallback path
+			plr->directDamage(-1);
+			CinPause();
+		}
 		return true;
 	} else { //if the player rejected the business proposition
 		cout << "\n" << plr->getName() << " - \"No >:|\"";
@@ -1143,12 +1155,15 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 	//if we shouldn't launch the attack if there's too many hypnotized npcs, check for that
 	if (attack->nottoohypno) {
 		int hypnocount = 0;
+		int incapcount = 0;
+		int amount = 0;
 		for (NPC* npc : choices) {
 			if (npc->getHypnotized()) hypnocount++;
-			if (hypnocount > 1) { //more than 1 is too much (works best for the one move that uses this field)
-				choices.clear();
-				break; //break because the amount isn't going to get any lower
-			}
+			if (!npc->getHealth()) incapcount++; //it technically means not hypnotized and still capacitated but I added this check to avoid spotlight from being called if your team is all incapacitated
+			amount++;
+		} //more than 1 hypnotized is too much (works best for the one move that uses this field)
+		if (hypnocount > 1 || amount - incapcount <= 2) { //don't use the move if there are only two capacitated targets available
+			choices.clear();
 		}
 	}
 	//check team-wide attack validity rules, just return early if it wouldn't work
@@ -1223,10 +1238,14 @@ vector<NPC*> Battle::getTargets(NPC* npc, Attack* attack) {
 		}
 		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filter everyone out
 	}
-	if (Effect* aeffect = npc->getAvoidEffect()) { //if the npc prioritizes hitting targets without this effect, filter out npcs with the effect
+	if (!npc->getAvoidEffects().empty()) { //if the npc prioritizes hitting targets without certain effects, filter out npcs with the effects
 		vector<NPC*> _targets; //store the npcs without the effect to see if prioritization would remove all valid targets
 		for (NPC* target : targets) {
-			if (!target->getEffect(aeffect, true)) _targets.push_back(target); //add the target if they don't have the targeted effect
+			bool avoid = false; //assume to not avoid the npc to start
+			for (Effect* aeffect : npc->getAvoidEffects()) { //if one of the effects matches we do want to avoid this npc so mark that
+				if (target->getEffect(aeffect, true)) avoid = true;
+			}
+			if (!avoid) _targets.push_back(target); //add the target if they don't have the targeted effect
 		}
 		if (!_targets.empty()) targets = _targets; //go with the filtered list if we didn't just filter everyone out
 	}
@@ -1282,8 +1301,8 @@ void Battle::npcTurn(NPC* npc, bool opener) {
 	if (!opener) { //don't print that it's their turn if it's just an opening attack
 		cout << "\n" << npc->getName() << "'s turn!"; //prints whose turn it is
 		CinPause();
-	} if (npc->popProposition()) { //if we need to do the business proposition for the forest temple boss
-		doBusinessProposition(npc, playerTeam[0], false);
+	} if (aliveCount(npc->getEnemy() ? playerTeam : enemyTeam) > 1 && npc->popProposition()) { //if we need to do the business proposition for the forest temple boss (check alive count earlier so if someone gets revived he can do it as opposed to one check then never again)
+		doBusinessProposition(npc, playerTeam[0], false); //we know the player is alive still because if they weren't the business proposition would've been popped earlier
 		return; //don't do the regular npc turn process
 	}
 
@@ -1413,7 +1432,7 @@ int Battle::FIGHT() {
 			cout << "\n" << current->getName() << " is " << idleText[rand()%5];
 			CinPause();
 		} else if (current->getPlayerness() && current->getInControl()) { //starts the player turn!
-			cout << "\n" << player->getName() << "'s turn!\nWhat will you do?";
+			cout << "\n" << current->getName() << "'s turn!\nWhat will you do?";
 			continuing = playerTurn(current);
 		} else { //does the npc's turn
 			npcTurn(current);

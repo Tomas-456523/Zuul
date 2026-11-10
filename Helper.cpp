@@ -447,7 +447,7 @@ namespace Helper {
 			pair<NPC*, Attack*>& data = changes.linkedAttacks.front();
 			data.first->addSpecialAttack(data.second);
 			if (announce && data.first->getPlayerness()) { //print what the new attack does if it's the player
-				cout << "\n" << data.first->getName() << " learned " << data.second->name << "!\n" << data.second->name << " - " << data.second->trueDesc;
+				cout << "\n" << data.first->getName() << " learned " << data.second->name << "!\n" << data.second->name << " - " << data.second->trueDesc << " - Costs " << data.second->cost << " SP";
 				CinPause();
 			}
 			changes.linkedAttacks.pop();

@@ -57,7 +57,7 @@ struct Conversation {
 	}
 
 	bool empty() const { //gets if this is a default conversation with no dialogue
-		return (goToAlt() ? (alt && alt->empty()) : lines.empty());
+		return (goToAlt() ? (!alt || alt->empty()) : lines.empty());
 	}
 
 	Conversation() : skipcondition({Helper::NEVER}), alt(0) {}

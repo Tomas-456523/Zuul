@@ -489,8 +489,8 @@ bool NPC::getRoamHelp() {
 Effect* NPC::getTargetEffect() { //get the effect this npc like to prioritize when targeting
 	return targeteffect;
 }
-Effect* NPC::getAvoidEffect() {
-	return avoideffect;
+const set<Effect*>& NPC::getAvoidEffects() {
+	return avoideffects;
 }
 bool NPC::getBanker() {
 	return banker;
@@ -909,7 +909,7 @@ void NPC::setTargetEffect(Effect* effect) {
 	targeteffect = effect;
 }
 void NPC::setAvoidEffect(Effect* effect) {
-	avoideffect = effect;
+	avoideffects.insert(effect);
 }
 void NPC::setTalkMakeChanges(bool miscworks) {
 	talktochange = true;
@@ -981,7 +981,7 @@ int NPC::damage(double power, double pierce) {
 		cout <<  "\nThe attack was blocked by " << name << "'s guard!";
 		if (guard <= 0) { //prints if the guard is now down
 			CinPause();
-			cout << name << "'s guard was broken!";
+			cout << "\n" << name << "'s guard was broken!";
 		}
 	} else { //subtract the damage and print how much was done
 		totalDamage = Clamp(damage, health-stats.hpmax, health); //clamps the total damage from how much it could heal to how much it can damage before reaching 0 hp
@@ -1804,7 +1804,7 @@ void NPC::printDialogue(bool lastpause, Conversation* thisone, bool actuallyprin
 			conversation = conversations.front(); //gets the current conversation
 			conversations.pop();
 		} while (conversation.getOutdated() && !conversations.empty()); //try again if the conversation is outdated, atm only regular conversations can be outdated
-		if (conversation.getOutdated()) conversation = dialogue; //just default to the exhausted dialogue if they were all outdated
+		if (conversation.empty()) conversation = dialogue; //just default to the exhausted dialogue if they were all outdated
 		else trackConv(this); //track that we said this since we used up a conversation
 	} else if (currentRoom->getGym()) { //gym dialogue if they're in the gym
 		conversation = gymDialogue.front();

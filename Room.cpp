@@ -327,10 +327,10 @@ vector<const char*> Room::unblockAll(const char* type) { //unblock all the block
 	vector<const char*> matches; //found exits of that block type
 	for (const char* exit : blockedExits) { //unblocks them
 		if (blockType[exit] == type) {
-			unblockExit(exit);
 			matches.push_back(exit);
 		}
-	}
+	} //this is done in a seperate loop to prevent undefined behavior
+	for (const char* exit : matches) unblockExit(exit);
 	return matches; //returns exits that were unblocked
 }
 void Room::undefeatEnemies() {

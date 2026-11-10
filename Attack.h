@@ -42,6 +42,7 @@ struct Attack {
 	int maxhits;
 	bool targetAlly = false; //if the attack is supposed to hit your own team
 	bool targetFainted = false; //if the attack is supposed to hit 0 hp npcs
+	bool affectAll = false; //if the attack can affect fainted npcs that the attack spread to despite not being targetFainted, and also away and fifth npcs
 	bool instakill = false; //if it instantly defeats non-boss npcs
 	bool focushits = true; //if every hit of multihit moves should hit the same target, as opposed to random targets each time
 	bool smartunfocus = false; //if unfocused hits should not hit incapacitated or away targets
@@ -53,6 +54,8 @@ struct Attack {
 	bool spbomb = false;
 	bool protect = false; //if this is a move that makes the mover start defending the target
 	bool parry = false; //if this is the parry move and we have to tell the attacker to start parrying the target
+
+	bool direct = false; //if there's no way for a guardian npc to take this attack for the target
 
 	int minLevel; //must be at least this level to use the attack
 	double hpmax = 1; //attacker health must be at below or equal to this * max hp in order to use the attack

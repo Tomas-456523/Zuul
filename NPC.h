@@ -133,7 +133,7 @@ public: //you need to set stats on creation
 	bool getRoaming();
 	bool getRoamHelp();
 	Effect* getTargetEffect();
-	Effect* getAvoidEffect();
+	const set<Effect*>& getAvoidEffects();
 	bool getBanker();
 	int getBalance();
 	time_t getDepositTime();
@@ -382,7 +382,7 @@ protected:
 	map<Effect*, Effect*> responseEffects; //if hit by an npc with the first effect, this npc gets the second effect
 
 	Effect* targeteffect = NULL; //prioritize hitting targets with this effect
-	Effect* avoideffect = NULL; //prioritize NOT hitting targets with this effect
+	set<Effect*> avoideffects; //prioritize NOT hitting targets with these effects
 
 	//give these effects to the opposing team if this is a team leader
 	Effect* fightteameffect = NULL; //the opposing team gets this effect during battle

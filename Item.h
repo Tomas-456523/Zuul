@@ -424,7 +424,7 @@ public:
 
 	bool getDropoff(Room* room); //get if this is the correct room
 private:
-	NPC* teammate; //light orbs manage a teammate while they're gone
+	NPC* teammate = NULL; //light orbs manage a teammate while they're gone
 	Room* dropoff; //must drop the light orb in this room
 	Room* limbo; //store teammates in limbo
 	pair<const char*, Room*> downwards; //the exit that gets opened once you drop all three light orbs at the dropoff

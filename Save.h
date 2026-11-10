@@ -162,7 +162,7 @@ struct Save {
 			sections.insert(*p); //track that we have checked this section so we can verify there aren't any duplicates using the check immediately before this
 
 			if (*p == 'V') {
-				if (sections.count('R')) return false; //we need to be able to check the version due to an issue with basic attack tracking in version 0, so V must precede R
+				if (sections.count('U') || sections.count('R')) return false; //we need to be able to check the version due to update issues such as with basic attack tracking in version 0, so V must precede these sections
 				version = *(++p); //track the version for validity checks that depend on
 				p++; //skip the version number
 			} else if (*p == 'N') {
@@ -711,9 +711,11 @@ struct Save {
 				Item* item = itemsH[adjustItemID(ParseNum(++data), discontinuity)];
 				NPC* npc = npcsH[ParseNum(++data)];
 				//this is why we need W to be after P, we don't set the light orb's teammate if they're in the party already because that would put them in the party twice
-				if (find(player->getParty()->begin(), player->getParty()->end(), npc) == player->getParty()->end()) {
+				if (find(player->getParty()->begin(), player->getParty()->end(), npc) == player->getParty()->end()) { //if it's not there
 					((LightOrb*)item)->setTeammate(npc, NULL, false); //logs itself automatically
-				}
+				}/* else { //if the npc is
+					logW("l", id, npc->getID());
+				}*/
 			} else if (*data == 'f') { //pop fight on arrival
 				npcsH[ParseNum(++data)]->getForceBattle(true); //pops and logs itself automatically
 			}
@@ -745,7 +747,9 @@ struct Save {
 			} else if (*data == 'W') { //w for world change and everything that can cause it, most important section
 				loadW(data, player, discontinuity); //it was a pretty big section so I gave it its own function
 			} else if (*data == 'U') { //u for second letter of pursuer
+				if (player->getPursuer()) //only do this if we actually have a pursuer, might not line up when using a V0 save in V1
 				player->getPursuer()->setRoom(roomsH[ParseNum(++data)]); //just set their room
+				else ParseNum(++data); //if there is no pursuer just do this thing which will move the pointer past section U
 			} else if (*data == 'R') { //r for recruitable, tracks recruitable npcs' stats (and Buford's)
 				for (; *data != '|' && *data != '=';) {
 					NPC* npc = charNPC[*(++data)];
@@ -819,6 +823,7 @@ struct Save {
 					WorldState[i] = *data - '0';
 				}
 				if (save->getVersion() == '0') WorldState[BEENINHOUSE] = false; //this is a new world condition so we must reset it when updating. The player might've been in the house before and we will never know but it's not that big of a deal so I think this is good enough
+				WorldState[BURGERCHASE] = player->getPursuer(); //I want these states to be equivalent but we have to reset this due to it potentially not being the case in previous versions
 			} else if (*data == 'Q') { //q for it's the randomest letter I could think of, random stats
 				playtime = ParseNum(++data); //yeah just set all the stats pretty simple
 				sessions = ParseNum(++data);
