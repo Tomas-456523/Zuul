@@ -1590,11 +1590,11 @@ void Game::SetupWorld() {
 	Attack* carefulconsideration = new Attack("CAREFUL CONSIDERATION", "is trying to figure out what to do about", false, -5, 0, 0, 0, 0, 0);
 	Attack* briefbase = new Attack("BRIEFBASE", "bonked", true, 10, 6, 0, 1, 1, 1);
 	briefbase->afterdesc = " with his briefcase as if with a baseball bat";
-	Attack* resourcefulness = new Attack("CONVENIENT ROCK", "threw a nearby rock at", true, 10, 4, 0, 1, 1, 1);
+	Attack* rockontheground = new Attack("ROCK ON THE GROUND", "threw a nearby rock at", true, 10, 4, 0, 1, 1, 1);
 	Attack* hjpunch = new Attack("PUNCH", "tried his best to punch", true, 10, 5, 0, 1, 1, 1);
 	hj->setBasicAttack(carefulconsideration);
 	hj->addSpecialAttack(briefbase);
-	hj->addSpecialAttack(resourcefulness);
+	hj->addSpecialAttack(rockontheground);
 	hj->addSpecialAttack(hjpunch);
 	hj->addGymDialogue({{hj, "I think working out is a good idea now."}, {hj, "Beause I mostly used to just sit and watch TV all day..."}});
 	
@@ -2785,8 +2785,8 @@ void Game::SetupWorld() {
 		 {fr, "all who believe in Him and follow Him, through His grace, get to share in His victory,"},
 		 {fr, "and will have eternal life with Him in Heaven."},
 		 {fr, "Well, thanks for hearing me out."},
-		 {fr, "I'd encourage you to think about that."},
-		 {fr, "Since your eternity does depend on it, after all."}}));
+		 {fr, "I invite you to think about that,"},
+		 {fr, "since your eternity does depend on it."}}));
 	shared_ptr<Conversation> frno = make_shared<Conversation>(Conversation({{fr, "Well, if you ever want to know, just ASK. I'll be right here."}}));
 	frcon.branch1 = {"YES", fryes};
 	frcon.branch2 = {"NO", frno};
@@ -3164,21 +3164,19 @@ void Game::SetupWorld() {
 	Item* bigredbutton = new MaterialItem("BIG RED BUTTON OF HOPE", "A component of THE PLOT DEVICE which the user must press with hope that God's will be done.", limbo);
 	Item* plotometer = new MaterialItem("PLOTOMETER OF PATIENCE", "A component of THE PLOT DEVICE; patiently waits for the right time to act.", limbo);
 
-	NPC* cheryl = new NPC("SCIENTIST", "CHERYL", "Invented the time machine and respawning, quite the innovative scientist.", limbo, 9);
-	cheryl->addConversation({{cheryl, "Hi I'm Cheryl, the developer sent me to come pick you up."},
+	NPC* cheryl = new NPC("SCIENTIST", "CHERYL", "Inventor of the time machine, quite the innovative scientist.", limbo, 9);
+	cheryl->addConversation({{cheryl, "Hi I'm Cheryl! The developer asked me to come pick you up."},
 							 {cheryl, "Because you seem quite stuck here."},
-							 {cheryl, "So feel free to use my time machine if you want to leave."},
+							 {cheryl, "So, feel free to use my time machine if you want to leave."},
 							 {self, "Oh ok thanks"},
 							 {cheryl, "Of course!"},
 							 {NULL, "CHERYL uses her time machine key."},
 							 {NULL, "The time machine makes a car chirping noise."},
 							 {NULL, "You can go IN TIME MACHINE now!"},
 							 {self, ":O"},
-							 {cheryl, "Well I'll be in the time machine."},
-							 {cheryl, "..."},
-							 {cheryl, "Bye."}});
-	cheryl->addRejectionDialogue("I've got things to do, sorry.");
-	cheryl->addConversation({{self, "So you made this time machine?"}, {cheryl, "Yeah."}, {self, "Nice."}});
+							 {cheryl, "Well I'll be in the time machine."}});
+	cheryl->addRejectionDialogue("Sorry I'm working on some new rooms here so I don't really have time.");
+	cheryl->addConversation({{self, "So you made this time machine?"}, {cheryl, "Yeah!"}, {self, "Nice."}});
 	cheryl->setDialogue({{cheryl, "I do enjoy not being an evil skeleton."}});
 	cheryl->setTalkMakeChanges(false); //when talking to cheryl she opens and goes in the time machine
 	cheryl->addDefeatRoom(cheryl, timemachine);

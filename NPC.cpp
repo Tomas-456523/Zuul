@@ -30,6 +30,7 @@
 #include <cmath>
 #include <iostream>
 #include <utility>
+#include <ctime>
 #include "NPC.h"
 #include "Item.h"
 #include "Helper.h"
