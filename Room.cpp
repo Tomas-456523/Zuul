@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  11/10/26
 *  This is the implementation file for rooms
 *  
 *  Rooms are the places that NPCs and the player are physically located in. The player can only interact
@@ -111,9 +111,9 @@ Item* Room::popBackup() {
 	return _backup;
 }
 //do changes that are done when entering the room
-void Room::doEnterChanges(bool force) { //don't do the change if it has none or if the condition isn't met and we have a condition set to something other than NEVER
-	if (!hasenterchanges || !force && !WorldState[enterchangecondition] && enterchangecondition != NEVER) return; //we can force the enter changes because world states are not fully initialized at the time of loading the world from save data
-	applyWorldChange(enterchange);
+void Room::doEnterChanges(bool loading) { //don't do the change if it has none or if the condition isn't met and we have a condition set to something other than NEVER
+	if (!hasenterchanges || !loading && !WorldState[enterchangecondition] && enterchangecondition != NEVER) return; //we can force the enter changes because world states are not fully initialized at the time of loading the world from save data
+	applyWorldChange(enterchange, !loading);
 	hasenterchanges = false; //don't do it again
 	logW("e", id); //track the enter changes because we just did some
 }

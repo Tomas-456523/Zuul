@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/25/26
+*  11/11/26
 *  This is the header file for battles
 *  
 *  After constructing a Battle, the combat process is started by the FIGHT() function. It loops through
@@ -64,7 +64,7 @@ public:
 	void checkFightEffects(); //check the enemy leader for if they have any team effects to apply to the player team
 	bool doBusinessProposition(NPC* sos, NPC* plr, bool faint); //do the business proposition, which is a very specific choice sequence for the forest temple boss, and return what the player chose
 	
-	NPC* addNPC(NPC* npc, NPC* summoner = NULL, bool altteam = false); //creates a new npc mid-battle
+	NPC* addNPC(NPC* npc, NPC* summoner = NULL, bool altteam = false, bool copy = false); //creates a new npc mid-battle
 	void numberNPC(NPC* npc, const vector<NPC*>& team); //adds a number to the end of an npc's name to account for duplicates
 
 	void buildReward(NPC* enemy, bool summon = false); //build up the reward for beating the fight depending on the npc passed
@@ -121,7 +121,7 @@ private:
 	};
 
 	const char* validCommands[9] = { //the valid commands that are printed when asking for HELP
-		"[attack] [npc]",
+		"[attack] ([npc])",
 		"USE [item] (ON [npc])",
 		"INVENTORY",
 		"PARTY",

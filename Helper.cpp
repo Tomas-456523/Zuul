@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/27/26
+*  11/12/26
 *  This is the implementation file for my Helper namespace. It has a bunch of helpful functions that I might use in multiple files
 *  
 *  My Helper namespace has a wide range of functions that might be used anywhere. Some examples of utlities are parsing commands into
@@ -184,7 +184,10 @@ namespace Helper {
 		for (Attack* attack : npc->getSpecialAttacks()) {
 			//we only print attacks if the npc is leveled up enough to use them
 			if (attack->minLevel <= npc->getLevel()) {
-				cout << "\n" << attack->name << " - " << attack->trueDesc << " - Costs " << Round(attack->cost * npc->getSPUseMultiplier()) << " SP";
+				cout << "\n" << attack->name << " - " << attack->trueDesc << " - Costs ";
+				if (!attack->spbomb) cout << Round(attack->cost * npc->getSPUseMultiplier());
+				else cout << "all";
+				cout << " SP";
 			}
 		}
 		commandcount[9]++; //increment successful attacksing
@@ -245,10 +248,10 @@ namespace Helper {
 		sort(team.begin(), team.end(), speedCompare);
 	}
 	//get how many npcs in a team have at least 1 hp
-	int aliveCount(vector<NPC*>& team) {
+	int aliveCount(vector<NPC*>& team, bool notaway) {
 		int i = 0; //starts at 0 and adds 1 every time someone has >0 hp
 		for (NPC* npc : team) {
-			if (npc->getHealth() > 0 && (npc->getBasicAttack() || !npc->getSpecialAttacks().empty())) { //they also don't count if they have no attacks (e.g. a life plant, it doesn't do anything so it doesn't count)
+			if (npc->getHealth() > 0&& (!notaway || !npc->getAway()) && (npc->getBasicAttack() || !npc->getSpecialAttacks().empty())) { //they also don't count if they have no attacks (e.g. a life plant, it doesn't do anything so it doesn't count)
 				i++;
 			}
 		}
@@ -331,8 +334,9 @@ namespace Helper {
 		}
 	}
 	//print the level up data tracked by this npc
-	void printLvlUpData(NPC* npc, bool finalattackpause) {
+	void printLvlUpData(NPC* npc, bool finalattackpause, bool initialpause) {
 		if (npc->getLevelUp()) {
+			if (initialpause) CinPause();
 			cout << "\n" << npc->getName() << " leveled up! " << npc->getName() << " is now Level " << npc->getLevel() << "!";
 			npc->setLevelUp(false); //marks level up as false so we don't say we leveled up every time we finish a battle
 			CinPause();
@@ -361,7 +365,7 @@ namespace Helper {
 		}
 	}
 	//changes the world based on the instructions passed, also the item/npc's world changes will be drained as we pass by reference
-	void applyWorldChange(WorldChange& changes, bool announce) { //really the only thing that gets announced is players getting moves
+	void applyWorldChange(WorldChange& changes, bool announce) { //announce is more used as a "is this during gameplay as opposed to loading a save" flag; really the only thing that gets announced is players getting moves
 		while (!changes.recruitLinks.empty()) {
 			NPC* npc = changes.recruitLinks.front();
 			npc->setRecruitable(true);
@@ -576,13 +580,14 @@ namespace Helper {
 		}
 		while (!changes.linkedLightOrbs.empty()) {
 			pair<vector<NPC*>*, Item*>& data = changes.linkedLightOrbs.front();
-			//the party size might not be full even though it's a temple because this might be called while loading a save file
-			if (data.first->size() > 1) ((LightOrb*)data.second)->setTeammate((*data.first)[1], data.first);
+			//don't set this stuff while loading saves because the final party is already set and shouldn't be changed. The teammates linked to the light orbs are instead set by section W subsection l
+			if (announce) ((LightOrb*)data.second)->setTeammate((*data.first)[1], data.first);
 			changes.linkedLightOrbs.pop();
 		}
 		while (!changes.unLightOrb.empty()) {
 			pair<vector<NPC*>*, Item*>& data = changes.unLightOrb.front();
-			((LightOrb*)data.second)->setTeammate(NULL, data.first, false); //put the teammate back
+			if (announce) ((LightOrb*)data.second)->setTeammate(NULL, data.first, false); //put the teammate back
+			else ((LightOrb*)data.second)->setTeammate(NULL, NULL, false, true); //don't edit the party if we're doing this for loading a save because the party is already set by section P
 			changes.unLightOrb.pop();
 		}
 		if (changes.hjLink) { //do stuff for Henry Jerry after beating the game

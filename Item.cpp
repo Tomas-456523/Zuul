@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/28/26
+*  11/10/26
 *  This is the implementation file for items
 *  
 *  Items are all the things the player can interact with that are stored in rooms or the player inventory. Not every
@@ -471,6 +471,9 @@ const char* ManholeItem::getDirection() {
 Attack* ManholeItem::getAttack() {
 	return attack;
 }
+Item* ManholeItem::Duplicate() { //returns a new manhole item as an Item*
+	return new ManholeItem(*this);
+}
 
 //info items, for printing information
 InfoItem::InfoItem(const char* _name, const char* _description, const Conversation& _text, Room* _room) : Item(_name, _description, _room, false, false) {
@@ -481,6 +484,10 @@ InfoItem::InfoItem(const char* _name, const char* _description, const Conversati
 const Conversation& InfoItem::getText() {
 	return text;
 }
+Item* InfoItem::Duplicate() { //returns a new info item as an Item*
+	return new InfoItem(*this);
+}
+
 
 //treasure items, for getting monies and also maybe fighting an enemy if it's trapped
 TreasureItem::TreasureItem(const char* _name, const char* _description, Room* _room, int _mony, initializer_list<Item*> _items, NPC* _mimic) : Item(_name, _description, _room, false, true) {
@@ -586,13 +593,13 @@ void EscapeOrb::take() {
 	name = name2;
 	description = desc2;
 }
-void EscapeOrb::drop() {
+void EscapeOrb::drop(bool loading) {
 	if (boss->getDefeated()) return; //don't do anything if the boss is already defeated
 	name = name1;
 	description = desc1;
 	for (NPC* enemy : enemies) enemy->undefeat(); //undefeat unrespawning enemies
 	WorldChange changes = dropchanges; //clone the changes so we can do them multiple times
-	applyWorldChange(changes);
+	applyWorldChange(changes, !loading);
 	setRoom(takefrom);
 }
 //make the orb into a useless STONE ORB
@@ -664,13 +671,13 @@ LightOrb::LightOrb(const char* _name, const char* desc, Room* _room, Room* _drop
 	downwards = {down, dest};
 }
 //set or unset the teammate this light orb is managing
-void LightOrb::setTeammate(NPC* npc, vector<NPC*>* party, bool announce) {
+void LightOrb::setTeammate(NPC* npc, vector<NPC*>* party, bool announce, bool loading) {
 	if (npc) {
 		npc->setRoom(limbo); //remove the teammate from the party and put them in limbo
 		if (party) party->erase(remove(party->begin(), party->end(), npc), party->end());
 		npc->Dismiss(false);
 		logW("l", id, npc->getID());
-	} else if (teammate) { //if we're tracking a teammate
+	} else if (!loading && teammate) { //if we're tracking a teammate (don't edit their party while loading because it should already be set)
 		teammate->setRoom(room); //put the teammate back in the room (room should be set correctly now)
 		party->push_back(teammate); //can only call with a null party if setting the teammate, so for removing we don't guard it
 		teammate->Recruit();

@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/29/26
+*  11/11/26
 *  This is the header file for the world saves
 *  
 *  This struct stores and manages save data. When calling SaveGame, it builds a new save string according
@@ -614,7 +614,6 @@ struct Save {
 					data++; //go past the choice letter
 				} else if (!strcmp(item->getType(), "lightorb")) {
 					LightOrb* orb = ((LightOrb*)item);
-					orb->setTeammate(NULL, player->getParty(), false); //give the teammate back
 					item->setRoom(room); //put the item in the dropoff room so we can do this check down here
 					vector<Item*> lightorbs; //get all the light orbs so we can check if we can open the ground yet
 					while (Item* lorb = getItemTypeInVector(room->getItems(), "lightorb")) {
@@ -629,8 +628,9 @@ struct Save {
 					}
 				} else if (!strcmp(item->getType(), "coldorb")) {
 					((ColdOrb*)item)->extinguishFire();
+					room->setDescription("in the volcano temple, built with dull red bricks. There is really good circulation here.");
 				} else if (!strcmp(item->getType(), "escapeorb")) { //do escape orb drop changes
-					((EscapeOrb*)item)->drop();
+					((EscapeOrb*)item)->drop(true);
 				} else if (!strcmp(item->getType(), "manhole")) { //uncover manhole item exits
 					ManholeItem* cover = (ManholeItem*)item;
 					room->setExit(cover->getDirection(), cover->getRoom());
@@ -710,12 +710,10 @@ struct Save {
 			} else if (*data == 'l') { //track teammates with light orb
 				Item* item = itemsH[adjustItemID(ParseNum(++data), discontinuity)];
 				NPC* npc = npcsH[ParseNum(++data)];
-				//this is why we need W to be after P, we don't set the light orb's teammate if they're in the party already because that would put them in the party twice
-				if (find(player->getParty()->begin(), player->getParty()->end(), npc) == player->getParty()->end()) { //if it's not there
+				//this is why we need W to be after P; if the npc associated with the light orb is in the party, that means we've since gotten the teammate back so we don't need to do this again
+				if (find(player->getParty()->begin(), player->getParty()->end(), npc) == player->getParty()->end()) { //light orb gets the teammate if the teammate is not in the team
 					((LightOrb*)item)->setTeammate(npc, NULL, false); //logs itself automatically
-				}/* else { //if the npc is
-					logW("l", id, npc->getID());
-				}*/
+				}
 			} else if (*data == 'f') { //pop fight on arrival
 				npcsH[ParseNum(++data)]->getForceBattle(true); //pops and logs itself automatically
 			}

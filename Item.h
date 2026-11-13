@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  11/10/26
 *  This is the header file for items
 *  
 *  Items are all the things the player can interact with that are stored in rooms or the player inventory. The main Item
@@ -293,6 +293,8 @@ public:
 	void nullifyRoom();
 	const char* getDirection(); //gets the direction it makes an exit in
 	Attack* getAttack(); //gets the throwing attack
+
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	Attack* attack; //you can throw a manhole cover at an enemy, pretty good attack
 	Room* destination; //the room that the new exit leads to
@@ -305,6 +307,8 @@ public:
 	InfoItem(const char* _name, const char* _description, const Conversation& _text, Room* _room);
 
 	const Conversation& getText(); //get the text to print
+
+	virtual Item* Duplicate() override; //gets an Item* pointing to a copy of this subitem
 private:
 	Conversation text; //the text to print
 };
@@ -375,7 +379,7 @@ public:
 	EscapeOrb(const char* _name1, const char* _name2, const char* _name3, const char* _desc1, const char* _desc2, const char* _desc3, Room* _home, Room* _teleport, NPC* _boss, initializer_list<NPC*> _enemies, const WorldChange& escapechanges);
 
 	void take(); //different stuff that happens when taking or dropping the orb
-	void drop();
+	void drop(bool loading = false);
 	void petrify();
 	void printUseError(); //the orbs have different error messages depending on if you try to use the escape or entry version
 
@@ -419,7 +423,7 @@ class LightOrb : public Item {
 public:
 	LightOrb(const char* _name, const char* desc, Room* _room, Room* _dropoff, Room* _limbo, const char* down, Room* dest);
 
-	void setTeammate(NPC* npc, vector<NPC*>* party, bool announce = true); //set or unset the teammate this light orb is managing
+	void setTeammate(NPC* npc, vector<NPC*>* party, bool announce = true, bool loading = false); //set or unset the teammate this light orb is managing
 	void paveDown(); //set the exit downwards to the boss area
 
 	bool getDropoff(Room* room); //get if this is the correct room

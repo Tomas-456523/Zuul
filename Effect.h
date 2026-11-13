@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/16/26
+*  11/10/26
 *  This is the header file for effects
 *  
 *  The effect struct is primarily a data container to avoid circular inclusion, so most of the logic is
@@ -27,6 +27,7 @@ struct Effect {
 	const char* name; //the name of the effect, (e.g. "POISON")
 	int duration; //how long the effect lasts
 	int playerduration; //it might have a different duration for the player, but it's just the regular duration by default
+	int selffectextradur = false; //if the one affected should get an extra turn of duration if they were also the affector
 
 	int damage; //how much damage the effect does per tick
 	int spleak; //how much sp this effect leaks per tick

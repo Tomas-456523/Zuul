@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/19/26
+*  11/9/26
 *  This is the header file for conversations
 *  
 *  Although the struct is called a conversation, it handles any series of lines of text, including things like room welcomes

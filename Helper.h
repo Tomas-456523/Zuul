@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/21/26
+*  11/12/26
 *  This is the header file for my Helper namespace
 *  
 *  The header namespace contains functions for many different types of functionalities. Some groups
@@ -46,11 +46,11 @@ namespace Helper {
 	double ClampD(double num, double min, double max); //same as Clamp but for floats instead of ints
 	int Round(double num); //do (int)round(num), so I don't have to write that everywhere
 	void sortBySpeed(std::vector<NPC*>& team); //sorts the vector of npcs by speed
-	int aliveCount(std::vector<NPC*>& team); //returns how many npcs in the given team have >0 hp
+	int aliveCount(std::vector<NPC*>& team, bool notaway = false); //returns how many npcs in the given team have >0 hp, with optinal further filtering for those that aren't away
 	std::vector<NPC*> getAlive(const std::vector<NPC*>& team); //get vector with only the npcs above 0 hp
 	bool AOrB(const char* prompt, const char* A, const char* B); //prompts the player to type either option A or option B and return true if A is chosen
 	void printConversation(const Conversation* _convo, bool finalpause, bool actuallyprint = true, bool* forcebranch = NULL); //print a conversation in conversation order
-	void printLvlUpData(NPC* npc, bool finalattackpause); //print the level up data of the given npc
+	void printLvlUpData(NPC* npc, bool finalattackpause, bool initialpause = false); //print the level up data of the given npc
 	void applyWorldChange(WorldChange& changes, bool announce = true); //apply the changes to the world which are in the given stuff to change
 	void applyWeaponAttack(NPC* player, Item* item); //gives the player the attack the weapon item has, weapon items can be gotten through different places so we have this helper
 	void updateTimeMachine(Room* timemachine, Room* destination, Room* from = NULL); //set up time machine exits, we do this from travel and load, so we have this helper function

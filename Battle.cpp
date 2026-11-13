@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/29/26
+*  11/12/26
 *  This is the implementation file for battles, which controls combat with teammates against enemies
 *
 *  Battles are created using the constructor, where you must pass the enemy and player teams. All NPCs involved
@@ -96,7 +96,7 @@ void Battle::setupWave(bool pteam, size_t wave, bool scaleteam) {
 	}
 }
 //creates a new npc and adds it to the battle MARK: add npc
-NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
+NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam, bool copy) {
 	NPC* newguy = new NPC(*npc);
 	if (summoner) newguy->setEnemy(summoner->getEnemy()^altteam); //make sure it is on the right side
 	vector<NPC*>* team = (newguy->getEnemy() ? &enemyTeam : &playerTeam); //gets which side the enemy is on
@@ -104,8 +104,8 @@ NPC* Battle::addNPC(NPC* npc, NPC* summoner, bool altteam) {
 	everyone.push_back(newguy);
 	numberNPC(newguy, *team); //number the npc so that the player can specify which one to target
 	newguy->setSummoner(summoner);
-	if (newguy->getBasicAttack() || !newguy->getSpecialAttacks().empty()) newguy->setLevel((summoner ? summoner : (*team)[0])->getLevel()); //update the level to match the team, base it off the summoner if we can but default to the team leader's level, but don't level up dummies because they're supposed to get incapacitated instantly
-	if (newguy->getEnemy()) buildReward(newguy, true); //add to the fight reward based on the new guy
+	if (!copy && (newguy->getBasicAttack() || !newguy->getSpecialAttacks().empty())) newguy->setLevel((summoner ? summoner : (*team)[0])->getLevel()); //update the level to match the team, base it off the summoner if we can but default to the team leader's level, but don't level up dummies because they're supposed to get incapacitated instantly
+	if (newguy->getEnemy() && !(summoner && !summoner->getEnemy())) buildReward(newguy, true); //add to the fight reward based on the new guy, unless it was summoned for the enemy team by the player team
 	else if (teameffect && !newguy->getPlayerness()) attachEffect(newguy->setEffect(teameffect, NULL)); //add the lead or team effect if there is one and this is a player team summon, and depending on if this is a player npc (cloned from kosmic katana) or teammate npc
 	else if (leadeffect) attachEffect(newguy->setEffect(leadeffect, NULL));
 	if (newguy->getOpener()) { //do the opening attack if they have one
@@ -227,7 +227,12 @@ void Battle::detatchEffect(NPCEffect* effect) {
 				CinPause();
 				continue;
 			}
-			int damage = npc->damage(effect->effect->falldamage, 0);
+			int _damage = effect->effect->falldamage;
+			for (NPC* affector : effect->affected->getOldAffectors(effect->effect)) if (affector->getPlotPower()) { //if this is the final boss multiply the attack power so it actually does something
+				_damage *= 1000;
+				break;
+			}
+			int damage = npc->damage(_damage, 0);
 			CinPause();
 			bool ko = npc->popKO();
 			if (ko) handleKnockout(npc);
@@ -395,7 +400,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, N
 	}
 	//after this it does stuff related to the reciever(s) of the attack (if it doesn't print what happened, it's probably either said in NPC's functions or by the attack itself)
 	if (Effect* effect = (attack->specifictarget && attack->specifictarget != reciever ? attack->nonspecificeffect : attack->appliedeffect)) { //adds an effect if the attack had one, might be different for the specific target of a multi-target attack
-		NPCEffect* neffect = reciever->setEffect(effect, attacker, (reciever->getPlayerness() && (reciever == attacker || !attacker->getPlayerness()) ? effect->playerduration : effect->duration)); //might have a different duration for the player, but the effects applied in other ways don't have this (also, don't use player duration if the affector is the player so that you can't exploit a bug to energize your clone for double duration, while still allowing double duration for energizing yourself since that's the point of making its playerduration 2)
+		NPCEffect* neffect = reciever->setEffect(effect, attacker, (reciever->getPlayerness() ? effect->playerduration : effect->duration) + (effect->selffectextradur && attacker == reciever ? 1 : 0)); //might have a different duration for the player, but the effects applied in other ways don't have this
 		if (!neffect) { //don't target this npc type with this attack again because they were immune to the effect
 			donteffect[effect].insert(reciever->getParent());
 		}
@@ -424,7 +429,7 @@ void Battle::hitTarget(Attack* attack, NPC* attacker, NPC* reciever, int hits, N
 		if (reciever->popKO()) handleKnockout(reciever); //handle ko stuff if the reciever was just incapacitated due to effect fall damage
 	}
 	for (int i = 0; i < attack->copyamount; i++) { //copy the target for copying attacks
-		NPC* otherguy = addNPC(reciever); //duplicate the target with no parent on the same team as the target
+		NPC* otherguy = addNPC(reciever, NULL, false, true); //duplicate the target with no parent on the same team as the target, and while keeping the same level since it's not a summon
 		otherguy->setParent(reciever->getParent()); //use the same parent because it's like they're both the original or something
 	}
 	if (attack->targuard) reciever->setGuard(attack->targuard, true); //adds target guards on the target
@@ -501,12 +506,13 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			int contribution = npc->alterSp(-npc->getSP());
 			if (trackNPC(npc)) spusedup[npc->getParent()] -= contribution; //I mean we kinda used it for them but it's still their sp being used so track as sp usage
 		}
-		attack->pierce = (int)round(attack->pierce / 2.0f);
 		biggestspbomb = max(attack->power, biggestspbomb); //update the tracker for the biggest sp bomb
+		attack->power *= 2; //it was kind of weak so we double the power per sp
 		cout << "\n" << attacker->getName() << " gathered the team's SP into an SP BOMB!";
 		CinPause();
 		if (!attack->power) { //if nobody has sp
 			cout << "\nEveryone has 0 SP! No attack was formed!";
+			CinPause();
 			return;
 		}
 		cout << "\n" << attack->power << " SP went into the attack!\nIt's ";
@@ -550,6 +556,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 			saidattackconvo = true;
 		} else cout << "\n" << attacker->getName() << " used " << attack->name << "!"; //normal attack text
 	} else if (attack->focushits) cout << "\n" << target->getName() << " was affected by " << attacker->getName() << "'s " << attack->name << "!"; //attack triggered target's recoil or attack had recoil and hit teammate as well and this is the result of either situation
+	else if (attack->onlyRecoilOps) cout << "\nYour team was affected by " << attacker->getName() << "'s " << attack->name << "!"; //this is bolide's fragment
 	else cout << "\n" << attacker->getName() << "'s team was affected by " << attacker->getName() << "'s " << attack->name << "!"; //this was the result of a recoiling regular attack that hits the team unfocusedly
 
 	if (!saidattackconvo) { //print description of the attack and what the attacker did
@@ -574,7 +581,7 @@ void Battle::carryOutAttack(Attack* attack, NPC* attacker, NPC* target, bool rec
 		}
 	}
 	//says if we hit multiple targets
-	if (attack->focushits && attack->targets > 1 && tarparty.size() > 1) {
+	if (attack->focushits && !attack->skiptarget && attack->targets > 1 && tarparty.size() > 1) {
 		cout << "\n" << target->getName() << "'s surrounding teammates were also affected!";
 		CinPause();
 	}
@@ -872,9 +879,19 @@ bool Battle::useItem(const char* itemname, NPC* plr) {
 			cout << "\nYou don't have enough SP for this attack! (" << plr->getSP() << "/" << Round(weapon->getAttack()->cost*plr->getSPUseMultiplier()) << ")";
 			return false; //could not launch attack
 		}
+		if (weapon->getAttack()->copyamount && weapon->getAttack()->copylimit) { //limit the amount of copies we can make if the attack does that (this is specifically designed for spacetime slice at the moment since there's no other similar attacks)
+			for (NPC* _npc : playerTeam) {
+				if (_npc != npc && _npc->getParent() == npc->getParent() && !npc->getSummoner()) { //if they have the same parent but are not the same (and don't have a summoner meaning they don't come from a summon move) that means it was duplicated so don't copy it again
+					cout << "\n" << npc->getName() << "'s spacetime is too unstable to slice again!";
+					return false;
+				}
+			}
+		}
 		carryOutAttack(weapon->getAttack(), plr, npc);
 	} else if (!strcmp(item->getType(), "PLOTDEVICE")) { //plot device does(n't need to do) nothing in battle
 		cout << "\nYou press down on THE PLOT DEVICE's BIG RED BUTTON!"; //old: THE PLOT DEVICE's PLOTOMETER isn't locked onto anything!
+		CinPause();
+		cout << "..."; //suspense
 		CinPause();
 		cout << "Nothing happened...";
 		return false;
@@ -1002,9 +1019,10 @@ bool Battle::ParseAttack(NPC* plr, char* commandP, char* commandWordP, char* com
 
 		//if no target was given in the string and there's only one possible target, we of course just target that guy
 		//target == NULL if this if statement runs, because I don't remember naming anybody ""
-		if (attack && (attack->targets && attack->focushits) && !strcmp(commandExtensionP, "") && aliveCount(tarteam) == 1) { //don't find a target if the attack doesn't need targets
+		if (attack && (attack->targets && attack->focushits) && !strcmp(commandExtensionP, "") && (aliveCount(tarteam) == 1 || aliveCount(tarteam, true) == 1)) { //don't find a target if the attack doesn't need targets
+			bool onlyhere = aliveCount(tarteam, true) == 1; //only hit the non-away one if we are doing the shortcut for non-away targets
 			for (NPC* npc : tarteam) { //find the guy who still has health and isn't a dummy
-				if (npc->getHealth() && (npc->getBasicAttack() || npc->getSpecialAttacks().size())) {
+				if (npc->getHealth() && (!onlyhere || !npc->getAway()) && (npc->getBasicAttack() || npc->getSpecialAttacks().size())) {
 					target = npc;
 					break;
 				}
@@ -1416,6 +1434,7 @@ int Battle::FIGHT() {
 		}
 
 		checkEffects(current); //we also check if there are any 0-duration effects to stop tracking before the turn starts
+		current->setParrying(NULL); //if they were parrying something, stop parrying because that lasts one turn
 		
 		if (current->getHealth() <= 0) { //the npc doesn't do anything if out of health. I do this empty if statement because i still need to do stuff after all the else ifs and I don't like nesting
 			//do a backflip idk

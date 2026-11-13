@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/25/26
+*  11/10/26
 *  This is the header file for rooms
 *  
 *  Rooms are the locations of the game world which are linked up and the player can move between.
@@ -55,7 +55,7 @@ public:
 	bool gotBackup(); //get if there is a backup item to get, so that we don't make a pointless duplicate if we have repeating backups
 	Item* popBackup(); //take the backup from the room to check if we should put it there
 
-	void doEnterChanges(bool force = false); //do changes when we enter the room and the change condition is met
+	void doEnterChanges(bool loading = false); //do changes when we enter the room and the change condition is met
 
 	void printExits(); //functions for printing the stuff in the room
 	void printItems();

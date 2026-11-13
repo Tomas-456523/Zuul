@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/30/26
+*  11/12/26
 *  This is the implementation file for npcs
 *  
 *  NPCs are the characters who the player can interact with, and also include player character himself.
@@ -1439,7 +1439,7 @@ NPCEffect* NPC::setEffect(Effect* effect, NPC* affector, int manualduration) { /
 	}
 	if (effect->attackeffect) { //only one effect in the game uses this so we don't need to worry about multiple effects handling
 		if (!attackeffect && affector) {
-			cout << "\n" << name << "'s attacks will now inflict " << effect->attackeffect << "!";
+			cout << "\n" << name << "'s attacks will now inflict " << effect->attackeffect->name << "!";
 			pause = true;
 		}
 		attackeffect = effect->attackeffect;
@@ -1573,7 +1573,7 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 				away = false;
 			}
 			if (effect->attackeffect) { //only one effect in the game uses this so we don't need to worry about multiple effects handling
-				cout << "\n" << name << "'s attacks no longer inflict " << effect->attackeffect << "!";
+				cout << "\n" << name << "'s attacks no longer inflict " << effect->attackeffect->name << "!";
 				pause = true;
 				attackeffect = NULL;
 			}
@@ -1632,7 +1632,12 @@ NPCEffect* NPC::removeEffect(Effect* effect, NPC* affector) { //also, if we don'
 
 			//apply fall damage (effect removal damage) if the npc isn't invincible (or the fall damage heals for some reason)
 			if (effect->falldamage && !(effect->falldamage > 0 && invincibility)) {
-				int damag = damage(effect->falldamage, 0);
+				int _damag = effect->falldamage;
+				for (NPC* affector : oldaffectors[effect]) if (affector->getPlotPower()) {
+					_damag *= 1000; //plot power makes this more powerful as well so that it actually does damage
+					break; //only do this once
+				}
+				int damag = damage(_damag, 0);
 				for (NPC* affector : oldaffectors[effect]) {
 					if (trackNPC(affector)) { //increase damage counters for tracked affectors
 						if (damag > 0) damagedealt[affector->getParent()] += damag;

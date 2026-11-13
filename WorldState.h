@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/26/26
+*  10/27/26
 *  This header file is an extension of the Helper namespace, but it's in a seperate file due to 
 *  circular dependency with Conversation.h.
 *  

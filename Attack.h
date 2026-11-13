@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/28/26
+*  11/9/26
 *  This is the header file for attacks
 *  
 *  The attack struct is primarily a data container to avoid circular inclusion, so most of the logic is

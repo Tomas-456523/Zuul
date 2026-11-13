@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/30/26
+*  11/12/26
 *  This is the implementation file for the game world and playing the game!
 *  
 *  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
@@ -309,7 +309,7 @@ void Game::SetupWorld() {
 	Room* sewerplant = new Room("in the main control room of the sewers. How does one maintain this lava maintenence system?");
 	Room* sewermineswest = new Room("at the easternmost end of a long minecart track. You can't see the end.");
 	Room* sewerminessouth = new Room("in a peculiar offshoot from the sewers which someone mined out.");
-	Room* mineshortcut = new Room("in stable room, full of mining supplies and explosives.");
+	Room* mineshortcut = new Room("in a stable room, full of mining supplies and explosives.");
 	Room* sewertreasure = new Room("in a rocky cave full of bones and fancy ores.");
 	//the volcano temple
 	Room* volcanotempleentrance = new Room("in a massive cavern, at the door of an ancient volcanic temple.\nThe rock burns bright red.");
@@ -521,8 +521,8 @@ void Game::SetupWorld() {
 	volcanobuffer1->shareItems(volcanobuffer2);
 	Room* volcanotemple = new Room("in the volcano temple, built with dull red bricks.\nThe path forward is blocked by a blazing fire, and there's three slots to drop COLD ORBs into.");
 	Room* volcanotempleboss = new Room("in an arena burning with fire. There's a fiery figure in the center of the room.");
-	Room* volcanotemplel = new Room("on a path with lava on both sides. Twin lavafalls flow lava into the temple.");
-	Room* volcanotempler = new Room("on a path with lava on both sides. Um ackshually it's magma, because it's underground.");
+	Room* volcanotemplel = new Room("on a path with magma on both sides. Twin magmafalls flow into the temple.");
+	Room* volcanotempler = new Room("on a path with magma on both sides. You know it's magma, because it's underground.");
 	Room* volcanotemplelr = new Room("further into the volcano temple. It's a little cooler here, but that's still really hot.");
 	Room* volcanotemplec = new Room("in the center of the volcano temple, branching into many paths.\nYou realize red bricks are just normal bricks,\nhowever these red bricks are more volcanoey and templey.");
 	Room* volcanotemple1 = new Room("at a fork in the road; how classic and familiar and retro and a callback.\nTo the WEST you see a statue of a programmer with bad posture.\nTo the NORTH you see a statue of a super buff gymnast.");
@@ -575,7 +575,7 @@ void Game::SetupWorld() {
 	
 	Room* home = new Room("in Henry Jerry's multiuse bed/dining/living room.");
 	Room* juiceroom = new Room("in Henry Jerry's portal juice room.");
-	Room* yard = new Room("at Henry Jerry's backyard, in the void.\nThe time machine is parked here.");
+	Room* yard = new Room("at Henry Jerry's well-lit backyard, in the void.\nThe time machine is parked here.");
 
 	Room* tunnels = new Room("in the train tunnels that span the continent. The acoustics here are great!");
 	tunnels->setStation();
@@ -618,13 +618,13 @@ void Game::SetupWorld() {
 	bonedrill->addDescription("Spin the conic bone, drilling into the target. (5 ATTACK, 3 PIERCE, 5-6 hits)");
 	Item* bonecone = new WeaponItem("BONE CONE", "A cone-shaped bone, looks kind of like a drill.", desertgrave, bonedrill);
 	Attack* scarfsmack = new Attack("SCARF SMACK", "smacked", false, 15, 25, 0, 2, 2, 1); //no contact because the scarf stretches far from Bernard
-	scarfsmack->afterdesc = " with his scarf";
+	scarfsmack->afterdesc = " with a big scarf";
 	scarfsmack->addDescription("Smack the target with each end of your stretchy scarf. (25 ATTACK, 2 hits)");
-	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your current one, good for doing scarf attacks.", limbo, scarfsmack);
+	Item* bigscarf = new WeaponItem("BIG SCARF", "A scarf considerably bigger and stretchier than your typical one, good for doing scarf attacks.", limbo, scarfsmack);
 	Item* factchest = new TreasureItem("TREASURE CHEST", "A big treasure chest, possibly full of treasure.", factorytreasure, 50, {bigscarf});
 	Attack* energize = new Attack("ENERGIZE", "energized", false, 10, 0, 0, 1, 1, 1, true, 15);
 	Effect* energized = new Effect("ENERGIZED", 1, 0, 0, 3.0, 1, 1, 1);
-	energized->playerduration = 2; //so if you energize yourself it doesn't just disappear immediately
+	energized->selffectextradur = true; //so if you energize yourself it doesn't just disappear immediately
 	energize->addEffect(energized);
 	energize->addDescription("Imbue yourself or an teammate with energy, tripling attack for one turn.");
 	Attack* smokebomb = new Attack("SMOKE BOMB", "threw two smoke bombs, bringing SMOKEMEN into the battle", false, 14, 0, 0, 0, 0, 0);
@@ -649,7 +649,7 @@ void Game::SetupWorld() {
 	Attack* ballisticmissile = new Attack("BALLISTIC MISSILE", "threw a missile of energy at", false, 25, 28, 25, 1, 1, 1, false, 18);
 	ballisticmissile->addDescription("Throw a dense missile of energy straight towards the target. (28 ATTACK, 25 PIERCE)");
 	Attack* spbomb = new Attack("SP BOMB", "lobbed the SP BOMB at", false, 0, 0, 0, 1, 1, 9, false, 25);
-	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (SP ATTACK, SP/2 PIERCE)");
+	spbomb->addDescription("Gather up the collective SP of the entire team into a huge ball of energy and lob it at the enemy team. (2xSP ATTACK, SP PIERCE)");
 	spbomb->spbomb = true; //sp bomb do indeed be sp bomb
 	Attack* spacetimeslice = new Attack("SPACETIME SLICE", "sliced", false, 30, 0, 0, 1, 1, 1, true);
 	spacetimeslice->afterdesc = "'s spacetime into two";
@@ -789,6 +789,7 @@ void Game::SetupWorld() {
 	Attack* overclock = new Attack("OVERCLOCK", "overclocked", false, 8, 0, 0, 1, 1, 1, true, 5);
 	overclock->addDescription("Overclock a teammate, boosting their attack and speed.");
 	Effect* overclocked = new Effect("OVERCLOCKED", 3, 0, 0, 1.5, 1, 1, 1, 1.5);
+	overclocked->selffectextradur = true;
 	overclock->addEffect(overclocked);
 	egadwick->addSpecialAttack(overclock);
 	Attack* shieldacid = new Attack("SHIELD ACID", "threw shield-melting acid at", false, 4, 0, 0, 1, 1, 1, false, 8);
@@ -802,6 +803,7 @@ void Game::SetupWorld() {
 	Attack* hyperclock = new Attack("HYPERCLOCK", "hyperclocked", false, 13, 0, 0, 1, 1, 1, true, 12);
 	hyperclock->addDescription("Over-overclock a teammate, greatly boosting their attack and speed.");
 	Effect* hyperclocked = new Effect("HYPERCLOCKED", 3, 0, 0, 2.0, 1, 1, 1, 2.0);
+	hyperclocked->selffectextradur = true;
 	hyperclock->addEffect(hyperclocked);
 	egadwick->addSpecialAttack(hyperclock);
 	Attack* rocketscience = new Attack("ROCKET SCIENCE", "launched a volley of rockets", false, 20, 8, 15, 3, 3, 3, false, 15);
@@ -816,6 +818,7 @@ void Game::SetupWorld() {
 	Attack* uberclock = new Attack("UBERCLOCK", "uberclocked", false, 16, 0, 0, 1, 1, 1, true, 20);
 	uberclock->addDescription("Over-over-overclock a teammate, very greatly boosting their attack and speed.");
 	Effect* uberclocked = new Effect("UBERCLOCKED", 2, 0, 0, 4.0, 1, 1, 1, 4.0);
+	uberclocked->selffectextradur = true;
 	uberclock->addEffect(uberclocked);
 	egadwick->addSpecialAttack(uberclock);
 	Attack* orbitalstrike = new Attack("ORBITAL STRIKE", "called down an orbital beam towards", false, 30, 15, 30, 1, 1, 21, false, 25);
@@ -871,7 +874,7 @@ void Game::SetupWorld() {
 	Attack* defend = new Attack("PROTECT", "is protecting", false, 10, 0, 0, 1, 1, 1, true, 10);
 	defend->protect = true; //defend start protecting
 	forestknight->addSpecialAttack(defend);
-	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 12, 15, 1, 1, 3, false, 12);
+	Attack* redwoodrend = new Attack("REDWOOD REND", "thrusted his sword at", true, 5, 12, 15, 1, 1, 1, false, 12);
 	redwoodrend->afterdesc = " with the might of a redwood";
 	forestknight->addSpecialAttack(redwoodrend);
 	Attack* warcry = new Attack("WAR CRY", "rallied the team into action", false, 15, 0, 0, 1, 1, 999, true, 15);
@@ -884,7 +887,7 @@ void Game::SetupWorld() {
 	enrootf->selfeffect = rootedf;
 	enrootf->focushits = false;
 	forestknight->addSpecialAttack(enrootf);
-	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 15, 30, 0, 1, 1, 1, false, 20);
+	Attack* sequoiasmash = new Attack("SEQUOIA SMASH", "crashed down his sword onto", true, 15, 25, 0, 1, 1, 3, false, 20);
 	sequoiasmash->afterdesc = " with the weight of a sequoia";
 	forestknight->addSpecialAttack(sequoiasmash);
 	Attack* splinter = new Attack("SPLINTER", "swung splinters from his sword at", false, 12, 3, 0, 1, 1, 3, false, 25);
@@ -946,7 +949,7 @@ void Game::SetupWorld() {
 	mike->addSpecialAttack(bunkerbuster);
 	bunkerbuster->addDescription("Throw a bunker-busting explosive at the target with immense pierce. (15 ATTACK, 100 PIERCE)");
 	Attack* dedefenser = new Attack("DEDEFENSER", "threw a defense-destroying charge at", false, 15, 10, 20, 1, 1, 1, false, 12);
-	Effect* dedefensed = new Effect("DEDEFENSED", 7, 0, 0, 1, 0.5, 0.25);
+	Effect* dedefensed = new Effect("DEDEFENSED", 5, 0, 0, 1, 0.5, 0.25);
 	dedefenser->addEffect(dedefensed);
 	Attack* ddrecoil = new Attack("LOOSE DEDEFENSER", "accidentally dropped a dedefenser near", false, 0, 10, 20, 1, 1, 1, true);
 	ddrecoil->addEffect(dedefensed);
@@ -954,7 +957,7 @@ void Game::SetupWorld() {
 	dedefenser->recoilchance = 1.0/3;
 	dedefenser->redundanteffect = false;
 	mike->addSpecialAttack(dedefenser);
-	dedefenser->addDescription("Throw a heavy explosive that damages the target's defense for a long time. (10 ATTACK, 20 PIERCE)");
+	dedefenser->addDescription("Throw a heavy explosive that damages the target's defense for a while. (10 ATTACK, 20 PIERCE)");
 	Attack* depthcharge = new Attack("DEPTH CHARGE", "threw a depth charge at", false, 20, 20, 40, 1, 1, 5, false, 17);
 	Attack* dcrecoil = new Attack("MISINPUT", "accidentally included", false, 0, 10, 20, 1, 1, 1, true);
 	dcrecoil->afterdesc = " in the charge's radius";
@@ -1084,7 +1087,7 @@ void Game::SetupWorld() {
 		 {michelin, "IT'S BEAUTIFUL!"},
 		 {NULL, "You gave the SUPERSMOOTHIE to MICHELIN."},
 		 {NULL, "MICHELIN takes a sip of the SUPERSMOOTHIE."},
-		 {michelin, "EW BRO THIS THING IS ATROCIOUS"},
+		 {michelin, "EW THIS THING IS ATROCIOUS"},
 		 {michelin, "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"},
 		 {self, ":|"},
 		 {michelin, "HIYNGIEINFGFUGFIBFIU"},
@@ -1116,6 +1119,7 @@ void Game::SetupWorld() {
 	michelin->addSpecialAttack(flambe);
 	Attack* hotsauce = new Attack("HOT SAUCE", "gave hot sauce to", false, 3, 0, 0, 1, 1, 1, true, 11);
 	Effect* hotsauced = new Effect("HOT SAUCED", 4, 0, 0, 1.25, 0.75);
+	hotsauced->selffectextradur = true;
 	hotsauce->addEffect(hotsauced);
 	hotsauce->risky = true; //don't do this if the teammate has too low health because otherwise this would be dumb to do
 	hotsauce->addDescription("Give a teammate hot sauce, boosting attack but lowering defense.");
@@ -1139,7 +1143,7 @@ void Game::SetupWorld() {
 	michelin->addSpecialAttack(congratulation);
 
 	//Hackerman Carlos is a disruptor MARK: Carlos
-	NPC* carlos = new NPC("HACKERMAN", "CARLOS", "Black hat hacker with no hat and no vitamin D. He has a space invaders hoodie.", factorytower, 12, Stats(15, 20, 10, 10, 15, 5, 9), Stats(1, 1, 1, 0, 1, 0, 0));
+	NPC* carlos = new NPC("HACKERMAN", "CARLOS", "Black hat hacker with no hat and no vitamin D. He has a space invaders hoodie.", factorytower, 12, Stats(15, 10, 10, 10, 15, 5, 9), Stats(0, 1, 1, 0, 1, 0, 0));
 	npcChar[carlos] = 'x'; //Carlos' character representation is x for the common xX_epic_gamertag_Xx gamertag naming convention
 	carlos->setDialogue({{carlos, "get out i cant focus with u here"}, {carlos, "im so close to hacking into microsofts mony supply"}});
 	carlos->addRejectionDialogue({{carlos, "what"}, {carlos, "get outta my room im tryna focus"}});
@@ -1150,7 +1154,7 @@ void Game::SetupWorld() {
 	carlos->addDismissalDialogue({{carlos, "i dont feel like hacking microsoft all over again"}, {carlos, "guess ill just play fortnite or something"}});
 	carlos->addGymDialogue({{carlos, "..."}, {carlos, "theres too much sunlight here"}});
 
-	Item* carlosplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", factorytower, {{NULL, "All the monitors in the room turn off."}, {carlos, "BRO WHAT THE HECK"}, {self, "Oh my bad."}, {self, "I didn't realize it would do that."}, {carlos, "I WAS LIKE SECONDS FROM STEALING ALL OF MICROSOFTS MONIES"}, {carlos, "THAT WAS LIKE A MONTH LONG PROCESS"}, {self, "You shouldn't steal monies."}, {carlos, "SHUT UP"}, {carlos, "GIMME BACK THAT PLUG"}, {self, "Alright."}, {NULL, "You returned the PLUG to CARLOS."}}, true);
+	Item* carlosplug = new WorldChangeItem("PLUG", "A plug that is plugged into the wall as plugs are.", factorytower, {{NULL, "All the monitors in the room turn off."}, {carlos, "WHAT THE HECK"}, {self, "Oh my bad."}, {self, "I didn't realize it would do that."}, {carlos, "I WAS LIKE SECONDS FROM STEALING ALL OF MICROSOFTS MONIES"}, {carlos, "THAT WAS LIKE A MONTH LONG PROCESS"}, {self, "You shouldn't steal monies."}, {carlos, "SHUT UP"}, {carlos, "GIMME BACK THAT PLUG"}, {self, "Alright."}, {NULL, "You returned the PLUG to CARLOS."}}, true);
 	WorldChange& carlosplugchanges = ((WorldChangeItem*)carlosplug)->getChanges();
 	carlosplugchanges.recruitLinks.push(carlos);
 	carlosplugchanges.linkedDescriptions.push({carlos, "Black hat hacker with no hat and no vitamin D, whose attempt to hack Microsoft's monies you foiled."});
@@ -1160,7 +1164,7 @@ void Game::SetupWorld() {
 	Attack* backtrack = new Attack("BACKTRACK", "sent malware to the attacker's traced location", false, 0, 0, 0, 1, 1, 1);
 	backtrack->addEffect(infected);
 	carlos->setRecoilAttack(backtrack);
-	Attack* hack = new Attack("HACK", "hacked into", false, -5, 0, 0, 1, 1, 1, false, 0, 5); //no damage but steals sp which I think is pretty interesting
+	Attack* hack = new Attack("HACK", "hacked into", false, -5, 0, 0, 1, 1, 1, false, 0, 1); //no damage but steals sp which I think is pretty interesting
 	hack->afterdesc = "'s SP supply";
 	carlos->setBasicAttack(hack);
 	Attack* trojan = new Attack("TROJAN", "sent a trojan to", false, 5, 5, 20, 1, 1, 1);
@@ -1188,13 +1192,13 @@ void Game::SetupWorld() {
 	carlos->addSpecialAttack(forkbomb);
 	forkbomb->addDescription("Send a forking bomb, covering the entire enemy team. (10 ATTACK, 15 PIERCE)");
 	Attack* cryptojack = new Attack("CRYPTOJACK", "set up an SP and HP mine in", false, 15, 0, 0, 1, 1, 1, false, 17);
-	Effect* cryptojacked = new Effect("CRYPTOJACKED", 5, 5, 5);
+	Effect* cryptojacked = new Effect("CRYPTOJACKED", 5, 5, 3);
 	cryptojacked->lifesteal = cryptojacked->spsteal = 1;
 	cryptojack->addEffect(cryptojacked);
 	carlos->addSpecialAttack(cryptojack);
 	cryptojack->addDescription("Set up a bitcoin mine in the target, stealing their HP and SP for 5 turns.");
-	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 5, 15, 15, 1, 1, 999, false, 20);
-	cascadingfailure->weight = 2.0; //we do this so it's cheap and Carlos can chain it with other moves better but still gets called a reasonable number of times
+	Attack* cascadingfailure = new Attack("CASCADING FAILURE", "triggered a cascading failure in the enemy team", false, 5, 10, 15, 1, 1, 999, false, 20);
+	cascadingfailure->weight = 3.0; //we do this so it's cheap and Carlos can chain it with other moves better but still gets called a reasonable number of times
 	cascadingfailure->focushits = false;
 	cascadingfailure->synergies.push_back(infected);
 	cascadingfailure->synergies.push_back(overflow);
@@ -1229,7 +1233,7 @@ void Game::SetupWorld() {
 	fireing->attackeffect = onfire;
 	burnyblossom->addEffect(fireing);
 	plum->addSpecialAttack(burnyblossom);
-	Attack* bobbybomb = new Attack("BOBBY BOMB", "threw a Bobby Bomb at", false, 10, 20, 20, 1, 1, 3, false, 7);
+	Attack* bobbybomb = new Attack("BOBBY BOMB", "threw a Bobby Bomb at", false, 10, 15, 20, 1, 1, 3, false, 7);
 	plum->addSpecialAttack(bobbybomb);
 	Attack* metalhat = new Attack("METAL HAT", "gave a metal hat to", false, 14, 0, 0, 1, 1, 1, true, 10);
 	Effect* metallic = new Effect("METAL", 3, 0, 0, 1.25, 3.0);
@@ -1240,7 +1244,7 @@ void Game::SetupWorld() {
 	Effect* mini = new Effect("MINI", 3, 0, 0, 0.5, 0.5);
 	lightning->addEffect(mini);
 	plum->addSpecialAttack(lightning);
-	Attack* blueshell = new Attack("BLUE TURTLE SHELL", "threw a winged blue turtle shell, which went flying at", false, 20, 30, 10, 1, 1, 3, false, 16);
+	Attack* blueshell = new Attack("BLUE TURTLE SHELL", "threw a winged blue turtle shell, which went flying at", false, 20, 25, 10, 1, 1, 3, false, 16);
 	plum->addSpecialAttack(blueshell);
 	Attack* superstar = new Attack("SUPER STAR", "gave a super star to", false, 25, 0, 0, 1, 1, 1, true, 18);
 	Effect* invincible = new Effect("INVINCIBLE", 3, 0, 0, 2.0, 1);
@@ -1253,7 +1257,7 @@ void Game::SetupWorld() {
 	lifemushroom->addDescription("Give a teammate a green life mushroom, granting an extra chance after being incapacitated.");
 
 	//Gambler Graham is the rng guy MARK: Graham
-	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(20, 12, 12, 12, 12, 12, 9), Stats(1, 1, 1, 0, 0, 0, 0));
+	NPC* graham = new NPC("GAMBLER", "GRAHAM", "A sorry gambling addict who is trillions in debt.\nHe'll pay it off as soon as he wins; any day now.", casino, 19, Stats(20, 6, 12, 6, 12, 12, 9), Stats(1, 1, 1, 0, 0, 0, 0));
 	npcChar[graham] = 'g'; //Graham's character representation is g for Graham
 	Conversation gramconvo = {{self, "You should stop gambling."}, {graham, "What?"}, {graham, "Haven't you heard that 99% of gamblers quit right before hitting it big?"}, {NULL, "GAMBLING MACHINE - \"You lose 1000000 monies.\""}, {graham, "Aw dang it."}};
 	gramconvo.skipcondition = {NOGAMBLING};
@@ -1293,7 +1297,7 @@ void Game::SetupWorld() {
 	gramchanges.linkedItems.push({grambutton2, casinobase});
 	gramchanges.roomChanges.push({casinobase, "in the casino's basement. The energy core is glowing extra blue."});
 
-	NPC* icosahedrongus = new NPC("", "ICOSAHEDRONGUS", "Floating yellow icosahedral construct from Graham's icosahedral die.", limbo, 0, Stats(20, 10, 20, 10, 20, 20, 9));
+	NPC* icosahedrongus = new NPC("", "ICOSAHEDRONGUS", "Floating yellow icosahedral construct from Graham's icosahedral die.", limbo, 0, Stats(20, 5, 20, 10, 20, 20, 9));
 	Attack* laser = new Attack("LASER", "fired a laser at", false, -5, 5, 12, 1, 1, 1);
 	laser->afterdesc = " from one of its vertices";
 	Attack* bonk = new Attack("BONK", "flew into", true, 8, 9, 3, 1, 1, 1);
@@ -1306,7 +1310,7 @@ void Game::SetupWorld() {
 	icosahedrongus->addSpecialAttack(bonk);
 	icosahedrongus->addSpecialAttack(hypnotize);
 	
-	Attack* nat1 = new Attack("DICE ROLL", "rolled a NAT 1!", false, 0, 0, 0, 1, 1, 3, true); //1 - Graham explodes
+	Attack* nat1 = new Attack("DICE ROLL", "rolled a NAT 1!", false, 0, 1, 0, 1, 1, 1, true); //1 - Graham explodes
 	nat1->afterdesc = " blew up";
 	nat1->targetself = true;
 	nat1->instakill = true;
@@ -1329,7 +1333,7 @@ void Game::SetupWorld() {
 	graham->addSpecialAttack(nat5);
 	Attack* nat6 = new Attack("DICE ROLL", "rolled a 6! An anvil appeared over", false, 0, 0, 0, 1, 1, 1, true); //6 - put anvil over teammate, will hit in 2 turns
 	Effect* anvilabove = new Effect("ANVIL ABOVE", 2);
-	anvilabove->falldamage = 50;
+	anvilabove->falldamage = 40;
 	nat6->addEffect(anvilabove);
 	graham->addSpecialAttack(nat6);
 	Attack* nat7 = new Attack("DICE ROLL", "rolled a 7! The enemy team got an ICOSAHEDRONGUS", false, 0, 0, 0, 0, 0, 0); //7 - give enemy team an icosahedrongus
@@ -1481,9 +1485,6 @@ void Game::SetupWorld() {
 	healsprinkler->setBasicAttack(sprinkle);
 
 	NPC* guardbot = new NPC("", "ROBOCOP", "Robotic policeman for protecting citizens, bought by Richie to assist in battle.\nTheir effectiveness didn't last long in BURGERSBURG, but are now sold by collectors rarely.", limbo, 0, Stats(8, 0, 16, 0, 8, 13, 9));
-	Effect* swatshield = new Effect("SWAT SHIELD", 2147483647);
-	swatshield->guardset = 1;
-	guardbot->setEffect(swatshield, NULL);
 	Attack* baton = new Attack("BATON", "thwacked", true, -5, 7, 0, 1, 1, 1);
 	baton->afterdesc = " with its baton";
 	guardbot->setBasicAttack(baton);
@@ -1505,12 +1506,12 @@ void Game::SetupWorld() {
 	
 	Attack* throwmoney = new Attack("THROW MONEY AT THE PROBLEM", "threw a heavy gold bar at", false, -5, 5, 0, 1, 1, 1);
 	richie->setBasicAttack(throwmoney);
-	Attack* buydrone = new Attack("AMAZON PRIME", "bought a DRONE on Amazon", false, 5, 0, 0, 0, 0, 0);
+	Attack* buydrone = new Attack("AMAZON PRIME", "bought a DRONE on Amazon", false, 10, 0, 0, 0, 0, 0);
 	buydrone->summon = drone;
 	buydrone->summonamount = 1;
 	buydrone->focushits = false;
 	richie->addSpecialAttack(buydrone);
-	Attack* buyheal = new Attack("AMAZON PRIME", "bought a HEAL SPRINKLER on Amazon", false, 10, 0, 0, 0, 0, 0);
+	Attack* buyheal = new Attack("AMAZON PRIME", "bought a HEAL SPRINKLER on Amazon", false, 7, 0, 0, 0, 0, 0);
 	buyheal->summon = healsprinkler;
 	buyheal->summonamount = 1;
 	buyheal->focushits = false;
@@ -1520,21 +1521,21 @@ void Game::SetupWorld() {
 	buybot->summonamount = 1;
 	buybot->focushits = false;
 	richie->addSpecialAttack(buybot);
-	Attack* buymech = new Attack("AMAZON PRIME", "bought a MARINE MECH on Amazon", false, 20, 0, 0, 0, 0, 0);
+	Attack* buymech = new Attack("AMAZON PRIME", "bought a MARINE MECH on Amazon", false, 25, 0, 0, 0, 0, 0);
 	buymech->summon = marinemech;
 	buymech->summonamount = 1;
 	buymech->focushits = false;
 	richie->addSpecialAttack(buymech);
 
 	//Bodyguard Buford is a damage dealer tied to Richie MARK: Buford
-	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 25, Stats(35, 10, 15, 20, 0, 25, 9), Stats(0, 0, 1, 0, 1, 0, 1));
+	NPC* buford = new NPC("BODYGUARD", "BUFORD", "Richie's bodyguard, trained in every martial art.", richneighborhood3, 25, Stats(25, 10, 15, 10, 0, 25, 9), Stats(0, 0, 1, 0, 1, 0, 1));
 	npcChar[buford] = 'u'; //Buford's character representation is u for the second letter of Buford
 	richie->setGuardian(buford);
 	buford->setGuarding(richie);
 	buford->setDialogue("...");
 	buford->addGymDialogue("...");
 	buford->addRejectionDialogue({{buford, "..."}, {NULL, "BUFORD is already recruited by RICHIE!"}});
-	Attack* counter = new Attack("COUNTER", "counterattacked", false, -5, 7, 0, 1, 1, 1); //this very much is a contact move but it has to be marked as non-contact lest there be an infinite recoil loop
+	Attack* counter = new Attack("COUNTER", "counterattacked", false, -5, 3, 0, 1, 1, 1); //this very much is a contact move but it has to be marked as non-contact lest there be an infinite recoil loop
 	buford->setRecoilAttack(counter);
 	Attack* martialart = new Attack("MARTIAL ART", "combo'd", true, -5, 2, 0, 5, 6, 1);
 	martialart->afterdesc = " with one of his many martial arts";
@@ -1564,7 +1565,8 @@ void Game::SetupWorld() {
 	buford->addSpecialAttack(fiveforty);
 
 	//BURGER QUEST 1 Protagonist Henry Jerry is not that good at fighting but he's trying his best MARK: Henry Jerry
-	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who you freed from BURGER.\nHe wears a formal business suit and a spaced out expression.", abyssrestaurant, 1, Stats(10, 2, 4, 1, 0, 4, 9));
+	NPC* hj = new NPC("BURGER QUEST 1 PROTAGONIST", "HENRY JERRY", "The protagonist of BURGER QUEST 1 who you freed from BURGER.\nHe wears a formal business suit and a spaced out expression.", abyssrestaurant, 0, Stats(10, 2, 4, 1, 0, 4, 10)); //he is special and gets 10 starting sp
+	self->addXp(3); //to match the player's level 0 xp to level up
 	hj->setRecruitable(true);
 	npcChar[hj] = 'h'; //Henry Jerry's character representation is h for Henry Jerry
 	hj->setFifth(true); //he is a fifth teammate because you're supposed to have a full team here anyway
@@ -1576,9 +1578,9 @@ void Game::SetupWorld() {
 	Conversation hjdismiss = {{hj, "I'm just gonna head back to the restaurant I guess."}, {hj, "It has a good view, that's one good thing about it."}};
 	hjdismiss.skipcondition = {BURGERMENDEF};
 	hj->addDismissalDialogue(hjdismiss);
-	Conversation segway = {{hj, "Man, I did a lot of bad things as the BURGER MAN..."},
+	Conversation segway = {{hj, "Man, the BURGER MAN used me to do a lot of bad things..."},
 						   {hj, "Can I go with you?"},
-						   {hj, "I want to do something against BURGER..."}};
+						   {hj, "I want to do something against BURGERs..."}};
 	segway.skipcondition = {BURGERMENDEF};
 	hj->addConversation(segway);
 	hj->addRecruitmentDialogue({{self, "Yeah you can join my team."},
@@ -1588,12 +1590,13 @@ void Game::SetupWorld() {
 	Attack* carefulconsideration = new Attack("CAREFUL CONSIDERATION", "is trying to figure out what to do about", false, -5, 0, 0, 0, 0, 0);
 	Attack* briefbase = new Attack("BRIEFBASE", "bonked", true, 10, 6, 0, 1, 1, 1);
 	briefbase->afterdesc = " with his briefcase as if with a baseball bat";
-	Attack* resourcefulness = new Attack("RESOURCEFULNESS", "threw a nearby rock at", true, 10, 5, 0, 1, 1, 1);
-	Attack* hjpunch = new Attack("PUNCH", "tried his best to punch", true, 10, 4, 0, 1, 1, 1);
+	Attack* resourcefulness = new Attack("CONVENIENT ROCK", "threw a nearby rock at", true, 10, 4, 0, 1, 1, 1);
+	Attack* hjpunch = new Attack("PUNCH", "tried his best to punch", true, 10, 5, 0, 1, 1, 1);
 	hj->setBasicAttack(carefulconsideration);
 	hj->addSpecialAttack(briefbase);
 	hj->addSpecialAttack(resourcefulness);
 	hj->addSpecialAttack(hjpunch);
+	hj->addGymDialogue({{hj, "I think working out is a good idea now."}, {hj, "Beause I mostly used to just sit and watch TV all day..."}});
 	
 	//MARK: other npcs
 	NPC* archie = new NPC("VILLAGE ELDER", "ARCHIE", "The elder of Tactical Tent Village.\nHe stands there all day and night like a statue.", village, 50);
@@ -1783,7 +1786,7 @@ void Game::SetupWorld() {
 	child->addBlock(elevatorentrance, IN_ELEVATOR);
 	child->addBlock(mainstreethole, IN_THE_HOLE); //no post/end-game shenanigans either
 	child->addBlock(mainstreethole, IN_TIME_MACHINE);
-	child->addBlock(burgbasenw, IN_THE_HOLE);
+	child->addBlock(burgbasenw, IN_THE_HOLE); //have to go via lobster tunnel
 	child->addBlock(burgbasehole, IN_THE_HOLE);
 	child->addBlock(burgbasene, IN_THE_HOLE);
 	child->setRecruitable(true);
@@ -1864,7 +1867,7 @@ void Game::SetupWorld() {
 	matrej4->alt = matrej5;
 	matilda->addRejectionDialogue(matrej1);
 
-	Item* jillydrawing = new InfoItem("JILLY'S DRAWING", "A masterfully crafted crayon drawing depicting when you found Jilly.", {{NULL, "You see a drawing of Jilly uppercutting you."}}, limbo);
+	Item* jillydrawing = new InfoItem("JILLY'S DRAWING", "A masterfully crafted crayon drawing depicting when you found Jilly.", {{NULL, "You look at the crayon drawing of Jilly uppercutting you."}, {self, "How sweet"}}, limbo);
 
 	shared_ptr<WorldChange> jillyreunion = make_shared<WorldChange>(); //when Jilly and Matilda are reunited!
 	jillyreunion->linkedTitles.push({matilda, ""}); //she is no longer worried
@@ -2024,15 +2027,19 @@ void Game::SetupWorld() {
 	Conversation prisrej = {{burgerprisoner, "Well,"},
 							{burgerprisoner, "I can't really leave here."},
 							{NULL, "ARCHIBALD shakes his chains for emphasis."}};
-	shared_ptr<Conversation> prisrej2 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest."},
-							  {burgerprisoner, "But I think you can see I'm not going anywhere..."},
+	shared_ptr<Conversation> prisrej2 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest,"},
+							  {burgerprisoner, "but I think you can see I'm not going anywhere..."},
 							  {NULL, "ARCHIBALD shakes his chains for emphasis."}}));
-	shared_ptr<Conversation> prisrej3 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest."},
-							  {burgerprisoner, "But I don't want to attract unnecessary attention from the BURGER MAN."}}));
+	shared_ptr<Conversation> prisrej3 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you on your quest,"},
+							  {burgerprisoner, "but I don't want to attract unnecessary attention from the BURGER MAN."}}));
+	shared_ptr<Conversation> prisrej4 = make_shared<Conversation>(Conversation({{burgerprisoner, "I would love to join you, but I have a lot of work to do here."},
+							  {burgerprisoner, "I've been gone a long time..."}}));
 	prisrej.skipcondition = {TEMPLEQUEST};
 	prisrej.alt = prisrej2;
 	prisrej2->skipcondition = {ESCAPEDBASE};
 	prisrej2->alt = prisrej3;
+	prisrej3->skipcondition = {BURGERMENDEF};
+	prisrej3->alt = prisrej4;
 	burgerprisoner->addRejectionDialogue(prisrej);
 
 	Conversation priscon = {{burgerprisoner, "Hm?"},
@@ -2205,6 +2212,7 @@ void Game::SetupWorld() {
 	usetheplotdevice.exitPavings.push(make_tuple(burgbasec, burgbasehole, NORTH, SOUTH));
 	usetheplotdevice.exitPavings.push(tuple<Room*, Room*, const char*, const char*>(burgbasenw, abyss, IN_THE_HOLE, NULL));
 	usetheplotdevice.exitPavings.push(tuple<Room*, Room*, const char*, const char*>(burgbasene, abyss, IN_THE_HOLE, NULL));
+	usetheplotdevice.worldcon = BURGERMANDEF; //because this is how you do that
 	usetheplotdevice.uncon = CANDISMISS; //can't dismiss your teammates because you're in the abyss and the time machine hasn't arrived yet
 	
 	//THE PLOT DEVIIIIIIIIIIIIIIIIIIIIIICE!!!!!!!!!!!!!!!!!!!!!!!!!! which you use to get to the final boss
@@ -2228,7 +2236,7 @@ void Game::SetupWorld() {
 		 {NULL, "if you lose your own soul?"},
 		 {NULL, "\n\t<<< BURGER QUEST COMPLETE? >>>"
 				"\n\t<<<     ENDING ACHIEVED:   >>>"
-				"\n\t<<<     PASSING KING OF    >>>"
+				"\n\t<<<     PASSING RULER OF   >>>"
 				"\n\t<<<     A PASSING WORLD    >>>\n"}},
 		{{self, "Nah I'm good."}, //option b, use the device (go to abyss for good ending)
 		 {NULL, "You press down on THE PLOT DEVICE's BIG RED BUTTON!"},
@@ -2387,7 +2395,11 @@ void Game::SetupWorld() {
 	factelder->addRejectionDialogue("I only oversee this factory; I cannot leave the wall.");
 
 	NPC* developer = new NPC("DEVELOPER", "TOMAS", "It's me the guy who made the game.", tenthome, 67, Stats(102, 99, 102, 99, 67, 99, 164), Stats(-1, -1, -1, -1, 0, -1, -1));
-	developer->setDialogue({{developer, "I'm out of dialogue sorry. :P"}, {developer, "Maybe I'll add some more later."}});
+	Conversation devfallback = {{developer, "I'm out of dialogue sorry. :P"}, {developer, "Although I get two more after you finish the game."}};
+	shared_ptr<Conversation> devfallbackfallback = make_shared<Conversation>(Conversation({{developer, "I'm out of dialogue sorry. :P"}, {developer, "Maybe I'll add some more later."}}));
+	devfallback.alt = devfallbackfallback;
+	devfallback.skipcondition = {BURGERMENDEF};
+	developer->setDialogue(devfallback);
 	Conversation devconvo = {{developer, "Ayy Bernard how's it going?"},
 							{self, "Pretty good I think but the player actually named me that."},
 							{NULL, "^"
@@ -2440,7 +2452,7 @@ void Game::SetupWorld() {
 	developer->addConversation({{self, "So what actually are monies?"},
 	 {developer, "???"},
 	 {self, "wdym '???\'"}, //apparently I have to backslash the ' because ??' means ^. The more you know!
-	 {developer, "Bro you're carrying monies around you tell me."},
+	 {developer, "Like you're carrying monies around you tell me."},
 	 {self, "Well you made me say that so you could explain what monies are. T_T"},
 	 {developer, "Yep that's true!"},
 	 {developer, "Well so I'm thinking monies are like gold coins."},
@@ -2450,12 +2462,12 @@ void Game::SetupWorld() {
 	 {developer, "for some graph that was for visualizing currency inflation,"},
 	 {developer, "like it starts at a certain value and gets divided by x,"},
 	 {developer, "where x is how many of that currency exists."},
-	 {developer, "I don't really know if that's exactly how it works but that's what the graph was so yeah."},
+	 {developer, "I'm pretty sure there's more to it than that but that's what the graph was so yeah."},
 	 {developer, "And anyway the bookmark was called \"economonies\" so that's where I assume monies came from."}});
 	//have you tried... the gym, the simulator, the triple chest in the sewers, the bank, BURGER QUEST 1
 	developer->addConversation({{developer, "Have you ever played BURGER QUEST? (the first one)"},
 	 {developer, "If not and you're curious you can try it on this link:"},
-	 {developer, "https://codehs.com/sandbox/id/zuul-kb8vTu/run (You're probably on a terminal so you should do ctrl+insert or ctrl+shift+c to copy it.)"},
+	 {developer, "https://codehs.com/sandbox/id/zuul-kb8vTu/run (You're probably on a terminal so you should do ctrl+insert or ctrl+shift+c to copy it. unless you're on a mac I think you can just use command+c then)"},
 	 {developer, "The sequel is way better but I still like the original."}});
 	developer->addConversation({{developer, "I was walking to my C++ class today,"},
 	 {developer, "and I saw a bicycle-powered blender."},
@@ -2470,10 +2482,11 @@ void Game::SetupWorld() {
 	 {developer, "Well that bank is very reliable."}});
 	//have you fought greer yet
 	developer->addConversation({{developer, "Hi can you give me feedback pls"},
-	 {developer, "Here is a link if yes: https://forms.gle/gL2tFzFhNiDk8gzy6 (you should prolly copy it using Ctrl + Shift + C)"},
-	 {developer, "(or Ctrl + Insert)"},
-	 {developer, "(because you're probably on a terminal and Ctrl + C would end the game process)"}});
-	developer->addConversation({{developer, "Idk if you've encountered teammates with defend attack,"},
+	 {developer, "Here is a link if yes: https://forms.gle/gL2tFzFhNiDk8gzy6 (remember ctrl+c probably won't work)"},
+	 {developer, "wait nevermind I would actually prefer if you did it after you're done with the game"},
+	 {developer, "or if you'll forget, now is fine tho"},
+	 {developer, "Although if I know you in real life I'll probably just ask you directly eventually so yea"}});
+	developer->addConversation({{developer, "Idk if you've encountered npcs with a defend attack,"},
 	 {developer, "like they tank hits for someone else after using a defend move,"},
 	 {developer, "but something funny about that is when I was making that type of move,"},
 	 {developer, "I realized they wouldn't check if it was a beneficial attack,"},
@@ -2488,8 +2501,7 @@ void Game::SetupWorld() {
 	developer->addConversation({{developer, "It's interesting how I have a very specific vision for how the world looks,"},
 	 {developer, "like I have character designs and everything,"},
 	 {developer, "but nobody will ever see them cause it's a text-based game :|"},
-	 {developer, "Maybe I'll make this a graphics-based game someday and then you can see all that..."},
-	 {developer, "but that's a very considerably sized maybe."}});
+	 {developer, "Hopefully I did a good job describing everything"}});
 	//scope creep
 	//future projects
 	developer->addConversation({{developer, "Hey check it out I can say dancing!"},
@@ -2601,16 +2613,17 @@ void Game::SetupWorld() {
 	 {developer, "When I saw that I wasn't even annoyed at the bugs cause it was so funny"},
 	 {developer, "like it just had such perfect comedic timing"},
 	 {developer, "I mean I was a little annoyed"},
-	 {developer, "well probably pretty annoyed"},
-	 {developer, "But in the end I'm grateful that I have this really funny log now."}});
+	 {developer, "well probably pretty annoyed I think it was kinda late but I'm not sure"},
+	 {developer, "But I probably still found it a little funny."},
+	 {developer, "In the end, I'm grateful that I have this really funny log now."}});
 	developer->addConversation({{developer, "Hey Bernard guess how I came up with your name."},
 	 {self, "idk"},
 	 {self, "If you're writing my dialogue how are you supposed to come up with a natural guess?"},
 	 {developer, "That's a good question."},
 	 {developer, "Let's see what ChatGPT guesses and that'll be your guess."},
 	 {developer, "uh what"},
-	 {developer, "Bro said Bernard came from burger + nerd?"},
-	 {developer, "It says because you're secretly a burger nerd?"},
+	 {developer, "It said Bernard came from burger + nerd?"},
+	 {developer, "because you're secretly a burger nerd?"},
 	 {developer, "Why would you guess that?"},
 	 {developer, "Let's try that again."},
 	 {self, "Is it because Bernard is a funny \"real name\" for a video game protagonist?"},
@@ -2658,7 +2671,7 @@ void Game::SetupWorld() {
 
 	NPC* gymbro = new NPC("GYM BRO", "JIM NASIUM", "Obsessed with being in peak physique, there's scarcely a moment when he isn't seen in the gym.\nHe isn't a shrimp, just to clarify.", desertgymfixed, 25);
 	gymbro->addGymDialogue("YYYEEEEEEEEEEAAAAAAAAAAAAAHHHHHHHHHHHHHHHHH WEIGHT LIFTING!!!!!!!!!!!!!!!!!");
-	gymbro->addRejectionDialogue("Sorry dude, I gotta stay on THAT GRIND to get THEM GAINS.");
+	gymbro->addRejectionDialogue("Sorry mate, I gotta stay on THAT GRIND to get THEM GAINS.");
 	gymbro->setGymStart(1); //he will always catch up to your level
 
 	mike->addGymDialogue({{mike, "HA this place is great for practicing my throwing range!"}, {gymbro, "PSST!"}, {gymbro, "Hey, kid."}, {self, "Yeah?"}, {gymbro, "Can you please hurry and RECRUIT this guy back?"}, {gymbro, "He's freaking scary."}});
@@ -2825,7 +2838,7 @@ void Game::SetupWorld() {
 						  {jim, "I wish my shrimple brothers would be self-aware as well."},
 						  {jim, "Have you encountered them?"},
 						  {self, "A few times."},
-						  {jim, "Well I apolagize on their behalf if they've been a nusicence."},
+						  {jim, "Well I apologize on their behalf if they've been a nusicence."},
 						  {jim, "I guard the key to our place of origin."},
 						  {jim, "I was told to wait for someone with blond anime hair and a scarf,"},
 						  {jim, "and you seem to match the description."},
@@ -2845,7 +2858,7 @@ void Game::SetupWorld() {
 	NPC* skeleseller = new NPC("SKELETON", "KELVIN", "He appears to be a skeleton on the floor.", kaboomroom, 5);
 	skeleseller->setDialogue("Well hello there! Could I interest you in some explosives?");
 	skeleseller->addRejectionDialogue("Sorry fella, my ligaments are long gone. No walking for me!");
-	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 7, 20, 1, 1, 1);
+	Attack* pdynamite = new Attack("DYNAMITE", "threw a stick of dynamite at", false, 0, 7, 10, 1, 1, 1);
 	Item* dynamite = new KeyItem("DYNAMITE", "Explosives for exploding stuff, such as rocky rubble.", {{NULL, "You threw the dynamite at the the rubble."}, {NULL, "*KABOOM!*"}, {NULL, "The exit has been unblocked!"}}, limbo, RUBBLE, true, pdynamite);
 	kaboomroom->setStock(dynamite, 2147483647, 5, {{skeleseller, "Do you need some explosives? Here you go! I assume you know what you're doing..."}});
 
@@ -2963,7 +2976,7 @@ void Game::SetupWorld() {
 	scissorliftse->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
 	scissorliftne->setDenial("You can't take the SCISSOR LIFT because you're standing on it!");
 
-	Item* rbtree = new InfoItem("RED-BLACK TREE", "A very cool tree with red and black fruits, rebalancing itself as it grows.", {{NULL, "You try to grab one of the RED-BLACK TREE's fruits."}, {NULL, "The tree rebalanced itself!"}, {NULL, "You fell down to the ground."}}, mountainpeak);
+	Item* rbtree = new InfoItem("RED-BLACK TREE", "A very cool tree with red and black fruits, rebalancing itself as it grows.", {{NULL, "You try to grab one of the RED-BLACK TREE's fruits."}, {NULL, "The tree rebalanced itself to account for your prescence!"}, {NULL, "You fell down to the ground."}, {NULL, "The tree rebalanced itself again to account for your removal."}}, mountainpeak);
 	rbtree->setDenial("And how do you plan to TAKE an entire tree, exactly?");
 
 	Item* controlpanel1 = new WorldChangeItem("CONTROL PANEL", "A huge array of buttons for controlling the factory.\nThankfully, they're all neatly labelled.", controlroom1, {{NULL, "You pull the drainage lever."}, {NULL, "You see the lava level lowering outside!"}});
@@ -3033,12 +3046,16 @@ void Game::SetupWorld() {
 	hose->addBlocker(ceoelevator2, TO_FLOOR_1, "\nYou pressed the button to go TO FLOOR 1 but the door reopened after closing on your FIRE HOSE.", "\nYou pressed the button to go TO FLOOR 1 but the door reopened after closing on the FIRE HOSE on the ground.");
 	hose->addBlocker(ceoelevator2, TO_THE_TOP, "\nYou pressed the button to go TO THE TOP but the door reopened after closing on your FIRE HOSE.", "\nYou pressed the button to go TO THE TOP but the door reopened after closing on the FIRE HOSE on the ground.");
 	hose->addBlocker(mainstreethole, IN_THE_HOLE, "\nYou tried to go IN THE HOLE but got pulled back by your FIRE HOSE.", NULL);
+	hose->addBlocker(timemachine, TO_THE_ABYSS, "\nYou tried to go TO THE ABYSS but the time machine door reopened after closing on your FIRE HOSE.", NULL);
+	hose->addBlocker(timemachine, TO_THE_VOID, "\nYou tried to go TO THE VOID but the time machine door reopened after closing on your FIRE HOSE.", NULL);
 	hose->setStationBlock("\nYou started going into the tunnels but got pulled off your lobster by your fully extended FIRE HOSE!");
 
 	WorldChange hsdropceoele1; //changes if you drop the hose in the floor 1 ceo elevator
 	hose->addDropBlock(ceoelevator1, ceolobby2, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move."); //fire exit because you just dropped the thing that can unblock that type
 	hose->addDropBlock(ceoelevator2, ceolobby, IN_ELEVATOR, FIRE, "closed because the hose you dropped below isn't letting it move.");
 	hose->addDropBlock(elevator, burgerbasement, IN_ELEVATOR, FIRE, "closed because the hose you dropped above isn't letting it move."); //no reverse because you can't go to the basement with the hose
+	hose->addDropBlock(timemachine, timemachine, TO_THE_ABYSS, ENEMY, "unavailable because the hose you dropped isn't letting the time machine space travel.");
+	hose->addDropBlock(timemachine, timemachine, TO_THE_VOID, ENEMY, "unavailable because the hose you dropped isn't letting the time machine space travel.");
 
 	NPC* ninjasmith = new NPC("", "NINJA SMITH", "An expert smith and ninja, maker of all the ninja's fine weapons.", ninjaforge, 20, Stats(61, 21, 43, 32, 50, 30, 9));
 	Conversation smithconv = {{ninjasmith, "I have made many weapon here."},
@@ -3151,6 +3168,8 @@ void Game::SetupWorld() {
 	cheryl->addConversation({{cheryl, "Hi I'm Cheryl, the developer sent me to come pick you up."},
 							 {cheryl, "Because you seem quite stuck here."},
 							 {cheryl, "So feel free to use my time machine if you want to leave."},
+							 {self, "Oh ok thanks"},
+							 {cheryl, "Of course!"},
 							 {NULL, "CHERYL uses her time machine key."},
 							 {NULL, "The time machine makes a car chirping noise."},
 							 {NULL, "You can go IN TIME MACHINE now!"},
@@ -3186,10 +3205,10 @@ void Game::SetupWorld() {
 	Item* salecover = new ManholeItem("MANHOLE COVER", "A heavy metal cover to the sewers. You could probably use this like a frisbee.", limbo, coverthrow);
 	Item* salespork = new ManholeItem("SPORK","\"A spoon-shaped eating utensil with short tines at the tip.\"\n- Oxford Languages", limbo, sporkthrow);
 
-	Item* tv = new InfoItem("TV", "A very cool flatscreen tv for watching tv.", {{NULL, "The TV is out of batteries!"}}, home); //they're all out of batteries logically, also it's an excuse to not make any functionality and the portal destinations
-	Item* hblender = new InfoItem("BLENDER", "A very cool blender for blending stuff into smoothies.", {{NULL, "The BLENDER is out of batteries!"}}, juiceroom);
-	Item* portalgenerator = new InfoItem("PORTAL GENERATOR", "A corporate-issued device for generating portals to go places.", {{NULL, "The PORTAL GENERATOR is out of juice!"}}, yard);
-	Item* tablet = new InfoItem("TABLET", "A tablet for displaying graphics and playing games", {{NULL, "The TABLET is out of batteries!"}}, juiceroom);
+	Item* tv = new InfoItem("TV", "A very cool flatscreen tv for watching tv.", {{NULL, "The TV has no power!"}}, home); //the electricity generator is dead after 67 years
+	Item* hblender = new InfoItem("BLENDER", "A very cool blender for blending stuff into smoothies.", {{NULL, "The BLENDER has no power!"}}, juiceroom);
+	Item* portalgenerator = new InfoItem("PORTAL", "A corporate-issued portal for going places.", {{NULL, "The PORTAL is not linked to a destination!"}}, yard); //the last liquid you threw into the portal slowly fades until it defaults to no destination again
+	Item* tablet = new InfoItem("TABLET", "A large wall-mounted tablet for displaying graphics and playing games", {{NULL, "The TABLET has no power!"}}, juiceroom);
 	
 	//Create exits between rooms MARK: set exits
 	village->setExit(SOUTH, docks);
@@ -4356,8 +4375,10 @@ void Game::SetupWorld() {
 	Effect* tired = new Effect("RECOVERING", 1);
 	shrimplecomplex->selfeffect = tired;
 	tired->tiring = true;
+	Attack* realshrimplebeam = new Attack("SHRIMPLE BEAM", "fired a pressurized jet of water at", false, 0, 55, 40, 1, 1, 1); //this is a higher damage version of the regular shrimple beam, just so parrying the beams does more damage to the boss
+	realshrimplebeam->instakill = true;
 	realjimshady->setOpener(shrimplecomplex);
-	realjimshady->setBasicAttack(shrimplebeam);
+	realjimshady->setBasicAttack(realshrimplebeam);
 
 	NPC* hatchling = new NPC("", "HATCHLING", "Just-hatched lizard with an instant parental bond and fighting instincts.", limbo, 0, Stats(10, 0, 3, 0, 1, 17, 4), Stats(0, 0, 1, 0, 0, 1, 1));
 	Attack* filialinstinct = new Attack("FILIAL INSTINCT", "instinctually aided", false, 0, 0, 0, 1, 1, 1, true, 10);
@@ -4508,9 +4529,9 @@ void Game::SetupWorld() {
 	naturaldisaster->addSpecialAttack(supercell);
 
 	NPC* gamblemonster = new NPC("GAMBLE MONSTER", "GAMBLONGO", "He's Gamblongo the Gamble monster and he owns the casino. He looks like a floating blob of puree with eyes.", limbo, 0, Stats(100, 20, 30, 40, 50, 70, 90), Stats(3, 2, 2, 2, 2, 2, 1));
-	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -1, 0, 0, 0, 0, 0, 0);
+	Attack* gonna = new Attack("ANTICIPATION", "is charging an intense attack", false, -3, 0, 0, 0, 0, 0, 0);
 	gonna->focushits = false;
-	Attack* get = new Attack("DEATH", "got you", false, 22, 12345678, 12345678, 1, 1, 999); //it will take 12 turns before gamblongo's intense attack is usable (22-10 starting sp)
+	Attack* get = new Attack("DEATH", "got you", false, 30, 12345678, 12345678, 1, 1, 999); //it will take 10 turns before gamblongo's intense attack is usable
 	get->focushits = false;
 	gamblemonster->setBasicAttack(gonna);
 	gamblemonster->addSpecialAttack(get);
@@ -4534,12 +4555,12 @@ void Game::SetupWorld() {
 	grandma->addSpecialAttack(slipper);
 
 	//Ratman is Batman MARK: Ratman (enemy)
-	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(25, 30, 13, 20, 15, 23, 10), Stats(0, 1, 1, 0, 1, 0, 0));
+	NPC* ratman = new NPC("", "RATMAN", "Rich vigilante wearing a dark rat suit and a cape, and a yellow utility belt.", limbo, 0, Stats(25, 15, 13, 20, 15, 23, 10), Stats(0, 1, 1, 0, 1, 0, 0));
 	Effect* prepared = new Effect("PREPARED AGAINST", 3);
 	ratman->setTargetEffect(prepared);
 	Effect* shrouded = new Effect("SHROUDED", 5); //5 but probably gets canceled before that
 	shrouded->evasive = true;
-	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 8, 10, 1, 1, 1);
+	Attack* ratarang = new Attack("RATARANG", "threw a ratarang at", false, -5, 10, 10, 1, 1, 1);
 	ratarang->synergies.push_back(prepared);
 	ratman->setBasicAttack(ratarang);
 	Attack* mma = new Attack("MIXED MARTIAL ARTS", "engaged", true, 8, 5, 0, 3, 3, 1);
@@ -4813,15 +4834,15 @@ void Game::SetupWorld() {
 	Attack* recruit2 = new Attack(*recruit1);
 	Attack* recruit3 = new Attack(*recruit1);
 	recruit1->attackconvo = {{NULL, "SENSE OF SELF used RECRUIT!"}, {NULL, "\nSENSE OF SELF - \"Yo, don't you remember the first choice in the temple?\""}, {senseofself, "Yall got robbed of the buff you deserved..."}, {senseofself, "Like, tactically, it's not even a good decision?"}, {senseofself, "Join me! I won't keep the buffs to myself!"}};
-	recruit2->attackconvo = {{NULL, "SENSE OF SELF used RECRUIT!"}, {NULL, "\nSENSE OF SELF - \"Dude why are you still siding with this guy?\""}, {senseofself, "Don't you remember at the lake how you all got debuffed,"}, {senseofself, "all cuz bro could NEVER take one for the team..."}, {senseofself, "I'll never treat you like that! I've got buffs saved just for you!"}};
+	recruit2->attackconvo = {{NULL, "SENSE OF SELF used RECRUIT!"}, {NULL, "\nSENSE OF SELF - \"Dude why are you still siding with this selfish individual?\""}, {senseofself, "Don't you remember at the lake how you all got debuffed?"}, {senseofself, "*sigh* some people can just NEVER take one for the team..."}, {senseofself, "I'll never treat you like that! I've got buffs saved just for you!"}};
 	recruit3->attackconvo = {{NULL, "SENSE OF SELF used RECRUIT!"}, {NULL, "\nSENSE OF SELF - \"Hey! Remember how your *generous leader* chose to hog alllll the SUPER SWAGGiness...\""}, {senseofself, "Smh my head, always has to be the star of the show..."}, {senseofself, "Why don't you join me! I have plenty of buffs to share!"}};
 	//moves to get rid of the temptation statuses
-	Attack* apolagize = new Attack("APOLAGIZE TO", "apolagized to", false, 0, 0, 0, 1, 1, 1, true); //apolagizing only costs a turn, not sp
+	Attack* apolagize = new Attack("APOLOGIZE TO", "apologized to", false, 0, 0, 0, 1, 1, 1, true); //apologizing only costs a turn, not sp
 	apolagize->cancels = {pride};
 	apolagize->direct = true;
 	apolagize->addDescription("Take a turn to apolagize to a teammate with PRIDE in hopes of bringing them back.");
 	apolagize->donotplayer = true; //you need to GO BACK instead
-	pride->teamresponse = apolagize; //player can apolagize once a teammate gets pride
+	pride->teamresponse = apolagize; //player can apologize once a teammate gets pride
 	Attack* sharethespotlight = new Attack("SHARE THE SPOTLIGHT", "shared the spotlight", false, 0, 0, 0, 1, 1, 999, true);
 	sharethespotlight->addDescription("Share the spotlight with your team and remove all spotlight statuses.");
 	sharethespotlight->cancels = {inthespotlight, outthespotlight};
@@ -4878,7 +4899,7 @@ void Game::SetupWorld() {
 								  {senseofself, "All the credit goes to meee! >B)"},
 								  {self, "what?"},
 								  {NULL, "\nSENSE OF SELF used HINDSIGHT 20/20!"},
-								  {NULL, "\nYou blow up behind SENSE OF SELF as he looks away"},
+								  {NULL, "\nYou blow up behind SENSE OF SELF as who is looking away"},
 								  {NULL, "because it's cooler to not look at explosions."}};
 	hindsight2020->repeatconvo = true; //it's funny so repeat it
 	senseofself->setBetrayal(hindsight2020);
@@ -4945,7 +4966,7 @@ void Game::SetupWorld() {
 
 	NPC* thedark = new NPC("", "THE DARK", "The face of the darkness that haunts people's nightmares.", limbo, 0, Stats(2943, 0, 5, 0, 10, 0, 9), Stats(2, 1, 0, 1, 0, 0, 0));
 	thedark->setBoss(true);
-	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 8, 10, 1, 1, 1);
+	Attack* choke = new Attack("CHOKE", "strangled", true, -5, 10, 15, 1, 1, 1);
 	choke->statchip = 0.03; //chip up to 3% of stats per hit
 	thedark->setBasicAttack(choke);
 	Attack* ballofpain = new Attack("BALL OF PAIN", "sent a dark ball of pain at", false, 5, 10, 40, 1, 1, 1);
@@ -4994,20 +5015,20 @@ void Game::SetupWorld() {
 	despair->teamresponse = encourage; //player can use encourage once a teammate gets despair
 	forestknight->setImmunity(despair, {{forestknight, "You are a terrible beast..."}, {forestknight, "but this is no reason to give up hope!"}, {forestknight, "Friends, don't let this monster break your spirit!"}});
 
-	NPC* bolide = new NPC("", "BOLIDE", "Rocky volcanic boulder, burning through the atmosphere straight at your face.", limbo, 0, Stats(60, 20, 6, 20, 8, 100, 9));
+	NPC* bolide = new NPC("", "BOLIDE", "Rocky boulder from a cosmic volcano, burning bright through the atmosphere straight at your face.", limbo, 0, Stats(41, 20, 6, 20, 8, 100, 9));
 	Attack* ablation = new Attack("ABLATION", "is falling to the earth", false, -5, 0, 0, 0, 0, 0);
 	ablation->recoil = 10;
 	ablation->focushits = false;
 	bolide->setBasicAttack(ablation);
-	Attack* fragment = new Attack("FRAGMENT", "fragmented into fragments that fell onto the team", false, -5, 2, 9, 3, 3, 1);
+	Attack* fragment = new Attack("FRAGMENT", "fragmented into fragments that fell onto the team", false, -5, 5, 9, 3, 3, 1);
 	fragment->focushits = false;
 	fragment->onlyRecoilOps = true; //so firefly's motivation can make this hit the player team
 	bolide->setRecoilAttack(fragment, false); //fragments on every hit
-	Attack* meteorshower = new Attack("METEOR SHOWER", "called its meteor friends", false, 10, 10, 5, 3, 3, 1);
+	Attack* meteorshower = new Attack("METEOR SHOWER", "called its meteor friends to hit the team", false, 10, 10, 5, 3, 3, 1);
 	meteorshower->focushits = false;
 	bolide->addSpecialAttack(meteorshower);
 	Attack* impact = new Attack("IMPACT", "crashed into", true, 20, 20, 5, 1, 1, 3);
-	impact->recoil = 60;
+	impact->recoil = 40;
 	bolide->addSpecialAttack(impact);
 
 	NPC* firefly = new NPC("", "FIREFLY", "Little bug made of fire and it flies. It does a little trolling (arson).", limbo, 0, Stats(15, 6, 10, 4, 20, 26, 9));
@@ -5026,7 +5047,7 @@ void Game::SetupWorld() {
 
 	NPC* monkeystatue = new NPC("", "MONKEY STATUE", "Spherical stone monkey looking very peaceful as it sleeps in statue form.", limbo, 0, Stats(110, 100, 0, 100, 0, 0, 9), Stats(1, 1, 0, 0, 0, 0, 1));
 	NPC* infernobo = new NPC("", "INFERNOBO", "Firey spherical monkey in an uncontrollable rage after getting woken up.", limbo, 0, Stats(110, 10, 20, 20, 10, 30, 9), Stats(1, 0, 1, 0, 0, 0, 1));
-	Attack* sleepinertia = new Attack("SLEEP INERTIA", "exploded", false, 0, 5, 0, 1, 1, 3, true); //do one damage to teammates to wake up fellow monkey statues
+	Attack* sleepinertia = new Attack("SLEEP INERTIA", "exploded awake! A shockwave blasts outward from", false, 0, 5, 0, 1, 1, 3, true); //do one damage to teammates to wake up fellow monkey statues
 	sleepinertia->afterdesc = " awake"; //focus hits would make the attack not actually center on the infernobo so I just use this weird grammar instead
 	sleepinertia->targetself = true; //center the blast on itself for a funny domino effect
 	sleepinertia->skiptarget = true; //don't hit itself again
@@ -5061,7 +5082,7 @@ void Game::SetupWorld() {
 	firefight->addEffect(onfire);
 	Attack* firefight2 = new Attack("FIREFIGHT", "fought", true, -5, 2, 4, 3, 3, 1);
 	firefight2->afterdesc = " with blue fire";
-	firefight2->addEffect(extrafire);
+	firefight2->addEffect(onfire);
 	Attack* ragebait = new Attack("RAGEBAIT", "ragebaited", false, 5, 0, 0, 1, 1, 1);
 	Effect* wrath = new Effect("WRATH", 3, 0, 0, 1.5, 1, 1, 1, 1.5);
 	wrath->playerduration = 5; //it's longer for the player because they have to calm down manually while the teammates calm down automatically
@@ -5076,6 +5097,8 @@ void Game::SetupWorld() {
 	Attack* flame = new Attack("FLAME", "flamed", false, 10, 5, 50, 1, 1, 3);
 	flame->addEffect(extrafire);
 	Attack* firefirefire = new Attack("FIRE FIRE FIRE", "fired at will", false, 8, 4, 20, 3, 3, 1);
+	firefirefire->focushits = false;
+	firefirefire->smartunfocus = true; //to finish off the team more efficiently
 	firewithfire->setBasicAttack(firefight);
 	firewithfire->addSpecialAttack(ragebait);
 	firewithfir2->setBasicAttack(firefight2);
@@ -5102,7 +5125,7 @@ void Game::SetupWorld() {
 	ragebait->setTargetConv(mike, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh I just realized,\""}, {firewithfire, "you're carrying around dynamite!"}, {firewithfire, "I thought those were candles,"}, {firewithfire, "since that's about as hard as your dynamite hits! BAHAHAHA! ^^D"}, {mike, "Oh yeah?"}, {mike, "I'm gonna make you eat those words! HAHAHAHA!"}});
 	ragebait->setTargetConv(cacty, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - *insults Cacty's mother in cactus language*\""}, {NULL, "CACTY - *furious cactus noises*"}});
 	ragebait->setTargetConv(michelin, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Michelin, Mr. Purposeless!\""}, {michelin, "Bro what the heck."}, {firewithfire, "Well it's true!"}, {firewithfire, "Your whole job is to make food,"}, {firewithfire, "yet it tastes like what it turns into when you're done! ^^D"}, {michelin, "Hmmmm >:/"}, {firewithfire, "Even your last hope turned out to be a poopy smoothie!"}, {michelin, "I'm gonna-"}, {firewithfire, "You're gonna what?"}, {firewithfire, "Give me food poisoning? ^^D"}, {firewithfire, "BAHAHAHAHA!"}, {michelin, "I'm gonna make you shut up! >:("}});
-	ragebait->setTargetConv(carlos, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Carlos remember when your monthlong hacking attempt got foiled by some kid unplugging your computer?"}, {carlos, "..."}, {firewithfire, "Well I was right down here below you the whole time."}, {firewithfire, "You looked so stupid! BAHAHAHA! ^^D"}, {firewithfire, "BrO wHaT tHe HeCk"}, {firewithfire, "I wAs LiKe SeCoNdS fRoM sTeAlInG AlL oF mIcRoSoFtS mOnIeS"}, {carlos, "hey i know where u live i can-"}, {firewithfire, "*you"}, {carlos, "SHUT THE HECK UP"}});
+	ragebait->setTargetConv(carlos, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Hey Carlos remember when your monthlong hacking attempt got foiled by some kid unplugging your computer?"}, {carlos, "..."}, {firewithfire, "Well I was right down here below you the whole time."}, {firewithfire, "You looked so stupid! BAHAHAHA! ^^D"}, {firewithfire, "wHaT tHe HeCk"}, {firewithfire, "I wAs LiKe SeCoNdS fRoM sTeAlInG AlL oF mIcRoSoFtS mOnIeS"}, {carlos, "hey i know were u live i can-"}, {firewithfire, "*where"}, {carlos, "IM GONNA KILL YOU"}});
 	ragebait->setTargetConv(plum, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Oh you must be the famous fungus princess.\""}, {firewithfire, "Hey I bet you liiiike Browser, don't you? ^^D"}, {plum, "WHAT?"}, {firewithfire, "Well why else do you get kidnapped so easily?"}, {firewithfire, "'ohhhh noooo I can't afford security with my enormous royal budget'"}, {firewithfire, "BAHAHAHA!"}, {plum, "I'm getting around to it!"}, {firewithfire, "Suuuuuure, suuuuuuure. ^^D"}});
 	ragebait->setTargetConv(graham, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE looks at Graham."}, {firewithfire, "Look at this bozo."}, {firewithfire, "Everyone has a clear role in this team, but you?"}, {firewithfire, "What's even your purpose?"}, {firewithfire, "The gambling addict?"}, {firewithfire, "So useless BAHAHAHA! ^^D"}, {graham, "Hey.... you shut up! >:("}});
 	ragebait->setTargetConv(richie, {{NULL, "FIRE WITH FIRE used RAGEBAIT!"}, {NULL, "\nFIRE WITH FIRE - \"Here we have the rich dirtbag of the group...\""}, {richie, ">:O"}, {firewithfire, "Bro stop hogging all your monies to yourself!"}, {richie, "I'll have you know I donate! >:("}, {firewithfire, "Yeah I'm sure you do..."}, {firewithfire, "With your big mansion and fancy cars..."}, {firewithfire, "Hey anyone wanna pull up this guy's purchase history? ^^D"}, {richie, "STOP! >:("}});
@@ -5125,7 +5148,7 @@ void Game::SetupWorld() {
 	Attack* mince = new Attack("MINCE", "violently lashed around BURGER TENDRILs", true, 15, 5, 5, 5, 5, 1);
 	mince->focushits = false;
 	burgermenace->addSpecialAttack(mince);
-	Attack* onthehouse = new Attack("ON THE HOUSE", "served", false, 20, 22, 22, 1, 1, 3);
+	Attack* onthehouse = new Attack("ON THE HOUSE", "served", false, 20, 17, 20, 1, 1, 3);
 	onthehouse->afterdesc = " an explosion on the house";
 	burgermenace->addSpecialAttack(onthehouse);
 
@@ -5147,7 +5170,7 @@ void Game::SetupWorld() {
 	Attack* pitchfork = new Attack("PITCHFORK", "pierced", true, -5, 7, 5, 1, 1, 1);
 	pitchfork->afterdesc = " with his pitchfork";
 	adversary->setBasicAttack(pitchfork);
-	Attack* darkestenergy = new Attack("DARKEST ENERGY", "fired a blast of dark energy at", false, 10, 20, 25, 1, 1, 1);
+	Attack* darkestenergy = new Attack("DARKEST ENERGY", "fired a blast of dark energy at", false, 10, 15, 25, 1, 1, 1);
 	darkestenergy->afterdesc = " from his pitchfork, darker than dark";
 	adversary->addSpecialAttack(darkestenergy);
 	Attack* levitation = new Attack("LEVITATION", "started levitating", false, 15, 5, 5, 1, 1, 1);
@@ -5535,7 +5558,7 @@ void Game::SetupWorld() {
 								  {greer, "Scram, kid!"},
 								  {greer, "This is official BOIGA business!"},
 								  {self, "No >:|"},
-								  {greer, "Ohhh we got a tough guy, huh?"},
+								  {greer, "Ohhh we got a real tough one 'ere, huh?"},
 								  {greer, "Well if youse wanna turn da valve, youse gonna hafta go through me!"},
 								  {self, "Alright then."}});
 	springguard->addRejectionDialogue("Now why would I wanna join youse, huh?");
@@ -5927,6 +5950,7 @@ void Game::SetupWorld() {
 
 	NPC* gamblongo = new NPC(*gamblemonster);
 	gamblongo->setLeader(true, 20, casinoback, false);
+	gamblongo->alterSp(-30); //so he starts with 0 sp and has to build up to his intense attack
 	gamblongo->blockExit(DOWN, ENEMY, "blocked by GAMBLONGO.");
 	gamblongo->addConversation({{gamblongo, "ahahaha"}, {gamblongo, "i am gamblongo the gamble monster and i own this casino"}, {self, "??????????"}, {gamblongo, "if you wish to enter the basement you will have to defeat me in combat"}});
 	gamblongo->addConversation({{gamblongo, "i am inevitable"}});
@@ -6092,8 +6116,8 @@ void Game::SetupWorld() {
 								 {self, "Could one of you guys direct me towards where you kidnap people to?"},
 								 {self, "..."},
 								 {richpeople, "..."},
-								 {richperson, "LET'S GET HIM!"}});
-	richpeople->setDialogue({{self, "I'm gonna save that kid you guys kidnapped >:|"}, {richperson, "LET'S GET HIM!"}});
+								 {richperson, "LET'S GET 'EM!"}});
+	richpeople->setDialogue({{self, "I'm gonna save that kid you guys kidnapped >:|"}, {richperson, "LET'S GET 'EM'!"}});
 	richpeople->addRejectionDialogue({{NULL, "Like, are you trying to recruit all of them at once?"}, {NULL, "That's not gonna work. :|"}});
 	richpeople->setForceBattle();
 	richpeople->addLinkedRoom(ballroom, "in the BURGER ballroom, full of incapacitated rich people.");
@@ -6630,7 +6654,7 @@ void Game::SetupWorld() {
 
 	NPC* vtguard2 = new NPC(*bolide);
 	vtguard2->setLeader(true, 21, volcanotemple2v, false);
-	vtguard2->setParty({firefly, monkeystatue, monkeystatue});
+	vtguard2->setParty({firefly, monkeystatue});
 	vtguard2->blockExit(NORTHEAST, ENEMY, "guarded by the BOLIDE.");
 	vtguard2->setDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
 	vtguard2->addRejectionDialogue({{NULL, "BOLIDE - *sonic meteor noises*"}});
@@ -6813,7 +6837,7 @@ void Game::SetupWorld() {
 	finalboss->setForceBattle(true, true); //you get forced into battle the first time you get here
 	finalboss->addLinkedRoom(aboss, "at a sheer drop-off, the location of your climactic final battle.");
 	finalboss->addLinkedRoom(abyss7, "at the far end of the abyssal crater. The rocks look very climbable.");
-	finalboss->addLinkedRoom(abyss6, "in the middle of the crater. You see a rock that looks like a duck.");
+	finalboss->addLinkedRoom(abyss6, "in the middle of the crater. You see a different rock that looks like a duck.");
 	finalboss->addLinkedRoom(abyss5, "at the end of the crater. The path back continues.");
 	finalboss->addLinkedRoom(abyss10, "on the highest stretch of ground you can see.");
 	finalboss->addLinkedRoom(burgbasenw, "in a sort of BURGER storage room, full of ashes.\nHalf of the room was pulled into the hole.");
@@ -6873,10 +6897,10 @@ void Game::SetupWorld() {
 		{archie, "I haven't been to church for a long time..."},
 		{archie, "Maybe I'll stop by again."}});
 	finalboss->addDefeatRoom(hj, home); //Henry Jerry goes back home
-	finalboss->addDismissLink(party, hj); //hj leaves your party too
+	finalboss->addDismissLink(self->getParty(), hj); //hj leaves your party too
 	finalboss->addHJLink(hj, {{self, "Hey wanna join my team?"}, {hj, "?"}, {hj, "Isn't the game already over?"}, {self, "Yeah but you can still walk around"}, {self, "and 100% the game and stuff."}, {hj, "Sure why not"}}, {{hj, "Well I'm just gonna head back home then."}}); //hj becomes a normal non-fifth teammate type, doesn't print regular conversations on recruitment anymore and he has new recruitment and dismissal dialogue
 	finalboss->addLinkedConvo(hj, {{hj, "You know, there's an ANTI-SKELETON DEVICE lying around in my old office."},
-								   {hj, "Shame the portal's out of juice because we could probably actually pick it up now,"},
+								   {hj, "Shame that I lost my portal coffee because we could probably actually pick it up now,"},
 								   {hj, "with this game's brand new multi-word parsing."}});
 	finalboss->addLinkedConvo(hj, {{hj, "Back in my day,"},
 								   {hj, "we didn't have any of these fancy commands,"},
@@ -6933,8 +6957,8 @@ void Game::SetupWorld() {
 	 {developer, "and time traveled back to the future once all was said and done."},
 	 {developer, "So he ordered the BURGER from himself."},
 	 {self, "Dang that's crazy."}});
-	finalboss->addLinkedConvo(developer, {{developer, "Bro I cannot be fr"},
-	 {developer, "I started replaying my game for some reason cause I was being nostalgic or something"},
+	finalboss->addLinkedConvo(developer, {{developer, "I cannot be fr"},
+	 {developer, "I started replaying my game cause I was being nostalgic or something"},
 	 {developer, "and I noticed..."},
 	 {NULL, "PAST TOMAS - \"hold up...\""},
 	 {NULL, "PAST TOMAS - \"I literally can't exit the forest temple...\""},
@@ -7431,7 +7455,7 @@ void Game::fight(Room* currentRoom, const char* name, bool track) {
 
 				//if the player did not try to use the plot device correctly we give an error message
 				if (strcmp(command, "USE THE PLOT DEVICE") && strcmp(command, "USE THE PLOT DEVICE ON THE ADVERSARY")) {
-					cout << "\nThere is no time for \"" << command << "\"! Use THE PLOT DEVICE!";
+					cout << "\nThere is no time for \"" << command << "\"! USE THE PLOT DEVICE!";
 					invalidcommand++;
 				} else { //stop continuing because the player typed correctly
 					continuing = false;
@@ -7446,7 +7470,7 @@ void Game::fight(Room* currentRoom, const char* name, bool track) {
 	if (roamio) party->erase(remove(party->begin(), party->end(), roamio), party->end());
 	if (track) commandcount[12]++; //increment successful fighting, as in successfully did the command
 	//prints the room data after battle so that the player can reorient themselves
-	if (!npc->getBoss(true)) PrintRoomData(currentRoom); //don't print room if it's the final boss because that's for when you log back in
+	if (!npc->getBoss(true) || battlestatus != 1) PrintRoomData(currentRoom); //don't print room if it's the final boss and we won because that's for when you log back in
 }
 
 //takes an item from the current room and adds it to the inventory MARK: take item
@@ -7770,7 +7794,10 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 			Attack* attack = attacks[i]; //get the attack to add
 			player->addSpecialAttack(attack);
 			//print the description and name of any attacks we have just learned
-			cout << "\n" << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc << " - Costs " << attack->cost << " SP";
+			cout << "\n" << player->getName() << " learned " << attack->name << "!\n" << attack->name << " - " << attack->trueDesc << " - Costs ";
+			if (!attack->spbomb) cout << attack->cost;
+			else cout << "all";
+			cout << " SP";
 			if (i < amount-1) CinPause(); //do not print the final pause cause then the > looks bad
 		}
 		for (Attack* attack : futureattacks) player->addSpecialAttack(attack); //add all the remaining attacks to the pool for use in the future but do not announce them
@@ -8042,6 +8069,8 @@ void Game::useItem(Room* currentRoom, const char* itemname) {
 		if (!device->getUsable(currentRoom)) { //if the plot device has nothing to do it just does nothing
 			cout << "\nYou press down on THE PLOT DEVICE's BIG RED BUTTON!"; //old: THE PLOT DEVICE's PLOTOMETER isn't locked onto anything!
 			CinPause();
+			cout << "..."; //suspense
+			CinPause();
 			cout << "Nothing happened...";
 			return;
 		} //print the first part of the conversation which will the branch depending on the player's choice which is hopefully to not give the device
@@ -8124,7 +8153,7 @@ void Game::recruitNPC(Room* currentRoom, const char* npcname) {
 	if (!npc->getFifth()) cout << " (Party size: " << newpartysize << "/" << 4 << ")";
 	if (currentRoom->getGym()) { //if we're in a gym, print the fruits of the npc's training
 		scaleNPC(npc, self->getLevel()-1); //update the npc level capped at the given cap
-		printLvlUpData(npc, false);
+		printLvlUpData(npc, false, true);
 		npc->setGymStart(0); //no longer training so we reset training time
 	} else {
 		npc->popStatChanges();
@@ -8150,7 +8179,7 @@ void Game::dismissNPC(Room* currentRoom, const char* npcname) {
 		return;
 	} //you can't dismiss yourself/the main character because that makes no sense
 	if (npc->getPlayerness()) {
-		cout << "\n" << npcname << " - \"Huh? You can't dismiss me bro I'm the main character!\"";
+		cout << "\n" << npcname << " - \"Huh? You can't dismiss me I'm the main character!\"";
 		CinPause();
 		cout << "\n" << npcname << " was not dismissed.";
 		return;
@@ -8408,7 +8437,7 @@ bool Game::confirmQuit(time_t savetime, bool laws) { //laws = last action was sa
 		return true;
 	}
 	if (!save && WorldState[LAVADRAINED]) { //extra confirmation because why not. I'm not sure why you would go this far writhout saving (and why you would quit without saving after all that)
-		cout << "\nDude you are like really far into the game.\nAre you really sure you want to quit without saving? (YES or NO)";
+		cout << "\nYou are like really far into the game.\nAre you really sure you want to quit without saving? (YES or NO)";
 		if (!AOrB(NULL, "YES", "NO")) { //get the player choice
 			cout << "\nAlrighty then."; //carry on message
 			return true;
@@ -8474,7 +8503,7 @@ void Game::play() {
 			WorldState[ISBERNARD] = true;
 			CinPause();
 		} else if (!strcmp(name, "HELP")) { //Help complains if you followed the previous instructions and typed HELP (for help)
-			cout << "\nHELP - \"BRO are you serious? Now my name is Help... :(\"";
+			cout << "\nHELP - \"HUH are you serious? Now my name is Help... :(\"";
 			CinPause();
 		//if the player typed anything by following the instructions too literally, the main character remarks on that
 		} else if (!strncmp(name, "YOUR NAME HERE!)", 16)) {
@@ -8544,7 +8573,7 @@ void Game::play() {
 		} else if (!strcmp(commandWord, "ANALYZE")) { //for getting the data of an item or npc
 			analyze(currentRoom, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "FIGHT")) { //for initiating battle with npcs
-			fight(currentRoom, &commandExtension[0]);
+			fight(currentRoom, &commandExtension[0], true);
 		} else if (!strcmp(commandWord, "BUY")) { //for buying items for sale
 			buy(currentRoom, &commandExtension[0]);
 		} else if (!strcmp(commandWord, "HELP")) { //for getting a list of valid commands

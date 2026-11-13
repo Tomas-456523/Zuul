@@ -1,5 +1,5 @@
 /* Tomas Carranza Echaniz
-*  5/14/26
+*  10/28/26
 *  This program is an epic text-based RPG where you can GO between rooms, TAKE, DROP, and USE items, ASK, RECRUIT,
 *  DISMISS, and FIGHT npcs, and you're on a QUEST TO get a BURGER. There's a bunch of other commands as well.
 *
