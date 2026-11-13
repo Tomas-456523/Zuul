@@ -1,8 +1,8 @@
 /* Tomas Carranza Echaniz
-*  11/12/26
+*  11/13/26
 *  This is the implementation file for the game world and playing the game!
 *  
-*  The first ~6850 lines of this file is world setup, because there's a lot of things in the game world. It creates
+*  The first ~7050 lines of this file is world setup, because there's a lot of things in the game world. It creates
 *  all the rooms, NPCs, items, their conversations, all attacks and effects, and the ways they affect each other with
 *  WorldChanges. The general structure of the function is that it sets up directions, then makes rooms, then most of
 *  the teammates, then the other non-enemy world NPCs, then connects all the rooms by setting exits, then creates
@@ -10,7 +10,7 @@
 *  start blocked. The world setup creates the world as if it was freshly created in a NEW GAME; loading saves is managed
 *  after world setup in play() by mutating the world if a non-null Save was passed into the constructor.
 *
-*  The middle section, until ~8200, handles functions corresponding for all the different actions the player can take
+*  The middle section, until ~8460, handles functions corresponding for all the different actions the player can take
 *  during gameplay. The gameplay loop is handled in play(), which is called after creating a new save or loading an
 *  existing save. The loop contnues until the player manually quits or reaches an ending. The player can choose to
 *  QUIT without saving, and must SAVE manually, but the game automatically saves after reaching an ending.
@@ -841,7 +841,7 @@ void Game::SetupWorld() {
 	Conversation absrecruit1 = {{self, "Hey knight man wanna help me save this kid?"},
 							    {forestknight, "Why of course!"},
 							    {forestknight, "From what will we be saving them?"},
-							    {self, "From the BURGER coropration, they kidnapped them."},
+							    {self, "From the BURGER corporation, they kidnapped them."},
 							    {forestknight, "Of course, the fiendish stewards of BURGER."},
 							    {forestknight, "I shall assist you in saving this child!"}};
 	absrecruit1.skipcondition = {TEMPLEQUEST};
@@ -4897,7 +4897,7 @@ void Game::SetupWorld() {
 								  {senseofself, "All the credit goes to meee! >B)"},
 								  {self, "what?"},
 								  {NULL, "\nSENSE OF SELF used HINDSIGHT 20/20!"},
-								  {NULL, "\nYou blow up behind SENSE OF SELF as who is looking away"},
+								  {NULL, "\nYou blow up behind SENSE OF SELF who is looking away"},
 								  {NULL, "because it's cooler to not look at explosions."}};
 	hindsight2020->repeatconvo = true; //it's funny so repeat it
 	senseofself->setBetrayal(hindsight2020);
@@ -6123,7 +6123,7 @@ void Game::SetupWorld() {
 	richpeople->setEscapable(false);
 
 	NPC* enzo = new NPC(*ceo);
-	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER COROPORATION, sitting ominously behind his desk.");
+	enzo->setMask("BURGER CEO", "ENZO", "The CEO of the whole BURGER corporation, sitting ominously behind his desk.");
 	enzo->setLeader(true, 20, ceoroom, false);
 	enzo->blockExit(IN_SAFE, ENEMY, "guarded by ENZO.");
 	enzo->addConversation({{self, "Why'd you guys kidnap that kid? >:|"},
